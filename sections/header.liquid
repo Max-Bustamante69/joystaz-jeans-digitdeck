@@ -20,7 +20,6 @@
    <div class="header__menu hidden xl:flex items-center justify-start gap-6">
     {% for link in section.settings.menu.links %}
       <p class="font-semibold">
-
         {{ link.title | link_to: link.url }}
       </p>
     {% endfor %}
@@ -33,8 +32,8 @@
 
 
   <h2 class="header__title flex items-center justify-center">
-    <a href="{{ routes.root_url }}">
-      <img src="../assets//logo.png" alt="" class="invert-100">
+    <a href="{{ routes.root_url }}" >
+      <img src="../assets/logo.png" alt="" class="invert-100">
     </a>
   </h2>
 

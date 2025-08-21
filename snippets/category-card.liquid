@@ -29,9 +29,9 @@
 {% endcase %}
 
 {% if category.link %}
-  <a href="{{ category.link }}" class="category-card block relative overflow-hidden aspect-[3/4] group">
+  <a href="{{ category.link }}" class="category-card block relative overflow-hidden aspect-[3/4] group md:min-w-[200px] w-full">
 {% else %}
-  <div class="category-card  relative overflow-hidden aspect-[3/4]">
+  <div class="category-card relative overflow-hidden aspect-[3/4] md:min-w-[200px] w-full">
 {% endif %}
 
 {% if category.image %}

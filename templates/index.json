@@ -13,9 +13,13 @@
       "type": "hero",
       "settings": {}
     },
-
+    "category-grid": {
+      "type": "category-grid",
+      "settings": {}
+    }
   },
   "order": [
     "hero",
+    "category-grid"
   ]
 }

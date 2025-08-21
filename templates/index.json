@@ -97,11 +97,108 @@
         "subtitle_color": "#1f2937",
         "text_color": "#374151"
       }
+    },
+    "category_grid_tiJRNW": {
+      "type": "category-grid",
+      "blocks": {
+        "category_QC8xmk": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Blanco_Adelante_bacf7242-71a2-4698-8437-a60bf6c5e09a.png",
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left"
+          }
+        },
+        "category_V68LeD": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/FOTOSPAGINAWEBJOY_12.png",
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left"
+          }
+        },
+        "category_pPrFBF": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/bolsillo_c02ca904-0240-4d14-8069-8e9ae0ce6ff0.png",
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left"
+          }
+        },
+        "category_gatxCg": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/adelante_488a8690-d3e2-49a5-a3fb-eda6bf1e75f7.png",
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left"
+          }
+        }
+      },
+      "block_order": [
+        "category_QC8xmk",
+        "category_V68LeD",
+        "category_pPrFBF",
+        "category_gatxCg"
+      ],
+      "name": "Category Grid",
+      "settings": {
+        "title": "Best Sellers",
+        "subtitle": "",
+        "mobile_layout": "column"
+      }
+    },
+    "quote_E6r7tE": {
+      "type": "quote",
+      "name": "Quote",
+      "settings": {
+        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <em><strong>but so everyone can smell unforgettable.</strong></em>\"</p>",
+        "background_color": "#ffffff",
+        "text_color": "#6b7280",
+        "emphasis_color": "#1f2937",
+        "border_color": "#3b82f6",
+        "text_size": 1.5,
+        "padding": 3
+      }
+    },
+    "hero_x9Qnqz": {
+      "type": "hero",
+      "blocks": {
+        "slide_4rHAFr": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "title": "FLAWLESS FUNDATION",
+            "description": "Transform your business etc",
+            "button_text": "shop now",
+            "button_link": "shopify://collections/jean-hombre",
+            "button_style": "underline  border-none text-sm"
+          }
+        }
+      },
+      "block_order": [
+        "slide_4rHAFr"
+      ],
+      "name": "Hero Section",
+      "settings": {
+        "min_height": 100,
+        "autoplay_duration": 3000,
+        "animation_duration": 1000,
+        "pause_on_hover": true,
+        "show_navigation": false,
+        "show_bullets": true
+      }
     }
   },
   "order": [
     "hero",
     "category-grid",
-    "image_with_text_gxhgP9"
+    "image_with_text_gxhgP9",
+    "category_grid_tiJRNW",
+    "quote_E6r7tE",
+    "hero_x9Qnqz"
   ]
 }

@@ -11,15 +11,97 @@
   "sections": {
     "hero": {
       "type": "hero",
-      "settings": {}
+      "blocks": {
+        "slide_kF6V7J": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "title": "Viste el espíritu",
+            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "button_text": "Descubrelos",
+            "button_link": "shopify://collections/jeans-mujer",
+            "button_style": "text-xl px-6 py-3 border border-white"
+          }
+        },
+        "slide_7EQ4Qm": {
+          "type": "slide",
+          "settings": {
+            "image_url": "https://plus.unsplash.com/premium_photo-1708110921398-1fc68e98eacc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "title": "Viste el espíritu",
+            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": ""
+          }
+        }
+      },
+      "block_order": [
+        "slide_kF6V7J",
+        "slide_7EQ4Qm"
+      ],
+      "settings": {
+        "min_height": 100,
+        "autoplay_duration": 3000,
+        "animation_duration": 1000,
+        "pause_on_hover": true,
+        "show_navigation": false,
+        "show_bullets": true
+      }
     },
     "category-grid": {
       "type": "category-grid",
-      "settings": {}
+      "blocks": {
+        "category_pwLXdi": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Manga_Detalle.png",
+            "title": "Hombres",
+            "link": "shopify://collections/men",
+            "text_position": "bottom-left"
+          }
+        },
+        "category_eVzi4H": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/196.png",
+            "title": "Mujeres",
+            "link": "shopify://collections/women",
+            "text_position": "bottom-left"
+          }
+        }
+      },
+      "block_order": [
+        "category_pwLXdi",
+        "category_eVzi4H"
+      ],
+      "settings": {
+        "title": "Best Sellers",
+        "subtitle": "",
+        "mobile_layout": "column"
+      }
+    },
+    "image_with_text_gxhgP9": {
+      "type": "image-with-text",
+      "name": "Image with Text",
+      "settings": {
+        "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
+        "image_alt": "",
+        "title": "Self-Care Starts With Your Underwear",
+        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "subtitle": "Nuestra promesa",
+        "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
+        "button_text": "Descubrelos",
+        "button_link": "/collections/all",
+        "background_color": "#ffffff",
+        "title_color": "#1f2937",
+        "subtitle_color": "#1f2937",
+        "text_color": "#374151"
+      }
     }
   },
   "order": [
     "hero",
-    "category-grid"
+    "category-grid",
+    "image_with_text_gxhgP9"
   ]
 }

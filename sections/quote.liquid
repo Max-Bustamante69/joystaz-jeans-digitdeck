@@ -1,0 +1,169 @@
+{% comment %}
+  Quote Section
+  Features:
+  - Centered quote layout
+  - Rich text content with customizable formatting
+  - Subtle border lines
+  - Customizable colors and styling
+  - Responsive design
+{% endcomment %}
+
+<div
+  class="quote-section py-16 px-4 md:px-8"
+  style="background-color: {{ section.settings.background_color | default: '#ffffff' }};"
+>
+  <div class="max-w-4xl mx-auto">
+    <div class="relative">
+      <!-- Quote content -->
+      <div class="relative z-10 text-center py-12 lg:py-12 md:py-8 sm:py-6">
+        {% if section.settings.quote_text != blank %}
+          <blockquote
+            class="leading-relaxed font-normal m-0"
+            style="color: {{ section.settings.text_color | default: '#6b7280' }}; font-size: {{ section.settings.text_size | default: 1.5 }}rem;"
+          >
+            {{ section.settings.quote_text }}
+          </blockquote>
+        {% else %}
+          <blockquote
+            class="leading-relaxed font-normal m-0"
+            style="color: {{ section.settings.text_color | default: '#6b7280' }}; font-size: {{ section.settings.text_size | default: 1.5 }}rem;"
+          >
+            <p class="m-0">
+              "Curating luxury fragrances with sincerity—not for profit,
+              <strong class="font-bold" style="color: {{ section.settings.emphasis_color | default: '#1f2937' }};"
+                ><em class="italic">but so everyone can smell unforgettable.</em></strong
+              >"
+            </p>
+          </blockquote>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .quote-section blockquote p {
+    margin: 0;
+  }
+
+  .quote-section blockquote strong {
+    color: {{ section.settings.emphasis_color | default: '#1f2937' }};
+    font-weight: 700;
+  }
+
+  .quote-section blockquote em {
+    font-style: italic;
+  }
+
+  .quote-section blockquote strong em {
+    color: {{ section.settings.emphasis_color | default: '#1f2937' }};
+    font-weight: 700;
+    font-style: italic;
+  }
+
+  /* Responsive text size adjustments */
+  @media screen and (max-width: 1023px) {
+    .quote-section blockquote {
+      font-size: calc({{ section.settings.text_size | default: 1.5 }}rem * 0.9) !important;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .quote-section blockquote {
+      font-size: calc({{ section.settings.text_size | default: 1.5 }}rem * 0.8) !important;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .quote-section blockquote {
+      font-size: calc({{ section.settings.text_size | default: 1.5 }}rem * 0.7) !important;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Quote",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "richtext",
+      "id": "quote_text",
+      "label": "Quote Text",
+      "default": "<p>\"Curating luxury fragrances with sincerity—not for profit, <strong><em>but so everyone can smell unforgettable.</em></strong>\"</p>",
+      "info": "Use <strong> for bold text and <em> for italic text. The quote marks are included in the default text."
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#6b7280",
+      "info": "Color for regular text"
+    },
+    {
+      "type": "color",
+      "id": "emphasis_color",
+      "label": "Emphasis Color",
+      "default": "#1f2937",
+      "info": "Color for bold/emphasized text"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#3b82f6",
+      "info": "Color for the top and bottom border lines"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "unit": "rem",
+      "label": "Text Size",
+      "default": 1.5,
+      "info": "Base font size for the quote"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "unit": "rem",
+      "label": "Vertical Padding",
+      "default": 3,
+      "info": "Padding above and below the quote"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Quote",
+      "category": "Content",
+      "settings": {
+        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <strong><em>but so everyone can smell unforgettable.</em></strong>\"</p>",
+        "background_color": "#ffffff",
+        "text_color": "#6b7280",
+        "emphasis_color": "#1f2937",
+        "border_color": "#3b82f6"
+      }
+    }
+  ]
+}
+{% endschema %}

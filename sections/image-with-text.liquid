@@ -1,0 +1,225 @@
+{% comment %}
+  Image with Text Section
+  Features:
+  - Responsive layout (side-by-side on desktop, column on mobile)
+  - Editable content (title, text, subtitle, rich text, button)
+  - Image on left, text on right (desktop)
+  - Text first, then image (mobile)
+  - Customizable button styling
+{% endcomment %}
+
+<div class="image-with-text-section py-16 px-4 md:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+      <!-- Text Content (First on mobile, right side on desktop) -->
+      <div class="w-full lg:w-1/2 order-2 lg:order-2">
+        <div class="text-content space-y-6">
+          {% if section.settings.title != blank %}
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+              {{ section.settings.title }}
+            </h2>
+          {% endif %}
+
+          {% if section.settings.text != blank %}
+            <p class="text-lg text-gray-700 leading-relaxed">
+              {{ section.settings.text }}
+            </p>
+          {% endif %}
+
+          {% if section.settings.subtitle != blank %}
+            <h3 class="text-xl font-semibold text-gray-900">
+              {{ section.settings.subtitle }}
+            </h3>
+          {% endif %}
+
+          {% if section.settings.rich_text != blank %}
+            <div class="rich-text-content text-gray-700 leading-relaxed">
+              {{ section.settings.rich_text }}
+            </div>
+          {% endif %}
+
+          {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+            <div class="button-container pt-4">
+              <a
+                href="{{ section.settings.button_link }}"
+                class="inline-block bg-primary text-white px-8 py-4 text-lg font-semibold hover:bg-primary/90 transition-all duration-300 ease-in-out"
+              >
+                {{ section.settings.button_text }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Image (Second on mobile, left side on desktop) -->
+      <div class="w-full lg:w-1/2 order-1 lg:order-1">
+        <div class="image-container">
+          {% if section.settings.image %}
+            {{
+              section.settings.image
+              | image_url: width: 800
+              | image_tag: class: 'w-full h-auto  shadow-lg', alt: section.settings.image_alt
+              | default: section.settings.title, loading: 'lazy'
+            }}
+          {% else %}
+            <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400 text-lg">Add an image</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .image-with-text-section {
+    background-color: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+  .text-content h2 {
+    color: {{ section.settings.title_color | default: '#1f2937' }};
+  }
+
+  .text-content h3 {
+    color: {{ section.settings.subtitle_color | default: '#1f2937' }};
+  }
+
+  .text-content p,
+  .rich-text-content {
+    color: {{ section.settings.text_color | default: '#374151' }};
+  }
+
+  li {
+    list-style: disc;
+    margin-left: 1rem;
+  }
+
+
+
+
+  /* Responsive adjustments */
+  @media screen and (max-width: 1023px) {
+    .image-with-text-section {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
+
+  @media screen and (max-width: 767px) {
+    .image-with-text-section {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .text-content h2 {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Image with Text",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image Alt Text",
+      "info": "Optional alt text for accessibility"
+    },
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Self-Care Starts With Your Underwear"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Main Text",
+      "default": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice."
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Nuestra promesa"
+    },
+    {
+      "type": "richtext",
+      "id": "rich_text",
+      "label": "Rich Text Content",
+      "default": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Descubrelos"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#374151"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with Text",
+      "category": "Content",
+      "settings": {
+        "title": "Self-Care Starts With Your Underwear",
+        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "subtitle": "Nuestra promesa",
+        "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
+        "button_text": "Descubrelos",
+        "button_link": "/collections/all"
+      }
+    }
+  ]
+}
+{% endschema %}

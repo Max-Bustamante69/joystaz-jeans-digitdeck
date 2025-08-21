@@ -1,56 +1,87 @@
-<header>
-  <h2 class="header__title">
-    {{ shop.name | link_to: routes.root_url }}
+<header class="flex flex-col bg-transparent absolute top-0 left-0 right-0 z-50 overflow-hidden" >
+  <div class="w-screen overflow-hidden bg-primary py-2 whitespace-nowrap">
+  <div class="ticker-wrap inline-block">
+    <span class="ticker-item text-white text-md font-medium tracking-wide"
+      >Class Is in Session &bull; Class Is in Session &bull; Class Is in Session
+      &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in
+      Session &bull; Class Is in Session &bull; Class Is in Session &bull;
+      Class Is in Session &bull; Class Is in Session &bull;</span
+    >
+    <!-- Repeat the content to ensure smooth looping -->
+    <span class="ticker-item text-white text-md font-medium tracking-wide"
+      >Class Is in Session &bull; Class Is in Session &bull; Class Is in Session
+      &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in
+      Session &bull; Class Is in Session &bull; Class Is in Session &bull;
+      Class Is in Session &bull; Class Is in Session &bull;</span
+    >
+  </div>
+</div>
+  <nav class="grid grid-cols-3 py-8 px-6 md:px-24 bg-transparent text-white w-full bg-gradient-to-b from-black/60 to-transparent ">
+   <div class="header__menu hidden xl:flex items-center justify-start gap-6">
+    {% for link in section.settings.menu.links %}
+      <p class="font-semibold">
+
+        {{ link.title | link_to: link.url }}
+      </p>
+    {% endfor %}
+      </div>
+
+  <div class="flex gap-6 items-center xl:hidden">
+    {% render 'menu-icon' %}
+    {% render 'search-icon' %}
+  </div>
+
+
+  <h2 class="header__title flex items-center justify-center">
+    <a href="{{ routes.root_url }}">
+      <img src="../assets//logo.png" alt="" class="invert-100">
+    </a>
   </h2>
 
-  <div class="header__menu">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
+ 
 
-  <div class="header__icons">
-    {% if shop.customer_accounts_enabled %}
-      {{ 'icon-account.svg' | inline_asset_content | link_to: routes.account_url }}
-    {% endif %}
-
-    <a href="{{ routes.cart_url }}">
-      {% if cart.item_count > 0 %}
+  <div class="flex items-center justify-end gap-4">
+      {% render 'search-icon' , class: "hidden xl:block"%}
+      {% render 'heart-icon', class: "hidden xl:block" %}
+      {% render 'user-icon' %}
+      <div>
+        {% render 'cart-icon' %}
+              {% if cart.item_count > 0 %}
         <sup>{{ cart.item_count }}</sup>
       {% endif %}
+        </div>
+      </div>
+  </nav>
 
-      {{ 'icon-cart.svg' | inline_asset_content }}
-    </a>
-  </div>
 </header>
 
 {% stylesheet %}
-  header {
-    height: 5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  /* You might want to define this in your global CSS file or within a <style> tag */
+.ticker-wrap {
+  animation: ticker linear infinite;
+  animation-duration: 40s; /* Adjust speed as needed */
+  transform: translateX(0%); /* Start position */
+}
+
+@keyframes ticker {
+  0% {
+    transform: translateX(0%);
   }
-  header a {
-    position: relative;
-    text-decoration: none;
-    color: var(--color-foreground);
+  100% {
+    /* Translate by -50% to perfectly loop when repeating the content once */
+    transform: translateX(-50%);
   }
-  header a sup {
-    position: absolute;
-    left: 100%;
-    overflow: hidden;
-    max-width: var(--page-margin);
+}
+
+/* Optional: Add media queries for different speeds or column layouts if desired */
+@media (max-width: 768px) {
+  .ticker-wrap {
+    animation-duration: 25s; /* Faster on smaller screens */
   }
-  header svg {
-    width: 2rem;
-  }
-  header .header__menu,
-  header .header__icons {
-    display: flex;
-    gap: 1rem;
-  }
+}
 {% endstylesheet %}
+
+
 
 {% schema %}
 {

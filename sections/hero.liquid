@@ -1,0 +1,78 @@
+<div class="hero relative flex items-end ">
+
+    {% assign hero_images_urls = 'https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto,https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto,https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto' |  split: ',' %}
+
+  <div id="hero-glide" class="glide ">
+    <div class="glide__track" data-glide-el="track">
+      <ul class="glide__slides">
+        {% for url in hero_images_urls%}
+          <li class="glide__slide h-screen w-full">
+            <img src="{{ url }}" alt="" class=" h-screen w-screen object-cover">
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+
+
+    <div class="glide__bullets" data-glide-el="controls[nav]">
+      <button class="glide__bullet" data-glide-dir="=0"></button>
+      <button class="glide__bullet" data-glide-dir="=1"></button>
+      <button class="glide__bullet" data-glide-dir="=2"></button>
+    </div>
+  </div>
+
+  <div class="hero-content absolute ml-16 mb-24 text-white space-y-4">
+    <h1 class="text-4xl font-bold">Viste el espiritu</h1>
+    <p class="text-lg text-white/80">Creemo que la moda no es solo ropa es la <br> historia que cuentas cada vez que te vistes</p>
+    <button class="text-xl font-semibold px-6 py-4  text-white border border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out">
+        Descubrelos
+    </button>
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Glide !== 'undefined') {
+      new Glide('#hero-glide', { 
+        type: 'carousel',     
+        perView: 1,          
+        autoplay: 3000,    
+        hoverpause: true,     
+        animationDuration: 1000,
+        rewind: true,       
+        breakpoints: {
+          1024: { perView: 1 },
+          768: { perView: 1 },
+          480: { perView: 1 }
+        }
+      }).mount(); // No arguments to mount()
+    } else {
+      console.warn('Glide.js library not found. Make sure glide.min.js is loaded in theme.liquid.');
+    }
+  });
+</script>
+
+<style>
+    .glide__bullets {
+    position: absolute;
+    left: 90%;
+    gap: 1rem;
+}
+
+
+</style>
+
+{% schema %}
+{
+  "name": "Hero Section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Hero Section Home Page",
+      "category": "Hero Sections"
+    }
+  ]
+}
+{% endschema %}

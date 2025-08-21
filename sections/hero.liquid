@@ -1,83 +1,300 @@
-<div class="hero relative flex items-end ">
+{% comment %}
+  Hero Section - Modular and fully editable
+  Features:
+  - Multiple slides support
+  - Fully customizable content per slide
+  - Responsive design
+  - Autoplay and navigation controls
+{% endcomment %}
 
-    {% assign hero_images_urls = 'https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto,https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto,https://static.pullandbear.net/assets/public/1759/aca4/dafa4b1db5f1/21b214e26d44/newinnuevosradesktop/newinnuevosradesktop.jpg?ts=1755529816173&w=1258.9090909090908&f=auto' |  split: ',' %}
+<div class="hero relative flex items-end" style="min-height: {{ section.settings.min_height }}vh;">
+  {% if section.blocks.size > 0 %}
+    <div id="hero-glide-{{ section.id }}" class="glide">
+      <div class="glide__track" data-glide-el="track">
+        <ul class="glide__slides">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'slide' %}
+                {% render 'hero-slide', slide: block.settings %}
+            {% endcase %}
+          {% endfor %}
+        </ul>
+      </div>
 
-  <div id="hero-glide" class="glide ">
-    <div class="glide__track" data-glide-el="track">
-      <ul class="glide__slides">
-        {% for url in hero_images_urls%}
-          <li class="glide__slide h-dvh w-full">
-            <img src="{{ url }}" alt="" class=" h-dvh w-dvw object-cover">
-          </li>
-        {% endfor %}
-      </ul>
+      {% if section.blocks.size > 1 %}
+        {% if section.settings.show_navigation %}
+          <div class="glide__arrows" data-glide-el="controls">
+            <button class="glide__arrow glide__arrow--left" data-glide-dir="<">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <button class="glide__arrow glide__arrow--right" data-glide-dir=">">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
+        {% endif %}
+
+        {% if section.settings.show_bullets %}
+          <div class="glide__bullets" data-glide-el="controls[nav]">
+            {% for block in section.blocks %}
+              {% if block.type == 'slide' %}
+                <button class="glide__bullet" data-glide-dir="={{ forloop.index0 }}"></button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
     </div>
-
-
-
-    <div class="glide__bullets" data-glide-el="controls[nav]">
-      <button class="glide__bullet" data-glide-dir="=0"></button>
-      <button class="glide__bullet" data-glide-dir="=1"></button>
-      <button class="glide__bullet" data-glide-dir="=2"></button>
+  {% else %}
+    <div class="flex items-center justify-center w-full h-dvh bg-gray-100">
+      <div class="text-center text-gray-500">
+        <p class="text-lg mb-4">No slides added yet</p>
+        <p class="text-sm">Add slides using the theme editor</p>
+      </div>
     </div>
-  </div>
-
-  <div class="hero-content absolute ml-8 md:ml-16 mb-24 text-white space-y-6">
-    <h1 class="text-4xl font-bold">Viste el espiritu</h1>
-    <p class="text-md md:text-lg text-white/80">Creemos que la moda no es solo ropa es la <br> historia que cuentas cada vez que te vistes</p>
-    <button class="text-xl font-semibold px-4 py-2  text-white border border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out">
-        Descubrelos
-    </button>
-  </div>
+  {% endif %}
 </div>
 
-
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    if (typeof Glide !== 'undefined') {
-      new Glide('#hero-glide', { 
-        type: 'carousel',     
-        perView: 1,          
-        autoplay: 3000,    
-        hoverpause: true,     
-        animationDuration: 1000,
-        rewind: true,       
-        breakpoints: {
-          1024: { perView: 1 },
-          768: { perView: 1 },
-          480: { perView: 1 }
-        }
-      }).mount(); // No arguments to mount()
-    } else {
-      console.warn('Glide.js library not found. Make sure glide.min.js is loaded in theme.liquid.');
+    document.addEventListener('DOMContentLoaded', function() {
+      const heroElement = document.getElementById('hero-glide-{{ section.id }}');
+
+      if (heroElement && typeof Glide !== 'undefined') {
+      new Glide(heroElement, {
+    perView: 1,
+    gap: 0,
+    autoplay: {{ section.settings.autoplay_duration | default: 3000 }},
+    hoverpause: {{ section.settings.pause_on_hover | json }},
+    animationDuration: {{ section.settings.animation_duration | default: 1000 }},
+    rewind: true,
+    breakpoints: {
+      1024: { perView: 1 },
+      768: { perView: 1 },
+      480: { perView: 1 }
     }
-  });
+  }).mount();
+      } else if (heroElement) {
+        console.warn('Glide.js library not found. Make sure glide.min.js is loaded in theme.liquid.');
+      }
+    });
 </script>
 
 <style>
-    .glide__bullets {
+  .glide__bullets {
     position: absolute;
     left: 90%;
+    bottom: 20px;
     gap: 1rem;
-}
+    z-index: 20;
+    display: flex;
+    flex-direction: row;
+  }
 
-@media screen and (max-width: 768px) {
+  .glide__bullet {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .glide__bullet--active {
+    background: white;
+    transform: scale(1.2);
+  }
+
+  .glide__arrows {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    z-index: 20;
+  }
+
+  .glide__arrow {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .glide__arrow:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+
+  .glide__arrow--left {
+    left: 20px;
+  }
+
+  .glide__arrow--right {
+    right: 20px;
+  }
+
+  @media screen and (max-width: 768px) {
     .glide__bullets {
-        left: 50%;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
     }
-}
 
+    .glide__bullet {
+      width: 10px;
+      height: 10px;
+    }
 
+    .glide__arrow {
+      width: 40px;
+      height: 40px;
+    }
+
+    .glide__arrow--left {
+      left: 10px;
+    }
+
+    .glide__arrow--right {
+      right: 10px;
+    }
+  }
 </style>
 
 {% schema %}
 {
   "name": "Hero Section",
-  "settings": [],
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "min_height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "label": "Minimum Height",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "autoplay_duration",
+      "min": 1000,
+      "max": 8000,
+      "step": 500,
+      "unit": "ms",
+      "label": "Autoplay Duration",
+      "default": 3000
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 200,
+      "max": 2000,
+      "step": 100,
+      "unit": "ms",
+      "label": "Animation Duration",
+      "default": 1000
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on Hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show Navigation Arrows",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bullets",
+      "label": "Show Bullet Navigation",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Hero Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slide Image"
+        },
+        {
+          "type": "url",
+          "id": "image_url",
+          "label": "Or Image URL (alternative to image picker)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Slide Title",
+          "default": "Viste el espíritu"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Slide Description",
+          "default": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Descubrelos"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button Style",
+          "options": [
+            {
+              "value": "",
+              "label": "Default"
+            },
+            {
+              "value": "text-xl px-6 py-3 border border-white",
+              "label": "Transparent"
+            },
+            {
+              "value": "underline  border-none text-sm",
+              "label": "Underlined"
+            }
+          ],
+          "default": ""
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "Hero Section Home Page",
-      "category": "Hero Sections"
+      "name": "Hero Section",
+      "category": "Hero Sections",
+      "blocks": [
+        {
+          "type": "slide"
+        }
+      ]
     }
   ]
 }

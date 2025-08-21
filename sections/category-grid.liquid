@@ -1,0 +1,218 @@
+{% comment %}
+  Category Grid Section
+  Features:
+  - Dynamic grid based on category count
+  - Customizable category images and names
+  - Mobile responsive (column or slider)
+  - Optional section title
+{% endcomment %}
+
+<div class="category-grid-section py-12 px-4 md:px-8">
+  {% if section.settings.title != blank %}
+    <div class="text-left mb-8">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        {{ section.settings.title }}
+      </h2>
+      {% if section.settings.subtitle != blank %}
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          {{ section.settings.subtitle }}
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if section.blocks.size > 0 %}
+    {% assign category_count = section.blocks.size %}
+
+    <!-- Dynamic grid layout -->
+    <div class="category-grid-container">
+      <!-- Mobile Layout -->
+      {% if section.settings.mobile_layout == 'slider' %}
+        <!-- Mobile Slider -->
+        <div class="md:hidden">
+          <div id="category-mobile-slider-{{ section.id }}" class="glide">
+            <div class="glide__track" data-glide-el="track">
+              <ul class="glide__slides">
+                {% for block in section.blocks %}
+                  {% case block.type %}
+                    {% when 'category' %}
+                      <li class="glide__slide px-1">
+                        {% render 'category-card', category: block.settings %}
+                      </li>
+                  {% endcase %}
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Grid -->
+        <div class="hidden md:grid gap-1 overflow-x-auto" style="grid-template-columns: repeat({{ category_count }}, 1fr);">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'category' %}
+                {% render 'category-card', category: block.settings %}
+            {% endcase %}
+          {% endfor %}
+        </div>
+      {% else %}
+        <!-- Mobile Column + Desktop Grid -->
+        <div class="grid gap-1" style="grid-template-columns: repeat(1, 1fr);">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'category' %}
+                {% render 'category-card', category: block.settings %}
+            {% endcase %}
+          {% endfor %}
+        </div>
+
+        <!-- Desktop Grid Override -->
+        <style>
+          @media screen and (min-width: 768px) {
+            .category-grid-container .grid {
+              grid-template-columns: repeat({{category_count}}, 1fr) !important;
+            }
+          }
+        </style>
+      {% endif %}
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <p class="text-gray-500 text-lg">No categories added yet</p>
+      <p class="text-gray-400 text-sm mt-2">Add categories using the theme editor</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const mobileSliderElement = document.getElementById('category-mobile-slider-{{ section.id }}');
+
+    if (mobileSliderElement && typeof Glide !== 'undefined') {
+      new Glide(mobileSliderElement, {
+        type: 'carousel',
+        perView: 1.5,
+        gap: 4,
+        autoplay: false,
+        focusAt: 'center',
+        peek: 0.5,
+      }).mount();
+    }
+  });
+</script>
+
+<style>
+  .category-grid-container {
+    max-width: 100%;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Category Grid",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "info": "Optional subtitle below the main title"
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout",
+      "options": [
+        {
+          "value": "column",
+          "label": "Single Column"
+        },
+        {
+          "value": "slider",
+          "label": "Slider"
+        }
+      ],
+      "default": "column"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Category Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Category Name",
+          "default": "Camisas"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Category Link"
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Text Position",
+          "options": [
+            {
+              "value": "bottom-left",
+              "label": "Bottom Left"
+            },
+            {
+              "value": "bottom-center",
+              "label": "Bottom Center"
+            },
+            {
+              "value": "bottom-right",
+              "label": "Bottom Right"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ],
+          "default": "bottom-left"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Grid",
+      "category": "Content",
+      "blocks": [
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        },
+        {
+          "type": "category"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

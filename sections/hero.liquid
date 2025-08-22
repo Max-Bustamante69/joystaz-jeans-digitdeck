@@ -64,12 +64,13 @@
 
       if (heroElement && typeof Glide !== 'undefined') {
       new Glide(heroElement, {
+        type: 'carousel',
     perView: 1,
     gap: 0,
     autoplay: {{ section.settings.autoplay_duration | default: 3000 }},
     hoverpause: {{ section.settings.pause_on_hover | json }},
     animationDuration: {{ section.settings.animation_duration | default: 1000 }},
-    rewind: true,
+    loop: true,
     breakpoints: {
       1024: { perView: 1 },
       768: { perView: 1 },

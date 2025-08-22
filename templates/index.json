@@ -57,7 +57,8 @@
             "image": "shopify://shop_images/Manga_Detalle.png",
             "title": "Hombres",
             "link": "shopify://collections/men",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "landscape"
           }
         },
         "category_eVzi4H": {
@@ -66,7 +67,8 @@
             "image": "shopify://shop_images/196.png",
             "title": "Mujeres",
             "link": "shopify://collections/women",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "landscape"
           }
         }
       },
@@ -107,7 +109,8 @@
             "image": "shopify://shop_images/Blanco_Adelante_bacf7242-71a2-4698-8437-a60bf6c5e09a.png",
             "title": "Camisas",
             "link": "",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
           }
         },
         "category_V68LeD": {
@@ -116,7 +119,8 @@
             "image": "shopify://shop_images/FOTOSPAGINAWEBJOY_12.png",
             "title": "Camisas",
             "link": "",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
           }
         },
         "category_pPrFBF": {
@@ -125,7 +129,8 @@
             "image": "shopify://shop_images/bolsillo_c02ca904-0240-4d14-8069-8e9ae0ce6ff0.png",
             "title": "Camisas",
             "link": "",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
           }
         },
         "category_gatxCg": {
@@ -134,7 +139,8 @@
             "image": "shopify://shop_images/adelante_488a8690-d3e2-49a5-a3fb-eda6bf1e75f7.png",
             "title": "Camisas",
             "link": "",
-            "text_position": "bottom-left"
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
           }
         }
       },

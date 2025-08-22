@@ -7,6 +7,7 @@
   - title: category name
   - link: category URL
   - text_position: text positioning
+  - aspect_ratio: aspect ratio for the card
 {% endcomment %}
 
 {% assign text_position_classes = 'absolute text-white font-bold text-lg z-10' %}
@@ -28,10 +29,32 @@
     {% assign text_position_classes = text_position_classes | append: ' bottom-4 left-4' %}
 {% endcase %}
 
+{% comment %} Set aspect ratio classes {% endcomment %}
+{% assign aspect_ratio_class = 'aspect-square' %}
+{% case category.aspect_ratio %}
+  {% when 'square' %}
+    {% assign aspect_ratio_class = 'aspect-square' %}
+  {% when 'portrait' %}
+    {% assign aspect_ratio_class = 'aspect-[3/4]' %}
+  {% when 'landscape' %}
+    {% assign aspect_ratio_class = 'aspect-[4/3]' %}
+  {% when 'wide' %}
+    {% assign aspect_ratio_class = 'aspect-[16/9]' %}
+  {% when 'ultra-wide' %}
+    {% assign aspect_ratio_class = 'aspect-[21/9]' %}
+  {% when 'tall' %}
+    {% assign aspect_ratio_class = 'aspect-[2/3]' %}
+  {% else %}
+    {% assign aspect_ratio_class = 'aspect-square' %}
+{% endcase %}
+
 {% if category.link %}
-  <a href="{{ category.link }}" class="category-card block relative overflow-hidden aspect-[3/4] group md:min-w-[200px] ">
+  <a
+    href="{{ category.link }}"
+    class="category-card block relative {{ aspect_ratio_class }} overflow-hidden group md:min-w-[200px]"
+  >
 {% else %}
-  <div class="category-card relative overflow-hidden aspect-[3/4] md:min-w-[200px] ">
+  <div class="category-card relative overflow-hidden {{ aspect_ratio_class }} md:min-w-[200px]">
 {% endif %}
 
 {% if category.image %}

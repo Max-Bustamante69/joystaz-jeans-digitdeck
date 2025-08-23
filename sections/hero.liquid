@@ -38,7 +38,7 @@
         {% endif %}
 
         {% if section.settings.show_bullets %}
-          <div class="glide__bullets" data-glide-el="controls[nav]">
+          <div class="glide__bullets pr-10" data-glide-el="controls[nav]">
             {% for block in section.blocks %}
               {% if block.type == 'slide' %}
                 <button class="glide__bullet" data-glide-dir="={{ forloop.index0 }}"></button>
@@ -86,7 +86,7 @@
 <style>
   .glide__bullets {
     position: absolute;
-    left: 90%;
+    left: 95%;
     bottom: 20px;
     gap: 1rem;
     z-index: 20;
@@ -274,7 +274,7 @@
               "label": "Default"
             },
             {
-              "value": "text-xl px-6 py-3 border border-white",
+              "value": "px-6 py-3 border border-white",
               "label": "Transparent"
             },
             {

@@ -26,25 +26,32 @@
         class="hero-slide-content absolute bottom-24 left-8 md:left-16 text-white space-y-6 z-10"
       >
         {% if slide.title %}
-          <h2 class="text-4xl md:text-5xl font-bold leading-tight text-shadow">
+          <h1>
             {{ slide.title }}
-          </h2>
+          </h1>
         {% endif %}
 
         {% if slide.description %}
-          <p class="text-md md:text-lg text-white/90 max-w-md text-shadow">
+          <p class="body text-white/90 max-w-md text-shadow">
             {{ slide.description }}
           </p>
         {% endif %}
         {% if slide.button_text and slide.button_link %}
-          <a
+          <h6>
+
+            <a
             href="{{ slide.button_link }}"
-            class=" font-semibold
-                {{ slide.button_style }}
+            class="
+            font-semibold
+            {{ slide.button_style }}
             "
-          >
+            >
+            
+            
             {{ slide.button_text }}
-          </a>
+            
+            </a>
+            </h6>
         {% endif %}
       </div>
     {% endif %}

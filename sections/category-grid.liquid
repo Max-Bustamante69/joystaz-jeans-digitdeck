@@ -14,7 +14,7 @@
         {{ section.settings.title }}
       </h2>
       {% if section.settings.subtitle != blank %}
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        <p class="text-lg text-gray-600 max-w-2xl ">
           {{ section.settings.subtitle }}
         </p>
       {% endif %}
@@ -32,7 +32,7 @@
         <div class="md:hidden">
           <div id="category-mobile-slider-{{ section.id }}" class="glide">
             <div class="glide__track" data-glide-el="track">
-              <ul class="glide__slides">
+              <ul class="glide__slides ">
                 {% for block in section.blocks %}
                   {% case block.type %}
                     {% when 'category' %}

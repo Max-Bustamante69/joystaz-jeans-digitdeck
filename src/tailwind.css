@@ -13,9 +13,66 @@
         font-family: "Inter", sans-serif;
     }
 
-    svg {
+    h1 {
+        font-size: 40px;
+        line-height: 1.1;
+        font-weight: 700;
+    }
+    h2 {
+        font-size: 32px;
+        line-height: 1.2;
+        font-weight: 600;
+    }
+    h3 {
+        font-size: 26px;
+        line-height: 1.4;
+        font-weight: 500;
+    }
+    h4 {
+        font-size: 22px;
+        line-height: 1.4;
+        font-weight: 400;
+    }
+    h5 {
+        font-size: 18px;
+        line-height: 1.4;
+        font-weight: 300;
+    }
+    h6 {
+        font-size: 16px;
+        line-height: 1.3;
+        font-weight: 200;
+    }
+    .body {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .body-2 {
+        font-size: 10px;
+        line-height: 1.3;
+    }
+    .body-3 {
+        font-size: 12px;
+        line-height: 1.3;
+    }
+    .body-14 {
+        font-size: 14px;
+        line-height: 1.3;
+    }
+    .body-4 {
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+        svg {
         width: 24px;
     }
 
+    }
 
-}
+
+
+
+
+

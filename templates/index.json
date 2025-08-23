@@ -33,11 +33,24 @@
             "button_link": "",
             "button_style": ""
           }
+        },
+        "slide_wfyam9": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/adelante2_b6edc962-0ada-47ae-9a84-1bc0f085eaac.png",
+            "image_url": "",
+            "title": "Viste el espíritu",
+            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": ""
+          }
         }
       },
       "block_order": [
         "slide_kF6V7J",
-        "slide_7EQ4Qm"
+        "slide_7EQ4Qm",
+        "slide_wfyam9"
       ],
       "settings": {
         "min_height": 100,

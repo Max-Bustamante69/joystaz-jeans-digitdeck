@@ -20,7 +20,7 @@
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
             "button_text": "Descubrelos",
             "button_link": "shopify://collections/jeans-mujer",
-            "button_style": "text-xl px-6 py-3 border border-white"
+            "button_style": "underline  border-none text-sm"
           }
         },
         "slide_7EQ4Qm": {
@@ -39,7 +39,7 @@
           "settings": {
             "image": "shopify://shop_images/adelante2_b6edc962-0ada-47ae-9a84-1bc0f085eaac.png",
             "image_url": "",
-            "title": "Viste el espíritu",
+            "title": "Marcos",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
             "button_text": "Descubrelos",
             "button_link": "",
@@ -174,7 +174,7 @@
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <em><strong>but so everyone can smell unforgettable.</strong></em>\"</p>",
+        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <em><strong>but so everyone can smell unforgettable. quote</strong></em>\"</p>",
         "background_color": "#ffffff",
         "text_color": "#6b7280",
         "emphasis_color": "#1f2937",
@@ -194,7 +194,7 @@
             "description": "Transform your business etc",
             "button_text": "shop now",
             "button_link": "shopify://collections/jean-hombre",
-            "button_style": "underline  border-none text-sm"
+            "button_style": "text-xl px-6 py-3 border border-white"
           }
         }
       },

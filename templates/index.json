@@ -99,6 +99,8 @@
       "type": "image-with-text",
       "name": "Image with Text",
       "settings": {
+        "layout_direction": "image_first",
+        "image_style": "windowed",
         "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
         "image_alt": "",
         "title": "Self-Care Starts With Your Underwear",
@@ -107,6 +109,7 @@
         "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
+        "button_style": "background",
         "background_color": "#ffffff",
         "title_color": "#1f2937",
         "subtitle_color": "#1f2937",
@@ -210,6 +213,73 @@
         "show_navigation": false,
         "show_bullets": true
       }
+    },
+    "trust_badges_bzGmPj": {
+      "type": "trust-badges",
+      "blocks": {
+        "badge_q4YbLx": {
+          "type": "badge",
+          "settings": {
+            "icon_type": "svg",
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
+            "title": "Free shipping",
+            "description": "We offer free worldwide shipping on orders over $100"
+          }
+        },
+        "badge_nymaqi": {
+          "type": "badge",
+          "settings": {
+            "icon_type": "svg",
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
+            "title": "Customer service",
+            "description": "Our customer service team is available Monday till Friday from 9am - 6pm"
+          }
+        },
+        "badge_4F9eFf": {
+          "type": "badge",
+          "settings": {
+            "icon_type": "svg",
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
+            "title": "Secure payments",
+            "description": "We offer secure payments using Creditcard, PayPal, ShopPay and Amazon Pay."
+          }
+        }
+      },
+      "block_order": [
+        "badge_q4YbLx",
+        "badge_nymaqi",
+        "badge_4F9eFf"
+      ],
+      "name": "Trust Badges",
+      "settings": {
+        "show_borders": true,
+        "background_color": "#f9fafb",
+        "title_color": "#1f2937",
+        "text_color": "#374151",
+        "icon_color": "#1f2937",
+        "border_color": "#e5e7eb"
+      }
+    },
+    "image_with_text_G6betb": {
+      "type": "image-with-text",
+      "name": "Image with Text",
+      "settings": {
+        "layout_direction": "text_first",
+        "image_style": "full_width",
+        "image": "shopify://shop_images/1_1.jpg",
+        "image_alt": "",
+        "title": "Self-Care Starts With Your Underwear",
+        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "subtitle": "",
+        "rich_text": "",
+        "button_text": "Descubrelos",
+        "button_link": "/collections/all",
+        "button_style": "border",
+        "background_color": "#ffffff",
+        "title_color": "#1f2937",
+        "subtitle_color": "#1f2937",
+        "text_color": "#374151"
+      }
     }
   },
   "order": [
@@ -218,6 +288,8 @@
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",
     "quote_E6r7tE",
-    "hero_x9Qnqz"
+    "hero_x9Qnqz",
+    "trust_badges_bzGmPj",
+    "image_with_text_G6betb"
   ]
 }

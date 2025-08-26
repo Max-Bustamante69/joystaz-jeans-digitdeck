@@ -1,0 +1,213 @@
+{% comment %}
+  FAQ Section with Accordion
+  Features:
+  - Editable main title
+  - Flexible number of accordion items
+  - Smooth expand/collapse animations using Alpine.js
+  - Responsive design
+  - Customizable styling
+{% endcomment %}
+
+<div
+  class="faq-section py-16 px-4 md:px-8"
+  style="background-color: {{ section.settings.background_color | default: '#ffffff' }};"
+>
+  <div class="w-full">
+    {% if section.settings.title != blank %}
+      <h1
+        class="text-left mb-12 pb-4 "
+        style="color: {{ section.settings.title_color | default: '#1f2937' }};"
+      >
+        {{ section.settings.title }}
+      </h1>
+    {% endif %}
+
+    <div class="faq-accordion" x-data="{ openItem: null }">
+      {% for block in section.blocks %}
+        {% case block.type %}
+          {% when 'faq_item' %}
+            <div class="faq-item border-b border-gray-200" {{ block.shopify_attributes }}>
+              <button
+                class="faq-question w-full text-left py-4 px-0 border-b border-gray-200 flex justify-between items-center transition-all duration-300 hover:bg-gray-50"
+                @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
+                :aria-expanded="openItem === {{ forloop.index }}"
+                style="color: {{ section.settings.question_color | default: '#1f2937' }};"
+              >
+                <h5 class="  font-semibold">
+                  {{ block.settings.question }}
+                </h5>
+                <svg
+                  class="faq-icon w-5 h-5 transition-transform duration-500 ease-out"
+                  :class="{ 'rotate-180': openItem === {{ forloop.index }} }"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <div
+                class="faq-answer overflow-hidden transition-all duration-500 ease-out"
+                x-show="openItem === {{ forloop.index }}"
+                x-transition:enter="transition ease-out duration-500"
+                x-transition:enter-start="opacity-0 max-h-0"
+                x-transition:enter-end="opacity-100 max-h-96"
+                x-transition:leave="transition ease-in duration-500"
+                x-transition:leave-start="opacity-100 max-h-96"
+                x-transition:leave-end="opacity-0 max-h-0"
+              >
+                <div
+                  class="ml-2 body py-4 px-0"
+                  style="color: {{ section.settings.answer_color | default: '#374151' }};"
+                >
+                  {{ block.settings.answer }}
+                </div>
+              </div>
+            </div>
+        {% endcase %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .faq-section {
+    background-color: {{ section.settings.background_color | default: '#ffffff' }};
+  }
+
+
+
+  .faq-question {
+    background: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+
+
+
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .faq-question-text {
+      font-size: 14px;
+    }
+
+    .faq-content {
+      font-size: 14px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "FAQ",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Preguntas Frecuentes"
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "question_color",
+      "label": "Question Color",
+      "default": "#1f2937"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Focus)",
+      "default": "#3B2E10"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "¿Cuanto tiempo tarda el envio?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ",
+      "category": "Content",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Cuanto tiempo tarda el envio?",
+            "answer": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Como funciona la garantia?",
+            "answer": "<p>Ofrecemos una garantía de 30 días en todos nuestros productos. Si no estás satisfecho con tu compra, puedes devolver el producto en su estado original para un reembolso completo o cambio.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Es seguro comprar en la tienda online?",
+            "answer": "<p>Sí, es completamente seguro. Utilizamos tecnología SSL de encriptación para proteger toda la información personal y de pago. Además, nunca almacenamos los datos de tu tarjeta de crédito en nuestros servidores.</p>"
+          }
+        }
+      ],
+      "settings": {
+        "title": "Preguntas Frecuentes"
+      }
+    }
+  ]
+}
+{% endschema %}

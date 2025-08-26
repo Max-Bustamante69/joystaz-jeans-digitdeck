@@ -1,39 +1,159 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
-  </div>
-
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
+<footer class="w-full" x-data="{ openItem: null }">
+  <div class="relative w-full">
+    {% if section.settings.image_desktop != blank %}
+      <img
+        src="{{ section.settings.image_desktop | image_url }}"
+        alt="Footer image desktop"
+        class="hidden md:block w-full object-cover"
+        width="{{ section.settings.image_desktop.width }}"
+        height="{{ section.settings.image_desktop.height }}"
+        loading="lazy"
+      >
     {% endif %}
+    {% if section.settings.image_mobile != blank %}
+      <img
+        src="{{ section.settings.image_mobile | image_url }}"
+        alt="Footer image mobile"
+        class="block md:hidden w-full object-cover"
+        width="{{ section.settings.image_mobile.width }}"
+        height="{{ section.settings.image_mobile.height }}"
+        loading="lazy"
+      >
+    {% endif %}
+  </div>
+
+  <div class="px-6 md:px-10 lg:px-16 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+      <div class="space-y-4 col-span-2">
+        <a href="{{ routes.root_url }}" class="inline-block">
+          <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name }}" width="120" height="40" class="invert-0">
+        </a>
+        {% if section.settings.tagline != blank %}
+          <p class="text-gray-500">{{ section.settings.tagline }}</p>
+        {% endif %}
+
+        <form action="{{ routes.search_url }}" method="get" role="search" class="mt-4 flex items-stretch max-w-md">
+          <input
+            type="search"
+            name="q"
+            value="{{ search.terms | escape }}"
+            placeholder="Search products"
+            class="w-full border border-gray-300 px-3 py-2"
+          >
+          <input type="hidden" name="type" value="product">
+          <button type="submit" class="px-3 bg-black text-white">{% render 'search-icon' %}</button>
+        </form>
+
+        {% if section.settings.show_social and shop.social_links != blank %}
+          <div class="flex gap-4 mt-4 text-gray-700">
+            {%- comment -%} Placeholder for theme social icons if any {%- endcomment -%}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="hidden lg:grid lg:col-span-3 grid-cols-4 gap-8">
+        {% for block in section.blocks %}
+          {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
+            <div {{ block.shopify_attributes }}>
+              {% if block.settings.title != blank %}
+                <p class=" tracking-wide font-bold uppercase text-gray-500 mb-3 ">{{ block.settings.title }}</p>
+              {% endif %}
+              <ul class="space-y-2">
+                {% for link in block.settings.menu.links %}
+                  <li>
+                    <a href="{{ link.url }}" class="hover:underline font-bold body">{{ link.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="lg:hidden divide-y divide-gray-200 mt-8" x-data="{ openItem: null }">
+      {% for block in section.blocks %}
+        {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
+          <div class="py-2" {{ block.shopify_attributes }}>
+            <button
+              class="w-full flex items-center justify-between py-3"
+              @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
+              :aria-expanded="openItem === {{ forloop.index }}"
+            >
+              <span class="text-sm tracking-wide uppercase font-bold text-gray-500">{{ block.settings.title }}</span>
+              <span class="text-gray-500">
+                <svg
+                  x-show="openItem !== {{ forloop.index }}"
+                  x-cloak
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"></path>
+                </svg>
+                <svg
+                  x-show="openItem === {{ forloop.index }}"
+                  x-cloak
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>
+                </svg>
+              </span>
+            </button>
+            <div
+              class="overflow-hidden"
+              x-show="openItem === {{ forloop.index }}"
+              x-transition:enter="transition ease-out duration-700"
+              x-transition:enter-start="opacity-0 max-h-0"
+              x-transition:enter-end="opacity-100 max-h-96"
+              x-transition:leave="transition ease-in-out duration-600"
+              x-transition:leave-start="opacity-100 max-h-96"
+              x-transition:leave-end="opacity-0 max-h-0"
+            >
+              <ul class="py-3 space-y-3">
+                {% for link in block.settings.menu.links %}
+                  <li>
+                    <a
+                      href="{{ link.url }}"
+                      class="hover:underline font-bold body transition-all duration-300 ease-in-out"
+                    >
+                      {{- link.title -}}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <div class="mt-8 flex flex-col-reverse md:flex-row md:items-center md:justify-between gap-4">
+      <div class="text-sm text-gray-500">
+        &copy; {{ 'now' | date: '%Y' }}
+        {{ shop.name | link_to: routes.root_url }}
+        {% if section.settings.credit_text != blank %}
+          <span class="mx-1">&middot;</span>{{ section.settings.credit_text }}
+        {% endif %}
+      </div>
+      {% if section.settings.show_payment_icons %}
+        <div class="flex flex-wrap items-center gap-2 justify-start md:justify-end">
+          {% for type in shop.enabled_payment_types %}
+            {{ type | payment_type_svg_tag }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
-  }
-  footer a {
-    text-decoration: none;
-    color: var(--color-foreground);
-  }
-  footer .footer__links,
-  footer .footer__payment {
-    display: flex;
-    gap: 1rem;
+  .footer__mobile-accordion .faq-icon {
+    transition: transform 0.5s ease-out;
   }
 {% endstylesheet %}
 
@@ -42,15 +162,62 @@
   "name": "t:general.footer",
   "settings": [
     {
-      "type": "link_list",
-      "id": "menu",
-      "label": "t:labels.menu"
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "The next wave of natural skincare."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Desktop image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image"
     },
     {
       "type": "checkbox",
       "id": "show_payment_icons",
       "label": "t:labels.show_payment_icons",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "credit_text",
+      "label": "Credit text",
+      "default": "Desarrollado por DigitDeck"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Heading",
+          "default": "TIENDA"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Footer",
+      "blocks": [
+        { "type": "menu", "settings": { "title": "TIENDA" } },
+        { "type": "menu", "settings": { "title": "COMPANY" } },
+        { "type": "menu", "settings": { "title": "OTHER" } },
+        { "type": "menu", "settings": { "title": "LEGAL" } }
+      ]
     }
   ]
 }

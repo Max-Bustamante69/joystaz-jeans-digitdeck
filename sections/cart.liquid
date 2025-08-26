@@ -1,33 +1,198 @@
 {% comment %}
-  This section is used in the cart template to render /cart page with an
-  overview of the items in customer's cart.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/cart
+  Cart Section with Alpine.js
+  Features:
+  - Interactive quantity updates
+  - Real-time cart calculations
+  - Smooth animations
+  - Better user experience
 {% endcomment %}
 
-<h1>{{ 'cart.title' | t }}</h1>
+<div class="cart-section py-16 px-4 md:px-8" x-data="cartData()">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-8">{{ 'cart.title' | t }}</h1>
 
-<form action="{{ routes.cart_url }}" method="post">
-  <table>
-    {% for item in cart.items %}
-      <tr>
-        <td>
-          {% render 'image', image: item.image, url: item.url %}
-        </td>
-        <td>
-          <p>{{ item.product.title }}</p>
-          {{ 'cart.remove' | t | link_to: item.url_to_remove }}
-        </td>
-        <td>
-          <input type="text" name="updates[]" value="{{ item.quantity }}">
-          <input type="submit" value="{{ 'cart.update' | t }}">
-        </td>
-      </tr>
-    {% endfor %}
-  </table>
+    {% if cart.item_count > 0 %}
+      <form action="{{ routes.cart_url }}" method="post" x-ref="cartForm">
+        <div class="space-y-6">
+          {% for item in cart.items %}
+            <div
+              class="cart-item flex items-center gap-6 p-6 border border-gray-200 rounded-lg"
+              x-data="
+                {
+                  quantity: {{ item.quantity }},
+                  updating: false,
+                  itemId: '{{ item.key }}'
+                }
+              "
+            >
+              <!-- Product Image -->
+              <div class="flex-shrink-0">
+                {% render 'image', image: item.image, url: item.url %}
+              </div>
 
-  <input type="submit" name="checkout" value="{{ 'cart.checkout' | t }}">
-</form>
+              <!-- Product Details -->
+              <div class="flex-1">
+                <h3 class="font-semibold text-lg">{{ item.product.title }}</h3>
+                <p class="text-gray-600">{{ item.variant.title }}</p>
+                <p class="text-lg font-bold mt-2">{{ item.final_line_price | money }}</p>
+              </div>
+
+              <!-- Quantity Controls -->
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  @click="updateQuantity(itemId, quantity - 1)"
+                  :disabled="quantity <= 1 || updating"
+                  class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                  </svg>
+                </button>
+
+                <input
+                  type="number"
+                  name="updates[]"
+                  :value="quantity"
+                  @change="updateQuantity(itemId, $event.target.value)"
+                  min="1"
+                  class="w-16 text-center border border-gray-300 rounded px-2 py-1"
+                  :disabled="updating"
+                >
+
+                <button
+                  type="button"
+                  @click="updateQuantity(itemId, quantity + 1)"
+                  :disabled="updating"
+                  class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Remove Button -->
+              <button
+                type="button"
+                @click="removeItem(itemId)"
+                :disabled="updating"
+                class="text-red-600 hover:text-red-800 transition-colors"
+                :class="{ 'opacity-50 cursor-not-allowed': updating }"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="mt-8 p-6 bg-gray-50 rounded-lg">
+          <div class="flex justify-between items-center mb-4">
+            <span class="text-lg font-semibold">Subtotal:</span>
+            <span class="text-lg font-bold">{{ cart.total_price | money }}</span>
+          </div>
+
+          <div class="flex gap-4">
+            <button
+              type="submit"
+              name="checkout"
+              value="{{ 'cart.checkout' | t }}"
+              class="flex-1 bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+            >
+              {{ 'cart.checkout' | t }}
+            </button>
+
+            <button
+              type="submit"
+              value="{{ 'cart.update' | t }}"
+              class="px-6 py-3 border border-gray-300 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+            >
+              {{ 'cart.update' | t }}
+            </button>
+          </div>
+        </div>
+      </form>
+    {% else %}
+      <!-- Empty Cart -->
+      <div class="text-center py-16">
+        <svg class="w-24 h-24 mx-auto text-gray-400 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        <h2 class="text-2xl font-semibold mb-4">Your cart is empty</h2>
+        <p class="text-gray-600 mb-8">Looks like you haven't added any items to your cart yet.</p>
+        <a
+          href="{{ routes.all_products_collection_url }}"
+          class="bg-primary text-white py-3 px-8 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
+        >
+          Continue Shopping
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function cartData() {
+    return {
+      updateQuantity(itemId, newQuantity) {
+        if (newQuantity < 1) return;
+
+        this.updating = true;
+        this.quantity = parseInt(newQuantity);
+
+        // Update the form input
+        const input = this.$el.querySelector(`input[name="updates[]"]`);
+        if (input) input.value = this.quantity;
+
+        // Submit form after a short delay to batch updates
+        setTimeout(() => {
+          this.$refs.cartForm.submit();
+        }, 500);
+      },
+
+      removeItem(itemId) {
+        this.updating = true;
+
+        // Create a form to remove the item
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ routes.cart_change_url }}';
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'id';
+        input.value = itemId;
+
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'hidden';
+        quantityInput.name = 'quantity';
+        quantityInput.value = '0';
+
+        form.appendChild(input);
+        form.appendChild(quantityInput);
+        document.body.appendChild(form);
+        form.submit();
+      },
+    };
+  }
+</script>
+
+<style>
+  .cart-section {
+    min-height: 60vh;
+  }
+
+  .cart-item {
+    transition: all 0.3s ease;
+  }
+
+  .cart-item:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+</style>
 
 {% schema %}
 {

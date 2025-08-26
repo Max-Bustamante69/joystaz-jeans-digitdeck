@@ -59,28 +59,50 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const heroElement = document.getElementById('hero-glide-{{ section.id }}');
+  document.addEventListener('DOMContentLoaded', function() {
+    const heroElement = document.getElementById('hero-glide-{{ section.id }}');
+    const slideCount = {{ section.blocks.size }};
 
-      if (heroElement && typeof Glide !== 'undefined') {
+    // Only initialize carousel if there are multiple slides
+    if (heroElement && typeof Glide !== 'undefined' && slideCount > 1) {
       new Glide(heroElement, {
         type: 'carousel',
-    perView: 1,
-    gap: 0,
-    autoplay: {{ section.settings.autoplay_duration | default: 3000 }},
-    hoverpause: {{ section.settings.pause_on_hover | json }},
-    animationDuration: {{ section.settings.animation_duration | default: 1000 }},
-    loop: true,
-    breakpoints: {
-      1024: { perView: 1 },
-      768: { perView: 1 },
-      480: { perView: 1 }
-    }
-  }).mount();
-      } else if (heroElement) {
-        console.warn('Glide.js library not found. Make sure glide.min.js is loaded in theme.liquid.');
+        perView: 1,
+        gap: 0,
+        autoplay: {{ section.settings.autoplay_duration | default: 3000 }},
+        hoverpause: {{ section.settings.pause_on_hover | json }},
+        animationDuration: {{ section.settings.animation_duration | default: 1000 }},
+        loop: true,
+        breakpoints: {
+          1024: { perView: 1 },
+          768: { perView: 1 },
+          480: { perView: 1 }
+        }
+      }).mount();
+    } else if (heroElement && slideCount === 1) {
+      // For single slide, remove carousel classes and make it a static display
+      heroElement.classList.remove('glide');
+      const track = heroElement.querySelector('.glide__track');
+      const slides = heroElement.querySelector('.glide__slides');
+
+      if (track && slides) {
+        // Remove carousel structure and make it a simple container
+        track.classList.remove('glide__track');
+        slides.classList.remove('glide__slides');
+        slides.style.display = 'block';
+
+        // Move slides directly into the hero element
+        while (slides.firstChild) {
+          heroElement.appendChild(slides.firstChild);
+        }
+
+        // Remove the track wrapper
+        track.remove();
       }
-    });
+    } else if (heroElement) {
+      console.warn('Glide.js library not found. Make sure glide.min.js is loaded in theme.liquid.');
+    }
+  });
 </script>
 
 <style>

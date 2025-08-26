@@ -1,0 +1,23 @@
+{% comment %}
+  Carousel Navigation Arrows Snippet
+  Reusable navigation arrows for carousels
+{% endcomment %}
+
+<div class="flex space-x-2">
+  <button
+    class="carousel-arrow carousel-prev w-10 h-10 rounded-full bg-gray-400 transition-colors flex items-center justify-center text-white cursor-not-allowed"
+    aria-label="Previous"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M15 18l-6-6 6-6"/>
+    </svg>
+  </button>
+  <button
+    class="carousel-arrow carousel-next w-10 h-10 rounded-full bg-gray-900 hover:bg-gray-800 transition-colors flex items-center justify-center text-white cursor-pointer"
+    aria-label="Next"
+  >
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M9 18l6-6-6-6"/>
+    </svg>
+  </button>
+</div>

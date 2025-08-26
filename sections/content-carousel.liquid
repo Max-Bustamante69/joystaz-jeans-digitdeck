@@ -1,0 +1,244 @@
+{% comment %}
+  Content Carousel Section
+  Supports content cards with configurable options
+{% endcomment %}
+
+<div class="py-16 md:py-8" id="content-carousel-{{ section.id }}">
+  <div class="container mx-auto px-4">
+    {% if section.settings.title != blank %}
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">{{ section.settings.title }}</h2>
+        {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
+          <a href="{{ section.settings.view_all_link }}" class="text-gray-600 hover:text-gray-900 transition-colors">
+            {{ section.settings.view_all_text | default: 'Ver todos' }}
+          </a>
+        {% endif %}
+        {% if section.settings.show_arrows and section.blocks.size > 1 %}
+          {% render 'carousel-arrows' %}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% if section.blocks.size > 0 %}
+      <div class="content-carousel glide-{{ section.id }} overflow-hidden" data-carousel-id="{{ section.id }}">
+        <div class="glide__track" data-glide-el="track">
+          <ul class="glide__slides flex">
+            {% for block in section.blocks %}
+              <li class="glide__slide px-2">
+                {% render 'content-card',
+                  content_image: block.settings.content_image,
+                  content_title: block.settings.content_title,
+                  product_count: block.settings.product_count,
+                  content_description: block.settings.content_description,
+                  content_link: block.settings.content_link
+                %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const carouselId = '{{ section.id }}';
+    const carouselElement = document.querySelector('.glide-{{ section.id }}');
+
+    if (carouselElement && typeof Glide !== 'undefined') {
+      const glide = new Glide(carouselElement, {
+        type: 'slider',
+        perView: {{ section.settings.items_per_view | default: 5 }},
+        gap: {{ section.settings.gap | default: 24 }},
+        autoplay: false,
+        rewind: false,
+        breakpoints: {
+          640: {
+            perView: 2,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+          768: {
+            perView: 3,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+          1024: {
+            perView: 4,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+        },
+      });
+
+      // Custom arrow controls with dynamic states
+      const prevButton = carouselElement.closest('[id^="content-carousel-"]').querySelector('.carousel-prev');
+      const nextButton = carouselElement.closest('[id^="content-carousel-"]').querySelector('.carousel-next');
+
+      // Function to update arrow states
+      function updateArrowStates() {
+        const totalSlides = glide.slides.length;
+        const currentIndex = glide.index;
+        const perView = glide.settings.perView;
+
+        // Check if we can go left (not at the beginning)
+        const canGoLeft = currentIndex > 0;
+        // Check if we can go right (not at the end and there are more items than perView)
+        const canGoRight = currentIndex < totalSlides - perView;
+
+        if (prevButton) {
+          if (canGoLeft) {
+            prevButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            prevButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          } else {
+            prevButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+            prevButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+          }
+        }
+
+        if (nextButton) {
+          if (canGoRight) {
+            nextButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            nextButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          } else {
+            nextButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+            nextButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+          }
+        }
+      }
+
+      if (prevButton) {
+        prevButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (glide.index > 0) {
+            glide.go('<');
+          }
+        });
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (glide.index < glide.slides.length - glide.settings.perView) {
+            glide.go('>');
+          }
+        });
+      }
+
+      // Update arrow states on mount and after each move
+      glide.on(['mount.after', 'run.after'], () => {
+        updateArrowStates();
+      });
+
+      glide.mount();
+    }
+
+
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Content Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Carousel Title",
+      "default": "Content Carousel"
+    },
+    {
+      "type": "header",
+      "content": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Link",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All Text",
+      "default": "Ver todos"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "range",
+      "id": "items_per_view",
+      "label": "Items per view (desktop)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "blocks": [
+    {
+      "type": "content_card",
+      "name": "Content Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "content_image",
+          "label": "Content Image"
+        },
+        {
+          "type": "text",
+          "id": "content_title",
+          "label": "Content Title"
+        },
+        {
+          "type": "text",
+          "id": "product_count",
+          "label": "Product Count (e.g., '3 Productos')"
+        },
+        {
+          "type": "textarea",
+          "id": "content_description",
+          "label": "Content Description"
+        },
+        {
+          "type": "url",
+          "id": "content_link",
+          "label": "Content Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Content Carousel",
+      "blocks": [
+        {
+          "type": "content_card"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

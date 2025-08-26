@@ -1,0 +1,391 @@
+{% comment %}
+  Product Carousel Section
+  Features:
+  - Product filtering by collection, tags, or colors
+  - Product cards with badges, ratings, color swatches
+  - Interactive color selection that changes product image
+  - Size selection grid that appears on plus icon click
+  - Add to cart functionality
+  - Same styling as content carousel
+{% endcomment %}
+
+<div class="py-16 md:py-8" id="product-carousel-{{ section.id }}">
+  <div class="container mx-auto px-4">
+    {% if section.settings.title != blank %}
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">{{ section.settings.title }}</h2>
+        {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
+          <a href="{{ section.settings.view_all_link }}" class="text-gray-600 hover:text-gray-900 transition-colors">
+            {{ section.settings.view_all_text | default: 'Ver todos' }}
+          </a>
+        {% endif %}
+        {% if section.settings.show_arrows %}
+          {% render 'carousel-arrows' %}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% assign products = '' %}
+    {% case section.settings.product_source %}
+      {% when 'collection' %}
+        {% if section.settings.collection != blank %}
+          {% assign products = section.settings.collection.products %}
+        {% endif %}
+      {% when 'tags' %}
+        {% if section.settings.product_tags != blank %}
+          {% assign tag_array = section.settings.product_tags | split: ',' %}
+          {% assign products = collections.all.products %}
+          {% for tag in tag_array %}
+            {% assign tag_trimmed = tag | strip %}
+            {% assign products = products | where: 'tags', tag_trimmed %}
+          {% endfor %}
+        {% endif %}
+      {% when 'manual' %}
+        {% assign products = section.settings.products %}
+    {% endcase %}
+
+    {% if products.size > 0 %}
+      <div
+        class="product-carousel glide-main-carousel-{{ section.id }} overflow-hidden"
+        data-carousel-id="{{ section.id }}"
+        data-carousel-type="main-carousel"
+      >
+        <div class="glide__track" data-glide-el="track">
+          <ul class="glide__slides flex">
+            {% for product in products limit: section.settings.max_products %}
+              <li class="glide__slide px-2">
+                <div class="w-full">
+                  {% render 'product-card',
+                    product: product,
+                    show_badges: section.settings.show_badges,
+                    show_rating: section.settings.show_rating,
+                    show_color_swatches: section.settings.show_color_swatches,
+                    show_size_selector: section.settings.show_size_selector
+                  %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .product-carousel .glide__slides {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .product-carousel .glide__slide {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-width: 0;
+  }
+
+  .product-carousel .glide__slide > div {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-card .relative.aspect-square {
+    width: 100%;
+    flex-shrink: 0;
+  }
+
+  .product-card .space-y-2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Smooth transitions for Glide.js */
+  .glide__track {
+    overflow: hidden;
+  }
+
+  .glide__slides {
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .glide__slide {
+    transition: all 0.3s ease;
+  }
+
+  /* Fallback grid styles */
+  .product-carousel.grid {
+    display: grid;
+  }
+
+  .product-carousel.grid .glide__slides {
+    display: contents;
+  }
+
+  .product-carousel.grid .glide__slide {
+    display: block;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const carouselId = '{{ section.id }}';
+    const carouselElement = document.querySelector('.glide-main-carousel-{{ section.id }}');
+
+    if (carouselElement) {
+      // Fallback grid layout if Glide is not available
+      if (typeof Glide === 'undefined') {
+        carouselElement.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'lg:grid-cols-3', 'xl:grid-cols-4', 'gap-6');
+        return;
+      }
+
+      // Check if this carousel is already initialized
+      if (carouselElement.glideInstance) {
+        return;
+      }
+
+      const glide = new Glide(carouselElement, {
+        type: 'slider',
+        perView: 4,
+        gap: {{ section.settings.gap | default: 24 }},
+        autoplay: false,
+        rewind: false,
+        animationDuration: 800,
+        preview: true,
+        breakpoints: {
+          640: {
+            perView: 2,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+          768: {
+            perView: 2,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+          1024: {
+            perView: 4,
+            gap: {{ section.settings.gap | default: 24 }},
+          },
+        },
+      });
+
+      // Store the glide instance on the element to avoid conflicts
+      carouselElement.glideInstance = glide;
+
+      // Custom arrow controls with dynamic states
+      const prevButton = carouselElement.closest('[id^="product-carousel-"]').querySelector('.carousel-prev');
+      const nextButton = carouselElement.closest('[id^="product-carousel-"]').querySelector('.carousel-next');
+
+      // Function to update arrow states
+      function updateArrowStates() {
+        const totalSlides = glide.slides.length;
+        const currentIndex = glide.index;
+        const perView = glide.settings.perView;
+
+        // Check if we can go left (not at the beginning)
+        const canGoLeft = currentIndex > 0;
+        // Check if we can go right (not at the end and there are more items than perView)
+        const canGoRight = currentIndex < totalSlides - perView;
+
+        if (prevButton) {
+          if (canGoLeft) {
+            prevButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            prevButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          } else {
+            prevButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+            prevButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+          }
+        }
+
+        if (nextButton) {
+          if (canGoRight) {
+            nextButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
+            nextButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          } else {
+            nextButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+            nextButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+          }
+        }
+      }
+
+      if (prevButton) {
+        prevButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (glide.index > 0) {
+            glide.go('<');
+          }
+        });
+      }
+
+      if (nextButton) {
+        nextButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (glide.index < glide.slides.length - glide.settings.perView) {
+            glide.go('>');
+          }
+        });
+      }
+
+      // Update arrow states on mount and after each move
+      glide.on(['mount.after', 'run.after'], () => {
+        updateArrowStates();
+      });
+
+      glide.mount();
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Product Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Carousel Title",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "header",
+      "content": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All Text",
+      "default": "Ver todos"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Selection"
+    },
+    {
+      "type": "select",
+      "id": "product_source",
+      "label": "Product Source",
+      "options": [
+        {
+          "value": "collection",
+          "label": "Collection"
+        },
+        {
+          "value": "tags",
+          "label": "Product Tags"
+        },
+        {
+          "value": "manual",
+          "label": "Manual Selection"
+        }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Select products from this collection"
+    },
+    {
+      "type": "text",
+      "id": "product_tags",
+      "label": "Product Tags",
+      "info": "Comma-separated tags (e.g., 'best-seller,new')"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Manual Product Selection",
+      "limit": 20
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum Products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Product Card Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show Product Badges",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rating",
+      "label": "Show Product Rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_color_swatches",
+      "label": "Show Color Swatches",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_size_selector",
+      "label": "Show Size Selector",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between items",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "product_source": "collection"
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,47 @@
+{% comment %}
+  Content Card Snippet
+  Reusable content card component with collection linking
+{% endcomment %}
+
+<div class="w-full max-w-[280px] md:max-w-[240px] mx-auto">
+  {% if collection_link %}
+    <a href="{{ collection_link }}" class="block group">
+  {% endif %}
+  
+  <div class="relative overflow-hidden aspect-[2/3] group-hover:scale-105 transition-transform duration-300">
+    {% if content_image %}
+      <img
+        src="{{ content_image | img_url: '400x600', crop: 'center' }}"
+        alt="{{ content_title }}"
+        class="w-full h-full object-cover"
+        loading="lazy"
+        width="400"
+        height="600"
+      >
+    {% else %}
+      <div class="absolute inset-0 bg-gray-200 flex items-center justify-center">
+        <svg class="w-16 h-16 text-gray-400" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+        </svg>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="content-info mt-3">
+    {% if content_title %}
+      <h3 class="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+        {{ content_title }}
+      </h3>
+    {% endif %}
+    {% if product_count %}
+      <p class="text-gray-600 text-sm mt-1">{{ product_count }}</p>
+    {% endif %}
+    {% if content_description %}
+      <p class="text-gray-600 text-sm mt-1">{{ content_description }}</p>
+    {% endif %}
+  </div>
+  
+  {% if collection_link %}
+    </a>
+  {% endif %}
+</div>

@@ -280,6 +280,27 @@
         "subtitle_color": "#1f2937",
         "text_color": "#374151"
       }
+    },
+    "product_carousel_VNfNQL": {
+      "type": "product-carousel",
+      "name": "Product Carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "show_view_all": true,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "product_source": "collection",
+        "collection": "bermudas-mujer",
+        "product_tags": "",
+        "products": [],
+        "max_products": 12,
+        "show_badges": true,
+        "show_rating": true,
+        "show_color_swatches": true,
+        "show_size_selector": true,
+        "gap": 24
+      }
     }
   },
   "order": [
@@ -290,6 +311,7 @@
     "quote_E6r7tE",
     "hero_x9Qnqz",
     "trust_badges_bzGmPj",
-    "image_with_text_G6betb"
+    "image_with_text_G6betb",
+    "product_carousel_VNfNQL"
   ]
 }

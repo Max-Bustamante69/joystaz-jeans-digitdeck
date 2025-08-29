@@ -20,21 +20,19 @@
     {% endif %}
 
     {% if section.blocks.size > 0 %}
-      <div class="content-carousel glide-{{ section.id }} overflow-hidden" data-carousel-id="{{ section.id }}">
-        <div class="glide__track" data-glide-el="track">
-          <ul class="glide__slides flex">
-            {% for block in section.blocks %}
-              <li class="glide__slide px-2">
-                {% render 'content-card',
-                  content_image: block.settings.content_image,
-                  content_title: block.settings.content_title,
-                  product_count: block.settings.product_count,
-                  content_description: block.settings.content_description,
-                  content_link: block.settings.content_link
-                %}
-              </li>
-            {% endfor %}
-          </ul>
+      <div class="content-carousel swiper-{{ section.id }} overflow-hidden" data-carousel-id="{{ section.id }}">
+        <div class="swiper-wrapper">
+          {% for block in section.blocks %}
+            <div class="swiper-slide px-2">
+              {% render 'content-card',
+                content_image: block.settings.content_image,
+                content_title: block.settings.content_title,
+                product_count: block.settings.product_count,
+                content_description: block.settings.content_description,
+                content_link: block.settings.content_link
+              %}
+            </div>
+          {% endfor %}
         </div>
       </div>
     {% endif %}
@@ -44,27 +42,26 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const carouselId = '{{ section.id }}';
-    const carouselElement = document.querySelector('.glide-{{ section.id }}');
+    const carouselElement = document.querySelector('.swiper-{{ section.id }}');
 
-    if (carouselElement && typeof Glide !== 'undefined') {
-      const glide = new Glide(carouselElement, {
-        type: 'slider',
-        perView: {{ section.settings.items_per_view | default: 5 }},
-        gap: {{ section.settings.gap | default: 24 }},
-        autoplay: false,
-        rewind: false,
+    if (carouselElement && typeof Swiper !== 'undefined') {
+      const swiper = new Swiper(carouselElement, {
+        slidesPerView: 2,
+        spaceBetween: {{ section.settings.gap | default: 24 }},
+        freeMode: {
+          enabled: true,
+          sticky: true,
+          momentum: true,
+        },
+        grabCursor: true,
         breakpoints: {
-          640: {
-            perView: 2,
-            gap: {{ section.settings.gap | default: 24 }},
-          },
           768: {
-            perView: 3,
-            gap: {{ section.settings.gap | default: 24 }},
+            slidesPerView: 3,
+            spaceBetween: {{ section.settings.gap | default: 24 }},
           },
           1024: {
-            perView: 4,
-            gap: {{ section.settings.gap | default: 24 }},
+            slidesPerView: {{ section.settings.items_per_view | default: 5 }},
+            spaceBetween: {{ section.settings.gap | default: 24 }},
           },
         },
       });
@@ -75,32 +72,27 @@
 
       // Function to update arrow states
       function updateArrowStates() {
-        const totalSlides = glide.slides.length;
-        const currentIndex = glide.index;
-        const perView = glide.settings.perView;
-
-        // Check if we can go left (not at the beginning)
-        const canGoLeft = currentIndex > 0;
-        // Check if we can go right (not at the end and there are more items than perView)
-        const canGoRight = currentIndex < totalSlides - perView;
-
         if (prevButton) {
-          if (canGoLeft) {
-            prevButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            prevButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          if (swiper.isBeginning) {
+            prevButton.style.opacity = '0.3';
+            prevButton.style.cursor = 'not-allowed';
+            prevButton.disabled = true;
           } else {
-            prevButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
-            prevButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+            prevButton.style.opacity = '1';
+            prevButton.style.cursor = 'pointer';
+            prevButton.disabled = false;
           }
         }
 
         if (nextButton) {
-          if (canGoRight) {
-            nextButton.classList.remove('bg-gray-400', 'cursor-not-allowed');
-            nextButton.classList.add('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
+          if (swiper.isEnd) {
+            nextButton.style.opacity = '0.3';
+            nextButton.style.cursor = 'not-allowed';
+            nextButton.disabled = true;
           } else {
-            nextButton.classList.remove('bg-gray-900', 'hover:bg-gray-800', 'cursor-pointer');
-            nextButton.classList.add('bg-gray-400', 'cursor-not-allowed');
+            nextButton.style.opacity = '1';
+            nextButton.style.cursor = 'pointer';
+            nextButton.disabled = false;
           }
         }
       }
@@ -108,30 +100,26 @@
       if (prevButton) {
         prevButton.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (glide.index > 0) {
-            glide.go('<');
-          }
+          swiper.slidePrev();
         });
       }
 
       if (nextButton) {
         nextButton.addEventListener('click', (e) => {
           e.stopPropagation();
-          if (glide.index < glide.slides.length - glide.settings.perView) {
-            glide.go('>');
-          }
+          swiper.slideNext();
         });
       }
 
-      // Update arrow states on mount and after each move
-      glide.on(['mount.after', 'run.after'], () => {
-        updateArrowStates();
-      });
+      // Update arrow states on slide change
+      swiper.on('slideChange', updateArrowStates);
+      swiper.on('init', updateArrowStates);
+      swiper.on('reachBeginning', updateArrowStates);
+      swiper.on('reachEnd', updateArrowStates);
 
-      glide.mount();
+      // Initial state update
+      setTimeout(updateArrowStates, 100);
     }
-
-
   });
 </script>
 

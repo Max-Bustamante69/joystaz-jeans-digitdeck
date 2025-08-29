@@ -69,6 +69,10 @@
         width: 24px;
     }
 
+    html, body {
+        overflow-x: hidden;
+    }
+
     }
 
 

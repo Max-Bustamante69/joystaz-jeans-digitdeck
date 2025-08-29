@@ -30,18 +30,16 @@
       {% if section.settings.mobile_layout == 'slider' %}
         <!-- Mobile Slider -->
         <div class="md:hidden">
-          <div id="category-mobile-slider-{{ section.id }}" class="glide">
-            <div class="glide__track" data-glide-el="track">
-              <ul class="glide__slides ">
-                {% for block in section.blocks %}
-                  {% case block.type %}
-                    {% when 'category' %}
-                      <li class="glide__slide px-1">
-                        {% render 'category-card', category: block.settings %}
-                      </li>
-                  {% endcase %}
-                {% endfor %}
-              </ul>
+          <div id="category-mobile-slider-{{ section.id }}" class="swiper">
+            <div class="swiper-wrapper">
+              {% for block in section.blocks %}
+                {% case block.type %}
+                  {% when 'category' %}
+                    <div class="swiper-slide px-1">
+                      {% render 'category-card', category: block.settings %}
+                    </div>
+                {% endcase %}
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -83,15 +81,16 @@
   document.addEventListener('DOMContentLoaded', function () {
     const mobileSliderElement = document.getElementById('category-mobile-slider-{{ section.id }}');
 
-    if (mobileSliderElement && typeof Glide !== 'undefined') {
-      new Glide(mobileSliderElement, {
-        type: 'carousel',
-        perView: 1.5,
-        gap: 4,
-        autoplay: false,
-        focusAt: 'center',
-        peek: 0.5,
-      }).mount();
+    if (mobileSliderElement && typeof Swiper !== 'undefined') {
+      new Swiper(mobileSliderElement, {
+        slidesPerView: 1.2,
+        spaceBetween: 4,
+        freeMode: {
+          enabled: true,
+          sticky: true,
+        },
+        grabCursor: true,
+      });
     }
   });
 </script>

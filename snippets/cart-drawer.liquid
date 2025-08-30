@@ -1,0 +1,405 @@
+{% comment %}
+  Cart Drawer Component
+  Features:
+  - Slide-in drawer from right
+  - Cart items with quantity controls
+  - Progress bar for free shipping
+  - Secure payment button
+  - Responsive design
+{% endcomment %}
+
+<div
+  x-data="cartDrawer()"
+  x-show="isOpen"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition ease-in duration-200"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  class="fixed inset-0 z-50 overflow-hidden"
+  @click.self="closeDrawer()"
+  @keydown.escape.window="closeDrawer()"
+  @cart:open.window="openDrawer()"
+  @cart:updated.window="loadCart()"
+>
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+
+  <!-- Drawer -->
+  <div
+    x-show="isOpen"
+    x-transition:enter="transform transition ease-in-out duration-300"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform transition ease-in-out duration-300"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between p-6 border-b border-gray-200">
+      <h2 class="text-xl font-bold text-gray-900">Your Cart</h2>
+      <button
+        @click="closeDrawer()"
+        class="text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Progress Bar for Free Shipping -->
+    <div class="p-4 bg-gray-50 border-b border-gray-200" x-show="freeShippingThreshold > 0">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center space-x-2">
+          <div class="flex items-center space-x-1">
+            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-sm font-medium text-green-600">Envío gratis</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+        <div
+          class="bg-green-600 h-2 rounded-full transition-all duration-300"
+          :style="`width: ${Math.min((cartTotal / freeShippingThreshold) * 100, 100)}%`"
+        ></div>
+      </div>
+
+      <p class="text-sm text-gray-600" x-show="cartTotal < freeShippingThreshold">
+        Estas a <span class="font-semibold" x-text="'$' + formatMoney(freeShippingThreshold - cartTotal)"></span> de
+        adquirir envío gratis
+      </p>
+
+      <p class="text-sm text-green-600 font-medium" x-show="cartTotal >= freeShippingThreshold">
+        ¡Felicidades! Tu pedido califica para envío gratis
+      </p>
+    </div>
+
+    <!-- Cart Items -->
+    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+      <template x-if="cartItems.length === 0">
+        <div class="text-center py-8">
+          <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
+          <p class="text-gray-500">Add some products to get started</p>
+        </div>
+      </template>
+
+      <template x-for="item in cartItems" :key="item.key">
+        <div class="cart-product-card flex gap-4 p-4 border border-gray-200 rounded-lg bg-white">
+          <!-- Product Image -->
+          <div class="flex-shrink-0">
+            <img
+              :src="item.image"
+              :alt="item.product_title"
+              class="w-20 h-20 object-cover rounded-md"
+              width="80"
+              height="80"
+              loading="lazy"
+            >
+          </div>
+
+          <!-- Product Details -->
+          <div class="flex-1 min-w-0">
+            <!-- Product Title and Tag -->
+            <div class="flex items-start justify-between mb-1">
+              <h3 class="font-semibold text-gray-900 text-sm leading-tight truncate" x-text="item.product_title"></h3>
+              <span
+                class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold ml-2 flex-shrink-0"
+                x-show="item.product_tags && item.product_tags.includes('nuevo')"
+              >
+                NUEVO
+              </span>
+            </div>
+
+            <!-- Variant Details -->
+            <p class="text-gray-600 text-sm mb-2" x-text="item.variant_title || ''"></p>
+
+            <!-- Rating -->
+            <div class="flex items-center gap-1 mb-2">
+              <div class="flex text-yellow-400">
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 24 24">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <span class="text-xs text-gray-500">(0)</span>
+            </div>
+
+            <!-- Stock Availability -->
+            <p class="text-red-600 text-xs font-medium mb-2">Ultimas unidades disponibles</p>
+
+            <!-- Price -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="font-bold text-gray-900 text-sm" x-text="'$' + formatMoney(item.final_line_price)"></span>
+                <span
+                  class="text-xs text-gray-500 line-through"
+                  x-show="item.original_line_price && item.original_line_price > item.final_line_price"
+                  x-text="'$' + formatMoney(item.original_line_price)"
+                ></span>
+              </div>
+
+              <!-- Quantity Controls -->
+              <div class="flex items-center gap-2">
+                <button
+                  @click="updateQuantity(item.key, item.quantity - 1)"
+                  :disabled="loading"
+                  :class="item.quantity <= 1 ? 'text-red-500 hover:text-red-700' : 'hover:bg-gray-50'"
+                  class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  :title="item.quantity <= 1 ? 'Remove item' : 'Decrease quantity'"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                  </svg>
+                </button>
+
+                <span class="text-sm font-medium w-8 text-center" x-text="item.quantity"></span>
+
+                <button
+                  @click="updateQuantity(item.key, item.quantity + 1)"
+                  :disabled="loading"
+                  class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  title="Increase quantity"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Footer -->
+    <div class="border-t border-gray-200 p-4 space-y-4">
+      <!-- Subtotal -->
+      <div class="flex justify-between items-center">
+        <span class="text-lg font-semibold">Subtotal:</span>
+        <div class="text-right">
+          <div class="flex items-center space-x-2">
+            <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded font-medium" x-show="cartSavings > 0">
+              AHORRA $<span x-text="formatMoney(cartSavings)"></span>
+            </span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span
+              class="text-gray-500 line-through text-sm"
+              x-show="cartSavings > 0"
+              x-text="'$' + formatMoney(originalTotal)"
+            ></span>
+            <span class="text-xl font-bold" x-text="'$' + formatMoney(cartTotal)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Button -->
+      <button
+        @click="proceedToCheckout()"
+        :disabled="cartItems.length === 0"
+        class="w-full bg-gray-900 text-white py-4 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Paga de forma segura
+      </button>
+
+      <!-- Payment Methods -->
+      <div class="flex items-center justify-center space-x-4 pt-2">
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function cartDrawer() {
+    return {
+      isOpen: false,
+      cartItems: [],
+      cartTotal: 0,
+      originalTotal: 0,
+      cartSavings: 0,
+      loading: false,
+      freeShippingThreshold: {{ settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
+
+      init() {
+        this.loadCart();
+        this.tryGetShopifyFreeShippingThreshold();
+        this.$watch('cartItems', () => {
+          this.calculateTotals();
+        });
+      },
+
+      async tryGetShopifyFreeShippingThreshold() {
+        // Try to get free shipping threshold from Shopify's shipping zones
+        try {
+          const response = await fetch('/admin/shipping_zones.json');
+          if (response.ok) {
+            const shippingZones = await response.json();
+            // Look for free shipping rates in shipping zones
+            for (const zone of shippingZones.shipping_zones) {
+              for (const rate of zone.weight_based_shipping_rates || []) {
+                if (rate.name.toLowerCase().includes('free') && rate.price === '0.00') {
+                  // Found a free shipping rate, but we need the threshold
+                  // This is limited as Shopify doesn't expose free shipping thresholds via API
+                  console.log('Found free shipping rate:', rate);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Silently fail - we'll use the theme setting instead
+          console.log('Could not fetch shipping zones, using theme setting');
+        }
+      },
+
+      openDrawer() {
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+      },
+
+      closeDrawer() {
+        this.isOpen = false;
+        document.body.style.overflow = '';
+      },
+
+      async loadCart() {
+        try {
+          const response = await fetch('/cart.js');
+          const cart = await response.json();
+          this.cartItems = cart.items;
+          this.calculateTotals();
+        } catch (error) {
+          console.error('Error loading cart:', error);
+        }
+      },
+
+      calculateTotals() {
+        this.cartTotal = this.cartItems.reduce((total, item) => total + item.final_line_price, 0);
+        this.originalTotal = this.cartItems.reduce(
+          (total, item) => total + (item.original_line_price || item.final_line_price),
+          0
+        );
+        this.cartSavings = this.originalTotal - this.cartTotal;
+      },
+
+      async updateQuantity(itemKey, newQuantity) {
+        if (newQuantity < 1) {
+          await this.removeItem(itemKey);
+          return;
+        }
+
+        this.loading = true;
+        try {
+          const response = await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: itemKey,
+              quantity: newQuantity,
+            }),
+          });
+
+          if (response.ok) {
+            await this.loadCart();
+            this.$dispatch('cart:updated');
+          }
+        } catch (error) {
+          console.error('Error updating quantity:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async removeItem(itemKey) {
+        this.loading = true;
+        try {
+          const response = await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: itemKey,
+              quantity: 0,
+            }),
+          });
+
+          if (response.ok) {
+            await this.loadCart();
+            this.$dispatch('cart:updated');
+            this.showRemoveMessage();
+          }
+        } catch (error) {
+          console.error('Error removing item:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      showRemoveMessage() {
+        // Create a temporary success message
+        const message = document.createElement('div');
+        message.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        message.textContent = 'Item removed from cart';
+        document.body.appendChild(message);
+
+        // Remove after 2 seconds
+        setTimeout(() => {
+          if (document.body.contains(message)) {
+            document.body.removeChild(message);
+          }
+        }, 2000);
+      },
+
+      formatMoney(cents) {
+        return (cents / 100).toLocaleString('es-CO', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+      },
+
+      proceedToCheckout() {
+        window.location.href = '/checkout';
+      },
+
+      toggleWishlist(productId) {
+        // Implement wishlist functionality here
+        console.log('Toggle wishlist for product:', productId);
+      },
+    };
+  }
+</script>

@@ -19,7 +19,7 @@
         "id": "type_primary_font",
         "default": "work_sans_n4",
         "label": "t:general.primary"
-      },
+      }
     ]
   },
   {
@@ -77,6 +77,26 @@
         "unit": "px",
         "label": "t:labels.input_corner_radius",
         "default": 4
+      }
+    ]
+  },
+  {
+    "name": "Cart Settings",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Free Shipping"
+      },
+      {
+        "type": "range",
+        "id": "free_shipping_threshold",
+        "min": 0,
+        "max": 1000,
+        "step": 10,
+        "unit": "USD",
+        "label": "Free Shipping Threshold",
+        "info": "Amount in dollars (e.g., 150 = $150.00). Set to 0 to disable free shipping progress bar.",
+        "default": 150
       }
     ]
   }

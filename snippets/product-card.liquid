@@ -78,7 +78,7 @@
         {% for tag in product.tags %}
           {% assign tag_lower = tag | downcase %}
           {% if tag_lower contains 'nuevo' %}
-            <span class="bg-white text-black text-xs px-2 py-1 font-bold">{{ tag |  upcase}}</span>
+            <span class="bg-white text-black text-xs px-2 py-1 font-bold">{{ tag | upcase }}</span>
           {% endif %}
         {% endfor %}
       </div>
@@ -89,14 +89,67 @@
       href="{{ product.url }}"
       class="absolute inset-0 z-20 pointer-events-auto"
       aria-label="View {{ product.title }}"
+      style="pointer-events: none;"
     ></a>
+
+    <!-- Size Selector Grid - Only show if "Talla" is in product options -->
+    {% if product.options contains 'Talla' %}
+      <div
+        x-show="showSizeSelector"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 transform translate-y-4"
+        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 transform translate-y-0"
+        x-transition:leave-end="opacity-0 transform translate-y-4"
+        @click.outside="showSizeSelector = false"
+        class="absolute bottom-0 left-0 right-0 bg-white border border-gray-200 shadow-lg  z-30"
+      >
+        <div class="grid grid-cols-5 gap-1">
+          {% assign unique_sizes = '' %}
+          {% for variant in product.variants %}
+            {% comment %} Find the size option from variant.options {% endcomment %}
+            {% assign size_name = '' %}
+            {% for option in variant.options %}
+              {% comment %} Check if this option is a size (not a color) {% endcomment %}
+              {% assign is_size = true %}
+              {% for product_option in product.options_with_values %}
+                {% if product_option.name == 'Color' %}
+                  {% for color_value in product_option.values %}
+                    {% if option == color_value %}
+                      {% assign is_size = false %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+
+              {% if is_size %}
+                {% assign size_name = option %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+
+            {% unless unique_sizes contains size_name %}
+              {% assign unique_sizes = unique_sizes | append: size_name | append: ',' %}
+              <button
+                class="px-6 py-4 text-md hover:bg-gray-100 transition-colors text-center font-semibold"
+                @click="selectSize('{{ size_name }}', {{ variant.id }})"
+              >
+                {{ size_name }}
+              </button>
+            {% endunless %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
   </div>
 
   <!-- Product Information -->
   <div class="space-y-2 p-1 w-full flex-1 flex flex-col justify-between">
     <!-- Star Rating and Plus Icon -->
-    {% if show_rating %}
-      <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
+      {% if show_rating %}
         <div class="flex items-center gap-1">
           <div class="flex text-yellow-400">
             {% assign rating = product.metafields.reviews.rating.value | default: 3.5 %}
@@ -126,65 +179,78 @@
           </div>
           <span class="text-sm text-gray-500">({{ product.metafields.reviews.rating.value | default: 0 }})</span>
         </div>
-        {% if show_size_selector %}
-          <button
-            class="text-gray-600 hover:text-gray-800 transition-colors"
-            @click="toggleSizeSelector"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-            </svg>
-          </button>
-        {% endif %}
-      </div>
-    {% endif %}
+      {% else %}
+        <div></div>
+        <!-- Empty div for spacing when no rating -->
+      {% endif %}
+
+      {% if show_size_selector %}
+        <button
+          class="text-gray-600 hover:text-gray-800 transition-colors relative z-30"
+          @click="handlePlusClick"
+          type="button"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+        </button>
+      {% endif %}
+    </div>
 
     <!-- Product Name and Price -->
     <div class="flex items-start justify-between space-y-2">
       <!-- Product Title Section -->
       <div class="flex flex-col items-start space-y-1">
         <h3 class="font-semibold text-gray-900 text-sm leading-tight">{{ product.title }}</h3>
+
+        <!-- Color Circles - Using product.options_with_values for proper swatch access -->
+        <!-- Pattern: product_option.name == "Color" then product_option_value.swatch.color -->
+        {% for product_option in product.options_with_values %}
+          {% if product_option.name == 'Color' %}
+            <div class="flex items-center gap-2 mt-2">
+              {% for product_option_value in product_option.values %}
+                {% comment %} Find a variant with this color to get its image {% endcomment %}
+                {% assign color_variant = null %}
+                {% for variant in product.variants %}
+                  {% for option in variant.options %}
+                    {% if option == product_option_value %}
+                      {% assign color_variant = variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if color_variant %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                <button
+                  @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                  class="w-4 h-4 rounded-full border-1 transition-colors"
+                  :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
+                  {% if product_option_value.swatch.color %}
+                    style="background-color: {{ product_option_value.swatch.color }};"
+                  {% else %}
+                    style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                  {% endif %}
+                  title="{{ product_option_value }}"
+                ></button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
 
       <!-- Price Section -->
       <div class="flex flex-col items-start space-y-1">
-        <span class="font-bold text-gray-900 text-sm"> ${{ product.price | money_without_currency }} </span>
+        <span class="font-bold text-gray-900 text-sm">${{ product.price | money_without_currency }}</span>
         {% if product.compare_at_price > product.price %}
           <span class="text-xs text-gray-500 line-through">
-            ${{ product.compare_at_price | money_without_currency }}s
+            ${{ product.compare_at_price | money_without_currency }}
           </span>
         {% endif %}
       </div>
     </div>
   </div>
-
-  <!-- Size Selector Grid -->
-  {% if show_size_selector %}
-    <div
-      x-show="showSizeSelector"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="opacity-0 transform translate-y-4"
-      x-transition:enter-end="opacity-100 transform translate-y-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="opacity-100 transform translate-y-0"
-      x-transition:leave-end="opacity-0 transform translate-y-4"
-      class="absolute bottom-full right-0 mb-2 bg-white border border-gray-200 shadow-lg p-3 z-10 min-w-48"
-    >
-      <div class="grid grid-cols-3 gap-2">
-        {% for variant in product.variants %}
-          {% if variant.option2 != blank %}
-            <button
-              class="px-3 py-2 text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
-              :class="selectedSize === '{{ variant.option2 }}' ? 'bg-gray-800 text-white border-gray-800' : ''"
-              @click="selectSize('{{ variant.option2 }}', {{ variant.id }})"
-            >
-              {{ variant.option2 }}
-            </button>
-          {% endif %}
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
 </div>
 
 <script>
@@ -193,14 +259,46 @@
       productId: productId,
       selectedVariantId: {{ product.selected_or_first_available_variant.id }},
       selectedVariantImage: null,
+      selectedColor: '{{ product.selected_or_first_available_variant.option1 }}',
       selectedSize: null,
       showSizeSelector: false,
       isInWishlist: false,
 
-      selectVariant(variantId, imageUrl) {
+      selectColor(color, imageUrl, variantId) {
+        this.selectedColor = color;
         this.selectedVariantId = variantId;
+
+        // Update the product image if a new image URL is provided
         if (imageUrl && imageUrl !== '') {
           this.selectedVariantImage = imageUrl;
+
+          // Update the carousel if it exists
+          const carouselElement = this.$el.querySelector('.product-image-carousel');
+          if (carouselElement && carouselElement.swiper) {
+            // Find the slide with the matching image and go to it
+            const slides = carouselElement.querySelectorAll('.swiper-slide img');
+            slides.forEach((slide, index) => {
+              if (slide.src === imageUrl) {
+                carouselElement.swiper.slideTo(index);
+                return;
+              }
+            });
+          }
+        }
+      },
+
+      handlePlusClick() {
+        // Check if product has Talla option using the product data
+        const productOptions = {{ product.options | json }};
+        const hasTalla = productOptions.includes('Talla');
+        const hasColor = productOptions.includes('Color');
+
+        if (hasTalla) {
+          // If product has sizes, open size selector
+          this.toggleSizeSelector();
+        } else {
+          // If no sizes, add to cart directly
+          this.addToCart(this.selectedVariantId);
         }
       },
 
@@ -211,9 +309,30 @@
       selectSize(size, variantId) {
         this.selectedSize = size;
         this.selectedVariantId = variantId;
-        this.addToCart(variantId);
+
+        // Check if product has Color option using the product data
+        const productOptions = {{ product.options | json }};
+        const hasColor = productOptions.includes('Color');
+
+        if (hasColor) {
+          // If product has colors, we need to find the variant with current color and selected size
+          const currentColor = this.selectedColor;
+          // Find the variant that matches both size and color
+          const targetVariantId = this.findVariantBySizeAndColor(size, currentColor);
+          if (targetVariantId) {
+            this.addToCart(targetVariantId);
+          } else {
+            this.addToCart(variantId);
+          }
+        } else {
+          // If no colors, just add the selected variant
+          this.addToCart(variantId);
+        }
+
         this.showSizeSelector = false;
       },
+
+
 
       async addToCart(variantId) {
         try {
@@ -230,13 +349,70 @@
             })
           });
 
-          if (response.ok) {
+                    if (response.ok) {
             // Trigger cart update event
-            document.dispatchEvent(new CustomEvent('cart:updated'));
+            this.$dispatch('cart:updated');
+
+            // Open cart drawer
+            this.$dispatch('cart:open');
+
+            // Show success feedback
+            this.showSuccessMessage();
           }
         } catch (error) {
           console.error('Error adding to cart:', error);
         }
+      },
+
+      showSuccessMessage() {
+        // Create a temporary success message
+        const message = document.createElement('div');
+        message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        message.textContent = 'Added to cart!';
+        document.body.appendChild(message);
+
+        // Remove after 2 seconds
+        setTimeout(() => {
+          document.body.removeChild(message);
+        }, 2000);
+      },
+
+      findVariantByColor(color) {
+        // Get all variants from the product with their options
+        const variants = [
+          {% for variant in product.variants %}
+            {
+              id: {{ variant.id }},
+              options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}]
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ];
+
+        // Find variant that matches the color
+        const targetVariant = variants.find(variant =>
+          variant.options.includes(color)
+        );
+
+        return targetVariant ? targetVariant.id : null;
+      },
+
+      findVariantBySizeAndColor(size, color) {
+        // Get all variants from the product with their options
+        const variants = [
+          {% for variant in product.variants %}
+            {
+              id: {{ variant.id }},
+              options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}]
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        ];
+
+        // Find variant that matches both size and color
+        const targetVariant = variants.find(variant =>
+          variant.options.includes(size) && variant.options.includes(color)
+        );
+
+        return targetVariant ? targetVariant.id : null;
       },
 
       toggleWishlist() {
@@ -244,100 +420,93 @@
         // Here you would typically make an API call to add/remove from wishlist
       },
 
-             // Initialize product image carousel
-       init() {
-         this.$nextTick(() => {
-           const carouselElement = this.$el.querySelector('.product-image-carousel');
-           if (carouselElement && typeof Swiper !== 'undefined') {
-             const carouselId = carouselElement.id;
+      // Initialize product image carousel
+      init() {
+        this.$nextTick(() => {
+          const carouselElement = this.$el.querySelector('.product-image-carousel');
+          if (carouselElement && typeof Swiper !== 'undefined') {
+            const carouselId = carouselElement.id;
 
-             // Check if this carousel is already initialized
-             if (carouselElement.swiper) {
-               return;
-             }
+            // Check if this carousel is already initialized
+            if (carouselElement.swiper) {
+              return;
+            }
 
-                                                                     const swiper = new Swiper(carouselElement, {
-                slidesPerView: 1,
-                spaceBetween: 0,
-                allowTouchMove: true,
-                grabCursor: true,
-                navigation: {
-                  nextEl: carouselElement.querySelector('.product-next'),
-                  prevEl: carouselElement.querySelector('.product-prev'),
-                },
-                on: {
-                  init: function() {
-                    updateArrowStates();
-                  },
-                  slideChange: function() {
-                    updateArrowStates();
-                  }
-                }
-              });
-
-              // Function to update arrow states
-              function updateArrowStates() {
-                const prevArrow = carouselElement.querySelector('.product-prev');
-                const nextArrow = carouselElement.querySelector('.product-next');
-
-                if (prevArrow) {
-                  if (swiper.isBeginning) {
-                    prevArrow.style.opacity = '0.3';
-                    prevArrow.style.cursor = 'not-allowed';
-                    prevArrow.disabled = true;
-                  } else {
-                    prevArrow.style.opacity = '1';
-                    prevArrow.style.cursor = 'pointer';
-                    prevArrow.disabled = false;
-                  }
-                }
-
-                if (nextArrow) {
-                  if (swiper.isEnd) {
-                    nextArrow.style.opacity = '0.3';
-                    nextArrow.style.cursor = 'not-allowed';
-                    nextArrow.disabled = true;
-                  } else {
-                    nextArrow.style.opacity = '1';
-                    nextArrow.style.cursor = 'pointer';
-                    nextArrow.disabled = false;
-                  }
-                }
+            // Create swiper instance
+            const swiperInstance = new Swiper(carouselElement, {
+              slidesPerView: 1,
+              spaceBetween: 0,
+              allowTouchMove: true,
+              grabCursor: true,
+              navigation: {
+                nextEl: carouselElement.querySelector('.product-next'),
+                prevEl: carouselElement.querySelector('.product-prev'),
               }
+            });
 
-              // Set initial state and add event listeners
-              swiper.on('slideChange', updateArrowStates);
-              swiper.on('reachBeginning', updateArrowStates);
-              swiper.on('reachEnd', updateArrowStates);
-
-              // Initial state update
-              setTimeout(updateArrowStates, 100);
-
-              // Add touch event listeners for mobile
+            // Function to update arrow states
+            const updateArrowStates = () => {
               const prevArrow = carouselElement.querySelector('.product-prev');
               const nextArrow = carouselElement.querySelector('.product-next');
 
               if (prevArrow) {
-                prevArrow.addEventListener('touchstart', () => {
-                  if (!swiper.isBeginning) {
-                    swiper.slidePrev();
-                  }
-                });
+                if (swiperInstance.isBeginning) {
+                  prevArrow.style.opacity = '0.3';
+                  prevArrow.style.cursor = 'not-allowed';
+                  prevArrow.disabled = true;
+                } else {
+                  prevArrow.style.opacity = '1';
+                  prevArrow.style.cursor = 'pointer';
+                  prevArrow.disabled = false;
+                }
               }
 
               if (nextArrow) {
-                nextArrow.addEventListener('touchstart', () => {
-                  if (!swiper.isEnd) {
-                    swiper.slideNext();
-                  }
-                });
+                if (swiperInstance.isEnd) {
+                  nextArrow.style.opacity = '0.3';
+                  nextArrow.style.cursor = 'not-allowed';
+                  nextArrow.disabled = true;
+                } else {
+                  nextArrow.style.opacity = '1';
+                  nextArrow.style.cursor = 'pointer';
+                  nextArrow.disabled = false;
+                }
               }
+            };
 
-             // Store the swiper instance on the element to avoid conflicts
-             carouselElement.swiper = swiper;
-           }
-         });
-       }
+            // Set initial state and add event listeners
+            swiperInstance.on('slideChange', updateArrowStates);
+            swiperInstance.on('reachBeginning', updateArrowStates);
+            swiperInstance.on('reachEnd', updateArrowStates);
+
+            // Initial state update
+            setTimeout(updateArrowStates, 100);
+
+            // Add touch event listeners for mobile
+            const prevArrow = carouselElement.querySelector('.product-prev');
+            const nextArrow = carouselElement.querySelector('.product-next');
+
+            if (prevArrow) {
+              prevArrow.addEventListener('touchstart', () => {
+                if (!swiperInstance.isBeginning) {
+                  swiperInstance.slidePrev();
+                }
+              });
+            }
+
+            if (nextArrow) {
+              nextArrow.addEventListener('touchstart', () => {
+                if (!swiperInstance.isEnd) {
+                  swiperInstance.slideNext();
+                }
+              });
+            }
+
+            // Store the swiper instance on the element to avoid conflicts
+            carouselElement.swiper = swiperInstance;
+          }
+        });
+      }
     }
   }
 </script>

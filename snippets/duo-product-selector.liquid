@@ -1,0 +1,57 @@
+{% comment %}
+  Duo Product Selector Snippet
+
+  Usage:
+  {% render 'duo-product-selector',
+    product: product,
+    product_number: 1,
+    product_title: 'Primera prenda'
+  %}
+
+  Parameters:
+  - product: Product object
+  - product_number: 1 or 2
+  - product_title: Display title for the product
+{% endcomment %}
+
+<div class=" p-4 space-y-3">
+
+
+  <div class="py-4">  
+  <!-- Color selection -->
+  {% if product_number == 1 %}
+    {% render 'color-selector',
+      product: product,
+      selected_color_variable: 'duoProduct1',
+      click_function: 'selectDuoColor',
+      product_number: product_number
+    %}
+  {% else %}
+    {% render 'color-selector',
+      product: product,
+      selected_color_variable: 'duoProduct2',
+      click_function: 'selectDuoColor',
+      product_number: product_number
+    %}
+  {% endif %}
+  </div>
+
+  <!-- Size selection -->
+  <div class="py-4">  
+  {% if product_number == 1 %}
+    {% render 'size-selector',
+      product: product,
+      selected_size_variable: 'duoProduct1',
+      click_function: 'selectDuoSize',
+      product_number: product_number
+    %}
+  {% else %}
+    {% render 'size-selector',
+      product: product,
+      selected_size_variable: 'duoProduct2',
+      click_function: 'selectDuoSize',
+      product_number: product_number
+    %}
+  {% endif %}
+  </div>
+</div>

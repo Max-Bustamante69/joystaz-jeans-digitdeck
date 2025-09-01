@@ -1,0 +1,86 @@
+{% comment %}
+  Size Selector Snippet
+
+  Usage:
+  {% render 'size-selector',
+    product: product,
+    selected_size_variable: 'selectedSize',
+    click_function: 'selectSize',
+    product_number: nil,
+    show_main_label: false,
+    show_size_guide: false
+  %}
+
+  Parameters:
+  - product: Product object
+  - selected_size_variable: Alpine.js variable name for selected size
+  - click_function: Function name to call on size selection
+  - product_number: For duo selections (1 or 2), nil for single
+  - show_main_label: Show main "Elije una talla" label (for single mode)
+  - show_size_guide: Show size guide button (for single mode)
+{% endcomment %}
+
+{% for product_option in product.options_with_values %}
+  {% if product_option.name == 'Talla' %}
+    <div class="space-y-2">
+      {% if show_main_label %}
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">
+            Elije una talla
+            {% if product_number %}
+              <span
+                class="text-xl ml-2 font-medium text-gray-400"
+                x-show="{{ selected_size_variable | remove: "'" }}.size"
+                x-text="{{ selected_size_variable | remove: "'" }}.size"
+              ></span>
+            {% else %}
+              <span
+                class="text-xl ml-2 font-medium text-gray-400"
+                x-show="{{ selected_size_variable }}"
+                x-text="{{ selected_size_variable }}"
+              ></span>
+            {% endif %}
+          </h3>
+          {% if show_size_guide %}
+            <button class="text-sm text-gray-600 underline hover:text-gray-900 transition-colors">
+              Guía de tallas
+            </button>
+          {% endif %}
+        </div>
+      {% else %}
+        <label class="text-sm font-medium text-gray-700">
+          Talla:
+          {% if product_number %}
+            <span
+              class="ml-2 font-normal text-gray-500"
+              x-show="{{ selected_size_variable | remove: "'" }}.size"
+              x-text="{{ selected_size_variable | remove: "'" }}.size"
+            ></span>
+          {% else %}
+            <span
+              class="ml-2 font-normal text-gray-500"
+              x-show="{{ selected_size_variable }}"
+              x-text="{{ selected_size_variable }}"
+            ></span>
+          {% endif %}
+        </label>
+      {% endif %}
+      <div class="flex gap-2">
+        {% for product_option_value in product_option.values %}
+          <button
+            {% if product_number %}
+              @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ product.variants[forloop.index0].id }})"
+              :class="{{ selected_size_variable | remove: "'" }}.size === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400'"
+            {% else %}
+              @click="{{ click_function }}('{{ product_option_value }}', {{ product.variants[forloop.index0].id }})"
+              :class="{{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400'"
+            {% endif %}
+            class="size-12 p-2 text-lg flex items-center justify-center font-medium border-2 rounded-full transition-all duration-200"
+          >
+            {{ product_option_value }}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}

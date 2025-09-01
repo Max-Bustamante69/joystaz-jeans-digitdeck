@@ -1,0 +1,112 @@
+{% comment %}
+  Color Selector Snippet
+
+  Usage:
+  {% render 'color-selector',
+    product: product,
+    selected_color_variable: 'selectedColor',
+    click_function: 'selectColor',
+    product_number: nil,
+    show_main_label: false,
+    show_wishlist: false
+  %}
+
+  Parameters:
+  - product: Product object
+  - selected_color_variable: Alpine.js variable name for selected color
+  - click_function: Function name to call on color selection
+  - product_number: For duo selections (1 or 2), nil for single
+  - show_main_label: Show main "Elije un color" label (for single mode)
+  - show_wishlist: Show wishlist button (for single mode)
+{% endcomment %}
+
+{% for product_option in product.options_with_values %}
+  {% if product_option.name == 'Color' %}
+    <div class="space-y-2">
+      {% if show_main_label %}
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-900">
+            Elije un color
+            {% if product_number %}
+              <span
+                class="text-xl ml-2 font-medium text-gray-400"
+                x-show="{{ selected_color_variable | remove: "'" }}.color"
+                x-text="{{ selected_color_variable | remove: "'" }}.color"
+              ></span>
+            {% else %}
+              <span
+                class="text-xl ml-2 font-medium text-gray-400"
+                x-show="{{ selected_color_variable }}"
+                x-text="{{ selected_color_variable }}"
+              ></span>
+            {% endif %}
+          </h3>
+          {% if show_wishlist %}
+            <button
+              @click="toggleWishlist"
+              class="text-gray-600 hover:text-red-500 transition-colors"
+              :class="isInWishlist ? 'text-red-500' : ''"
+            >
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+      {% else %}
+        <label class="text-sm font-medium text-gray-700">
+          Color:
+          {% if product_number %}
+            <span
+              class="ml-2 font-normal text-gray-500"
+              x-show="{{ selected_color_variable | remove: "'" }}.color"
+              x-text="{{ selected_color_variable | remove: "'" }}.color"
+            ></span>
+          {% else %}
+            <span
+              class="ml-2 font-normal text-gray-500"
+              x-show="{{ selected_color_variable }}"
+              x-text="{{ selected_color_variable }}"
+            ></span>
+          {% endif %}
+        </label>
+      {% endif %}
+      <div class="flex items-center gap-3">
+        {% for product_option_value in product_option.values %}
+          {% comment %} Find a variant with this color to get its image {% endcomment %}
+          {% assign color_variant = null %}
+          {% for variant in product.variants %}
+            {% for option in variant.options %}
+              {% if option == product_option_value %}
+                {% assign color_variant = variant %}
+                {% break %}
+              {% endif %}
+            {% endfor %}
+            {% if color_variant %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+
+          <button
+            {% if product_number %}
+              @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
+              :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400'"
+            {% else %}
+              @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
+              :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400'"
+            {% endif %}
+            class="w-8 h-8 border-2 transition-all duration-200"
+            {% if product_option_value.swatch.color %}
+              style="background-color: {{ product_option_value.swatch.color }};"
+            {% elsif product_option_value.swatch.image %}
+              style="background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center;"
+            {% else %}
+              style="background-color: #f3f4f6;"
+            {% endif %}
+            title="{{ product_option_value }}"
+          ></button>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endfor %}

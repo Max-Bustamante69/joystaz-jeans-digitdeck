@@ -39,6 +39,54 @@
             </div>
           {% endif %}
 
+          <!-- Dynamic Blocks (Icon List) -->
+          {% if section.blocks.size > 0 %}
+            <div class="icon-list-container space-y-4">
+              {% for block in section.blocks %}
+                {% case block.type %}
+                  {% when 'icon_list_item' %}
+                    <div class="icon-list-item flex items-start gap-4" {{ block.shopify_attributes }}>
+                      <!-- Icon -->
+                      {% if block.settings.icon_image %}
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8">
+                          {{
+                            block.settings.icon_image
+                            | image_url: width: 32
+                            | image_tag: class: 'w-full h-full object-contain', alt: block.settings.title
+                          }}
+                        </div>
+                      {% elsif block.settings.icon_svg %}
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                          {{ block.settings.icon_svg }}
+                        </div>
+                      {% else %}
+                        <!-- Default icon if none provided -->
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                          <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                      {% endif %}
+
+                      <!-- Content -->
+                      <div class="content-wrapper flex-1">
+                        {% if block.settings.title %}
+                          <h6 class="font-semibold text-gray-900 mb-1">
+                            {{ block.settings.title }}
+                          </h6>
+                        {% endif %}
+                        {% if block.settings.subtitle %}
+                          <p class="text-sm text-gray-600 leading-relaxed">
+                            {{ block.settings.subtitle }}
+                          </p>
+                        {% endif %}
+                      </div>
+                    </div>
+                {% endcase %}
+              {% endfor %}
+            </div>
+          {% endif %}
+
           {% if section.settings.button_text != blank and section.settings.button_link != blank %}
             <div class="button-container pt-4">
               <a
@@ -57,12 +105,22 @@
       <!-- Full Width Image -->
       <div class="w-full lg:w-2/3 order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
         <div class="image-container w-full">
-          {% if section.settings.image %}
+          {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
+          {% assign display_image = null %}
+          {% assign image_alt_text = section.settings.image_alt | default: section.settings.title %}
+
+          {% if template.name == 'product' and product and section.settings.use_product_image %}
+            {% assign display_image = product.featured_image %}
+            {% assign image_alt_text = product.title %}
+          {% elsif section.settings.image %}
+            {% assign display_image = section.settings.image %}
+          {% endif %}
+
+          {% if display_image %}
             {{
-              section.settings.image
+              display_image
               | image_url: width: 1200
-              | image_tag: class: 'w-full h-auto', alt: section.settings.image_alt
-              | default: section.settings.title, loading: 'lazy'
+              | image_tag: class: 'w-full h-auto', alt: image_alt_text, loading: 'lazy'
             }}
           {% else %}
             <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
@@ -105,6 +163,54 @@
               </div>
             {% endif %}
 
+            <!-- Dynamic Blocks (Icon List) -->
+            {% if section.blocks.size > 0 %}
+              <div class="icon-list-container space-y-4">
+                {% for block in section.blocks %}
+                  {% case block.type %}
+                    {% when 'icon_list_item' %}
+                      <div class="icon-list-item flex items-start gap-4" {{ block.shopify_attributes }}>
+                        <!-- Icon -->
+                        {% if block.settings.icon_image %}
+                          <div class="icon-wrapper flex-shrink-0 w-8 h-8">
+                            {{
+                              block.settings.icon_image
+                              | image_url: width: 32
+                              | image_tag: class: 'w-full h-full object-contain', alt: block.settings.title
+                            }}
+                          </div>
+                        {% elsif block.settings.icon_svg %}
+                          <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                            {{ block.settings.icon_svg }}
+                          </div>
+                        {% else %}
+                          <!-- Default icon if none provided -->
+                          <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                          </div>
+                        {% endif %}
+
+                        <!-- Content -->
+                        <div class="content-wrapper flex-1">
+                          {% if block.settings.title %}
+                            <h6 class="font-semibold text-gray-900 mb-1">
+                              {{ block.settings.title }}
+                            </h6>
+                          {% endif %}
+                          {% if block.settings.subtitle %}
+                            <p class="text-sm text-gray-600 leading-relaxed">
+                              {{ block.settings.subtitle }}
+                            </p>
+                          {% endif %}
+                        </div>
+                      </div>
+                  {% endcase %}
+                {% endfor %}
+              </div>
+            {% endif %}
+
             {% if section.settings.button_text != blank and section.settings.button_link != blank %}
               <div class="button-container pt-4">
                 <a
@@ -123,12 +229,22 @@
         <!-- Windowed Image -->
         <div class="w-full lg:w-1/2 order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
           <div class="image-container max-w-2xl mx-auto">
-            {% if section.settings.image %}
+            {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
+            {% assign display_image = null %}
+            {% assign image_alt_text = section.settings.image_alt | default: section.settings.title %}
+
+            {% if template.name == 'product' and product and section.settings.use_product_image %}
+              {% assign display_image = product.featured_image %}
+              {% assign image_alt_text = product.title %}
+            {% elsif section.settings.image %}
+              {% assign display_image = section.settings.image %}
+            {% endif %}
+
+            {% if display_image %}
               {{
-                section.settings.image
+                display_image
                 | image_url: width: 800
-                | image_tag: class: 'w-full h-auto shadow-lg', alt: section.settings.image_alt
-                | default: section.settings.title, loading: 'lazy'
+                | image_tag: class: 'w-full h-auto shadow-lg', alt: image_alt_text, loading: 'lazy'
               }}
             {% else %}
               <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
@@ -246,6 +362,13 @@
       "info": "Optional alt text for accessibility"
     },
     {
+      "type": "checkbox",
+      "id": "use_product_image",
+      "label": "Use Product Image (if on product page)",
+      "default": false,
+      "info": "When enabled, this will use the current product's featured image instead of the selected image above when viewing a product page"
+    },
+    {
       "type": "header",
       "content": "Content Settings"
     },
@@ -333,6 +456,38 @@
       "default": "#374151"
     }
   ],
+  "blocks": [
+    {
+      "type": "icon_list_item",
+      "name": "Icon List Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon Image",
+          "info": "Upload a custom icon image (32x32px recommended)"
+        },
+        {
+          "type": "html",
+          "id": "icon_svg",
+          "label": "Icon SVG Code",
+          "info": "Alternative: Paste SVG code for the icon. If both image and SVG are provided, image takes priority."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "Description",
+          "default": "Feature description goes here"
+        }
+      ]
+    }
+  ],
   "presets": [
     {
       "name": "Image with Text",
@@ -341,13 +496,36 @@
         "title": "Self-Care Starts With Your Underwear",
         "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
         "subtitle": "Nuestra promesa",
-        "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "layout_direction": "image_first",
         "image_style": "windowed",
-        "button_style": "background"
-      }
+        "button_style": "background",
+        "use_product_image": false
+      },
+      "blocks": [
+        {
+          "type": "icon_list_item",
+          "settings": {
+            "title": "Materiales Premium",
+            "subtitle": "Fabricados con materiales OEKO-TEX® certificados, libres de químicos dañinos"
+          }
+        },
+        {
+          "type": "icon_list_item",
+          "settings": {
+            "title": "Protección Antimicrobiana",
+            "subtitle": "Forro antimicrobiano extendido para protección diaria contra bacterias"
+          }
+        },
+        {
+          "type": "icon_list_item",
+          "settings": {
+            "title": "Transpirable y Cómodo",
+            "subtitle": "Telas que respiran y no irritan, priorizando tu salud íntima"
+          }
+        }
+      ]
     }
   ]
 }

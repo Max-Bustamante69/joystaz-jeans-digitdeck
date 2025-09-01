@@ -1,0 +1,407 @@
+{% comment %}
+  Video Carousel Section
+  Features:
+  - Swiper.js carousel for videos
+  - Videos start paused
+  - Play on hover (muted)
+  - Pause when hover ends
+  - Responsive design
+  - Configurable number of videos per view
+{% endcomment %}
+
+<div
+  class="video-carousel-section py-16 px-4 md:px-8"
+  style="background-color: {{ section.settings.background_color | default: '#ffffff' }};"
+>
+  <div class="max-w-7xl mx-auto">
+    <!-- Section Title -->
+    {% if section.settings.title != blank %}
+      <h2
+        class="text-3xl font-bold text-center mb-12"
+        style="color: {{ section.settings.title_color | default: '#1f2937' }};"
+      >
+        {{ section.settings.title }}
+      </h2>
+    {% endif %}
+
+    <!-- Video Carousel -->
+    {% if section.blocks.size > 0 %}
+      <div
+        class="video-carousel-container swiper-video-carousel-{{ section.id }} relative"
+        data-section-id="{{ section.id }}"
+        data-videos-per-view-desktop="{{ section.settings.videos_per_view_desktop }}"
+        data-videos-per-view-mobile="{{ section.settings.videos_per_view_mobile }}"
+        x-data="videoCarousel()"
+      >
+        <div class="swiper-wrapper">
+          {% for block in section.blocks %}
+            {% case block.type %}
+              {% when 'video_item' %}
+                <div class="swiper-slide" {{ block.shopify_attributes }}>
+                  <div class="video-item relative group cursor-pointer">
+                    <!-- Video Element -->
+                    <video
+                      class="w-full h-auto rounded-lg shadow-lg"
+                      muted
+                      preload="metadata"
+                      playsinline
+                      loop
+                      data-video-src="{{ block.settings.video.sources[0].url | default: '' }}"
+                      @mouseenter="playVideo($event.target)"
+                      @mouseleave="pauseVideo($event.target)"
+                      style="aspect-ratio: {{ section.settings.video_aspect_ratio | default: '16/9' }}; object-fit: cover;"
+                    >
+                      {% if block.settings.video %}
+                        <source
+                          src="{{ block.settings.video.sources[0].url }}"
+                          type="{{ block.settings.video.sources[0].mime_type }}"
+                        >
+                      {% endif %}
+                      Your browser does not support the video tag.
+                    </video>
+
+                    <!-- Video Overlay (Title and Description) -->
+                    {% if block.settings.title != blank or block.settings.description != blank %}
+                      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div class="absolute bottom-4 left-4 right-4 text-white">
+                          {% if block.settings.title != blank %}
+                            <h3 class="text-lg font-semibold mb-2">{{ block.settings.title }}</h3>
+                          {% endif %}
+                          {% if block.settings.description != blank %}
+                            <p class="text-sm opacity-90">{{ block.settings.description }}</p>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endif %}
+
+                    <!-- Play Icon Overlay -->
+                    <div class="absolute inset-0 flex items-center justify-center rounded-lg">
+                      <div class="play-icon bg-white/20 backdrop-blur-sm rounded-full p-4 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            {% endcase %}
+          {% endfor %}
+        </div>
+
+        <!-- Navigation Arrows -->
+        {% if section.settings.show_navigation %}
+          <div class="swiper-button-prev video-carousel-prev absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 z-10 cursor-pointer">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </div>
+          <div class="swiper-button-next video-carousel-next absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 z-10 cursor-pointer">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        {% endif %}
+
+        <!-- Pagination -->
+        {% if section.settings.show_pagination %}
+          <div class="swiper-pagination video-carousel-pagination mt-8 text-center"></div>
+        {% endif %}
+      </div>
+    {% else %}
+      <!-- Empty State -->
+      <div class="text-center py-16">
+        <p class="text-gray-500 text-lg">Add video blocks to display your video carousel.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  function videoCarousel() {
+    return {
+      swiperInstance: null,
+
+      playVideo(videoElement) {
+        if (videoElement && videoElement.play) {
+          videoElement.currentTime = 0; // Start from beginning
+          videoElement.play().catch(e => console.log('Video play failed:', e));
+        }
+      },
+
+      pauseVideo(videoElement) {
+        if (videoElement && videoElement.pause) {
+          videoElement.pause();
+          videoElement.currentTime = 0; // Reset to beginning
+        }
+      },
+
+      init() {
+        this.$nextTick(() => {
+          this.initializeCarousel();
+        });
+      },
+
+      initializeCarousel() {
+        const carouselElement = this.$el.querySelector('.video-carousel-container');
+
+        if (carouselElement && typeof Swiper !== 'undefined') {
+          // Check if already initialized
+          if (carouselElement.swiper) {
+            return;
+          }
+
+          const videosPerViewDesktop = parseInt(carouselElement.dataset.videosPerViewDesktop) || 3;
+          const videosPerViewMobile = parseInt(carouselElement.dataset.videosPerViewMobile) || 1;
+
+          // Initialize Swiper
+          this.swiperInstance = new Swiper(carouselElement, {
+            slidesPerView: videosPerViewMobile,
+            spaceBetween: 20,
+            loop: {{ section.settings.enable_loop | default: false }},
+            autoplay: {{ section.settings.enable_autoplay | default: false }} ? {
+              delay: {{ section.settings.autoplay_delay | default: 5000 }},
+              disableOnInteraction: true,
+            } : false,
+            breakpoints: {
+              768: {
+                slidesPerView: Math.min(videosPerViewDesktop, {{ section.blocks.size | default: 1 }}),
+                spaceBetween: 30,
+              }
+            },
+            navigation: {
+              nextEl: carouselElement.querySelector('.video-carousel-next'),
+              prevEl: carouselElement.querySelector('.video-carousel-prev'),
+            },
+            pagination: {
+              el: carouselElement.querySelector('.video-carousel-pagination'),
+              clickable: true,
+              dynamicBullets: true,
+            },
+            on: {
+              slideChange: () => {
+                // Pause all videos when slide changes
+                const videos = carouselElement.querySelectorAll('video');
+                videos.forEach(video => {
+                  video.pause();
+                  video.currentTime = 0;
+                });
+              }
+            }
+          });
+
+          // Store instance on element
+          carouselElement.swiper = this.swiperInstance;
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  .video-carousel-section .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0.5;
+  }
+
+  .video-carousel-section .swiper-pagination-bullet-active {
+    background: #ffffff;
+    opacity: 1;
+  }
+
+  .video-carousel-section .video-item {
+    transition: transform 0.3s ease;
+  }
+
+  .video-carousel-section .video-item:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  .video-carousel-section video::-webkit-media-controls {
+    display: none !important;
+  }
+
+  .video-carousel-section video {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Video Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Featured Videos"
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "range",
+      "id": "videos_per_view_desktop",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Videos per view (Desktop)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "videos_per_view_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Videos per view (Mobile)",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "video_aspect_ratio",
+      "label": "Video Aspect Ratio",
+      "options": [
+        {
+          "value": "16/9",
+          "label": "16:9 (Landscape)"
+        },
+        {
+          "value": "9/16",
+          "label": "9:16 (Portrait)"
+        },
+        {
+          "value": "1/1",
+          "label": "1:1 (Square)"
+        },
+        {
+          "value": "4/3",
+          "label": "4:3 (Standard)"
+        }
+      ],
+      "default": "16/9"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Show Pagination Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_loop",
+      "label": "Enable Loop",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_autoplay",
+      "label": "Enable Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "min": 2000,
+      "max": 9500,
+      "step": 500,
+      "label": "Autoplay Delay (ms)",
+      "default": 5000,
+      "info": "Only applies if autoplay is enabled"
+    },
+    {
+      "type": "header",
+      "content": "Styling Options"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#1f2937"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_item",
+      "name": "Video Item",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video File",
+          "info": "Upload your video file. MP4 format recommended for best compatibility."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Video Title",
+          "default": "Video Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Video Description",
+          "default": "Video description goes here..."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Carousel",
+      "category": "Media",
+      "settings": {
+        "title": "Featured Videos",
+        "videos_per_view_desktop": 3,
+        "videos_per_view_mobile": 1,
+        "video_aspect_ratio": "16/9",
+        "show_navigation": true,
+        "show_pagination": true
+      },
+      "blocks": [
+        {
+          "type": "video_item",
+          "settings": {
+            "title": "Video 1",
+            "description": "This is the first video in our collection"
+          }
+        },
+        {
+          "type": "video_item",
+          "settings": {
+            "title": "Video 2",
+            "description": "This is the second video in our collection"
+          }
+        },
+        {
+          "type": "video_item",
+          "settings": {
+            "title": "Video 3",
+            "description": "This is the third video in our collection"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

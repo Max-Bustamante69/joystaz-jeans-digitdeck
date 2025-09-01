@@ -1,0 +1,63 @@
+{% comment %}
+  Accordion Snippet - Reutilizable
+
+  Usage:
+  {% render 'accordion',
+    items: section.blocks,
+    accordion_id: 'product-accordion',
+    title_color: '#1f2937',
+    answer_color: '#374151'
+  %}
+
+  Parameters:
+  - items: Array of blocks with question and answer
+  - accordion_id: Unique ID for Alpine.js state
+  - title_color: Color for questions
+  - answer_color: Color for answers
+{% endcomment %}
+
+{% assign accordion_id = accordion_id | default: 'accordion' %}
+
+<div class="accordion-container" x-data="{ openItem: null }">
+  {% for item in items %}
+    <div class="accordion-item border-b border-gray-200">
+      <button
+        class="accordion-question w-full text-left py-4 px-0 border-b border-gray-200 flex justify-between items-center transition-all duration-300 hover:bg-gray-50"
+        @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
+        :aria-expanded="openItem === {{ forloop.index }}"
+        style="color: {{ title_color | default: '#1f2937' }};"
+      >
+        <p class="font-mediun text-sm ">
+          {{ item.settings.question }}
+        </p>
+        <svg
+          class="accordion-icon w-5 h-5 transition-transform duration-500 ease-out"
+          :class="{ 'rotate-180': openItem === {{ forloop.index }} }"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+      </button>
+
+      <div
+        class="accordion-answer overflow-hidden transition-all duration-500 ease-out"
+        x-show="openItem === {{ forloop.index }}"
+        x-transition:enter="transition ease-out duration-500"
+        x-transition:enter-start="opacity-0 max-h-0"
+        x-transition:enter-end="opacity-100 max-h-96"
+        x-transition:leave="transition ease-in duration-500"
+        x-transition:leave-start="opacity-100 max-h-96"
+        x-transition:leave-end="opacity-0 max-h-0"
+      >
+        <div
+          class="body py-4 px-0"
+          style="color: {{ answer_color | default: '#374151' }};"
+        >
+          {{ item.settings.answer }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

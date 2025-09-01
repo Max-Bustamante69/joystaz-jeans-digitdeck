@@ -1,0 +1,65 @@
+{% comment %}
+  Product Gallery Snippet - Related Products Carousel
+
+  Usage:
+  {% render 'product-gallery',
+    block: block,
+    current_product: product
+  %}
+
+  Parameters:
+  - block: Block object with settings
+  - current_product: Current product to find related products
+{% endcomment %}
+
+{% assign products_limit = block.settings.products_limit | default: 4 %}
+{% assign gallery_title = block.settings.title | default: 'Combínalo Con' %}
+
+{% comment %} Check if current product has collections and products to show {% endcomment %}
+{% assign has_related_products = false %}
+{% assign products_count = 0 %}
+
+{% if current_product.collections.size > 0 %}
+  {% assign main_collection = current_product.collections.first %}
+  {% for collection_product in main_collection.products %}
+    {% if collection_product.id != current_product.id %}
+      {% assign products_count = products_count | plus: 1 %}
+      {% if products_count >= 1 %}
+        {% assign has_related_products = true %}
+        {% break %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Render the gallery if we have products {% endcomment %}
+{% if has_related_products %}
+  <div class="product-gallery-section py-16 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto">
+      <!-- Gallery Title -->
+      {% if gallery_title != blank %}
+        <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">
+          {{ gallery_title }}
+        </h2>
+      {% endif %}
+
+      <!-- Product Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+        {% assign rendered_count = 0 %}
+        {% for collection_product in main_collection.products %}
+          {% if collection_product.id != current_product.id and rendered_count < products_limit %}
+            <div class="product-gallery-item">
+              {% render 'product-card',
+                product: collection_product,
+                show_badges: true,
+                show_rating: true,
+                show_size_selector: true
+              %}
+            </div>
+            {% assign rendered_count = rendered_count | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}

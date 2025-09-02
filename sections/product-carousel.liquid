@@ -46,7 +46,15 @@
         {% assign products = section.settings.products %}
     {% endcase %}
 
-    {% if products.size > 0 %}
+    {% comment %} Count available products {% endcomment %}
+    {% assign available_count = 0 %}
+    {% for product in products %}
+      {% if product.available %}
+        {% assign available_count = available_count | plus: 1 %}
+      {% endif %}
+    {% endfor %}
+
+    {% if available_count > 0 %}
       <div class="relative">
         <div
           class="product-carousel swiper-main-carousel-{{ section.id }} overflow-hidden"
@@ -54,21 +62,32 @@
           data-carousel-type="main-carousel"
         >
           <div class="swiper-wrapper">
-            {% for product in products limit: section.settings.max_products %}
-              <div class="swiper-slide">
-                <div class="w-full">
-                  {% render 'product-card',
-                    product: product,
-                    show_badges: section.settings.show_badges,
-                    show_rating: section.settings.show_rating,
-                    show_color_swatches: section.settings.show_color_swatches,
-                    show_size_selector: section.settings.show_size_selector
-                  %}
+            {% assign products_shown = 0 %}
+            {% for product in products %}
+              {% if product.available and products_shown < section.settings.max_products %}
+                <div class="swiper-slide">
+                  <div class="w-full">
+                    {% render 'product-card',
+                      product: product,
+                      show_badges: section.settings.show_badges,
+                      show_rating: section.settings.show_rating,
+                      show_color_swatches: section.settings.show_color_swatches,
+                      show_size_selector: section.settings.show_size_selector
+                    %}
+                  </div>
                 </div>
-              </div>
+                {% assign products_shown = products_shown | plus: 1 %}
+              {% endif %}
             {% endfor %}
           </div>
         </div>
+      </div>
+    {% else %}
+      {% comment %} Show message when no products are available {% endcomment %}
+      <div class="text-center py-8">
+        <p class="text-gray-600">
+          {{ section.settings.no_products_message | default: 'No hay productos disponibles en este momento.' }}
+        </p>
       </div>
     {% endif %}
   </div>
@@ -289,6 +308,17 @@
       "id": "show_size_selector",
       "label": "Show Size Selector",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "no_products_message",
+      "label": "No Products Available Message",
+      "default": "No hay productos disponibles en este momento.",
+      "info": "Message shown when no products are available to display"
     },
     {
       "type": "header",

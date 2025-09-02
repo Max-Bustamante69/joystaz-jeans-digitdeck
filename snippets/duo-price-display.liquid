@@ -14,8 +14,8 @@
 
 {% assign duo_discount = discount_percentage | default: 5 %}
 {% assign duo_original_price = product.price | times: 2 %}
-{% assign second_item_discount = product.price | times: duo_discount | divided_by: 100 %}
-{% assign discounted_price = product.price | plus: product.price | minus: second_item_discount %}
+{% assign item_discount = product.price | plus: product.price | times: duo_discount | divided_by: 100 %}
+{% assign discounted_price = product.price | plus: product.price | minus: item_discount %}
 
 <span class="text-xl text-semibold text-gray-900 ml-2">${{ discounted_price | money_without_currency }}</span>
 <span class="text-xl text-semibold line-through text-red-800">${{ duo_original_price | money_without_currency }}</span>

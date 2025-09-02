@@ -1,116 +1,65 @@
 {% comment %}
   Video Carousel Section
   Features:
-  - Swiper.js carousel for videos
-  - Videos start paused
-  - Play on hover (muted)
-  - Pause when hover ends
+  - Swiper carousel with video slides
+  - Hover to play/pause functionality
+  - Thumbnail support
+  - 3:4 aspect ratio
   - Responsive design
-  - Configurable number of videos per view
 {% endcomment %}
 
-<div
-  class="video-carousel-section py-16 px-4 md:px-8"
-  style="background-color: {{ section.settings.background_color | default: '#ffffff' }};"
->
-  <div class="max-w-7xl mx-auto">
-    <!-- Section Title -->
-    {% if section.settings.title != blank %}
-      <h2
-        class="text-3xl font-bold text-center mb-12"
-        style="color: {{ section.settings.title_color | default: '#1f2937' }};"
-      >
-        {{ section.settings.title }}
-      </h2>
+<div class="video-carousel-section py-8 lg:py-16" x-data="videoCarousel()">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Section Header -->
+    {% if section.settings.title != blank or section.settings.subtitle != blank %}
+      <div class="text-center mb-8 lg:mb-12">
+        {% if section.settings.title != blank %}
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+            {{ section.settings.title }}
+          </h2>
+        {% endif %}
+        {% if section.settings.subtitle != blank %}
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+            {{ section.settings.subtitle }}
+          </p>
+        {% endif %}
+      </div>
     {% endif %}
 
     <!-- Video Carousel -->
     {% if section.blocks.size > 0 %}
-      <div
-        class="video-carousel-container swiper-video-carousel-{{ section.id }} relative"
-        data-section-id="{{ section.id }}"
-        data-videos-per-view-desktop="{{ section.settings.videos_per_view_desktop }}"
-        data-videos-per-view-mobile="{{ section.settings.videos_per_view_mobile }}"
-        x-data="videoCarousel()"
-      >
-        <div class="swiper-wrapper">
-          {% for block in section.blocks %}
-            {% case block.type %}
-              {% when 'video_item' %}
-                <div class="swiper-slide" {{ block.shopify_attributes }}>
-                  <div class="video-item relative group cursor-pointer">
-                    <!-- Video Element -->
-                    <video
-                      class="w-full h-auto rounded-lg shadow-lg"
-                      muted
-                      preload="metadata"
-                      playsinline
-                      loop
-                      data-video-src="{{ block.settings.video.sources[0].url | default: '' }}"
-                      @mouseenter="playVideo($event.target)"
-                      @mouseleave="pauseVideo($event.target)"
-                      style="aspect-ratio: {{ section.settings.video_aspect_ratio | default: '16/9' }}; object-fit: cover;"
-                    >
-                      {% if block.settings.video %}
-                        <source
-                          src="{{ block.settings.video.sources[0].url }}"
-                          type="{{ block.settings.video.sources[0].mime_type }}"
-                        >
-                      {% endif %}
-                      Your browser does not support the video tag.
-                    </video>
-
-                    <!-- Video Overlay (Title and Description) -->
-                    {% if block.settings.title != blank or block.settings.description != blank %}
-                      <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div class="absolute bottom-4 left-4 right-4 text-white">
-                          {% if block.settings.title != blank %}
-                            <h3 class="text-lg font-semibold mb-2">{{ block.settings.title }}</h3>
-                          {% endif %}
-                          {% if block.settings.description != blank %}
-                            <p class="text-sm opacity-90">{{ block.settings.description }}</p>
-                          {% endif %}
-                        </div>
-                      </div>
-                    {% endif %}
-
-                    <!-- Play Icon Overlay -->
-                    <div class="absolute inset-0 flex items-center justify-center rounded-lg">
-                      <div class="play-icon bg-white/20 backdrop-blur-sm rounded-full p-4 opacity-100 group-hover:opacity-0 transition-opacity duration-300">
-                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M8 5v14l11-7z"/>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+      <div class="relative">
+        <div
+          class="video-carousel swiper overflow-hidden"
+          data-carousel-id="video-carousel-{{ section.id }}"
+          id="video-carousel-{{ section.id }}"
+        >
+          <div class="swiper-wrapper">
+            {% for block in section.blocks %}
+              {% if block.type == 'video_slide' %}
+                <div class="swiper-slide">
+                  {% render 'video-slide', block: block, aspect_ratio: '3/4' %}
                 </div>
-            {% endcase %}
-          {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Pagination -->
+          {% if section.settings.show_pagination %}
+            <div class="swiper-pagination mt-8 flex justify-center gap-2"></div>
+          {% endif %}
         </div>
-
-        <!-- Navigation Arrows -->
-        {% if section.settings.show_navigation %}
-          <div class="swiper-button-prev video-carousel-prev absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 z-10 cursor-pointer">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-            </svg>
-          </div>
-          <div class="swiper-button-next video-carousel-next absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 z-10 cursor-pointer">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </div>
-        {% endif %}
-
-        <!-- Pagination -->
-        {% if section.settings.show_pagination %}
-          <div class="swiper-pagination video-carousel-pagination mt-8 text-center"></div>
-        {% endif %}
       </div>
     {% else %}
       <!-- Empty State -->
       <div class="text-center py-16">
-        <p class="text-gray-500 text-lg">Add video blocks to display your video carousel.</p>
+        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">No videos added yet</h3>
+        <p class="text-gray-600">Add video slides to display your content</p>
       </div>
     {% endif %}
   </div>
@@ -119,21 +68,7 @@
 <script>
   function videoCarousel() {
     return {
-      swiperInstance: null,
-
-      playVideo(videoElement) {
-        if (videoElement && videoElement.play) {
-          videoElement.currentTime = 0; // Start from beginning
-          videoElement.play().catch(e => console.log('Video play failed:', e));
-        }
-      },
-
-      pauseVideo(videoElement) {
-        if (videoElement && videoElement.pause) {
-          videoElement.pause();
-          videoElement.currentTime = 0; // Reset to beginning
-        }
-      },
+      swiper: null,
 
       init() {
         this.$nextTick(() => {
@@ -142,7 +77,7 @@
       },
 
       initializeCarousel() {
-        const carouselElement = this.$el.querySelector('.video-carousel-container');
+        const carouselElement = this.$el.querySelector('.video-carousel');
 
         if (carouselElement && typeof Swiper !== 'undefined') {
           // Check if already initialized
@@ -150,47 +85,69 @@
             return;
           }
 
-          const videosPerViewDesktop = parseInt(carouselElement.dataset.videosPerViewDesktop) || 3;
-          const videosPerViewMobile = parseInt(carouselElement.dataset.videosPerViewMobile) || 1;
-
           // Initialize Swiper
-          this.swiperInstance = new Swiper(carouselElement, {
-            slidesPerView: videosPerViewMobile,
-            spaceBetween: 20,
-            loop: {{ section.settings.enable_loop | default: false }},
-            autoplay: {{ section.settings.enable_autoplay | default: false }} ? {
+          this.swiper = new Swiper(carouselElement, {
+            direction: 'horizontal',
+            slidesPerView: {{ section.settings.slides_mobile | default: 1 }}.2, // Mobile with peek
+            spaceBetween: {{ section.settings.slide_spacing | default: 20 }},
+            loop: {{ section.settings.loop | json }},
+            centeredSlides: false,
+            grabCursor: true,
+            touchRatio: 1,
+            touchAngle: 45,
+            simulateTouch: true,
+            autoplay: {{ section.settings.autoplay | json }} ? {
               delay: {{ section.settings.autoplay_delay | default: 5000 }},
-              disableOnInteraction: true,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
             } : false,
+            speed: {{ section.settings.transition_speed | default: 800 }},
+
+            // Responsive breakpoints
             breakpoints: {
+              640: {
+                slidesPerView: {{ section.settings.slides_mobile | default: 1 }}.2, // Mobile with peek
+                spaceBetween: {{ section.settings.slide_spacing | default: 20 }}
+              },
               768: {
-                slidesPerView: Math.min(videosPerViewDesktop, {{ section.blocks.size | default: 1 }}),
-                spaceBetween: 30,
+                slidesPerView: {{ section.settings.slides_tablet | default: 2 }}.1, // Tablet with peek
+                spaceBetween: {{ section.settings.slide_spacing | default: 20 }}
+              },
+              1024: {
+                slidesPerView: {{ section.settings.slides_desktop | default: 3 }}.1, // Desktop with peek
+                spaceBetween: {{ section.settings.slide_spacing | default: 20 }}
+              },
+              1280: {
+                slidesPerView: {{ section.settings.slides_large_desktop | default: 4 }}.1, // Large desktop with peek
+                spaceBetween: {{ section.settings.slide_spacing | default: 20 }}
               }
             },
-            navigation: {
-              nextEl: carouselElement.querySelector('.video-carousel-next'),
-              prevEl: carouselElement.querySelector('.video-carousel-prev'),
-            },
+
+
+
+            // Pagination
+            {% if section.settings.show_pagination %}
             pagination: {
-              el: carouselElement.querySelector('.video-carousel-pagination'),
+              el: carouselElement.querySelector('.swiper-pagination'),
               clickable: true,
-              dynamicBullets: true,
+              renderBullet: function (index, className) {
+                return '<span class="' + className + ' w-3 h-3 rounded-full bg-gray-300 cursor-pointer transition-all duration-200 hover:bg-gray-400"></span>';
+              },
             },
-            on: {
-              slideChange: () => {
-                // Pause all videos when slide changes
-                const videos = carouselElement.querySelectorAll('video');
-                videos.forEach(video => {
-                  video.pause();
-                  video.currentTime = 0;
-                });
-              }
-            }
+            {% endif %}
+
+
           });
 
-          // Store instance on element
-          carouselElement.swiper = this.swiperInstance;
+          // Store swiper instance
+          carouselElement.swiper = this.swiper;
+        }
+      },
+
+      destroy() {
+        if (this.swiper) {
+          this.swiper.destroy();
+          this.swiper = null;
         }
       }
     }
@@ -198,32 +155,36 @@
 </script>
 
 <style>
-  .video-carousel-section .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 0.5;
+  /* Custom Swiper Styles */
+  .video-carousel {
+    width: 100%;
+    height: 100%;
   }
 
-  .video-carousel-section .swiper-pagination-bullet-active {
-    background: #ffffff;
-    opacity: 1;
+  .video-carousel .swiper-wrapper {
+    display: flex;
+    transition-timing-function: var(--swiper-wrapper-transition-timing-function, initial);
   }
 
-  .video-carousel-section .video-item {
-    transition: transform 0.3s ease;
+  .video-carousel .swiper-slide {
+    flex-shrink: 0;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition-property: transform;
   }
 
-  .video-carousel-section .video-item:hover {
-    transform: translateY(-4px);
+  .video-carousel .swiper-pagination-bullet {
+    @apply bg-gray-300;
   }
 
-  /* Custom scrollbar for webkit browsers */
-  .video-carousel-section video::-webkit-media-controls {
-    display: none !important;
+  .video-carousel .swiper-pagination-bullet-active {
+    @apply bg-gray-800;
   }
 
-  .video-carousel-section video {
-    -webkit-appearance: none;
-    appearance: none;
+  /* Ensure videos maintain aspect ratio */
+  .video-slide-container {
+    width: 100%;
   }
 </style>
 
@@ -235,13 +196,19 @@
   "settings": [
     {
       "type": "header",
-      "content": "Content Settings"
+      "content": "Content"
     },
     {
       "type": "text",
       "id": "title",
       "label": "Section Title",
-      "default": "Featured Videos"
+      "default": "Video Gallery"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Section Subtitle",
+      "default": "Discover our latest content"
     },
     {
       "type": "header",
@@ -249,68 +216,70 @@
     },
     {
       "type": "range",
-      "id": "videos_per_view_desktop",
+      "id": "slides_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Slides per view (Mobile)",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "slides_tablet",
       "min": 1,
       "max": 4,
       "step": 1,
-      "label": "Videos per view (Desktop)",
+      "label": "Slides per view (Tablet)",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "slides_desktop",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Slides per view (Desktop)",
       "default": 3
     },
     {
       "type": "range",
-      "id": "videos_per_view_mobile",
+      "id": "slides_large_desktop",
       "min": 1,
-      "max": 3,
+      "max": 6,
       "step": 1,
-      "label": "Videos per view (Mobile)",
-      "default": 1
+      "label": "Slides per view (Large Desktop)",
+      "default": 4
     },
     {
-      "type": "select",
-      "id": "video_aspect_ratio",
-      "label": "Video Aspect Ratio",
-      "options": [
-        {
-          "value": "16/9",
-          "label": "16:9 (Landscape)"
-        },
-        {
-          "value": "9/16",
-          "label": "9:16 (Portrait)"
-        },
-        {
-          "value": "1/1",
-          "label": "1:1 (Square)"
-        },
-        {
-          "value": "4/3",
-          "label": "4:3 (Standard)"
-        }
-      ],
-      "default": "16/9"
+      "type": "range",
+      "id": "slide_spacing",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "label": "Space between slides (px)",
+      "default": 20
     },
     {
       "type": "checkbox",
-      "id": "show_navigation",
-      "label": "Show Navigation Arrows",
+      "id": "loop",
+      "label": "Loop slides",
       "default": true
     },
+
     {
       "type": "checkbox",
       "id": "show_pagination",
-      "label": "Show Pagination Dots",
+      "label": "Show pagination dots",
       "default": true
     },
     {
-      "type": "checkbox",
-      "id": "enable_loop",
-      "label": "Enable Loop",
-      "default": false
+      "type": "header",
+      "content": "Autoplay Settings"
     },
     {
       "type": "checkbox",
-      "id": "enable_autoplay",
-      "label": "Enable Autoplay",
+      "id": "autoplay",
+      "label": "Enable autoplay",
       "default": false
     },
     {
@@ -319,49 +288,61 @@
       "min": 2000,
       "max": 9500,
       "step": 500,
-      "label": "Autoplay Delay (ms)",
+      "label": "Autoplay delay (ms)",
       "default": 5000,
-      "info": "Only applies if autoplay is enabled"
+      "info": "Time between slide transitions"
+    },
+    {
+      "type": "range",
+      "id": "transition_speed",
+      "min": 300,
+      "max": 2000,
+      "step": 100,
+      "label": "Transition speed (ms)",
+      "default": 800
     },
     {
       "type": "header",
-      "content": "Styling Options"
+      "content": "Video Settings"
     },
     {
-      "type": "color",
-      "id": "background_color",
-      "label": "Background Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "title_color",
-      "label": "Title Color",
-      "default": "#1f2937"
+      "type": "paragraph",
+      "content": "Videos will automatically play muted and loop continuously."
     }
   ],
   "blocks": [
     {
-      "type": "video_item",
-      "name": "Video Item",
+      "type": "video_slide",
+      "name": "Video Slide",
       "settings": [
         {
           "type": "video",
-          "id": "video",
+          "id": "video_file",
           "label": "Video File",
-          "info": "Upload your video file. MP4 format recommended for best compatibility."
+          "info": "Upload a video file (MP4 recommended)"
         },
+
         {
           "type": "text",
-          "id": "title",
-          "label": "Video Title",
-          "default": "Video Title"
+          "id": "video_title",
+          "label": "Video Title"
         },
         {
           "type": "textarea",
-          "id": "description",
-          "label": "Video Description",
-          "default": "Video description goes here..."
+          "id": "video_description",
+          "label": "Video Description"
+        },
+        {
+          "type": "url",
+          "id": "video_link",
+          "label": "Video Link",
+          "info": "Optional: Link when video is clicked"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text",
+          "default": "Watch Full Video"
         }
       ]
     }
@@ -369,36 +350,15 @@
   "presets": [
     {
       "name": "Video Carousel",
-      "category": "Media",
-      "settings": {
-        "title": "Featured Videos",
-        "videos_per_view_desktop": 3,
-        "videos_per_view_mobile": 1,
-        "video_aspect_ratio": "16/9",
-        "show_navigation": true,
-        "show_pagination": true
-      },
       "blocks": [
         {
-          "type": "video_item",
-          "settings": {
-            "title": "Video 1",
-            "description": "This is the first video in our collection"
-          }
+          "type": "video_slide"
         },
         {
-          "type": "video_item",
-          "settings": {
-            "title": "Video 2",
-            "description": "This is the second video in our collection"
-          }
+          "type": "video_slide"
         },
         {
-          "type": "video_item",
-          "settings": {
-            "title": "Video 3",
-            "description": "This is the third video in our collection"
-          }
+          "type": "video_slide"
         }
       ]
     }

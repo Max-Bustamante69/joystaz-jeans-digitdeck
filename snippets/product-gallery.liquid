@@ -47,7 +47,11 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         {% assign rendered_count = 0 %}
         {% for collection_product in main_collection.products %}
-          {% if collection_product.id != current_product.id and rendered_count < products_limit %}
+          {% comment %} Only show available products that aren't the current product {% endcomment %}
+          {% if collection_product.id != current_product.id
+            and collection_product.available
+            and rendered_count < products_limit
+          %}
             <div class="product-gallery-item">
               {% render 'product-card',
                 product: collection_product,

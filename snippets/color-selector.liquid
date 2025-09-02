@@ -92,10 +92,16 @@
               @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
               :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400'"
             {% else %}
-              @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
-              :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400'"
+              @click="isColorAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }}) : null"
+              :class="
+                [
+                  {{ selected_color_variable }} === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400',
+                  isColorAvailable('{{ product_option_value }}') ? '' : 'opacity-40 cursor-not-allowed'
+                ]
+              "
+              :disabled="!isColorAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="w-8 h-8 border-2 transition-all duration-200"
+            class="relative w-8 h-8 border-2 transition-all duration-200"
             {% if product_option_value.swatch.color %}
               style="background-color: {{ product_option_value.swatch.color }};"
             {% elsif product_option_value.swatch.image %}
@@ -104,7 +110,22 @@
               style="background-color: #f3f4f6;"
             {% endif %}
             title="{{ product_option_value }}"
-          ></button>
+          >
+            <!-- Diagonal line for unavailable colors -->
+            {% unless product_number %}
+              <div
+                x-show="!isColorAvailable('{{ product_option_value }}')"
+                class="absolute inset-0 pointer-events-none"
+              >
+                <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <line x1="0" y1="0" x2="100" y2="100"
+                        stroke="#ef4444"
+                        stroke-width="3"
+                        class=""/>
+                </svg>
+              </div>
+            {% endunless %}
+          </button>
         {% endfor %}
       </div>
     </div>

@@ -7,13 +7,14 @@
   <div class="container mx-auto px-4">
     {% if section.settings.title != blank %}
       <div class="flex justify-between items-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-900">{{ section.settings.title }}</h2>
+        <h2>{{ section.settings.title }}</h2>
         {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
           <a href="{{ section.settings.view_all_link }}" class="text-gray-600 hover:text-gray-900 transition-colors">
             {{ section.settings.view_all_text | default: 'Ver todos' }}
           </a>
         {% endif %}
-        {% if section.settings.show_arrows and section.blocks.size > 1 %}
+        {% comment %} Always show arrows when there are blocks {% endcomment %}
+        {% if section.blocks.size > 1 %}
           {% render 'carousel-arrows' %}
         {% endif %}
       </div>
@@ -45,6 +46,9 @@
     const carouselElement = document.querySelector('.swiper-{{ section.id }}');
 
     if (carouselElement && typeof Swiper !== 'undefined') {
+      const totalBlocks = {{ section.blocks.size }};
+      const enableDesktopCarousel = totalBlocks > 4;
+
       const swiper = new Swiper(carouselElement, {
         slidesPerView: 2,
         spaceBetween: {{ section.settings.gap | default: 24 }},
@@ -54,71 +58,73 @@
           momentum: true,
         },
         grabCursor: true,
+        navigation: {
+          nextEl: '.carousel-next',
+          prevEl: '.carousel-prev',
+        },
         breakpoints: {
           768: {
             slidesPerView: 3,
             spaceBetween: {{ section.settings.gap | default: 24 }},
           },
           1024: {
-            slidesPerView: {{ section.settings.items_per_view | default: 5 }},
+            slidesPerView: enableDesktopCarousel ? 4 : {{ section.settings.items_per_view | default: 5 }},
             spaceBetween: {{ section.settings.gap | default: 24 }},
+            freeMode: enableDesktopCarousel ? false : {
+              enabled: true,
+              sticky: true,
+              momentum: true,
+            },
+          },
+        },
+        on: {
+          init: function() {
+            updateContentArrowStates(this);
+          },
+          slideChange: function() {
+            updateContentArrowStates(this);
+          },
+          reachBeginning: function() {
+            updateContentArrowStates(this);
+          },
+          reachEnd: function() {
+            updateContentArrowStates(this);
           },
         },
       });
+    }
 
-      // Custom arrow controls with dynamic states
-      const prevButton = carouselElement.closest('[id^="content-carousel-"]').querySelector('.carousel-prev');
-      const nextButton = carouselElement.closest('[id^="content-carousel-"]').querySelector('.carousel-next');
+    // Function to update arrow states for content carousel
+    function updateContentArrowStates(swiper) {
+      const sectionContainer = document.getElementById('content-carousel-{{ section.id }}');
+      if (!sectionContainer) return;
 
-      // Function to update arrow states
-      function updateArrowStates() {
-        if (prevButton) {
-          if (swiper.isBeginning) {
-            prevButton.style.opacity = '0.3';
-            prevButton.style.cursor = 'not-allowed';
-            prevButton.disabled = true;
-          } else {
-            prevButton.style.opacity = '1';
-            prevButton.style.cursor = 'pointer';
-            prevButton.disabled = false;
-          }
-        }
+      const prevArrow = sectionContainer.querySelector('.carousel-prev');
+      const nextArrow = sectionContainer.querySelector('.carousel-next');
 
-        if (nextButton) {
-          if (swiper.isEnd) {
-            nextButton.style.opacity = '0.3';
-            nextButton.style.cursor = 'not-allowed';
-            nextButton.disabled = true;
-          } else {
-            nextButton.style.opacity = '1';
-            nextButton.style.cursor = 'pointer';
-            nextButton.disabled = false;
-          }
+      if (prevArrow) {
+        if (swiper.isBeginning) {
+          prevArrow.style.opacity = '0.3';
+          prevArrow.style.cursor = 'not-allowed';
+          prevArrow.disabled = true;
+        } else {
+          prevArrow.style.opacity = '1';
+          prevArrow.style.cursor = 'pointer';
+          prevArrow.disabled = false;
         }
       }
 
-      if (prevButton) {
-        prevButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          swiper.slidePrev();
-        });
+      if (nextArrow) {
+        if (swiper.isEnd) {
+          nextArrow.style.opacity = '0.3';
+          nextArrow.style.cursor = 'not-allowed';
+          nextArrow.disabled = true;
+        } else {
+          nextArrow.style.opacity = '1';
+          nextArrow.style.cursor = 'pointer';
+          nextArrow.disabled = false;
+        }
       }
-
-      if (nextButton) {
-        nextButton.addEventListener('click', (e) => {
-          e.stopPropagation();
-          swiper.slideNext();
-        });
-      }
-
-      // Update arrow states on slide change
-      swiper.on('slideChange', updateArrowStates);
-      swiper.on('init', updateArrowStates);
-      swiper.on('reachBeginning', updateArrowStates);
-      swiper.on('reachEnd', updateArrowStates);
-
-      // Initial state update
-      setTimeout(updateArrowStates, 100);
     }
   });
 </script>

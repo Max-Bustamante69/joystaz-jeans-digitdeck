@@ -25,22 +25,25 @@
     <div class="space-y-2">
       {% if show_main_label %}
         <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-gray-900">
-            Elije un color
-            {% if product_number %}
-              <span
-                class="text-xl ml-2 font-medium text-gray-400"
+          <div class="flex items-center gap-2">
+
+            <p class="body font-semibold">
+              Elije un color
+              {% if product_number %}
+                <p
+                class="body font-semibold text-gray-400"
                 x-show="{{ selected_color_variable | remove: "'" }}.color"
                 x-text="{{ selected_color_variable | remove: "'" }}.color"
-              ></span>
-            {% else %}
-              <span
-                class="text-xl ml-2 font-medium text-gray-400"
+                ></p>
+                {% else %}
+                <p
+                class="body font-semibold text-gray-400"
                 x-show="{{ selected_color_variable }}"
                 x-text="{{ selected_color_variable }}"
-              ></span>
-            {% endif %}
-          </h3>
+                ></p>
+              {% endif %}
+              </p>
+              </div>
           {% if show_wishlist %}
             <button
               @click="toggleWishlist"
@@ -89,8 +92,14 @@
 
           <button
             {% if product_number %}
-              @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
-              :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400'"
+              @click="window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}') ? {{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }}) : null"
+              :class="
+                [
+                  {{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400',
+                  (window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}')) ? '' : 'opacity-40 cursor-not-allowed'
+                ]
+              "
+              :disabled="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
             {% else %}
               @click="isColorAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }}) : null"
               :class="
@@ -115,6 +124,18 @@
             {% unless product_number %}
               <div
                 x-show="!isColorAvailable('{{ product_option_value }}')"
+                class="absolute inset-0 pointer-events-none"
+              >
+                <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <line x1="0" y1="0" x2="100" y2="100"
+                        stroke="#ef4444"
+                        stroke-width="3"
+                        class=""/>
+                </svg>
+              </div>
+            {% else %}
+              <div
+                x-show="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
                 class="absolute inset-0 pointer-events-none"
               >
                 <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">

@@ -8,20 +8,26 @@
   - Responsive design
 {% endcomment %}
 
-<div class="video-carousel-section py-8 lg:py-16" x-data="videoCarousel()">
+<div class="video-carousel-section py-8 lg:py-16" id="video-carousel-section-{{ section.id }}" x-data="videoCarousel()">
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Section Header -->
     {% if section.settings.title != blank or section.settings.subtitle != blank %}
-      <div class="text-center mb-8 lg:mb-12">
-        {% if section.settings.title != blank %}
-          <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            {{ section.settings.title }}
-          </h2>
-        {% endif %}
-        {% if section.settings.subtitle != blank %}
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-            {{ section.settings.subtitle }}
-          </p>
+      <div class="flex justify-between items-center mb-8 lg:mb-12">
+        <div class="text-center flex-1">
+          {% if section.settings.title != blank %}
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              {{ section.settings.title }}
+            </h2>
+          {% endif %}
+          {% if section.settings.subtitle != blank %}
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+              {{ section.settings.subtitle }}
+            </p>
+          {% endif %}
+        </div>
+        {% comment %} Show arrows when there are multiple videos {% endcomment %}
+        {% if section.blocks.size > 1 %}
+          {% render 'carousel-arrows' %}
         {% endif %}
       </div>
     {% endif %}
@@ -96,6 +102,10 @@
             touchRatio: 1,
             touchAngle: 45,
             simulateTouch: true,
+            navigation: {
+              nextEl: '.carousel-next',
+              prevEl: '.carousel-prev',
+            },
             autoplay: {{ section.settings.autoplay | json }} ? {
               delay: {{ section.settings.autoplay_delay | default: 5000 }},
               disableOnInteraction: false,
@@ -121,6 +131,22 @@
                 slidesPerView: {{ section.settings.slides_large_desktop | default: 4 }}.1, // Large desktop with peek
                 spaceBetween: {{ section.settings.slide_spacing | default: 20 }}
               }
+            },
+
+            // Events for arrow states
+            on: {
+              init: function() {
+                updateVideoArrowStates(this);
+              },
+              slideChange: function() {
+                updateVideoArrowStates(this);
+              },
+              reachBeginning: function() {
+                updateVideoArrowStates(this);
+              },
+              reachEnd: function() {
+                updateVideoArrowStates(this);
+              },
             },
 
 
@@ -149,6 +175,39 @@
           this.swiper.destroy();
           this.swiper = null;
         }
+      }
+    }
+  }
+
+  // Function to update arrow states for video carousel
+  function updateVideoArrowStates(swiper) {
+    const sectionContainer = document.getElementById('video-carousel-section-{{ section.id }}');
+    if (!sectionContainer) return;
+
+    const prevArrow = sectionContainer.querySelector('.carousel-prev');
+    const nextArrow = sectionContainer.querySelector('.carousel-next');
+
+    if (prevArrow) {
+      if (swiper.isBeginning) {
+        prevArrow.style.opacity = '0.3';
+        prevArrow.style.cursor = 'not-allowed';
+        prevArrow.disabled = true;
+      } else {
+        prevArrow.style.opacity = '1';
+        prevArrow.style.cursor = 'pointer';
+        prevArrow.disabled = false;
+      }
+    }
+
+    if (nextArrow) {
+      if (swiper.isEnd) {
+        nextArrow.style.opacity = '0.3';
+        nextArrow.style.cursor = 'not-allowed';
+        nextArrow.disabled = true;
+      } else {
+        nextArrow.style.opacity = '1';
+        nextArrow.style.cursor = 'pointer';
+        nextArrow.disabled = false;
       }
     }
   }

@@ -9,20 +9,25 @@
   - Same styling as content carousel
 {% endcomment %}
 
-<div class="py-16 md:py-8" id="product-carousel-{{ section.id }}">
-  <div class=" ml-4 w-full overflow-hidden">
+<div class="py-7 md:py-8" id="product-carousel-{{ section.id }}">
+  <div class=" w-full overflow-hidden">
     {% if section.settings.title != blank %}
-      <div class="flex justify-between items-center mb-8 mr-4">
-        <h2 class="text-3xl font-bold text-gray-900">{{ section.settings.title }}</h2>
-        <div class="flex items-center space-x-4 mr-4">
-          {% if section.settings.show_arrows %}
-            {% render 'carousel-arrows' %}
-          {% endif %}
+      <div class="flex justify-between items-center mb-8 mx-4 lg:mx-12">
+        <div class="flex  flex-col gap-2">
+          <h3 class="body-md uppercase opacity-50  ">{{ section.settings.subtitle }}</h3>
+          <h2>{{ section.settings.title }}</h2>
+        </div>
+        <div class="flex items-center gap-8">
           {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
-            <a href="{{ section.settings.view_all_link }}" class="text-gray-600 hover:text-gray-900 transition-colors">
+            <a
+              href="{{ section.settings.view_all_link }}"
+              class="text-gray-600 hover:text-gray-900 transition-colors underline"
+            >
               {{ section.settings.view_all_text | default: 'Ver todos' }}
             </a>
           {% endif %}
+          {% comment %} Always show arrows for product carousel {% endcomment %}
+          {% render 'carousel-arrows' %}
         </div>
       </div>
     {% endif %}
@@ -57,7 +62,7 @@
     {% if available_count > 0 %}
       <div class="relative">
         <div
-          class="product-carousel swiper-main-carousel-{{ section.id }} overflow-hidden"
+          class="product-carousel swiper-main-carousel-{{ section.id }} overflow-hidden px-12"
           data-carousel-id="{{ section.id }}"
           data-carousel-type="main-carousel"
         >
@@ -104,9 +109,12 @@
         return;
       }
 
+            const totalProducts = {{ available_count }};
+      const enableDesktopCarousel = totalProducts > 4;
+
       const swiper = new Swiper(carouselElement, {
-        slidesPerView: 1.2,
-        spaceBetween: 8,
+        slidesPerView: 1.5,
+        spaceBetween: 2,
         freeMode: {
           enabled: true,
           sticky: true,
@@ -117,75 +125,83 @@
           momentumBounceRatio: 0.3,
         },
         grabCursor: true,
+        navigation: {
+          nextEl: '.carousel-next',
+          prevEl: '.carousel-prev',
+        },
         breakpoints: {
           768: {
             slidesPerView: 2.2,
+          
           },
           1024: {
-            slidesPerView: 3.2,
+            slidesPerView: enableDesktopCarousel ? 4 : 3.2,
+            freeMode: enableDesktopCarousel ? false : {
+              enabled: true,
+              sticky: true,
+              momentum: true,
+            },
           },
           1280: {
-            slidesPerView: 4.2,
+            slidesPerView: enableDesktopCarousel ? 4 : 4.2,
+              spaceBetween: 4,
+            freeMode: enableDesktopCarousel ? false : {
+              enabled: true,
+              sticky: true,
+              momentum: true,
+            },
           }
-
+        },
+        on: {
+          init: function() {
+            updateProductArrowStates(this);
+          },
+          slideChange: function() {
+            updateProductArrowStates(this);
+          },
+          reachBeginning: function() {
+            updateProductArrowStates(this);
+          },
+          reachEnd: function() {
+            updateProductArrowStates(this);
+          },
         },
       });
 
       // Store the swiper instance on the element to avoid conflicts
       carouselElement.swiper = swiper;
+    }
 
-      // Connect visible arrows to Swiper controls
-      if ({{ section.settings.show_arrows | json }}) {
-        const visiblePrevArrow = document.querySelector('.swiper-main-carousel-{{ section.id }}').closest('.py-16').querySelector('.carousel-prev');
-        const visibleNextArrow = document.querySelector('.swiper-main-carousel-{{ section.id }}').closest('.py-16').querySelector('.carousel-next');
+    // Function to update arrow states for product carousel
+    function updateProductArrowStates(swiper) {
+      const sectionContainer = document.getElementById('product-carousel-{{ section.id }}');
+      if (!sectionContainer) return;
 
-        if (visiblePrevArrow) {
-          visiblePrevArrow.addEventListener('click', () => {
-            swiper.slidePrev();
-          });
+      const prevArrow = sectionContainer.querySelector('.carousel-prev');
+      const nextArrow = sectionContainer.querySelector('.carousel-next');
+
+      if (prevArrow) {
+        if (swiper.isBeginning) {
+          prevArrow.style.opacity = '0.3';
+          prevArrow.style.cursor = 'not-allowed';
+          prevArrow.disabled = true;
+        } else {
+          prevArrow.style.opacity = '1';
+          prevArrow.style.cursor = 'pointer';
+          prevArrow.disabled = false;
         }
+      }
 
-        if (visibleNextArrow) {
-          visibleNextArrow.addEventListener('click', () => {
-            swiper.slideNext();
-          });
+      if (nextArrow) {
+        if (swiper.isEnd) {
+          nextArrow.style.opacity = '0.3';
+          nextArrow.style.cursor = 'not-allowed';
+          nextArrow.disabled = true;
+        } else {
+          nextArrow.style.opacity = '1';
+          nextArrow.style.cursor = 'pointer';
+          nextArrow.disabled = false;
         }
-
-        // Update visible arrow states based on Swiper state
-        function updateArrowStates() {
-          if (visiblePrevArrow) {
-            if (swiper.isBeginning) {
-              visiblePrevArrow.style.opacity = '0.3';
-              visiblePrevArrow.style.cursor = 'not-allowed';
-              visiblePrevArrow.disabled = true;
-            } else {
-              visiblePrevArrow.style.opacity = '1';
-              visiblePrevArrow.style.cursor = 'pointer';
-              visiblePrevArrow.disabled = false;
-            }
-          }
-
-          if (visibleNextArrow) {
-            if (swiper.isEnd) {
-              visibleNextArrow.style.opacity = '0.3';
-              visibleNextArrow.style.cursor = 'not-allowed';
-              visibleNextArrow.disabled = true;
-            } else {
-              visibleNextArrow.style.opacity = '1';
-              visibleNextArrow.style.cursor = 'pointer';
-              visibleNextArrow.disabled = false;
-            }
-          }
-        }
-
-        // Update states on slide change and initialization
-        swiper.on('slideChange', updateArrowStates);
-        swiper.on('init', updateArrowStates);
-        swiper.on('reachBeginning', updateArrowStates);
-        swiper.on('reachEnd', updateArrowStates);
-
-        // Initial state update
-        setTimeout(updateArrowStates, 100);
       }
     }
   });
@@ -201,6 +217,12 @@
       "type": "text",
       "id": "title",
       "label": "Carousel Title",
+      "default": "Best Sellers"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Carousel Subtitle",
       "default": "Best Sellers"
     },
     {
@@ -323,15 +345,6 @@
     {
       "type": "header",
       "content": "Carousel Settings"
-    },
-    {
-      "type": "range",
-      "id": "gap",
-      "label": "Gap between items",
-      "min": 0,
-      "max": 40,
-      "step": 4,
-      "default": 24
     }
   ],
   "presets": [

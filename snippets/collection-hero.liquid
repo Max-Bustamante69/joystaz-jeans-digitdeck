@@ -1,0 +1,29 @@
+{% comment %}
+  Collection Hero Snippet
+  Usage: {% render 'collection-hero', collection: collection_object %}
+
+  Displays a hero section with collection image, title, and description
+{% endcomment %}
+
+<div class="relative w-full h-[60dvh] overflow-hidden">
+  {% if collection.image %}
+    {{
+      collection.image
+      | image_url: width: 2000
+      | image_tag: class: 'w-full h-full object-cover object-center', alt: collection.title, loading: 'eager'
+    }}
+  {% else %}
+    <div class="w-full h-full bg-gray-200"></div>
+  {% endif %}
+
+  <!-- Gradient overlay for better text readability -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+
+  <!-- Content overlay -->
+  <div class="absolute bottom-0 left-0 space-y-3 px-12 py-8 text-white z-10">
+    <h1 >{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <p class="body-lg">{{ collection.description }}</p>
+    {% endif %}
+  </div>
+</div>

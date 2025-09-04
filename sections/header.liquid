@@ -67,33 +67,41 @@
   <!-- Mobile Menu Overlay -->
   <div
     x-show="mobileMenuOpen"
-    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter="transition ease-out duration-500"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave="transition ease-in duration-400"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black bg-opacity-50 z-40 xl:hidden"
+    class="fixed inset-0 bg-black/70 z-40 xl:hidden"
     @click="mobileMenuOpen = false"
   ></div>
 
   <!-- Mobile Menu Panel -->
   <div
     x-show="mobileMenuOpen"
-    x-transition:enter="transition ease-out duration-300"
-    x-transition:enter-start="transform translate-x-full"
+    x-transition:enter="transform transition ease-out duration-500"
+    x-transition:enter-start="transform -translate-x-full"
     x-transition:enter-end="transform translate-x-0"
-    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave="transform transition ease-in duration-400"
     x-transition:leave-start="transform translate-x-0"
-    x-transition:leave-end="transform translate-x-full"
-    class="fixed top-0 right-0 h-full w-80 bg-white text-black z-50 xl:hidden"
+    x-transition:leave-end="transform -translate-x-full"
+    class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-50 xl:hidden overflow-y-auto"
+    x-data="mobileMenu()"
   >
     <div class="p-6">
-      <div class="flex justify-between items-center mb-8">
-        <h3 class="text-lg font-semibold">Menu</h3>
+      <!-- Header with Heart Icon and Close Button -->
+      <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-3">
+          <button class="text-gray-600 hover:text-gray-800 transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </button>
+        </div>
         <button
           @click="mobileMenuOpen = false"
-          class="text-gray-500 hover:text-gray-700"
+          class="text-gray-500 hover:text-gray-700 transition-colors"
           aria-label="Close mobile menu"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,25 +110,97 @@
         </button>
       </div>
 
-      <nav class="space-y-4">
-        {% for link in section.settings.menu.links %}
-          <a
-            href="{{ link.url }}"
-            class="block py-2 text-gray-700 hover:text-gray-900 transition-colors"
-            @click="mobileMenuOpen = false"
-          >
-            {{ link.title }}
-          </a>
-        {% endfor %}
-      </nav>
-
-      <div class="mt-8 pt-8 border-t border-gray-200">
-        <div class="flex gap-4">
-          {% render 'search-icon' %}
-          {% render 'heart-icon' %}
-          {% render 'user-icon' %}
-          {% render 'cart-trigger' %}
+      <!-- Collection Tabs -->
+      {% if section.settings.mobile_menu_collections %}
+        <div class="flex gap-6 mb-6 border-b border-gray-200">
+          {% for collection in section.settings.mobile_menu_collections %}
+            <button
+              @click="activeTab = {{ forloop.index0 }}"
+              :class="activeTab === {{ forloop.index0 }} ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-gray-700'"
+              class="pb-2 font-medium transition-colors uppercase tracking-wide"
+            >
+              {{ collection.title }}
+            </button>
+          {% endfor %}
         </div>
+
+        <!-- Tab Content -->
+        {% for collection in section.settings.mobile_menu_collections %}
+          <div x-show="activeTab === {{ forloop.index0 }}" class="space-y-3">
+            <!-- Subcollections from Metafield -->
+            {% if collection.metafields.custom.subcollections %}
+              {% assign subcollections = collection.metafields.custom.subcollections.value %}
+              {% for subcollection in subcollections %}
+                <a
+                  href="{{ subcollection.url }}"
+                  class="block py-3 text-gray-700 hover:text-gray-900 transition-colors border-b border-gray-100"
+                  @click="mobileMenuOpen = false"
+                >
+                  {{ subcollection.title }}
+                </a>
+              {% endfor %}
+            {% endif %}
+
+            <!-- Subcollections Carousel -->
+            {% if collection.metafields.custom.subcollections %}
+              {% assign subcollections = collection.metafields.custom.subcollections.value %}
+
+              {% if subcollections %}
+                <div class="pt-6 pb-4">
+                  <div
+                    class="subcollections-carousel swiper-subcollections-{{ collection.id }}-{{ forloop.index0 }} overflow-hidden"
+                    data-carousel-id="subcollections-{{ collection.id }}-{{ forloop.index0 }}"
+                    data-carousel-type="subcollections"
+                  >
+                    <div class="swiper-wrapper">
+                      {% for subcollection in subcollections %}
+                        <div class="swiper-slide">
+                          <div class="w-32">
+                            {% render 'collection-card',
+                              category: subcollection,
+                              text_position: 'bottom-left',
+                              aspect_ratio: 'portrait'
+                            %}
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endif %}
+
+            <!-- Additional Menu Items -->
+            <div class="space-y-3 pt-4">
+              <a href="{{ collection.url }}" class="block py-2 text-gray-700 hover:text-gray-900 transition-colors">
+                Ver {{ collection.title }}
+              </a>
+              <a
+                href="/collections/{{ collection.handle }}/tendencias"
+                class="block py-2 text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Tendencias
+              </a>
+              <a
+                href="/collections/{{ collection.handle }}/mas-vendidos"
+                class="block py-2 text-gray-700 hover:text-gray-900 transition-colors"
+              >
+                Más Vendidos
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <!-- Footer Links -->
+      <div class="mt-8 pt-6 border-t border-gray-200 space-y-2">
+        <a href="/pages/company" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+          Compañia
+        </a>
+        <a href="/pages/brand" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors"> Marca </a>
+        <a href="/pages/terms-privacy" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+          Términos y privacidad
+        </a>
       </div>
     </div>
   </div>
@@ -134,20 +214,31 @@
     x-transition:leave="transition ease-in duration-200"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 z-50 overflow-hidden"
+    class="cart-drawer fixed inset-0 z-50 overflow-hidden"
     @click.self="cartDrawerOpen = false"
     @keydown.escape.window="cartDrawerOpen = false"
   >
     <!-- Backdrop -->
-    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div
+      x-cloak
+      x-show="cartDrawerOpen"
+      x-transition:enter="transition ease-out duration-500"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-400"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="absolute inset-0 bg-black/70"
+    ></div>
 
     <!-- Drawer -->
     <div
+      x-cloak
       x-show="cartDrawerOpen"
-      x-transition:enter="transform transition ease-in-out duration-300"
+      x-transition:enter="transform transition ease-out duration-500"
       x-transition:enter-start="translate-x-full"
       x-transition:enter-end="translate-x-0"
-      x-transition:leave="transform transition ease-in-out duration-300"
+      x-transition:leave="transform transition ease-in duration-400"
       x-transition:leave-start="translate-x-0"
       x-transition:leave-end="translate-x-full"
       class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
@@ -400,9 +491,78 @@
       animation-duration: 25s;
     }
   }
+
+  /* Hide scrollbar for collection carousel */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+
+  /* Mobile menu collection carousel styling */
+  .mobile-menu-carousel .collection-card {
+    min-width: 128px; /* w-32 = 8rem = 128px */
+    height: 170px; /* aspect-[3/4] with w-32 */
+  }
 {% endstylesheet %}
 
 <script>
+  // Mobile Menu functionality
+  function mobileMenu() {
+    return {
+      activeTab: 0,
+      init() {
+        // Initialize subcollections carousels when tab changes
+        this.$watch('activeTab', () => {
+          this.$nextTick(() => {
+            this.initializeSubcollectionsCarousels();
+          });
+        });
+
+        // Initialize carousels on initial load
+        this.$nextTick(() => {
+          this.initializeSubcollectionsCarousels();
+        });
+      },
+
+      initializeSubcollectionsCarousels() {
+        const carousels = document.querySelectorAll('[data-carousel-type="subcollections"]');
+        carousels.forEach((carousel) => {
+          if (carousel.swiper) return; // Already initialized
+
+          if (typeof Swiper !== 'undefined') {
+            const swiper = new Swiper(carousel, {
+              slidesPerView: 1.5,
+              spaceBetween: 12,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+                momentum: true,
+              },
+              grabCursor: true,
+              breakpoints: {
+                480: {
+                  slidesPerView: 2.2,
+                  spaceBetween: 16,
+                },
+                640: {
+                  slidesPerView: 3.2,
+                  spaceBetween: 20,
+                },
+              },
+            });
+
+            // Store swiper instance
+            carousel.swiper = swiper;
+          }
+        });
+      },
+    };
+  }
+
   // Cart functionality
   async function updateCartQuantity(itemKey, newQuantity) {
     if (newQuantity < 1) {
@@ -467,6 +627,16 @@
       "type": "link_list",
       "id": "menu",
       "label": "t:labels.menu"
+    },
+    {
+      "type": "header",
+      "content": "Mobile Menu"
+    },
+    {
+      "type": "collection_list",
+      "id": "mobile_menu_collections",
+      "label": "Mobile Menu Collections",
+      "info": "Select collections to display as tabs in the mobile menu. Each collection will show its subcollections from the 'custom.subcollections' metafield."
     }
   ]
 }

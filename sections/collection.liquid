@@ -2,46 +2,212 @@
   This section is used in the collection template to render collection page
   listing all products within a collection.
 
+  It can also be used in the search template to display search results.
+
   https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
 {% endcomment %}
 
-<h1>{{ collection.title }}</h1>
+<!-- Main Container with Alpine.js data -->
+<div x-data="{ layoutOption: 1 }">
+  <!-- Collection Hero (only show if not in search context) -->
+  {% unless template == 'search' %}
+    {% render 'collection-hero', collection: collection %}
+  {% endunless %}
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
+  <!-- Search Results Header (only show in search context) -->
+  {% if template == 'search' %}
+    <div class="mb-8 px-12 mt-52">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">
+        {% if search.terms %}
+          Showing search results for "{{ search.terms | escape }}"
+        {% else %}
+          Search Results
         {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
-        </div>
+      </h1>
+
+      {% assign product_count = search.results.size %}
+      <p class="text-lg text-gray-600">{{ product_count }} product{{ product_count | pluralize: 's', 's' }} found</p>
+    </div>
+  {% endif %}
+
+  <!-- Layout Toggle (only show when there are products) -->
+  {% unless template == 'search' and search.results.size == 0 %}
+    <div class="flex items-center justify-between mt-15 px-12 h-10">
+      <div class="flex h-full items-center gap-4">
+        <!-- Layout Toggle -->
+        <button
+          @click="layoutOption = layoutOption >= 3 ? 1 : layoutOption + 1"
+          class="flex h-full items-center gap-2 cursor-pointer"
+        >
+          <p
+            class="body"
+          >
+            Vista
+          </p>
+          <div class="flex gap-1">
+            <div
+              :class="layoutOption >= 1 ? 'bg-black' : 'bg-white border border-gray-300'"
+              class="size-4 transition-all duration-200"
+            ></div>
+            <div
+              :class="layoutOption >= 2 ? 'bg-black' : 'bg-white border border-gray-300'"
+              class="size-4 transition-all duration-200"
+            ></div>
+            <div
+              :class="layoutOption === 3 ? 'bg-black' : 'bg-white border border-gray-300'"
+              class="size-4 transition-all duration-200"
+            ></div>
+          </div>
+        </button>
       </div>
-    {% endfor %}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
+      <!-- Filters Button -->
+      <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        Filtros
+      </button>
+    </div>
+  {% endunless %}
+
+  <!-- Products Grid -->
+  <div class="">
+    <div
+      class="grid gap-0.5 transition-all duration-300"
+      :class="
+        {
+          'grid-cols-1 md:grid-cols-3 gap-y-6': layoutOption === 1,
+          'grid-cols-2 md:grid-cols-4 gap-y-6': layoutOption === 2,
+          'grid-cols-3 md:grid-cols-6': layoutOption === 3
+        }
+      "
+    >
+      {% if template == 'search' %}
+        <!-- Search Results -->
+        {% assign products = search.results %}
+        {% if products.size > 0 %}
+          {% for product in products %}
+            <!-- Normal product card for layouts 1 and 2 -->
+            <div x-show="layoutOption !== 3">
+              {% render 'product-card',
+                product: product,
+                show_badges: true,
+                show_rating: true,
+                show_size_selector: true,
+                hide_info: false
+              %}
+            </div>
+
+            <!-- Compact product card for layout 3 -->
+            <div x-show="layoutOption === 3">
+              {% render 'product-card',
+                product: product,
+                show_badges: true,
+                show_rating: true,
+                show_size_selector: true,
+                hide_info: true
+              %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <!-- No Results Message -->
+          <div class="col-span-full text-center py-16">
+            <div class="max-w-md mx-auto">
+              {% if section.settings.not_found_icon %}
+                <img
+                  src="{{ section.settings.not_found_icon | image_url: width: 48, height: 48 }}"
+                  alt="No products found"
+                  class="mx-auto h-12 w-12 mb-4 object-contain"
+                  width="48"
+                  height="48"
+                >
+              {% else %}
+                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              {% endif %}
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+              <p class="text-gray-500 mb-6">Try adjusting your search terms or browse our collections instead.</p>
+
+              <!-- Custom Browse Collections Buttons -->
+              {% if section.settings.browse_collections %}
+                <div class="flex flex-wrap justify-center gap-3 mt-6">
+                  {% for collection in section.settings.browse_collections %}
+                    <a
+                      href="{{ collection.url }}"
+                      class="inline-flex items-center px-4 py-2 border border-primary text-primary text-sm font-medium transition-colors hover:bg-primary hover:text-white"
+                    >
+                      {{ collection.title }}
+                    </a>
+                  {% endfor %}
+                </div>
+              {% else %}
+                <!-- Default Browse Collections Button -->
+                <a
+                  href="{{ routes.all_products_collection_url }}"
+                  class="inline-flex items-center px-4 py-2 border border-primary text-primary text-sm font-medium transition-colors hover:bg-primary hover:text-white"
+                >
+                  Browse Men's
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      {% else %}
+        <!-- Collection Products -->
+        {% paginate collection.products by 18 %}
+          {% for product in collection.products %}
+            <!-- Normal product card for layouts 1 and 2 -->
+            <div x-show="layoutOption !== 3">
+              {% render 'product-card',
+                product: product,
+                show_badges: true,
+                show_rating: true,
+                show_size_selector: true,
+                hide_info: false
+              %}
+            </div>
+
+            <!-- Compact product card for layout 3 -->
+            <div x-show="layoutOption === 3">
+              {% render 'product-card',
+                product: product,
+                show_badges: true,
+                show_rating: true,
+                show_size_selector: true,
+                hide_info: true
+              %}
+            </div>
+          {% endfor %}
+        {% endpaginate %}
+      {% endif %}
+    </div>
+  </div>
 </div>
-
-{% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
-{% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "No Results Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "not_found_icon",
+      "label": "Not Found Icon",
+      "info": "Custom icon to show when no products are found (search context only). Leave empty to use default icon."
+    },
+    {
+      "type": "collection_list",
+      "id": "browse_collections",
+      "label": "Browse Collections",
+      "info": "Collections to show as browse buttons when no products are found (search context only)"
+    }
+  ]
 }
 {% endschema %}

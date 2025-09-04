@@ -48,9 +48,32 @@
         "show_slide_counter": true,
         "show_mobile_navigation": true
       }
+    },
+    "product_carousel_pRd38z": {
+      "type": "product-carousel",
+      "name": "Product Carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "subtitle": "Best Sellers",
+        "show_view_all": true,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "product_source": "collection",
+        "collection": "men",
+        "product_tags": "",
+        "products": [],
+        "max_products": 12,
+        "show_badges": true,
+        "show_rating": true,
+        "show_color_swatches": true,
+        "show_size_selector": true,
+        "no_products_message": "No hay productos disponibles en este momento."
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "product_carousel_pRd38z"
   ]
 }

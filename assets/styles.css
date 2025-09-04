@@ -331,6 +331,9 @@
   .left-8 {
     left: calc(var(--spacing) * 8);
   }
+  .z-5 {
+    z-index: 5;
+  }
   .z-10 {
     z-index: 10;
   }
@@ -1514,6 +1517,13 @@
   }
   .group-hover\:opacity-100 {
     &:is(:where(.group):hover *) {
+      @media (hover: hover) {
+        opacity: 100%;
+      }
+    }
+  }
+  .group-hover\/image\:opacity-100 {
+    &:is(:where(.group\/image):hover *) {
       @media (hover: hover) {
         opacity: 100%;
       }

@@ -24,11 +24,12 @@
     <!-- Product Image Carousel -->
     {% if product.images.size > 1 %}
       <div
-        class="product-image-carousel swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full pointer-events-none"
+        class="product-image-carousel swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
         data-product-id="{{ product.id }}"
         data-section-id="{{ section.id }}"
         data-carousel-type="product-images"
         id="product-images-carousel-{{ product.id }}-{{ section.id }}"
+        style="touch-action: pan-y;"
       >
         <div class="swiper-wrapper h-full">
           {% for image in product.images %}
@@ -36,7 +37,7 @@
               <img
                 src="{{ image | image_url: width: 600 }}"
                 alt="{{ product.title }} - Image {{ forloop.index }}"
-                class="w-full h-full object-cover"
+                class="w-full h-full object-cover pointer-events-none"
                 width="600"
                 height="600"
                 loading="eager"
@@ -108,7 +109,7 @@
     <!-- Product Link Overlay (for clicking to go to product page) - positioned behind interactive elements -->
     <a
       href="{{ product.url }}"
-      class="absolute inset-0 z-10 pointer-events-auto"
+      class="absolute inset-0 z-10 pointer-events-none"
       aria-label="View {{ product.title }}"
     ></a>
 
@@ -695,6 +696,12 @@
               spaceBetween: 0,
               allowTouchMove: true,
               grabCursor: true,
+              touchRatio: 1,
+              touchAngle: 45,
+              simulateTouch: true,
+              touchStartPreventDefault: false,
+              touchStartForcePreventDefault: false,
+              touchMoveStopPropagation: false,
               navigation: {
                 nextEl: carouselElement.querySelector('.product-next'),
                 prevEl: carouselElement.querySelector('.product-prev'),
@@ -759,6 +766,20 @@
               });
             }
 
+            // Add click event to go to product page (only if not clicking on controls)
+            carouselElement.addEventListener('click', (e) => {
+              // Check if click is on navigation buttons or size selector
+              if (e.target.closest('.product-prev') || 
+                  e.target.closest('.product-next') || 
+                  e.target.closest('.size-selector-hover') ||
+                  e.target.closest('[data-carousel-id]')) {
+                return; // Don't navigate if clicking on controls
+              }
+              
+              // Navigate to product page
+              window.location.href = '{{ product.url }}';
+            });
+
             // Store the swiper instance on the element to avoid conflicts
             carouselElement.swiper = swiperInstance;
           }
@@ -789,5 +810,21 @@
   .size-selector-hover button:hover:not(:disabled) {
     background-color: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
+  }
+
+  /* Product image carousel improvements */
+  .product-image-carousel {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .product-image-carousel .swiper-slide {
+    touch-action: pan-y;
+  }
+
+  .product-image-carousel .swiper-slide img {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
 </style>

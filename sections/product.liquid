@@ -111,7 +111,9 @@
               </div>
             </div>
             <div class="flex flex-col items-end gap-0.5">
-              <h6 class=" {%if product.compare_at_price > product.price %} text-red-500  {% else %} text-black {% endif %} ">${{ product.price | money_without_currency }}</h6>
+              <h6 class=" {%if product.compare_at_price > product.price %} text-red-500  {% else %} text-black {% endif %} ">
+                ${{ product.price | money_without_currency }}
+              </h6>
               {% if product.compare_at_price > product.price %}
                 <p class="body line-through text-neutral-400">
                   ${{ product.compare_at_price | money_without_currency }}
@@ -125,9 +127,7 @@
           <!-- Price -->
         </div>
 
-      
-        
-          <!-- Color Selection -->
+        <!-- Color Selection -->
         <div
           class="space-y-3 transition-all duration-300"
           :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''"
@@ -154,8 +154,6 @@
             show_size_guide: true
           %}
         </div>
-
-
 
         <!-- Purchase Options Logic -->
         {% comment %} Check if current product is eligible for duo discount {% endcomment %}
@@ -1185,7 +1183,7 @@
               slidesPerView: 1,
               spaceBetween: 0,
               allowTouchMove: true,
-              grabCursor: true,
+              grabCursor: false,
               navigation: {
                 nextEl: carouselElement.querySelector('.mobile-next'),
                 prevEl: carouselElement.querySelector('.mobile-prev'),

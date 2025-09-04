@@ -695,7 +695,7 @@
               slidesPerView: 1,
               spaceBetween: 0,
               allowTouchMove: true,
-              grabCursor: true,
+              grabCursor: false,
               touchRatio: 1,
               touchAngle: 45,
               simulateTouch: true,
@@ -816,15 +816,22 @@
   .product-image-carousel {
     touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
+    cursor: default;
   }
 
   .product-image-carousel .swiper-slide {
     touch-action: pan-y;
+    cursor: default;
   }
 
   .product-image-carousel .swiper-slide img {
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
+    cursor: default;
+  }
+
+  .product-image-carousel .swiper-wrapper {
+    cursor: default;
   }
 </style>

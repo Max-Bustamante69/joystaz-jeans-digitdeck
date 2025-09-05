@@ -67,7 +67,6 @@
         "category_pwLXdi": {
           "type": "category",
           "settings": {
-            "image": "shopify://shop_images/Manga_Detalle.png",
             "title": "Hombres",
             "link": "shopify://collections/men",
             "text_position": "bottom-left",
@@ -314,47 +313,6 @@
         "show_size_selector": true,
         "no_products_message": "No hay productos disponibles en este momento."
       }
-    },
-    "faq_jQRdgN": {
-      "type": "faq",
-      "blocks": {
-        "faq_item_HbrtcF": {
-          "type": "faq_item",
-          "settings": {
-            "question": "¿Cuanto tiempo tarda el envio?",
-            "answer": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
-          }
-        },
-        "faq_item_PUDWJp": {
-          "type": "faq_item",
-          "settings": {
-            "question": "¿Como funciona la garantia?",
-            "answer": "<p>Ofrecemos una garantía de 30 días en todos nuestros productos. Si no estás satisfecho con tu compra, puedes devolver el producto en su estado original para un reembolso completo o cambio.</p>"
-          }
-        },
-        "faq_item_4wck4U": {
-          "type": "faq_item",
-          "settings": {
-            "question": "¿Es seguro comprar en la tienda online?",
-            "answer": "<p>Sí, es completamente seguro. Utilizamos tecnología SSL de encriptación para proteger toda la información personal y de pago. Además, nunca almacenamos los datos de tu tarjeta de crédito en nuestros servidores.</p>"
-          }
-        }
-      },
-      "block_order": [
-        "faq_item_HbrtcF",
-        "faq_item_PUDWJp",
-        "faq_item_4wck4U"
-      ],
-      "name": "FAQ",
-      "settings": {
-        "title": "Preguntas Frecuentes",
-        "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "question_color": "#1f2937",
-        "answer_color": "#374151",
-        "border_color": "#e5e7eb",
-        "accent_color": "#3B2E10"
-      }
     }
   },
   "order": [
@@ -366,7 +324,6 @@
     "hero_x9Qnqz",
     "trust_badges_bzGmPj",
     "image_with_text_G6betb",
-    "product_carousel_VNfNQL",
-    "faq_jQRdgN"
+    "product_carousel_VNfNQL"
   ]
 }

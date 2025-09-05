@@ -12,7 +12,7 @@
 {% endcomment %}
 
 <div
-  class="product-card relative group w-full flex flex-col h-full max-w-full"
+  class="product-card relative group w-full flex flex-col  h-full max-w-full"
   x-data="productCard{{ product.id }}()"
   {% if product.options contains 'Talla' %}
     @mouseenter="isDesktop && (showSizeSelector = true)"
@@ -20,9 +20,9 @@
   {% endif %}
 >
   <!-- Product Image Container -->
-  <div class="relative overflow-hidden aspect-[3/4] bg-gray-100  w-full group/image flex-shrink-0 max-w-full">
+  <div class="relative  aspect-[3/4] w-full group/image max-w-full">
     <!-- Product Image Carousel -->
-    {% if product.images.size > 1 %}
+    <div class="h-full" x-show="currentImages.length > 1">
       <div
         class="product-image-carousel swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
         data-product-id="{{ product.id }}"
@@ -32,18 +32,18 @@
         style="touch-action: pan-y;"
       >
         <div class="swiper-wrapper h-full">
-          {% for image in product.images %}
-            <div class="swiper-slide w-full h-full flex-shrink-0"   @click="window.location.href = '{{ product.url }}'">
+          <template x-for="(imageUrl, index) in currentImages" :key="imageUrl">
+            <div class="swiper-slide w-full h-full flex-shrink-0" @click="window.location.href = '{{ product.url }}'">
               <img
-                src="{{ image | image_url: width: 1800 }}"
-                alt="{{ product.title }} - Image {{ forloop.index }}"
+                :src="imageUrl"
+                :alt="`{{ product.title }} - Image ${index + 1}`"
                 class="w-full h-full object-cover pointer-events-none"
                 width="1800"
                 height="1800"
-                loading="eager"
+                :loading="index === 0 ? 'eager' : 'lazy'"
               >
             </div>
-          {% endfor %}
+          </template>
         </div>
 
         <!-- Navigation Arrows -->
@@ -80,18 +80,18 @@
           </button>
         </div>
       </div>
-    {% else %}
-      <!-- Single Image -->
+    </div>
+    <!-- Single Image Fallback -->
+    <div x-show="currentImages.length <= 1">
       <img
-        src="{{ product.featured_image | image_url: width: 1800 }}"
+        :src="currentImages[0] || '{{ product.featured_image | image_url: width: 1800 }}'"
         alt="{{ product.title }}"
         class="w-full h-full object-cover"
         width="1800"
         height="1800"
         loading="eager"
-      
       >
-    {% endif %}
+    </div>
 
     <!-- Product Badges -->
     {% if show_badges and product.tags.size > 0 %}
@@ -106,8 +106,6 @@
         {% endfor %}
       </div>
     {% endif %}
-
-
 
     <!-- Size Selector Plus Button - positioned in bottom right corner -->
     {% if show_size_selector and product.options contains 'Talla' %}
@@ -210,7 +208,7 @@
               {% endfor %}
 
               <button
-                class="relative px-6 py-4 text-md text-center font-semibold transition-colors overflow-hidden"
+                class="relative px-6 py-4 text-md text-center font-semibold transition-colors"
                 x-bind:class="isSizeAvailable('{{ size_name }}') ? 'hover:bg-white text-gray-900' : 'text-gray-400 cursor-not-allowed'"
                 @click="handleSizeClick('{{ size_name }}')"
                 x-bind:disabled="!isSizeAvailable('{{ size_name }}')"
@@ -239,7 +237,7 @@
   </div>
 
   {% unless hide_info %}
-    <div class="pt-4 px-3 w-full flex-1 flex flex-col justify-start">
+    <div class=" p-3 w-full  flex-1 flex flex-col justify-start">
       <!-- Star Rating and Plus Icon -->
       <div class="flex items-center justify-between">
         {% if show_rating %}
@@ -260,9 +258,9 @@
       </div>
 
       <!-- Product Name and Price -->
-      <div class="flex items-start justify-between space-y-2">
+      <div class="flex items-start  justify-between">
         <!-- Product Title Section -->
-        <div class="flex flex-col items-start justify-start space-y-1">
+        <div class="flex flex-col items-start justify-start">
           <p class="body-sm lg:body font-semibold ">{{ product.title }}</p>
 
           <!-- Color Circles - Using product.options_with_values for proper swatch access -->
@@ -303,7 +301,7 @@
         </div>
 
         <!-- Price Section -->
-        <div class="flex flex-col items-end space-y-1">
+        <div class="flex flex-col items-end">
           <span class="body-sm lg:body font-semibold">${{ product.price | money_without_currency }}</span>
           {% if product.compare_at_price > product.price %}
             <span class="body-xs lg:body-sm text-gray-500 line-through">
@@ -351,6 +349,50 @@
       showSizeSelector: false,
       isDesktop: window.innerWidth >= 1024,
       isInWishlist: false,
+      currentImages: [],
+      totalSlides: 0,
+      currentSlide: 0,
+      
+      // Variant data with metafields (same as product page)
+      variantData: [
+        {% for variant in product.variants %}
+          {
+            id: {{ variant.id }},
+            options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}],
+            color: {% comment %}Find the color option dynamically{% endcomment %}
+            {% assign color_value = '' %}
+            {% for product_option in product.options_with_values %}
+              {% for product_option_value in product_option.values %}
+                {% if product_option_value.swatch %}
+                  {% for variant_option in variant.options %}
+                    {% if variant_option == product_option_value %}
+                      {% assign color_value = variant_option %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                {% if color_value != '' %}{% break %}{% endif %}
+              {% endfor %}
+              {% if color_value != '' %}{% break %}{% endif %}
+            {% endfor %}
+            '{{ color_value | default: variant.option1 }}',
+            gallery: [
+              {% if variant.metafields.custom.variant_gallery.value %}
+                {% for image in variant.metafields.custom.variant_gallery.value %}
+                  '{{ image | image_url: width: 800 }}'{% unless forloop.last %},{% endunless %}
+                {% endfor %}
+              {% endif %}
+            ]
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
+      
+      // Fallback product images
+      productImages: [
+        {% for image in product.images %}
+          '{{ image | image_url: width: 800 }}'{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ],
 
       init() {
         // Update isDesktop on window resize
@@ -366,6 +408,7 @@
         // Initialize other components
         this.initializeColorSelection();
         this.debugStockLevels();
+        this.initializeGallery();
         this.initializeCarousel();
       },
 
@@ -379,23 +422,8 @@
         console.log(`Color changed to: ${color}`);
         this.debugStockLevels();
 
-        // Update the product image if a new image URL is provided
-        if (imageUrl && imageUrl !== '') {
-          this.selectedVariantImage = imageUrl;
-
-          // Update the carousel if it exists
-          const carouselElement = this.$el.querySelector('.product-image-carousel');
-          if (carouselElement && carouselElement.swiper) {
-            // Find the slide with the matching image and go to it
-            const slides = carouselElement.querySelectorAll('.swiper-slide img');
-            slides.forEach((slide, index) => {
-              if (slide.src === imageUrl) {
-                carouselElement.swiper.slideTo(index);
-                return;
-              }
-            });
-          }
-        }
+        // Update gallery for selected color (same as product page)
+        this.updateGalleryForColor(color);
       },
 
       // === CORE DATA METHODS ===
@@ -437,6 +465,71 @@
 
       hasColorVariants() {
         return !!this.getFirstColorWithSwatch();
+      },
+
+      // === GALLERY METHODS (same as product page) ===
+      
+      // Check if product has color variants (updated version)
+      hasColorVariantsForGallery() {
+        // Check if there are multiple different colors in variants
+        const uniqueColors = [...new Set(this.variantData.map(v => v.color))];
+        return uniqueColors.length > 1;
+      },
+
+      // Get images for a specific color
+      getImagesForColor(color) {
+        // If product doesn't have color variants, always use product images
+        if (!this.hasColorVariantsForGallery()) {
+          return this.productImages;
+        }
+        
+        // Find the first variant with this color that has gallery images
+        const variantWithGallery = this.variantData.find(variant => 
+          variant.color === color && variant.gallery.length > 0
+        );
+        
+        if (variantWithGallery && variantWithGallery.gallery.length > 0) {
+          return variantWithGallery.gallery;
+        }
+        
+        // Fallback to product images
+        return this.productImages;
+      },
+      
+      // Update gallery for selected color
+      updateGalleryForColor(color) {
+        this.currentImages = this.getImagesForColor(color);
+        this.totalSlides = this.currentImages.length;
+        this.currentSlide = 0;
+        
+        // Update carousel after Alpine.js updates the DOM
+        this.updateCarousel();
+      },
+      
+      // Update carousel after image changes
+      updateCarousel() {
+        if (this.carouselSwiper) {
+          // Wait for Alpine.js to update the DOM
+          this.$nextTick(() => {
+            this.carouselSwiper.update();
+            this.carouselSwiper.slideTo(0);
+          });
+        }
+      },
+
+      // Initialize gallery
+      initializeGallery() {
+        if (this.hasColorVariantsForGallery()) {
+          // Product has color variants - use variant-specific images
+          const firstColor = this.selectedColor || (this.variantData.length > 0 ? this.variantData[0].color : null);
+          if (firstColor) {
+            this.updateGalleryForColor(firstColor);
+          }
+        } else {
+          // Product has no color variants - always use product images
+          this.currentImages = this.productImages;
+          this.totalSlides = this.currentImages.length;
+        }
       },
 
       // === VARIANT MATCHING ABSTRACTION ===
@@ -698,6 +791,9 @@
               touchStartPreventDefault: false,
               touchStartForcePreventDefault: false,
               touchMoveStopPropagation: false,
+              autoHeight: false,
+              centeredSlides: false,
+              loop: false,
               navigation: {
                 nextEl: carouselElement.querySelector('.product-next'),
                 prevEl: carouselElement.querySelector('.product-prev'),
@@ -735,7 +831,10 @@
             };
 
             // Set initial state and add event listeners
-            swiperInstance.on('slideChange', updateArrowStates);
+            swiperInstance.on('slideChange', () => {
+              this.currentSlide = swiperInstance.activeIndex;
+              updateArrowStates();
+            });
             swiperInstance.on('reachBeginning', updateArrowStates);
             swiperInstance.on('reachEnd', updateArrowStates);
 
@@ -776,8 +875,9 @@
               window.location.href = '{{ product.url }}';
             });
 
-            // Store the swiper instance on the element to avoid conflicts
+            // Store the swiper instance on the element and component to avoid conflicts
             carouselElement.swiper = swiperInstance;
+            this.carouselSwiper = swiperInstance;
           }
         });
       }
@@ -806,28 +906,5 @@
   .size-selector-hover button:hover:not(:disabled) {
     background-color: rgba(255, 255, 255, 0.9);
     transform: translateY(-1px);
-  }
-
-  /* Product image carousel improvements */
-  .product-image-carousel {
-    touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
-    cursor: default;
-  }
-
-  .product-image-carousel .swiper-slide {
-    touch-action: pan-y;
-    cursor: default;
-  }
-
-  .product-image-carousel .swiper-slide img {
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
-    cursor: default;
-  }
-
-  .product-image-carousel .swiper-wrapper {
-    cursor: default;
   }
 </style>

@@ -1,8 +1,40 @@
 {% assign slide_image = slide.image_url | default: slide.image %}
+{% assign is_video = false %}
+{% if slide.media_type == 'video' and slide.video %}
+  {% assign is_video = true %}
+{% endif %}
 
-{% if slide_image or slide.title or slide.description or slide.button_text %}
-  <li class="glide__slide h-dvh w-full relative">
-    {% if slide_image %}
+{% if slide_image or slide.title or slide.description or slide.button_text or is_video %}
+  <div
+    class="absolute top-0 z-5 left-0 right-0 bottom-0 bg-gradient-to-t from-black/60 via-transparent to-black/60 pointer-events-none"
+  ></div>
+  <li
+    class="glide__slide h-dvh w-full relative"
+    {% if is_video %}
+      data-video-slide="true"
+    {% endif %}
+  >
+    {% if is_video %}
+      <!-- Video Slide -->
+      <video
+        class="h-dvh w-dvw object-cover"
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        data-video-element
+      >
+        {% if slide.video.sources %}
+          {% for source in slide.video.sources %}
+            <source src="{{ source.url }}" type="{{ source.mime_type }}">
+          {% endfor %}
+        {% else %}
+          <source src="{{ slide.video | file_url }}" type="video/mp4">
+        {% endif %}
+        Your browser does not support the video tag.
+      </video>
+    {% elsif slide_image %}
+      <!-- Image Slide -->
       {% if slide.image_url %}
         <img
           src="{{ slide.image_url }}"
@@ -23,7 +55,7 @@
 
     {% if slide.title or slide.description or slide.button_text %}
       <div
-        class="hero-slide-content absolute bottom-24 left-8 md:left-16 text-white space-y-6 z-10"
+        class="hero-slide-content absolute bottom-8 left-8 md:left-12 text-white space-y-6 z-10"
       >
         {% if slide.title %}
           <h1>
@@ -38,20 +70,16 @@
         {% endif %}
         {% if slide.button_text and slide.button_link %}
           <h6>
-
             <a
-            href="{{ slide.button_link }}"
-            class="
-            font-semibold
-            {{ slide.button_style }}
-            "
+              href="{{ slide.button_link }}"
+              class="
+                font-semibold
+                {{ slide.button_style }}
+              "
             >
-            
-            
-            {{ slide.button_text }}
-            
+              {{ slide.button_text }}
             </a>
-            </h6>
+          </h6>
         {% endif %}
       </div>
     {% endif %}

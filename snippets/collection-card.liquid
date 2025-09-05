@@ -1,37 +1,49 @@
 {% comment %}
-  Category Card Snippet
-  Usage: {% render 'collection-card', category: category_data %}
+  Collection Card Snippet
+  Usage: {% render 'collection-card', collection: collection_object, custom_image: image, custom_video: video, image_source: 'collection_image', text_position: 'bottom-left', aspect_ratio: 'portrait' %}
 
-  category object can be:
-  - A collection object (will auto-extract title, image, url)
-  - A custom object with:
-    - image: category image
-    - title: category name
-    - link: category URL
-    - text_position: text positioning
-    - aspect_ratio: aspect ratio for the card
+  Parameters:
+  - collection: Collection object (required)
+  - custom_image: Custom image (optional)
+  - custom_video: Custom video (optional)
+  - image_source: 'collection_image', 'collection_card_image', or 'custom_image'
+  - text_position: 'bottom-left', 'bottom-center', 'bottom-right', 'center'
+  - aspect_ratio: 'square', 'portrait', 'landscape', 'wide', 'ultra-wide', 'tall'
 {% endcomment %}
 
-{% comment %} Auto-extract data if a collection object is passed {% endcomment %}
-{% if category.handle and category.products_count != blank %}
-  {% comment %} This is a collection object, extract the data {% endcomment %}
-  {% assign category_title = category.title %}
-  {% assign category_image = category.metafields.custom.card_image.value | default: category.image %}
-  {% assign category_link = category.url %}
-  {% assign aspect_ratio = aspect_ratio %}
+{% comment %} Extract collection data {% endcomment %}
+{% assign category_title = collection.title %}
+{% assign category_link = collection.url %}
+
+{% comment %} Determine which image/video to use based on priority and settings {% endcomment %}
+{% assign category_image = null %}
+{% assign category_video = null %}
+
+{% comment %} Priority 1: Custom video (if provided) {% endcomment %}
+{% if custom_video %}
+  {% assign category_video = custom_video %}
 {% else %}
-  {% comment %} This is a custom category object, use the passed values {% endcomment %}
-  {% assign category_title = category.title %}
-  {% assign category_image = category.image %}
-  {% assign category_link = category.link %}
-  {% assign aspect_ratio = category.aspect_ratio %}
+  {% comment %} Priority 2: Custom image (if provided and image_source is 'custom_image') {% endcomment %}
+  {% if custom_image and image_source == 'custom_image' %}
+    {% assign category_image = custom_image %}
+  {% else %}
+    {% comment %} Priority 3: Collection card image (if image_source is 'collection_card_image') {% endcomment %}
+    {% if image_source == 'collection_card_image' and collection.metafields.custom.card_image.value %}
+      {% assign category_image = collection.metafields.custom.card_image.value %}
+    {% else %}
+      {% comment %} Priority 4: Collection default image {% endcomment %}
+      {% if collection.image %}
+        {% assign category_image = collection.image %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
 {% endif %}
 
 {% assign text_position_classes = 'absolute text-white z-10' %}
 
-{% case category.text_position %}
+{% case text_position %}
   {% when 'bottom-left' %}
-    {% assign text_position_classes = text_position_classes | append: ' bottom-4 left-4' %}
+    {% assign text_position_classes = text_position_classes | append: ' bottom-8 left-12' %}
   {% when 'bottom-center' %}
     {% assign text_position_classes = text_position_classes
       | append: ' bottom-4 left-1/2 transform -translate-x-1/2 text-center'
@@ -74,7 +86,27 @@
   <div class="collection-card relative overflow-hidden {{ aspect_ratio_class }} w-[110%] md:min-w-[220px]">
 {% endif %}
 
-{% if category_image %}
+{% if category_video %}
+  <!-- Video Display -->
+  <video
+    class="w-full h-full object-cover transition-transform duration-300"
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    autoplay
+  >
+    {% if category_video.sources %}
+      {% for source in category_video.sources %}
+        <source src="{{ source.url | asset_url }}" type="{{ source.mime_type }}">
+      {% endfor %}
+    {% else %}
+      <source src="{{ category_video | asset_url }}" type="video/mp4">
+    {% endif %}
+    Your browser does not support the video tag.
+  </video>
+{% elsif category_image %}
+  <!-- Image Display -->
   {{
     category_image
     | image_url: width: 400
@@ -84,8 +116,9 @@
       loading: 'lazy'
   }}
 {% else %}
+  <!-- Fallback -->
   <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-    <span class="text-gray-400 text-sm">No image</span>
+    <span class="text-gray-400 text-sm">No media</span>
   </div>
 {% endif %}
 
@@ -119,7 +152,12 @@
     transition: transform 0.3s ease;
   }
 
-  .collection-card:hover img {
+  .collection-card:hover img,
+  .collection-card:hover video {
     transform: scale(1.05);
+  }
+
+  .collection-card video {
+    transition: transform 0.3s ease;
   }
 </style>

@@ -40,7 +40,14 @@
                 {% case block.type %}
                   {% when 'category' %}
                     <div class="swiper-slide">
-                      {% render 'collection-card', category: block.settings %}
+                      {% render 'collection-card',
+                        collection: block.settings.collection,
+                        custom_image: block.settings.custom_image,
+                        custom_video: block.settings.custom_video,
+                        image_source: block.settings.image_source,
+                        text_position: block.settings.text_position,
+                        aspect_ratio: block.settings.aspect_ratio
+                      %}
                     </div>
                 {% endcase %}
               {% endfor %}
@@ -58,7 +65,14 @@
                   {% case block.type %}
                     {% when 'category' %}
                       <div class="swiper-slide">
-                        {% render 'collection-card', category: block.settings %}
+                        {% render 'collection-card',
+                          collection: block.settings.collection,
+                          custom_image: block.settings.custom_image,
+                          custom_video: block.settings.custom_video,
+                          image_source: block.settings.image_source,
+                          text_position: block.settings.text_position,
+                          aspect_ratio: block.settings.aspect_ratio
+                        %}
                       </div>
                   {% endcase %}
                 {% endfor %}
@@ -72,7 +86,14 @@
               {% case block.type %}
                 {% when 'category' %}
                   <div class="flex-1">
-                    {% render 'collection-card', category: block.settings %}
+                    {% render 'collection-card',
+                      collection: block.settings.collection,
+                      custom_image: block.settings.custom_image,
+                      custom_video: block.settings.custom_video,
+                      image_source: block.settings.image_source,
+                      text_position: block.settings.text_position,
+                      aspect_ratio: block.settings.aspect_ratio
+                    %}
                   </div>
               {% endcase %}
             {% endfor %}
@@ -86,7 +107,14 @@
             {% case block.type %}
               {% when 'category' %}
                 <div class="w-full lg:flex-1">
-                  {% render 'collection-card', category: block.settings %}
+                  {% render 'collection-card',
+                    collection: block.settings.collection,
+                    custom_image: block.settings.custom_image,
+                    custom_video: block.settings.custom_video,
+                    image_source: block.settings.image_source,
+                    text_position: block.settings.text_position,
+                    aspect_ratio: block.settings.aspect_ratio
+                  %}
                 </div>
             {% endcase %}
           {% endfor %}
@@ -262,20 +290,51 @@
       "name": "Category",
       "settings": [
         {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Select the collection to display"
+        },
+        {
+          "type": "header",
+          "content": "Media Settings"
+        },
+        {
+          "type": "select",
+          "id": "image_source",
+          "label": "Image Source",
+          "options": [
+            {
+              "value": "collection_image",
+              "label": "Collection Image"
+            },
+            {
+              "value": "collection_card_image",
+              "label": "Collection Card Image"
+            },
+            {
+              "value": "custom_image",
+              "label": "Custom Image"
+            }
+          ],
+          "default": "collection_image",
+          "info": "Choose which image to display. If no custom image is uploaded, it will fallback to the collection's default image."
+        },
+        {
           "type": "image_picker",
-          "id": "image",
-          "label": "Category Image"
+          "id": "custom_image",
+          "label": "Custom Image",
+          "info": "Optional: Upload a custom image. If not provided, the collection's default image will be used."
         },
         {
-          "type": "text",
-          "id": "title",
-          "label": "Category Name",
-          "default": "Camisas"
+          "type": "video",
+          "id": "custom_video",
+          "label": "Custom Video",
+          "info": "Optional: Upload a video to display instead of an image. If provided, video will take priority over images."
         },
         {
-          "type": "url",
-          "id": "link",
-          "label": "Category Link"
+          "type": "header",
+          "content": "Display Settings"
         },
         {
           "type": "select",

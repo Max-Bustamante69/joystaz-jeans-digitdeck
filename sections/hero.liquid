@@ -8,13 +8,15 @@
 {% endcomment %}
 
 <div class="hero relative flex items-end" style="min-height: {{ section.settings.min_height }}vh;">
+  {% comment %} overlay gradient {% endcomment %}
+
   {% if section.blocks.size > 0 %}
-    <div id="hero-swiper-{{ section.id }}" class="swiper">
+    <div id="hero-swiper-{{ section.id }}" class="swiper z-10">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
           {% case block.type %}
             {% when 'slide' %}
-              <div class="swiper-slide">
+              <div class="swiper-slide z-10">
                 {% render 'hero-slide', slide: block.settings %}
               </div>
           {% endcase %}
@@ -28,7 +30,7 @@
         {% endif %}
 
         {% if section.settings.show_bullets %}
-          <div class="swiper-pagination"></div>
+          <div class="swiper-pagination z-50"></div>
         {% endif %}
       {% endif %}
     </div>
@@ -46,20 +48,315 @@
   document.addEventListener('DOMContentLoaded', function() {
     const heroElement = document.getElementById('hero-swiper-{{ section.id }}');
     const slideCount = {{ section.blocks.size }};
+    
+    if (!heroElement || slideCount === 0) return;
+    
+    // Check if any slide has a video
+    const hasVideoSlides = heroElement.querySelectorAll('[data-video-slide="true"]').length > 0;
+    const autoplayDuration = {{ section.settings.autoplay_duration | default: 3000 }};
+
+    // Optimized progress controller
+    class ProgressController {
+      constructor() {
+        this.currentSlide = null;
+        this.currentBullet = null;
+        this.animationId = null;
+        this.timeoutId = null;
+        this.swiper = null;
+        this.autoplayPaused = false;
+        this.isUserInteracting = false;
+      }
+
+      // Clean up any running animations/timers
+      cleanup() {
+        if (this.animationId) {
+          cancelAnimationFrame(this.animationId);
+          this.animationId = null;
+        }
+        if (this.timeoutId) {
+          clearTimeout(this.timeoutId);
+          this.timeoutId = null;
+        }
+      }
+
+      // Reset bullet to initial state
+      resetBullet(bullet) {
+        if (!bullet) return;
+        
+        const slideNumber = bullet.querySelector('.slide-number');
+        const playIcon = bullet.querySelector('.play-icon');
+        const pauseIcon = bullet.querySelector('.pause-icon');
+        const progressCircle = bullet.querySelector('.circle-progress');
+        
+        if (slideNumber) slideNumber.style.display = 'flex';
+        if (playIcon) playIcon.style.display = 'none';
+        if (pauseIcon) pauseIcon.style.display = 'none';
+        if (progressCircle) {
+          progressCircle.style.transition = 'none';
+          progressCircle.style.strokeDasharray = '0, 100';
+          // Force repaint
+          progressCircle.getBoundingClientRect();
+        }
+      }
+
+      // Complete bullet animation
+      completeBullet(bullet, callback) {
+        if (!bullet) return callback?.();
+        
+        const progressCircle = bullet.querySelector('.circle-progress');
+        if (progressCircle) {
+          progressCircle.style.transition = 'stroke-dasharray 0.2s ease';
+          progressCircle.style.strokeDasharray = '100, 100';
+        }
+        
+        this.timeoutId = setTimeout(() => {
+          this.resetBullet(bullet);
+          callback?.();
+        }, 200);
+      }
+
+      // Animate progress using CSS transitions (smooth and performant)
+      animateProgress(bullet, duration, onComplete) {
+        if (!bullet) return;
+        
+        const progressCircle = bullet.querySelector('.circle-progress');
+        if (!progressCircle) return;
+        
+        // Reset and start animation
+        progressCircle.style.transition = 'none';
+        progressCircle.style.strokeDasharray = '0, 100';
+        
+        // Force reflow then start animation
+        requestAnimationFrame(() => {
+          progressCircle.style.transition = `stroke-dasharray ${duration}ms linear`;
+          progressCircle.style.strokeDasharray = '100, 100';
+        });
+        
+        // Handle completion
+        this.timeoutId = setTimeout(() => {
+          if (!this.isUserInteracting) {
+            onComplete?.();
+          }
+        }, duration);
+      }
+
+      // Handle video progress using requestAnimationFrame
+      animateVideoProgress(video, bullet, onComplete) {
+        if (!video || !bullet) return;
+        
+        const progressCircle = bullet.querySelector('.circle-progress');
+        if (!progressCircle) return;
+        
+        progressCircle.style.transition = 'none';
+        
+        const updateProgress = () => {
+          if (video.duration && video.duration > 0) {
+            const progress = Math.min((video.currentTime / video.duration) * 100, 100);
+            progressCircle.style.strokeDasharray = `${progress}, 100`;
+            
+            if (progress < 100 && !video.paused && !video.ended) {
+              this.animationId = requestAnimationFrame(updateProgress);
+            }
+          }
+        };
+        
+        // Handle video end
+        const handleVideoEnd = () => {
+          this.cleanup();
+          this.completeBullet(bullet, () => {
+            if (!this.isUserInteracting) {
+              onComplete?.();
+            }
+          });
+          video.removeEventListener('ended', handleVideoEnd);
+        };
+        
+        video.addEventListener('ended', handleVideoEnd);
+        updateProgress();
+      }
+
+      // Start slide (video or image)
+      startSlide(slideIndex, bullet) {
+        // Stop current slide
+        this.stopSlide();
+        
+        const slide = heroElement.querySelectorAll('.swiper-slide')[slideIndex];
+        const video = slide?.querySelector('video');
+        const isVideo = bullet?.dataset.isVideo === 'true';
+        
+        this.currentSlide = slide;
+        this.currentBullet = bullet;
+        
+        if (!bullet) return;
+        
+        // Update bullet UI
+        const slideNumber = bullet.querySelector('.slide-number');
+        const playIcon = bullet.querySelector('.play-icon');
+        const pauseIcon = bullet.querySelector('.pause-icon');
+        
+        if (isVideo && video) {
+          // Video slide
+          if (slideNumber) slideNumber.style.display = 'none';
+          if (pauseIcon) pauseIcon.style.display = 'flex';
+          if (playIcon) playIcon.style.display = 'none';
+          
+          video.play();
+          this.animateVideoProgress(video, bullet, () => {
+            this.advanceSlide();
+          });
+          
+          // Resume swiper autoplay if paused
+          if (this.swiper?.autoplay && this.autoplayPaused) {
+            this.swiper.autoplay.start();
+            this.autoplayPaused = false;
+          }
+        } else {
+          // Image slide
+          if (slideNumber) slideNumber.style.display = 'flex';
+          
+          this.animateProgress(bullet, autoplayDuration, () => {
+            this.advanceSlide();
+          });
+          
+          // Resume swiper autoplay if paused
+          if (this.swiper?.autoplay && this.autoplayPaused) {
+            this.swiper.autoplay.start();
+            this.autoplayPaused = false;
+          }
+        }
+      }
+
+      // Stop current slide
+      stopSlide() {
+        this.cleanup();
+        
+        if (this.currentSlide) {
+          const video = this.currentSlide.querySelector('video');
+          if (video && !video.paused) {
+            video.pause();
+          }
+        }
+        
+        if (this.currentBullet) {
+          this.completeBullet(this.currentBullet);
+        }
+        
+        // Pause swiper autoplay
+        if (this.swiper?.autoplay) {
+          this.swiper.autoplay.pause();
+          this.autoplayPaused = true;
+        }
+        
+        this.currentSlide = null;
+        this.currentBullet = null;
+      }
+
+      // Pause current slide
+      pauseSlide() {
+        this.cleanup();
+        
+        if (this.currentSlide) {
+          const video = this.currentSlide.querySelector('video');
+          if (video && !video.paused) {
+            video.pause();
+            
+            // Update video bullet UI
+            const playIcon = this.currentBullet?.querySelector('.play-icon');
+            const pauseIcon = this.currentBullet?.querySelector('.pause-icon');
+            const slideNumber = this.currentBullet?.querySelector('.slide-number');
+            
+            if (slideNumber) slideNumber.style.display = 'none';
+            if (playIcon) playIcon.style.display = 'flex';
+            if (pauseIcon) pauseIcon.style.display = 'none';
+          }
+        }
+        
+        // Reset progress
+        if (this.currentBullet) {
+          const progressCircle = this.currentBullet.querySelector('.circle-progress');
+          if (progressCircle) {
+            progressCircle.style.transition = 'stroke-dasharray 0.2s ease';
+            progressCircle.style.strokeDasharray = '0, 100';
+          }
+        }
+        
+        // Pause swiper autoplay
+        if (this.swiper?.autoplay) {
+          this.swiper.autoplay.pause();
+          this.autoplayPaused = true;
+        }
+      }
+
+      // Navigate to specific slide
+      navigateToSlide(slideIndex) {
+        this.isUserInteracting = true;
+        
+        // Use Swiper's native slideTo method
+        if (this.swiper) {
+          this.swiper.slideTo(slideIndex);
+        }
+        
+        // Reset user interaction flag after animation
+        setTimeout(() => {
+          this.isUserInteracting = false;
+        }, this.swiper?.params?.speed || 1000);
+      }
+
+      // Toggle slide (play/pause)
+      toggleSlide(slideIndex, bullet) {
+        const slide = heroElement.querySelectorAll('.swiper-slide')[slideIndex];
+        const video = slide?.querySelector('video');
+        const isVideo = bullet?.dataset.isVideo === 'true';
+        
+        if (this.currentSlide === slide && this.currentBullet === bullet) {
+          // Currently active slide - pause it
+          this.pauseSlide();
+          this.currentSlide = null;
+          this.currentBullet = null;
+        } else {
+          // Navigate to the clicked slide first
+          this.navigateToSlide(slideIndex);
+        }
+      }
+
+      // Advance to next slide
+      advanceSlide() {
+        if (this.swiper && !this.swiper.isEnd) {
+          this.swiper.slideNext();
+        }
+      }
+
+      // Auto-start current active slide
+      autoStartSlide() {
+        if (!this.swiper) return;
+        
+        const activeIndex = this.swiper.activeIndex;
+        const activeBullet = heroElement.querySelector(`[data-slide-index="${activeIndex}"]`);
+        
+        if (activeBullet && !this.isUserInteracting) {
+          this.startSlide(activeIndex, activeBullet);
+        }
+      }
+
+      // Reset all bullets
+      resetAllBullets() {
+        const allBullets = heroElement.querySelectorAll('.video-bullet, .image-bullet');
+        allBullets.forEach(bullet => this.resetBullet(bullet));
+      }
+    }
+
+    // Initialize progress controller
+    const progressController = new ProgressController();
 
     // Only initialize carousel if there are multiple slides
-    if (heroElement && typeof Swiper !== 'undefined' && slideCount > 1) {
-      new Swiper(heroElement, {
+    if (typeof Swiper !== 'undefined' && slideCount > 1) {
+      const swiperConfig = {
         slidesPerView: 1,
         spaceBetween: 0,
-        loop: true,
-        autoplay: {
-          delay: {{ section.settings.autoplay_duration | default: 3000 }},
-          disableOnInteraction: false,
-          pauseOnMouseEnter: {{ section.settings.pause_on_hover | json }},
-        },
+        loop: false,
         speed: {{ section.settings.animation_duration | default: 1000 }},
         grabCursor: false,
+        freeMode: { enabled: true, sticky: true },
         navigation: {
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev',
@@ -67,53 +364,251 @@
         pagination: {
           el: '.swiper-pagination',
           clickable: true,
+          renderBullet: function (index, className) {
+            const slide = heroElement.querySelectorAll('.swiper-slide')[index];
+            const isVideo = slide && slide.hasAttribute('data-video-slide');
+            
+            const bulletClass = isVideo ? 'video-bullet' : 'image-bullet';
+            
+            return `<span class="${className} ${bulletClass}" data-slide-index="${index}" data-is-video="${isVideo}">
+              <span class="slide-number">${index + 1}</span>
+              ${isVideo ? `
+                <svg class="play-icon" viewBox="0 0 256 256" style="display: none;">
+                  <rect width="256" height="256" fill="none"/>
+                  <path d="M72,39.88V216.12a8,8,0,0,0,12.15,6.69l144.08-88.12a7.82,7.82,0,0,0,0-13.38L84.15,33.19A8,8,0,0,0,72,39.88Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/>
+                </svg>
+                <svg class="pause-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="display: none;">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5" />
+                </svg>
+              ` : ''}
+              <div class="progress-ring">
+                <svg class="progress-circle" viewBox="0 0 36 36">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  <path class="circle-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" stroke-dasharray="0, 100"/>
+                </svg>
+              </div>
+            </span>`;
+          },
         },
         breakpoints: {
           1024: { slidesPerView: 1 },
           768: { slidesPerView: 1 },
           480: { slidesPerView: 1 }
         }
+      };
+
+      // Only add autoplay if there are no video slides
+      if (!hasVideoSlides) {
+        swiperConfig.autoplay = {
+          delay: autoplayDuration,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: {{ section.settings.pause_on_hover | json }},
+        };
+      }
+
+      const swiper = new Swiper(heroElement, swiperConfig);
+      progressController.swiper = swiper;
+
+      // Add click handlers to bullets
+      heroElement.addEventListener('click', function(e) {
+        const bullet = e.target.closest('.video-bullet, .image-bullet');
+        if (bullet) {
+          e.preventDefault();
+          const slideIndex = parseInt(bullet.dataset.slideIndex);
+          progressController.toggleSlide(slideIndex, bullet);
+        }
       });
-    } else if (heroElement && slideCount === 1) {
-      // For single slide, remove carousel classes and make it a static display
+
+      // Initialize bullets and auto-start first slide
+      progressController.resetAllBullets();
+      
+      setTimeout(() => {
+        progressController.autoStartSlide();
+      }, 500);
+
+      // Handle slide changes - wait for transition to complete
+      swiper.on('slideChangeTransitionEnd', function() {
+        setTimeout(() => {
+          progressController.autoStartSlide();
+        }, 100);
+      });
+
+    } else if (slideCount === 1) {
+      // Handle single slide case
       heroElement.classList.remove('swiper');
       const wrapper = heroElement.querySelector('.swiper-wrapper');
       const slide = heroElement.querySelector('.swiper-slide');
 
       if (wrapper && slide) {
-        // Remove carousel structure and make it a simple container
         wrapper.classList.remove('swiper-wrapper');
         slide.classList.remove('swiper-slide');
-
-        // Move slide directly into the hero element
         heroElement.appendChild(slide);
         wrapper.remove();
       }
-    } else if (heroElement) {
-      console.warn('Swiper.js library not found. Make sure swiper-bundle.min.js is loaded in theme.liquid.');
+
+      // Auto-start single slide if bullet exists
+      const singleBullet = heroElement.querySelector('[data-slide-index="0"]');
+      if (singleBullet) {
+        progressController.resetAllBullets();
+        setTimeout(() => {
+          progressController.startSlide(0, singleBullet);
+        }, 500);
+      }
     }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+      progressController.cleanup();
+    });
   });
 </script>
 
 <style>
-  .swiper-pagination {
-    position: absolute;
-    left: 95%;
-    bottom: 20px;
-    z-index: 20;
+  .hero {
+    position: relative;
   }
 
+  .hero .swiper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* PAGINATION POSITIONED ON RIGHT SIDE VERTICALLY */
+  .swiper-pagination {
+    z-index: 50;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: end;
+    width: auto;
+    height: auto;
+    padding-right: 48px;
+  }
+
+  /* SMALLER BULLETS - 32px instead of 44px */
   .swiper-pagination-bullet {
-    width: 12px;
-    height: 12px;
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 1;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: rgba(102, 102, 102, 0.15);
+    opacity: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
   }
 
   .swiper-pagination-bullet-active {
-    background: white;
-    transform: scale(1.2);
+    border-color: rgba(255, 255, 255, 0.6);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Unified bullet styles with smaller size */
+  .video-bullet,
+  .image-bullet {
+    width: 24px !important;
+    height: 24px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+  }
+
+  .video-bullet.swiper-pagination-bullet-active,
+  .image-bullet.swiper-pagination-bullet-active {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  /* SMALLER ICONS - 12px instead of 16px */
+  .video-bullet svg,
+  .image-bullet svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+    z-index: 3;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .progress-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    border-radius: 50%;
+  }
+
+  .progress-circle {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+    border-radius: 50%;
+  }
+
+  .circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 2;
+  }
+
+  .circle-progress {
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    /* Calculate proper circumference for smooth animation */
+    stroke-dasharray: 0, 100;
+  }
+
+  /* SMALLER SLIDE NUMBER - 12px instead of 16px */
+  .slide-number {
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    
+    /* Perfect centering using flexbox */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* Full coverage of button */
+    width: 100%;
+    height: 100%;
+    
+    /* Absolute positioning to overlay properly */
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    /* High z-index to appear above progress ring */
+    z-index: 4;
+    
+    /* Remove any margins/padding */
+    margin: 0;
+    padding: 0;
+    
+    /* Perfect text centering */
+    line-height: 1;
+    text-align: center;
+    
+    /* Make it round to match button */
+    border-radius: 50%;
   }
 
   .swiper-button-next,
@@ -124,6 +619,7 @@
     height: 48px;
     color: white;
     transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
   }
 
   .swiper-button-next:hover,
@@ -137,15 +633,35 @@
   }
 
   @media screen and (max-width: 768px) {
-    .swiper-pagination {
+    /* MOBILE: Move pagination to bottom center */
+    .swiper-pagination,
+    .swiper-pagination-bullets {
       bottom: 15px;
-      left: 50%;
-      transform: translateX(-50%);
+      right: auto !important;
+      left: 50% !important;
+      top: auto !important;
+      transform: translateX(-50%) !important;
+      flex-direction: row !important;
+      flex-wrap: wrap;
+      max-width: 90%;
     }
 
-    .swiper-pagination-bullet {
-      width: 10px;
-      height: 10px;
+    .swiper-pagination-bullet,
+    .video-bullet,
+    .image-bullet {
+      width: 28px !important;
+      height: 28px !important;
+      margin: 2px;
+    }
+
+    .slide-number {
+      font-size: 10px;
+    }
+
+    .video-bullet svg,
+    .image-bullet svg {
+      width: 18px;
+      height: 18px;
     }
 
     .swiper-button-next,
@@ -222,6 +738,22 @@
       "name": "Hero Slide",
       "settings": [
         {
+          "type": "select",
+          "id": "media_type",
+          "label": "Media Type",
+          "options": [
+            {
+              "value": "image",
+              "label": "Image"
+            },
+            {
+              "value": "video",
+              "label": "Video"
+            }
+          ],
+          "default": "image"
+        },
+        {
           "type": "image_picker",
           "id": "image",
           "label": "Slide Image"
@@ -230,6 +762,11 @@
           "type": "url",
           "id": "image_url",
           "label": "Or Image URL (alternative to image picker)"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video File"
         },
         {
           "type": "text",

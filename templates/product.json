@@ -11,10 +11,69 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "blocks": {
+        "accordion_item_R6Bhhn": {
+          "type": "accordion_item",
+          "settings": {
+            "question": "Detalles del producto",
+            "answer": "<p>Información detallada sobre el producto...</p>"
+          }
+        },
+        "product_gallery_JmAGCm": {
+          "type": "product_gallery",
+          "settings": {
+            "title": "Combínalo Con",
+            "products_limit": 4
+          }
+        }
+      },
+      "block_order": [
+        "accordion_item_R6Bhhn",
+        "product_gallery_JmAGCm"
+      ],
+      "settings": {
+        "delivery_days": 7,
+        "availability_text": "Aún disponibles",
+        "single_option_title": "Unico",
+        "single_option_subtitle": "Standard price",
+        "duo_option_title": "Duo",
+        "duo_option_subtitle": "Compra más y ahorra",
+        "best_value_text": "BEST VALUE",
+        "duo_discount_percentage": 5,
+        "duo_eligible_products": [],
+        "duo_eligible_collections": [],
+        "free_shipping_text": "Envío gratis En ordenes +500.000",
+        "free_returns_text": "Devoluciones gratis y intercambiables",
+        "cta_button_text": "Paga de forma segura",
+        "show_slide_counter": true,
+        "show_mobile_navigation": true
+      }
+    },
+    "product_carousel_pRd38z": {
+      "type": "product-carousel",
+      "name": "Product Carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "subtitle": "Best Sellers",
+        "show_view_all": true,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "product_source": "collection",
+        "collection": "men",
+        "product_tags": "",
+        "products": [],
+        "max_products": 12,
+        "show_badges": true,
+        "show_rating": true,
+        "show_color_swatches": true,
+        "show_size_selector": true,
+        "no_products_message": "No hay productos disponibles en este momento."
+      }
     }
   },
   "order": [
-    "main"
+    "main",
+    "product_carousel_pRd38z"
   ]
 }

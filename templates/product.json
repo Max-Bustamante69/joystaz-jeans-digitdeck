@@ -12,13 +12,6 @@
     "main": {
       "type": "product",
       "blocks": {
-        "accordion_item_R6Bhhn": {
-          "type": "accordion_item",
-          "settings": {
-            "question": "Detalles del producto",
-            "answer": "<p>Información detallada sobre el producto...</p>"
-          }
-        },
         "product_gallery_JmAGCm": {
           "type": "product_gallery",
           "settings": {
@@ -28,7 +21,6 @@
         }
       },
       "block_order": [
-        "accordion_item_R6Bhhn",
         "product_gallery_JmAGCm"
       ],
       "settings": {

@@ -14,8 +14,9 @@
     "footer": {
       "type": "footer",
       "settings": {
-        "menu": "",
-        "show_payment_icons": true
+        "tagline": "The next wave of natural skincare.",
+        "show_payment_icons": true,
+        "credit_text": "Desarrollado por DigitDeck"
       }
     }
   },

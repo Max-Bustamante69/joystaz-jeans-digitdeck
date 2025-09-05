@@ -61,6 +61,50 @@
         "show_bullets": true
       }
     },
+    "category-grid": {
+      "type": "category-grid",
+      "blocks": {
+        "category_pwLXdi": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/Manga_Detalle.png",
+            "title": "Hombres",
+            "link": "shopify://collections/men",
+            "text_position": "bottom-left",
+            "aspect_ratio": "landscape"
+          }
+        },
+        "category_MLFQQx": {
+          "type": "category",
+          "settings": {
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left",
+            "aspect_ratio": "landscape"
+          }
+        },
+        "category_eVzi4H": {
+          "type": "category",
+          "settings": {
+            "image": "shopify://shop_images/196.png",
+            "title": "Mujeres",
+            "link": "shopify://collections/women",
+            "text_position": "bottom-left",
+            "aspect_ratio": "landscape"
+          }
+        }
+      },
+      "block_order": [
+        "category_pwLXdi",
+        "category_MLFQQx",
+        "category_eVzi4H"
+      ],
+      "settings": {
+        "title": "dwdawd",
+        "subtitle": "",
+        "mobile_layout": "column"
+      }
+    },
     "image_with_text_gxhgP9": {
       "type": "image-with-text",
       "name": "Image with Text",
@@ -81,40 +125,6 @@
         "title_color": "#1f2937",
         "subtitle_color": "#1f2937",
         "text_color": "#374151"
-      }
-    },
-    "category-grid": {
-      "type": "category-grid",
-      "blocks": {
-        "category_pwLXdi": {
-          "type": "category",
-          "settings": {
-            "image": "shopify://shop_images/Manga_Detalle.png",
-            "title": "Hombres",
-            "link": "shopify://collections/men",
-            "text_position": "bottom-left",
-            "aspect_ratio": "landscape"
-          }
-        },
-        "category_eVzi4H": {
-          "type": "category",
-          "settings": {
-            "image": "shopify://shop_images/196.png",
-            "title": "Mujeres",
-            "link": "shopify://collections/women",
-            "text_position": "bottom-left",
-            "aspect_ratio": "landscape"
-          }
-        }
-      },
-      "block_order": [
-        "category_pwLXdi",
-        "category_eVzi4H"
-      ],
-      "settings": {
-        "title": "Best Sellers",
-        "subtitle": "",
-        "mobile_layout": "column"
       }
     },
     "category_grid_tiJRNW": {
@@ -159,13 +169,23 @@
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
+        },
+        "category_bi4mdJ": {
+          "type": "category",
+          "settings": {
+            "title": "Camisas",
+            "link": "",
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
+          }
         }
       },
       "block_order": [
         "category_QC8xmk",
         "category_V68LeD",
         "category_pPrFBF",
-        "category_gatxCg"
+        "category_gatxCg",
+        "category_bi4mdJ"
       ],
       "name": "Category Grid",
       "settings": {
@@ -288,6 +308,7 @@
       "name": "Product Carousel",
       "settings": {
         "title": "Best Sellers",
+        "subtitle": "Best Sellers",
         "show_view_all": true,
         "view_all_text": "Ver todos",
         "view_all_link": "",

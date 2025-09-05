@@ -71,16 +71,7 @@
             "title": "Hombres",
             "link": "shopify://collections/men",
             "text_position": "bottom-left",
-            "aspect_ratio": "landscape"
-          }
-        },
-        "category_MLFQQx": {
-          "type": "category",
-          "settings": {
-            "title": "Camisas",
-            "link": "",
-            "text_position": "bottom-left",
-            "aspect_ratio": "landscape"
+            "aspect_ratio": "square"
           }
         },
         "category_eVzi4H": {
@@ -90,13 +81,12 @@
             "title": "Mujeres",
             "link": "shopify://collections/women",
             "text_position": "bottom-left",
-            "aspect_ratio": "landscape"
+            "aspect_ratio": "square"
           }
         }
       },
       "block_order": [
         "category_pwLXdi",
-        "category_MLFQQx",
         "category_eVzi4H"
       ],
       "settings": {
@@ -110,7 +100,7 @@
       "name": "Image with Text",
       "settings": {
         "layout_direction": "image_first",
-        "image_style": "windowed",
+        "image_style": "full_width",
         "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
         "image_alt": "",
         "use_product_image": false,
@@ -246,6 +236,15 @@
             "description": "Our customer service team is available Monday till Friday from 9am - 6pm"
           }
         },
+        "badge_LeB4EC": {
+          "type": "badge",
+          "settings": {
+            "icon_type": "svg",
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
+            "title": "Free shipping",
+            "description": "We offer free worldwide shipping on orders over $100"
+          }
+        },
         "badge_4F9eFf": {
           "type": "badge",
           "settings": {
@@ -259,6 +258,7 @@
       "block_order": [
         "badge_q4YbLx",
         "badge_nymaqi",
+        "badge_LeB4EC",
         "badge_4F9eFf"
       ],
       "name": "Trust Badges",

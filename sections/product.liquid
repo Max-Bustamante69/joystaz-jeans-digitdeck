@@ -13,7 +13,7 @@
   class="product-page bg-white mt-48"
   x-data="productPage({{ product.id }}, {{ section.settings.delivery_days | default: 7 }})"
 >
-  <div class="w-full pr-12">
+  <div class="w-full lg:pr-12">
     <div class="grid grid-cols-1 lg:grid-cols-4  gap-8">
       <!-- Product Images Section - 2/3 width -->
       <div class="product-images-section lg:col-span-3">
@@ -68,21 +68,33 @@
             {% if section.settings.show_mobile_navigation %}
               <div class="absolute inset-0 pointer-events-none">
                 <button
-                  class="mobile-prev absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/10 border border-white flex items-center justify-center shadow-md opacity-100  transition-all duration-200 z-50 pointer-events-auto cursor-pointer"
+                  class="mobile-prev absolute p-2 left-2 top-1/2 -translate-y-1/2 w-10 h-10 opacity-100 transition-all duration-300 z-30 pointer-events-auto cursor-pointer touch-manipulation"
                   data-carousel-id="product-mobile-carousel-{{ product.id }}"
                   type="button"
                 >
-                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                  <svg
+                    class="w-5 h-5 text-black drop-shadow-md"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="2.5"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                   </svg>
                 </button>
                 <button
-                  class="mobile-next absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/10 border border-white flex items-center justify-center shadow-md opacity-100 transition-all duration-200 z-50 pointer-events-auto cursor-pointer"
+                  class="mobile-next absolute p-2 right-2 top-1/2 -translate-y-1/2 w-10 h-10 opacity-100 transition-all duration-300 z-30 pointer-events-auto cursor-pointer touch-manipulation"
                   data-carousel-id="product-mobile-carousel-{{ product.id }}"
                   type="button"
                 >
-                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  <svg
+                    class="w-5 h-5 text-black drop-shadow-md"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    stroke-width="2.5"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
                   </svg>
                 </button>
               </div>
@@ -99,14 +111,15 @@
             <div class="flex flex-col gap-0.5">
               <h6>{{ product.title }}</h6>
               <div class="flex items-center gap-2">
+                {% comment %} Fix the metafield references {% endcomment %}
                 {%
                   render 'star-rating',
-                  rating:  4.6,
+                  rating: product.metafields.reviews.rating.value | default: 0,
                   size: 'md',
                   show_count: true,
                   show_rating_value: true,
                   show_review_count: true,
-                  review_count: product.metafields.reviews.rating_count.value | default: 45
+                  review_count: product.metafields.reviews.rating_count.value | default: 0
                 %}
               </div>
             </div>
@@ -314,18 +327,89 @@
           </div>
         </div>
 
-        <!-- See it in Action -->
-        <div class="space-y-3">
-          <h3 class="text-lg font-semibold text-gray-900">Miralo En Acción</h3>
-          <div class="grid grid-cols-3 gap-3">
-            <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <span class="text-sm text-gray-500">@What's New</span>
-            </div>
-            <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <span class="text-sm text-gray-500">@Styling Elements</span>
-            </div>
-            <div class="aspect-video bg-gray-100 rounded-lg flex items-center justify-center">
-              <span class="text-sm text-gray-500">@Product Demo</span>
+        {% assign video_count = 0 %}
+        {% for media in product.media %}
+          {% if media.media_type == 'video' %}
+            {% assign video_count = video_count | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+
+        <!-- See it in Action - Video Carousel -->
+        <div class="space-y-3" x-data="productVideoCarousel()">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Miralo En Acción</h3>
+            {% comment %} Show arrows when there are multiple videos {% endcomment %}
+
+            {% if video_count > 1 %}
+              {% render 'carousel-arrows' %}
+            {% endif %}
+          </div>
+
+          <div class="relative">
+            <div
+              class="product-video-carousel swiper w-full overflow-hidden"
+              data-carousel-id="product-video-carousel-{{ product.id }}"
+              id="product-video-carousel-{{ product.id }}"
+            >
+              <div class="swiper-wrapper w-full">
+                {% for media in product.media %}
+                  {% if media.media_type == 'video' %}
+                    <div class="swiper-slide">
+                      <div
+                        class="video-slide-container relative  overflow-hidden bg-gray-100 h-64 md:h-80 lg:h-96"
+                        x-data="videoSlide()"
+                        @mouseenter="handleMouseEnter"
+                        @mouseleave="handleMouseLeave"
+                      >
+                        <!-- Video Element -->
+                        <video
+                          x-ref="video"
+                          class="absolute  inset-0 w-full h-full object-cover"
+                          muted
+                          loop
+                          playsinline
+                          preload="metadata"
+                          @loadedmetadata="onVideoLoaded"
+                        >
+                          {% if media.sources %}
+                            {% for source in media.sources %}
+                              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                            {% endfor %}
+                          {% else %}
+                            <source src="{{ media | file_url }}" type="video/mp4">
+                          {% endif %}
+                          Your browser does not support the video tag.
+                        </video>
+
+                        <!-- Play Button Overlay -->
+                        <div
+                          x-show="!isPlaying && showPlayButton"
+                          x-transition:enter="transition ease-out duration-300"
+                          x-transition:enter-start="opacity-0 scale-95"
+                          x-transition:enter-end="opacity-100 scale-100"
+                          x-transition:leave="transition ease-in duration-200"
+                          x-transition:leave-start="opacity-100 scale-100"
+                          x-transition:leave-end="opacity-0 scale-95"
+                          class="absolute inset-0 flex items-center justify-center z-20 bg-black/20"
+                        >
+                          <div class="w-6 h-6 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white/100 transition-all duration-200">
+                            <svg class="w-6 h-6 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z"/>
+                            </svg>
+                          </div>
+                        </div>
+
+                        <!-- Video Title Overlay -->
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+
+              <!-- Pagination -->
+              {% if video_count > 1 %}
+                <div class="swiper-pagination mt-4 flex justify-center gap-2"></div>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -927,7 +1011,7 @@
           {% for variant in product.variants %}
             {
               id: {{ variant.id }},
-              options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}]
+              options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}],
             }{% unless forloop.last %},{% endunless %}
           {% endfor %}
         ];
@@ -1197,25 +1281,25 @@
 
               if (prevArrow) {
                 if (swiperInstance.isBeginning) {
-                  prevArrow.style.opacity = '0.3';
-                  prevArrow.style.cursor = 'not-allowed';
-                  prevArrow.disabled = true;
+                  prevArrow.style.opacity = '0';
+                  prevArrow.style.pointerEvents = 'none';
+                  prevArrow.style.visibility = 'hidden';
                 } else {
-                  prevArrow.style.opacity = '1';
-                  prevArrow.style.cursor = 'pointer';
-                  prevArrow.disabled = false;
+                  prevArrow.style.opacity = '';
+                  prevArrow.style.pointerEvents = '';
+                  prevArrow.style.visibility = '';
                 }
               }
 
               if (nextArrow) {
                 if (swiperInstance.isEnd) {
-                  nextArrow.style.opacity = '0.3';
-                  nextArrow.style.cursor = 'not-allowed';
-                  nextArrow.disabled = true;
+                  nextArrow.style.opacity = '0';
+                  nextArrow.style.pointerEvents = 'none';
+                  nextArrow.style.visibility = 'hidden';
                 } else {
-                  nextArrow.style.opacity = '1';
-                  nextArrow.style.cursor = 'pointer';
-                  nextArrow.disabled = false;
+                  nextArrow.style.opacity = '';
+                  nextArrow.style.pointerEvents = '';
+                  nextArrow.style.visibility = '';
                 }
               }
             };
@@ -1238,6 +1322,273 @@
         });
       }
     }
+  }
+
+  // Product Video Carousel functionality
+  function productVideoCarousel() {
+    return {
+      swiper: null,
+
+      init() {
+        this.$nextTick(() => {
+          this.initializeCarousel();
+        });
+      },
+
+      initializeCarousel() {
+        const carouselElement = this.$el.querySelector('.product-video-carousel');
+
+        if (carouselElement && typeof Swiper !== 'undefined') {
+          // Check if already initialized
+          if (carouselElement.swiper) {
+            return;
+          }
+
+                      // Initialize Swiper
+            this.swiper = new Swiper(carouselElement, {
+              direction: 'horizontal',
+              slidesPerView: 1,
+              spaceBetween: 4,
+              loop: false,
+              centeredSlides: false,
+              grabCursor: false,
+              touchRatio: 1,
+              touchAngle: 45,
+              simulateTouch: true,
+              navigation: {
+                nextEl: '.carousel-next',
+                prevEl: '.carousel-prev',
+              },
+              speed: 800,
+
+              // Responsive breakpoints - more slides = smaller individual videos
+              breakpoints: {
+                1024: {
+                  slidesPerView: 2.2;
+                },
+              },
+
+            // Events for arrow states
+            on: {
+              init: function() {
+                updateProductVideoArrowStates(this);
+              },
+              slideChange: function() {
+                updateProductVideoArrowStates(this);
+              },
+              reachBeginning: function() {
+                updateProductVideoArrowStates(this);
+              },
+              reachEnd: function() {
+                updateProductVideoArrowStates(this);
+              },
+            },
+
+            // Pagination
+            pagination: {
+              el: carouselElement.querySelector('.swiper-pagination'),
+              clickable: true,
+              renderBullet: function (index, className) {
+                return '<span class="' + className + ' w-2 h-2 rounded-full bg-gray-300 cursor-pointer transition-all duration-200 hover:bg-gray-400"></span>';
+              },
+            },
+          });
+
+          // Store swiper instance
+          carouselElement.swiper = this.swiper;
+        }
+      },
+
+      destroy() {
+        if (this.swiper) {
+          this.swiper.destroy();
+          this.swiper = null;
+        }
+      }
+    }
+  }
+
+  // Function to update arrow states for product video carousel
+  function updateProductVideoArrowStates(swiper) {
+    const sectionContainer = document.querySelector('[x-data*="productVideoCarousel"]');
+    if (!sectionContainer) return;
+
+    const prevArrow = sectionContainer.querySelector('.carousel-prev');
+    const nextArrow = sectionContainer.querySelector('.carousel-next');
+
+    if (prevArrow) {
+      if (swiper.isBeginning) {
+        prevArrow.style.opacity = '0.3';
+        prevArrow.style.cursor = 'not-allowed';
+        prevArrow.disabled = true;
+      } else {
+        prevArrow.style.opacity = '1';
+        prevArrow.style.cursor = 'pointer';
+        prevArrow.disabled = false;
+      }
+    }
+
+    if (nextArrow) {
+      if (swiper.isEnd) {
+        nextArrow.style.opacity = '0.3';
+        nextArrow.style.cursor = 'not-allowed';
+        nextArrow.disabled = true;
+      } else {
+        nextArrow.style.opacity = '1';
+        nextArrow.style.cursor = 'pointer';
+        nextArrow.disabled = false;
+      }
+    }
+  }
+
+  // Video Slide functionality (same as video-slide snippet)
+  function videoSlide() {
+    return {
+      isPlaying: false,
+      videoLoaded: false,
+      showPlayButton: true,
+      hoverTimeout: null,
+
+      onVideoLoaded() {
+        console.log('Video metadata loaded');
+        this.videoLoaded = true;
+        // Set initial video state
+        const video = this.$refs.video;
+        if (video) {
+          video.currentTime = 0;
+          video.muted = true;
+          console.log('Video initial state set');
+        }
+      },
+
+      handleMouseEnter() {
+        console.log('Mouse entered, videoLoaded:', this.videoLoaded);
+        if (!this.videoLoaded) return;
+
+        // Clear any existing timeout
+        if (this.hoverTimeout) {
+          clearTimeout(this.hoverTimeout);
+        }
+
+
+
+        // Start playing after a short delay
+        this.hoverTimeout = setTimeout(() => {
+          console.log('Starting video playback');
+          this.playVideo();
+        }, 200);
+      },
+
+      handleMouseLeave() {
+        // Clear hover timeout
+        if (this.hoverTimeout) {
+          clearTimeout(this.hoverTimeout);
+        }
+
+    
+
+        // Pause video and reset
+        this.pauseVideo();
+      },
+
+      playVideo() {
+        const video = this.$refs.video;
+        console.log('playVideo called, video:', video, 'videoLoaded:', this.videoLoaded);
+        if (!video || !this.videoLoaded) return;
+
+        video
+          .play()
+          .then(() => {
+            console.log('Video playing successfully');
+            this.isPlaying = true;
+            this.showPlayButton = false;
+          })
+          .catch((error) => {
+            console.log('Video play failed:', error);
+            // Fallback: ensure video is muted and try again
+            video.muted = true;
+            video
+              .play()
+              .then(() => {
+                console.log('Video playing after mute');
+                this.isPlaying = true;
+                this.showPlayButton = false;
+              })
+              .catch(() => {
+                console.log('Video play completely failed');
+                // If still fails, just hide the play button
+                this.showPlayButton = false;
+              });
+          });
+      },
+
+      pauseVideo() {
+        const video = this.$refs.video;
+        if (!video) return;
+
+        video.pause();
+        video.currentTime = 0;
+        this.isPlaying = false;
+        this.showPlayButton = true;
+      },
+
+      // Handle click events
+      togglePlay() {
+        if (this.isPlaying) {
+          this.pauseVideo();
+        } else {
+          this.playVideo();
+        }
+      },
+
+      init() {
+        // Initialize video state
+        this.$nextTick(() => {
+          const video = this.$refs.video;
+          if (video) {
+            // Ensure video is muted for autoplay compliance
+            video.muted = true;
+            video.playsInline = true;
+
+            // Check if HLS.js is available and needed
+            const videoSrc = video.querySelector('source')?.src;
+            if (videoSrc && videoSrc.includes('.m3u8')) {
+              console.log('HLS video detected:', videoSrc);
+              if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                console.log('Using HLS.js for video playback');
+                const hls = new Hls();
+                hls.loadSource(videoSrc);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                  console.log('HLS manifest parsed');
+                  this.videoLoaded = true;
+                });
+              } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                console.log('Native HLS support detected');
+                video.src = videoSrc;
+              } else {
+                console.error('HLS not supported');
+              }
+            }
+
+            video.addEventListener('ended', () => {
+              this.pauseVideo();
+            });
+
+            video.addEventListener('error', (e) => {
+              console.error('Video loading error:', e);
+              this.showPlayButton = false;
+            });
+
+            // Handle click to play/pause
+            video.addEventListener('click', (e) => {
+              e.preventDefault();
+              this.togglePlay();
+            });
+          }
+        });
+      },
+    };
   }
 </script>
 

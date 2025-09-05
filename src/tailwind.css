@@ -107,6 +107,18 @@
   display: none !important;
 }
 
+/* Global alt text hiding */
+img {
+  font-size: 0 !important;
+  color: transparent !important;
+  text-indent: -9999px;
+  
+  /* Hide broken image indicators */
+  &::before,
+  &::after {
+    display: none !important;
+  }
+}
 
 }
 

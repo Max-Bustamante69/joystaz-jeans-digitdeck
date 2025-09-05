@@ -33,7 +33,7 @@
       >
         <div class="swiper-wrapper h-full">
           {% for image in product.images %}
-            <div class="swiper-slide w-full h-full flex-shrink-0">
+            <div class="swiper-slide w-full h-full flex-shrink-0"   @click="window.location.href = '{{ product.url }}'">
               <img
                 src="{{ image | image_url: width: 1800 }}"
                 alt="{{ product.title }} - Image {{ forloop.index }}"
@@ -89,6 +89,7 @@
         width="1800"
         height="1800"
         loading="eager"
+      
       >
     {% endif %}
 
@@ -106,12 +107,7 @@
       </div>
     {% endif %}
 
-    <!-- Product Link Overlay (for clicking to go to product page) - positioned behind interactive elements -->
-    <a
-      href="{{ product.url }}"
-      class="absolute inset-0 z-10 pointer-events-none"
-      aria-label="View {{ product.title }}"
-    ></a>
+
 
     <!-- Size Selector Plus Button - positioned in bottom right corner -->
     {% if show_size_selector and product.options contains 'Talla' %}

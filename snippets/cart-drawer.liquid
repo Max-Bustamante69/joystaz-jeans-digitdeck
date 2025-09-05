@@ -19,8 +19,6 @@
   x-transition:leave-start="opacity-100"
   x-transition:leave-end="opacity-0"
   class="fixed inset-0 z-50 overflow-hidden"
-  @click.self="closeDrawer()"
-  @keydown.escape.window="closeDrawer()"
   @cart:open.window="openDrawer()"
   @cart:updated.window="loadCart()"
 >
@@ -45,7 +43,7 @@
     x-transition:leave="transform transition ease-in duration-400"
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
-    class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-xl flex flex-col"
+    class="absolute right-0 top-0 h-full w-full sm:w-3/5 lg:w-3/5 xl:w-3/5 max-w-4xl bg-white shadow-xl flex flex-col overflow-hidden"
   >
     <!-- Header -->
     <div class="flex items-center justify-between p-6 border-b border-gray-200">
@@ -92,7 +90,7 @@
     </div>
 
     <!-- Cart Items -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+    <div class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4" style="-webkit-overflow-scrolling: touch;">
       <template x-if="cartItems.length === 0">
         <div class="text-center py-8">
           <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -249,6 +247,373 @@
         </svg>
       </div>
     </div>
+
+    <!-- Cart Product Carousel -->
+    {% if settings.cart_show_product_carousel %}
+      <div class="border-t border-gray-200 p-4">
+        <h3 class="text-lg font-semibold mb-4">También te puede interesar</h3>
+
+        {% comment %} Calculate tag-based product selection logic {% endcomment %}
+        {% assign mujer_count = 0 %}
+        {% assign hombre_count = 0 %}
+        {% assign total_cart_items = 0 %}
+
+        {% comment %} Get cart items and count tags/collections {% endcomment %}
+        {% for item in cart.items %}
+          {% assign total_cart_items = total_cart_items | plus: item.quantity %}
+          {% assign item_is_mujer = false %}
+          {% assign item_is_hombre = false %}
+
+          {% comment %} Check product tags {% endcomment %}
+          {% for tag in item.product.tags %}
+            {% assign tag_lower = tag | downcase %}
+            {% if tag_lower == 'mujer' %}
+              {% assign item_is_mujer = true %}
+            {% elsif tag_lower == 'hombre' %}
+              {% assign item_is_hombre = true %}
+            {% endif %}
+          {% endfor %}
+
+          {% comment %} Check product collections if not found in tags {% endcomment %}
+          {% unless item_is_mujer or item_is_hombre %}
+            {% for collection in item.product.collections %}
+              {% assign collection_handle = collection.handle | downcase %}
+              {% if collection_handle contains 'mujer'
+                or collection_handle contains 'women'
+                or collection_handle contains 'female'
+              %}
+                {% assign item_is_mujer = true %}
+              {% elsif collection_handle contains 'hombre'
+                or collection_handle contains 'men'
+                or collection_handle contains 'male'
+              %}
+                {% assign item_is_hombre = true %}
+              {% endif %}
+            {% endfor %}
+          {% endunless %}
+
+          {% if item_is_mujer %}
+            {% assign mujer_count = mujer_count | plus: item.quantity %}
+          {% elsif item_is_hombre %}
+            {% assign hombre_count = hombre_count | plus: item.quantity %}
+          {% endif %}
+        {% endfor %}
+
+        {% comment %} Calculate percentages and product counts {% endcomment %}
+        {% assign max_products = settings.cart_carousel_max_products | default: 8 %}
+        {% assign mujer_percentage = 0 %}
+        {% assign hombre_percentage = 0 %}
+        {% assign mujer_products_count = 0 %}
+        {% assign hombre_products_count = 0 %}
+
+        {% if total_cart_items > 0 %}
+          {% assign mujer_percentage = mujer_count | times: 100 | divided_by: total_cart_items %}
+          {% assign hombre_percentage = hombre_count | times: 100 | divided_by: total_cart_items %}
+          {% assign mujer_products_count = max_products | times: mujer_percentage | divided_by: 100 %}
+          {% assign hombre_products_count = max_products | times: hombre_percentage | divided_by: 100 %}
+        {% endif %}
+
+        {% comment %} Get products based on cart content or fallback collections {% endcomment %}
+        {% if total_cart_items > 0 and mujer_count > 0 or hombre_count > 0 %}
+          {% comment %} Find the specific hombre and mujer collections from cart items {% endcomment %}
+          {% assign mujer_collection = null %}
+          {% assign hombre_collection = null %}
+
+          {% comment %} First, find the collections from cart items {% endcomment %}
+          {% for item in cart.items %}
+            {% for collection in item.product.collections %}
+              {% assign collection_handle = collection.handle | downcase %}
+              {% if collection_handle == 'mujer' or collection_handle == 'women' or collection_handle == 'female' %}
+                {% assign mujer_collection = collection %}
+              {% elsif collection_handle == 'hombre' or collection_handle == 'men' or collection_handle == 'male' %}
+                {% assign hombre_collection = collection %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+
+          {% comment %} Get products from mujer collection - limited to calculated amount {% endcomment %}
+          {% if mujer_products_count > 0 and mujer_collection %}
+            {% assign mujer_products_filtered = '' %}
+            {% assign mujer_found_count = 0 %}
+
+            {% for product in mujer_collection.products %}
+              {% if product.available and mujer_found_count < mujer_products_count %}
+                {% comment %} Skip products that are already in cart {% endcomment %}
+                {% assign product_in_cart = false %}
+                {% for cart_item in cart.items %}
+                  {% if cart_item.product.handle == product.handle %}
+                    {% assign product_in_cart = true %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                {% unless product_in_cart %}
+                  {% assign mujer_products_filtered = mujer_products_filtered | append: product.handle | append: ',' %}
+                  {% assign mujer_found_count = mujer_found_count | plus: 1 %}
+                {% endunless %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% comment %} Get products from hombre collection - limited to calculated amount {% endcomment %}
+          {% if hombre_products_count > 0 and hombre_collection %}
+            {% assign hombre_products_filtered = '' %}
+            {% assign hombre_found_count = 0 %}
+
+            {% for product in hombre_collection.products %}
+              {% if product.available and hombre_found_count < hombre_products_count %}
+                {% comment %} Skip products that are already in cart {% endcomment %}
+                {% assign product_in_cart = false %}
+                {% for cart_item in cart.items %}
+                  {% if cart_item.product.handle == product.handle %}
+                    {% assign product_in_cart = true %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                {% unless product_in_cart %}
+                  {% assign hombre_products_filtered = hombre_products_filtered
+                    | append: product.handle
+                    | append: ','
+                  %}
+                  {% assign hombre_found_count = hombre_found_count | plus: 1 %}
+                {% endunless %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% else %}
+          {% comment %} Use fallback collections when cart is empty or no gender tags {% endcomment %}
+          {% assign fallback_products = '' %}
+          {% assign fallback_collections_count = settings.cart_fallback_collections.size %}
+
+          <!-- DEBUG: Fallback collections count: {{ fallback_collections_count }} -->
+          {% if fallback_collections_count > 0 %}
+            {% comment %} Calculate products per collection {% endcomment %}
+            {% assign products_per_collection = max_products | divided_by: fallback_collections_count %}
+            {% assign remaining_products = max_products | modulo: fallback_collections_count %}
+
+            <!-- DEBUG: Products per collection: {{ products_per_collection }}, Remaining: {{ remaining_products }} -->
+
+            {% for collection in settings.cart_fallback_collections %}
+              {% assign collection_products_added = 0 %}
+              {% assign target_products = products_per_collection %}
+
+              <!-- DEBUG: Processing collection: {{ collection.title }} -->
+
+              {% comment %} Add one extra product to first few collections if there's a remainder {% endcomment %}
+              {% if forloop.index <= remaining_products %}
+                {% assign target_products = target_products | plus: 1 %}
+              {% endif %}
+
+              <!-- DEBUG: Target products for this collection: {{ target_products }} -->
+
+              {% for product in collection.products %}
+                {% if product.available and collection_products_added < target_products %}
+                  {% assign fallback_products = fallback_products | append: product.handle | append: ',' %}
+                  {% assign collection_products_added = collection_products_added | plus: 1 %}
+                  <!-- DEBUG: Added fallback product: {{ product.title }} -->
+                {% endif %}
+              {% endfor %}
+
+              <!-- DEBUG: Added {{ collection_products_added }} products from {{ collection.title }} -->
+            {% endfor %}
+
+            <!-- DEBUG: Total fallback products collected: {{ fallback_products | split: ',' | size | minus: 1 }} -->
+          {% endif %}
+        {% endif %}
+
+        {% comment %} Build final product list with shuffling {% endcomment %}
+        {% assign final_products = '' %}
+        {% assign products_added = 0 %}
+
+        {% if total_cart_items > 0 and mujer_count > 0 or hombre_count > 0 %}
+          {% comment %} First, collect all products in separate arrays {% endcomment %}
+          {% assign mujer_products_array = '' %}
+          {% assign hombre_products_array = '' %}
+
+          {% comment %} Collect mujer products {% endcomment %}
+          {% if mujer_products_count > 0 and mujer_products_filtered != blank %}
+            {% assign mujer_handles = mujer_products_filtered | split: ',' %}
+            {% assign mujer_added = 0 %}
+            {% for handle in mujer_handles %}
+              {% if handle != blank and mujer_added < mujer_products_count %}
+                {% assign product = all_products[handle] %}
+                {% if product and product.available %}
+                  {% assign mujer_products_array = mujer_products_array | append: product.handle | append: ',' %}
+                  {% assign mujer_added = mujer_added | plus: 1 %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% comment %} Collect hombre products {% endcomment %}
+          {% if hombre_products_count > 0 and hombre_products_filtered != blank %}
+            {% assign hombre_handles = hombre_products_filtered | split: ',' %}
+            {% assign hombre_added = 0 %}
+            {% for handle in hombre_handles %}
+              {% if handle != blank and hombre_added < hombre_products_count %}
+                {% assign product = all_products[handle] %}
+                {% if product and product.available %}
+                  {% assign hombre_products_array = hombre_products_array | append: product.handle | append: ',' %}
+                  {% assign hombre_added = hombre_added | plus: 1 %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+
+          {% comment %} Shuffle and mix the products {% endcomment %}
+          {% assign mujer_handles_array = mujer_products_array | split: ',' %}
+          {% assign hombre_handles_array = hombre_products_array | split: ',' %}
+          {% assign mujer_index = 0 %}
+          {% assign hombre_index = 0 %}
+          {% assign total_products_to_add = mujer_added | plus: hombre_added %}
+
+          {% comment %} Create a simple shuffle pattern: alternate with some randomness {% endcomment %}
+          {% for i in (1..total_products_to_add) %}
+            {% if products_added < max_products %}
+              {% comment %} Simple alternating pattern with some variation {% endcomment %}
+              {% assign should_add_mujer = false %}
+              {% assign should_add_hombre = false %}
+
+              {% if mujer_index < mujer_added and hombre_index < hombre_added %}
+                {% comment %} Both arrays have products, alternate with some randomness {% endcomment %}
+                {% assign random_factor = i | modulo: 3 %}
+                {% if random_factor == 0 or random_factor == 1 %}
+                  {% assign should_add_mujer = true %}
+                {% else %}
+                  {% assign should_add_hombre = true %}
+                {% endif %}
+              {% elsif mujer_index < mujer_added %}
+                {% assign should_add_mujer = true %}
+              {% elsif hombre_index < hombre_added %}
+                {% assign should_add_hombre = true %}
+              {% endif %}
+
+              {% if should_add_mujer and mujer_index < mujer_handles_array.size %}
+                {% assign handle = mujer_handles_array[mujer_index] %}
+                {% if handle != blank %}
+                  {% assign final_products = final_products | append: handle | append: ',' %}
+                  {% assign products_added = products_added | plus: 1 %}
+                {% endif %}
+                {% assign mujer_index = mujer_index | plus: 1 %}
+              {% elsif should_add_hombre and hombre_index < hombre_handles_array.size %}
+                {% assign handle = hombre_handles_array[hombre_index] %}
+                {% if handle != blank %}
+                  {% assign final_products = final_products | append: handle | append: ',' %}
+                  {% assign products_added = products_added | plus: 1 %}
+                {% endif %}
+                {% assign hombre_index = hombre_index | plus: 1 %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          {% comment %} Use same shuffling method for fallback products {% endcomment %}
+          {% if fallback_products != blank %}
+            {% assign fallback_handles = fallback_products | split: ',' %}
+            {% assign fallback_handles_count = fallback_handles.size | minus: 1 %}
+
+            {% comment %} Use same shuffling pattern as hombre/mujer products {% endcomment %}
+            {% for i in (1..fallback_handles_count) %}
+              {% if products_added < max_products %}
+                {% assign handle_index = i | minus: 1 %}
+                {% assign handle = fallback_handles[handle_index] %}
+                {% if handle != blank %}
+                  {% assign product = all_products[handle] %}
+                  {% if product and product.available %}
+                    {% assign final_products = final_products | append: product.handle | append: ',' %}
+                    {% assign products_added = products_added | plus: 1 %}
+                  {% endif %}
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+
+        {% comment %} Debug: Check if we have products to render {% endcomment %}
+        <!-- DEBUG: Final products string: {{ final_products }} -->
+        <!-- DEBUG: Products added count: {{ products_added }} -->
+
+        {% comment %} Render the carousel if we have products {% endcomment %}
+        {% if final_products != blank %}
+          <div class="relative">
+            <div
+              class="cart-product-carousel swiper-cart-carousel overflow-hidden touch-pan-y"
+              data-carousel-id="cart-carousel"
+              data-carousel-type="cart-carousel"
+              @touchstart.stop
+              @touchmove.stop
+              @touchend.stop
+              @mousedown.stop
+              @mousemove.stop
+              @mouseup.stop
+            >
+              <div class="swiper-wrapper">
+                {% assign product_handles = final_products | split: ',' %}
+                {% for handle in product_handles %}
+                  {% if handle != blank %}
+                    {% assign product = all_products[handle] %}
+                    {% if product and product.available %}
+                      <div class="swiper-slide h-auto" @click.stop @touchstart.stop @touchend.stop>
+                        <div class="w-full h-full">
+                          {% render 'product-card',
+                            product: product,
+                            show_badges: false,
+                            show_rating: false,
+                            show_color_swatches: false,
+                            show_size_selector: false,
+                            hide_info: true
+                          %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <div class="absolute inset-0 pointer-events-none">
+              <button
+                class="cart-carousel-prev absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 hover:opacity-100 hover:bg-white/95 hover:scale-105 transition-all duration-300 z-50 pointer-events-auto cursor-pointer"
+                data-carousel-id="cart-carousel"
+                type="button"
+                @click.stop
+                @touchstart.stop
+                @touchend.stop
+              >
+                <svg
+                  class="w-4 h-4 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="2.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button
+                class="cart-carousel-next absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg opacity-0 hover:opacity-100 hover:bg-white/95 hover:scale-105 transition-all duration-300 z-50 pointer-events-auto cursor-pointer"
+                data-carousel-id="cart-carousel"
+                type="button"
+                @click.stop
+                @touchstart.stop
+                @touchend.stop
+              >
+                <svg
+                  class="w-4 h-4 text-gray-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="2.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
   </div>
 </div>
 
@@ -269,6 +634,7 @@
         this.$watch('cartItems', () => {
           this.calculateTotals();
         });
+        this.initializeCartCarousel();
       },
 
       async tryGetShopifyFreeShippingThreshold() {
@@ -297,11 +663,13 @@
       openDrawer() {
         this.isOpen = true;
         document.body.style.overflow = 'hidden';
+        document.body.classList.add('cart-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
+        document.body.classList.remove('cart-drawer-open');
       },
 
       async loadCart() {
@@ -310,6 +678,7 @@
           const cart = await response.json();
           this.cartItems = cart.items;
           this.calculateTotals();
+
         } catch (error) {
           console.error('Error loading cart:', error);
         }
@@ -409,6 +778,96 @@
       toggleWishlist(productId) {
         // Implement wishlist functionality here
         console.log('Toggle wishlist for product:', productId);
+      },
+
+      initializeCartCarousel() {
+        this.$nextTick(() => {
+          const carouselElement = this.$el.querySelector('.swiper-cart-carousel');
+          if (carouselElement && typeof Swiper !== 'undefined') {
+            // Check if this carousel is already initialized
+            if (carouselElement.swiper) {
+              return;
+            }
+
+
+            // Create swiper instance for cart carousel
+            const swiperInstance = new Swiper(carouselElement, {
+              slidesPerView: 1.2,
+              spaceBetween: 8,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+                momentum: true,
+                momentumRatio: 0.25,
+                momentumVelocityRatio: 0.5,
+                momentumBounce: true,
+                momentumBounceRatio: 0.3,
+              },
+              grabCursor: false,
+              navigation: {
+                nextEl: carouselElement.querySelector('.cart-carousel-next'),
+                prevEl: carouselElement.querySelector('.cart-carousel-prev'),
+              },
+              breakpoints: {
+                768: {
+                  slidesPerView: 2.2,
+                  spaceBetween: 12,
+                },
+                1024: {
+                  slidesPerView: 3.2,
+                  spaceBetween: 16,
+                }
+              },
+              on: {
+                init: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                slideChange: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                reachBeginning: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                reachEnd: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+              },
+            });
+
+            // Function to update arrow states for cart carousel
+            function updateCartCarouselArrowStates(swiper) {
+              const prevArrow = carouselElement.querySelector('.cart-carousel-prev');
+              const nextArrow = carouselElement.querySelector('.cart-carousel-next');
+
+              if (prevArrow) {
+                if (swiper.isBeginning) {
+                  prevArrow.style.opacity = '0.3';
+                  prevArrow.style.cursor = 'not-allowed';
+                  prevArrow.disabled = true;
+                } else {
+                  prevArrow.style.opacity = '1';
+                  prevArrow.style.cursor = 'pointer';
+                  prevArrow.disabled = false;
+                }
+              }
+
+              if (nextArrow) {
+                if (swiper.isEnd) {
+                  nextArrow.style.opacity = '0.3';
+                  nextArrow.style.cursor = 'not-allowed';
+                  nextArrow.disabled = true;
+                } else {
+                  nextArrow.style.opacity = '1';
+                  nextArrow.style.cursor = 'pointer';
+                  nextArrow.disabled = false;
+                }
+              }
+            }
+
+            // Store the swiper instance on the element to avoid conflicts
+            carouselElement.swiper = swiperInstance;
+          }
+        });
       },
     };
   }

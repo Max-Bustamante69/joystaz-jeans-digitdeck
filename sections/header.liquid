@@ -66,6 +66,7 @@
 
   <!-- Mobile Menu Overlay -->
   <div
+    x-cloak
     x-show="mobileMenuOpen"
     x-transition:enter="transition ease-out duration-500"
     x-transition:enter-start="opacity-0"
@@ -79,6 +80,7 @@
 
   <!-- Mobile Menu Panel -->
   <div
+    x-cloak
     x-show="mobileMenuOpen"
     x-transition:enter="transform transition ease-out duration-500"
     x-transition:enter-start="transform -translate-x-full"
@@ -86,7 +88,7 @@
     x-transition:leave="transform transition ease-in duration-400"
     x-transition:leave-start="transform translate-x-0"
     x-transition:leave-end="transform -translate-x-full"
-    class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-50 xl:hidden overflow-y-auto"
+    class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-100 xl:hidden overflow-y-auto"
     x-data="mobileMenu()"
   >
     <div class="p-6">
@@ -133,10 +135,20 @@
               {% for subcollection in subcollections %}
                 <a
                   href="{{ subcollection.url }}"
-                  class="block py-3 text-gray-700 hover:text-gray-900 transition-colors border-b border-gray-100"
+                  class="flex items-center justify-between py-3 text-gray-700 hover:text-gray-900 transition-colors border-b border-gray-100"
                   @click="mobileMenuOpen = false"
                 >
-                  {{ subcollection.title }}
+                <p class="text-sm">{{ subcollection.title }}</p>
+                {% if subcollection.image %}
+                  
+                  {{ subcollection.image | image_url: width: 400 | image_tag: class: 'aspect-square w-16 h-16 object-cover transition-transform duration-300', alt: subcollection.title, loading: 'lazy' }}
+                  {% elsif subcollection.metafields.custom.card_image.value %}
+                    {{ subcollection.metafields.custom.card_image.value | image_url: width: 400 | image_tag: class: 'aspect-square w-16 h-16 object-cover transition-transform duration-300', alt: subcollection.title, loading: 'lazy' }}
+                {% else %}
+                  <div class="w-16 h-16 bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-400 text-sm">No image</span>
+                  </div>
+                {% endif %}
                 </a>
               {% endfor %}
             {% endif %}
@@ -155,7 +167,7 @@
                     <div class="swiper-wrapper">
                       {% for subcollection in subcollections %}
                         <div class="swiper-slide">
-                          <div class="w-32">
+                          <div class="w-full">
                             {% render 'collection-card',
                               category: subcollection,
                               text_position: 'bottom-left',

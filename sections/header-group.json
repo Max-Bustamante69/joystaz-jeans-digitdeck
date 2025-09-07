@@ -14,7 +14,11 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu": "header-menu"
+        "menu": "header-menu",
+        "mobile_menu_collections": [
+          "men",
+          "women"
+        ]
       }
     }
   },

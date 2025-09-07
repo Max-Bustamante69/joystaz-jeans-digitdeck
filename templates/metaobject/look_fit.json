@@ -9,18 +9,30 @@
  */
 {
   "sections": {
-    "single_look": {
-      "type": "single-look",
+    "product_carousel_Y33Hjq": {
+      "type": "product-carousel",
+      "name": "Product Carousel",
       "settings": {
-        "title": "Look Details"
-      }
-    },
-    "look_fit_grid": {
-      "type": "look-fit-grid",
-      "settings": {
-        "title": "Get The Look"
+        "title": "Best Sellers",
+        "subtitle": "Best Sellers",
+        "show_view_all": true,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "product_source": "collection",
+        "collection": "",
+        "product_tags": "",
+        "products": [],
+        "max_products": 12,
+        "show_badges": true,
+        "show_rating": true,
+        "show_color_swatches": true,
+        "show_size_selector": true,
+        "no_products_message": "No hay productos disponibles en este momento."
       }
     }
   },
-  "order": ["single_look", "look_fit_grid"]
+  "order": [
+    "product_carousel_Y33Hjq"
+  ]
 }

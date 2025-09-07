@@ -1,0 +1,227 @@
+{% comment %}
+  sections/single-look.liquid
+  Section for displaying a single Look Fit metaobject entry
+  based on the 'handle' parameter from the URL
+{% endcomment %}
+
+{% comment %} Get the handle from the URL path - e.g., /pages/look-fit/hombre-completo {% endcomment %}
+{% assign url_parts = request.path | split: '/' %}
+{% assign url_handle = url_parts.last %}
+{% assign current_look = null %}
+{% assign is_collection_page = false %}
+
+{% comment %} Check if the URL handle is a collection {% endcomment %}
+{% if url_handle and url_handle != 'look-fit' %}
+  {% assign collection_by_handle = collections[url_handle] %}
+  {% if collection_by_handle %}
+    {% assign is_collection_page = true %}
+  {% else %}
+    {% comment %} Not a collection, check if it's a metaobject {% endcomment %}
+    {% assign current_look = metaobject %}
+  {% endif %}
+{% endif %}
+
+{% comment %} Only render single look section if we have a valid metaobject and it's not a collection page {% endcomment %}
+{% if current_look and is_collection_page == false %}
+  <div class="container mx-auto px-4 py-12">
+    {% if current_look %}
+      <nav class="text-sm breadcrumbs mb-8">
+        <ul>
+          <li><a href="{{ routes.root_url }}" class="text-gray-500 hover:text-gray-700">Inicio</a></li>
+          <li><span class="mx-2 text-gray-400">/</span></li>
+          <li>
+            <a href="{{ routes.root_url }}pages/look-fit" class="text-gray-500 hover:text-gray-700">Get The Look</a>
+          </li>
+          <li><span class="mx-2 text-gray-400">/</span></li>
+          <li class="font-semibold text-gray-800">{{ current_look.fit_title }}</li>
+        </ul>
+      </nav>
+
+      <div class="flex flex-col lg:flex-row gap-12">
+        <div class="lg:w-1/2">
+          {% if current_look.fit_image %}
+            <img
+              src="{{ current_look.fit_image | image_url: width: 1200 }}"
+              alt="{{ current_look.fit_title }}"
+              width="1200"
+              height="1600"
+              class="w-full h-auto object-cover rounded-lg shadow-xl"
+            >
+          {% else %}
+            <div class="w-full h-96 bg-gray-200 flex items-center justify-center rounded-lg text-gray-500">
+              Imagen no disponible
+            </div>
+          {% endif %}
+
+          {% if current_look.assigned_collections.size > 0 or current_look.assigned_tags.size > 0 %}
+            <div class="mt-8 p-6 bg-gray-50 rounded-lg shadow-md">
+              <h3 class="text-lg font-semibold text-gray-800 mb-4">Información adicional del Look:</h3>
+              {% if current_look.assigned_collections.size > 0 %}
+                <div class="mb-4">
+                  <span class="block text-sm font-medium text-gray-700 mb-2">Colecciones relacionadas:</span>
+                  <div class="flex flex-wrap gap-2">
+                    {% for collection in current_look.assigned_collections.value %}
+                      <a
+                        href="{{ collection.url }}"
+                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium px-3 py-1 rounded-full transition duration-150 ease-in-out"
+                      >
+                        {{ collection.title }}
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+              {% if current_look.assigned_tags.size > 0 %}
+                <div>
+                  <span class="block text-sm font-medium text-gray-700 mb-2">Tags:</span>
+                  <div class="flex flex-wrap gap-2">
+                    {% for tag in current_look.assigned_tags.value %}
+                      <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                        {{ tag }}
+                      </span>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="lg:w-1/2">
+          <h1 class="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">{{ current_look.fit_title }}</h1>
+
+          <div class="fit-products mt-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-6">Productos de este look:</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+              {% if current_look.related_products.value.count > 0 %}
+                {% for product in current_look.related_products.value %}
+                  <div class="product-card bg-white border border-gray-200 rounded-lg shadow-sm p-4 text-center">
+                    <a href="{{ product.url }}" class="block">
+                      {% if product.featured_media %}
+                        <div class="h-48 overflow-hidden mb-4">
+                          <img
+                            src="{{ product.featured_media | image_url: width: 400 }}"
+                            alt="{{ product.title }}"
+                            width="400"
+                            height="400"
+                            class="w-full h-full object-contain"
+                          >
+                        </div>
+                      {% else %}
+                        <div class="h-48 bg-gray-100 flex items-center justify-center rounded-md mb-4 text-gray-400">
+                          No hay imagen
+                        </div>
+                      {% endif %}
+                      <h3 class="text-lg font-semibold text-gray-800 mb-2 min-h-[3em] line-clamp-2">
+                        {{ product.title }}
+                      </h3>
+                      <p class="text-xl font-bold text-gray-900">
+                        {{ product.selected_or_first_available_variant.price | money }}
+                      </p>
+                    </a>
+
+                    <form action="/cart/add" method="post" enctype="multipart/form-data" class="mt-4">
+                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                      <button
+                        type="submit"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-200 ease-in-out"
+                      >
+                        Agregar al carrito
+                      </button>
+                    </form>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <p class="col-span-full text-center text-gray-600">No hay productos asignados a este look.</p>
+              {% endif %}
+            </div>
+
+            {% if current_look.related_products.size > 0 %}
+              <div class="add-all-to-cart mt-10 text-center">
+                <button
+                  onclick="addAllToCart()"
+                  class="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                >
+                  Agregar todos los productos al carrito
+                </button>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-center py-20">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Look no encontrado</h1>
+        <p class="text-lg text-gray-600 mb-8">El look que buscas no está disponible o la URL es incorrecta.</p>
+        <a
+          href="{{ routes.root_url }}pages/look-fit"
+          class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Volver a todos los looks
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+<script>
+  function addAllToCart() {
+    const products = [
+      {% for product in current_look.related_products.value %}
+        {
+          id: {{ product.selected_or_first_available_variant.id }},
+          quantity: 1
+        }{% unless forloop.last %},{% endunless %}
+      {% endfor %}
+    ];
+
+    if (products.length === 0) {
+      alert('No hay productos para añadir a este look.');
+      return;
+    }
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        items: products
+      })
+    })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(errorData => { throw new Error(errorData.description || 'Error al añadir productos al carrito'); });
+      }
+      return response.json();
+    })
+    .then(data => {
+      window.location.href = '/cart'; // Redirigir al carrito
+    })
+    .catch(error => {
+      console.error('Error al agregar productos al carrito:', error);
+      alert('Hubo un error al añadir los productos al carrito: ' + error.message + '. Por favor, inténtalo de nuevo.');
+    });
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Single Look",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "Look Details"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Single Look"
+    }
+  ]
+}
+{% endschema %}

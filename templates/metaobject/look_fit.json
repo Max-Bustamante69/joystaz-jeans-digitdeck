@@ -8,6 +8,19 @@
  * ------------------------------------------------------------
  */
 {
-  "sections": {},
-  "order": []
+  "sections": {
+    "single_look": {
+      "type": "single-look",
+      "settings": {
+        "title": "Look Details"
+      }
+    },
+    "look_fit_grid": {
+      "type": "look-fit-grid",
+      "settings": {
+        "title": "Get The Look"
+      }
+    }
+  },
+  "order": ["single_look", "look_fit_grid"]
 }

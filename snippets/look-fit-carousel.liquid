@@ -1,0 +1,103 @@
+{% comment %}
+  Look Fit Carousel Snippet - Simple Version
+  Usage: {% render 'look-fit-carousel', metaobject: metaobject %}
+{% endcomment %}
+
+{% comment %} Count total items for navigation logic {% endcomment %}
+{% assign total_items = 0 %}
+{% if metaobject.images.value.count > 0 %}
+  {% assign total_items = total_items | plus: metaobject.images.value.count %}
+{% endif %}
+{% if metaobject.videos.value.count > 0 %}
+  {% assign total_items = total_items | plus: metaobject.videos.value.count %}
+{% endif %}
+
+{% if total_items > 0 %}
+  <div class="look-fit-carousel-container relative group">
+    <div class="swiper look-fit-carousel-{{ section.id | default: 'default' }} aspect-[3/4] lg:aspect-[4/5]">
+      <div class="swiper-wrapper">
+        {% comment %} Regular images {% endcomment %}
+        {% if metaobject.images.value.count > 0 %}
+          {% for image_url in metaobject.images.value %}
+            <div class="swiper-slide">
+              <img
+                src="{{ image_url | img_url: '1080x1920', crop: 'center' }}"
+                alt="{{ image_url.alt }}"
+                class="w-full h-full object-cover"
+                loading="lazy"
+                width="400"
+                height="600"
+
+              >>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {% comment %} Regular videos {% endcomment %}
+        {% if metaobject.videos.value.count > 0 %}
+          {% for video_url in metaobject.videos.value %}
+            <div class="swiper-slide">
+              <video class="w-full h-full object-cover" muted loop playsinline preload="metadata" autoplay>
+                <source src="https:{{ video_url }}" type="video/mp4">
+              </video>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %} Navigation - only show if more than 1 item {% endcomment %}
+    {% if total_items > 1 %}
+      <div class="absolute inset-0 pointer-events-none group-hover:block">
+        <button
+          class="carousel-arrow carousel-prev absolute p-2 left-2 top-1/2 -translate-y-1/2 w-10 h-10 lg:w-10 lg:h-10 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+          aria-label="Previous"
+        >
+          <svg
+            class="w-5 h-5 lg:w-5 lg:h-5 text-black drop-shadow-md"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button
+          class="carousel-arrow carousel-next absolute p-2 right-2 top-1/2 -translate-y-1/2 w-10 h-10 lg:w-10 lg:h-10 lg:opacity-0 group-hover:opacity-100 transition-all duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+          aria-label="Next"
+        >
+          <svg
+            class="w-5 h-5 lg:w-5 lg:h-5 text-black drop-shadow-md"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const carousel = document.querySelector('.look-fit-carousel-{{ section.id | default: 'default' }}');
+      if (carousel && typeof Swiper !== 'undefined') {
+        new Swiper(carousel, {
+          slidesPerView: 1,
+          navigation: {
+            nextEl: '.carousel-next',
+            prevEl: '.carousel-prev',
+          },
+
+        });
+      }
+    });
+  </script>
+{% else %}
+  <div class="aspect-[3/4] lg:aspect-[4/5] bg-gray-200 flex items-center justify-center">
+    <span class="text-gray-400 text-lg">No media available</span>
+  </div>
+{% endif %}

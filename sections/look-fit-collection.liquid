@@ -1,0 +1,134 @@
+{% comment %}
+  Look Fit Collection Section
+  This section displays a Look Fit Collection metaobject with its associated Look Fit entries.
+
+  The metaobject is automatically passed and can be accessed via the 'metaobject' keyword.
+  Expected metaobject fields:
+  - title: String
+  - featured_image: Image
+  - featured_video: Video
+  - images: Image list
+  - videos: Video list
+  - fits: Reference to Look Fit metaobjects
+{% endcomment %}
+
+<!-- Main Container with Alpine.js data -->
+<div x-data="{ layoutOption: 1 }">
+  <!-- Hero Section -->
+  {% render 'generic-hero',
+    image: metaobject.featured_image,
+    title: metaobject.title,
+    description: metaobject.description
+  %}
+
+  
+  <!-- Grid Content -->
+  {% capture grid_content %}
+    {% if metaobject.fits.value.count > 0 %}
+      {% for fit in metaobject.fits.value %}
+        <!-- Normal card for layouts 1 and 2 -->
+        <div>
+          {% render 'look-fit-card',
+            fit: fit,
+            text_position: 'bottom-left',
+            aspect_ratio: 'portrait'
+          %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <!-- No Results Message -->
+      <div class="col-span-full text-center py-16">
+        <div class="max-w-md mx-auto">
+          <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No looks found</h3>
+          <p class="text-gray-500 mb-6">This collection doesn't have any looks yet.</p>
+        </div>
+      </div>
+    {% endif %}
+  {% endcapture %}
+
+  <!-- Render Grid with Content -->
+  {% render 'generic-grid', content: grid_content, show_layout_toggle: true, show_filters: false %}
+</div>
+
+{% schema %}
+{
+  "name": "Look Fit Collection",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_layout_toggle",
+      "label": "Show Layout Toggle",
+      "default": true,
+      "info": "Show the layout toggle buttons (1, 2, 3 columns)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show Filters Button",
+      "default": false,
+      "info": "Show the filters button in the toolbar"
+    },
+    {
+      "type": "header",
+      "content": "Card Settings"
+    },
+    {
+      "type": "select",
+      "id": "default_aspect_ratio",
+      "label": "Default Aspect Ratio",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text Position",
+      "options": [
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "bottom-left"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,66 @@
+{% comment %}
+  Generic Grid Layout Snippet
+  Usage: {% render 'generic-grid', content: content_string, show_layout_toggle: true %}
+
+  Displays a grid layout with optional layout toggle and custom content
+  Parameters:
+  - content: String containing the grid content (required)
+  - show_layout_toggle: Boolean to show/hide layout toggle (optional, default: true)
+  - show_filters: Boolean to show/hide filters button (optional, default: true)
+{% endcomment %}
+
+<!-- Layout Toggle (only show when show_layout_toggle is true) -->
+{% if show_layout_toggle != false %}
+  <div class="flex items-center justify-between mt-15 px-12 h-10">
+    <div class="flex h-full items-center gap-4">
+      <!-- Layout Toggle -->
+      <button
+        @click="layoutOption = layoutOption >= 3 ? 1 : layoutOption + 1"
+        class="flex h-full items-center gap-2 cursor-pointer"
+      >
+        <p class="body">Vista</p>
+        <div class="flex gap-1">
+          <div
+            :class="layoutOption >= 1 ? 'bg-black' : 'bg-white border border-gray-300'"
+            class="size-4 transition-all duration-200"
+          ></div>
+          <div
+            :class="layoutOption >= 2 ? 'bg-black' : 'bg-white border border-gray-300'"
+            class="size-4 transition-all duration-200"
+          ></div>
+          <div
+            :class="layoutOption === 3 ? 'bg-black' : 'bg-white border border-gray-300'"
+            class="size-4 transition-all duration-200"
+          ></div>
+        </div>
+      </button>
+    </div>
+
+    <!-- Filters Button (only show when show_filters is true) -->
+    {% if show_filters != false %}
+      <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        Filtros
+      </button>
+    {% endif %}
+  </div>
+{% endif %}
+
+<!-- Content Grid -->
+<div class="">
+  <div
+    class="grid gap-0.5 transition-all duration-300"
+    :class="
+      {
+        'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
+        'grid-cols-2 lg:grid-cols-4 gap-y-6': layoutOption === 2,
+        'grid-cols-3 lg:grid-cols-6': layoutOption === 3
+      }
+    "
+  >
+    {{ content }}
+  </div>
+</div>
+

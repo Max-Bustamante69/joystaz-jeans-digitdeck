@@ -11,7 +11,7 @@
 <div x-data="{ layoutOption: 1 }">
   <!-- Collection Hero (only show if not in search context) -->
   {% unless template == 'search' %}
-    {% render 'collection-hero', collection: collection %}
+    {% render 'generic-hero', image: collection.image, title: collection.title, description: collection.description %}
   {% endunless %}
 
   <!-- Search Results Header (only show in search context) -->
@@ -71,18 +71,8 @@
     </div>
   {% endunless %}
 
-  <!-- Products Grid -->
-  <div class="">
-    <div
-      class="grid gap-0.5 transition-all duration-300"
-      :class="
-        {
-          'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
-          'grid-cols-2 lg:grid-cols-4 gap-y-6': layoutOption === 2,
-          'grid-cols-3 lg:grid-cols-6': layoutOption === 3
-        }
-      "
-    >
+  <!-- Products Grid Content -->
+  {% capture grid_content %}
       {% if template == 'search' %}
         <!-- Search Results -->
         {% assign products = search.results %}
@@ -182,8 +172,10 @@
           {% endfor %}
         {% endpaginate %}
       {% endif %}
-    </div>
-  </div>
+  {% endcapture %}
+
+  <!-- Render Grid with Content -->
+  {% render 'generic-grid', content: grid_content, show_layout_toggle: false, show_filters: true %}
 </div>
 
 {% schema %}

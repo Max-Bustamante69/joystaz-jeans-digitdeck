@@ -37,7 +37,7 @@
         <h5>Search</h5>
         <button
           @click="closeDrawer()"
-          class="text-gray-400 hover:text-gray-600 transition-colors duration-200 hover:scale-110"
+          class="text-gray-400 hover:text-gray-600 transition-colors duration-200 "
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -125,7 +125,7 @@
                 <!-- Clickable search term area -->
                 <button
                   @click="searchFromHistory(term)"
-                  class="flex items-center space-x-3 flex-1 min-w-0 text-left hover:scale-[1.01] transition-transform duration-200"
+                  class="flex items-center space-x-3 flex-1 min-w-0 text-left  transition-transform duration-200"
                 >
                   <svg
                     class="w-4 h-4 text-gray-400 flex-shrink-0"
@@ -265,7 +265,7 @@
                   <img
                     :src="result.featured_image.url"
                     :alt="result.title"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    class="w-full h-full object-cover  transition-transform duration-300"
                     width="400"
                     height="400"
                     loading="lazy"
@@ -288,7 +288,7 @@
         <div x-show="searchResults.length > 10" class="mt-6 text-center">
           <button
             @click="viewAllResults"
-            class="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 hover:scale-105"
+            class="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 "
           >
             Ver todos los <span x-text="searchResults.length"></span> resultados
           </button>

@@ -1,0 +1,16 @@
+{
+  "sections": {
+    "look_fit_collection_main": {
+      "type": "look-fit-collection",
+      "name": "Look Fit Collection",
+      "settings": {
+        "show_layout_toggle": true,
+        "show_filters": false,
+        "default_aspect_ratio": "portrait",
+        "text_position": "bottom-left"
+      }
+    }
+  },
+  "order": ["look_fit_collection_main"]
+}
+

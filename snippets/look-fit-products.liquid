@@ -1,0 +1,116 @@
+{% comment %}
+  Look Fit Products Snippet
+  Usage: {% render 'look-fit-products', metaobject: metaobject %}
+
+  Displays a 2x2 grid of related products for a Look Fit metaobject
+{% endcomment %}
+
+{% assign products = metaobject.related_products.value %}
+{% assign product_count = products.count %}
+{% if product_count > 0 %}
+  <div class="look-fit-products">
+    <!-- Section Header -->
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">
+        {{ section.settings.products_title | default: 'Consigue El Look' }}
+      </h2>
+      {% if section.settings.show_product_count != false %}
+        <p class="text-lg text-gray-600">{{ product_count }} artículo{{ product_count | pluralize: '', 's' }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid grid-cols-2 gap-4">
+      {% for product in products limit: 4 %}
+        <div class="product-card-container">
+          {% render 'product-card', 
+            product: product,
+            show_badges: true,
+            show_rating: true,
+            show_color_swatches: true,
+            show_size_selector: false,
+            hide_info: false
+          %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Show More Button (if more than 4 products) -->
+    {% if product_count > 4 %}
+      <div class="mt-6 text-center">
+        <button
+          class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200"
+          onclick="showAllProducts()"
+        >
+          Ver todos los productos ({{ product_count }})
+        </button>
+      </div>
+
+      <!-- Hidden products (initially) -->
+      <div id="additional-products" class="hidden mt-6">
+        <div class="grid grid-cols-2 gap-4">
+          {% for product in products offset: 4 %}
+            <div class="product-card-container">
+              {% render 'product-card',
+                product: product,
+                show_badges: true,
+                show_rating: true,
+                show_color_swatches: true,
+                show_size_selector: false,
+                hide_info: false
+              %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    function showAllProducts() {
+      const additionalProducts = document.getElementById('additional-products');
+      const button = document.querySelector('button[onclick="showAllProducts()"]');
+
+      if (additionalProducts && button) {
+        additionalProducts.classList.remove('hidden');
+        button.style.display = 'none';
+      }
+    }
+  </script>
+{% else %}
+  <!-- No Products Message -->
+  <div class="text-center py-12">
+    <div class="max-w-md mx-auto">
+      <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No products available</h3>
+      <p class="text-gray-500">This look doesn't have any associated products yet.</p>
+    </div>
+  </div>
+{% endif %}
+
+<style>
+  .look-fit-products .product-card-container {
+    /* Ensure consistent card heights */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .look-fit-products .product-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .look-fit-products .product-card .product-image {
+    flex-shrink: 0;
+  }
+
+  .look-fit-products .product-card .product-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+</style>

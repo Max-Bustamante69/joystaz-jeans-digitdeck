@@ -1,0 +1,20 @@
+{% comment %}
+  Look Fit Card Snippet
+  Usage: {% render 'look-fit-card', fit: fit_object, text_position: 'bottom-left', aspect_ratio: 'portrait' %}
+
+  Displays a card for a Look Fit metaobject
+  Parameters:
+  - fit: Look Fit metaobject (required)
+  - text_position: 'bottom-left', 'bottom-center', 'bottom-right', 'center' (optional, default: 'bottom-left')
+  - aspect_ratio: 'square', 'portrait', 'landscape', 'wide', 'ultra-wide', 'tall' (optional, default: 'portrait')
+{% endcomment %}
+
+{% comment %} Use the generic card component with Look Fit data {% endcomment %}
+{% render 'generic-card',
+  image: fit.featured_image,
+  video: fit.featured_video,
+  title: fit.title,
+  link: fit.system.url,
+  text_position: text_position,
+  aspect_ratio: aspect_ratio
+%}

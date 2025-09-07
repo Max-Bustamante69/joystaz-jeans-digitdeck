@@ -1,0 +1,75 @@
+{% comment %}
+  Look Fit Section
+  This section displays a single Look Fit metaobject with a carousel of images/videos
+  and a grid of related products.
+
+  The metaobject is automatically passed and can be accessed via the 'metaobject' keyword.
+  Expected metaobject fields:
+  - title: String
+  - featured_image: Image
+  - featured_video: Video
+  - images: Image list
+  - videos: Video list
+  - related_products: Product references
+{% endcomment %}
+
+<div class="look-fit-section mt-24">
+  
+  <!-- Single Flex Container for Both Desktop and Mobile -->
+  <div class="flex flex-col lg:flex-row lg:gap-8 lg:min-h-[80vh]">
+    <!-- Carousel Section -->
+    <div class=" lg:w-3/5 mb-8 lg:mb-0">
+      {% render 'look-fit-carousel', metaobject: metaobject %}
+    </div>
+
+    <!-- Products Grid Section -->
+    <div class=" lg:w-2/5">
+      {% render 'look-fit-products', metaobject: metaobject %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Look Fit",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable Autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "label": "Autoplay Delay (ms)",
+      "min": 2000,
+      "max": 9500,
+      "step": 500,
+      "default": 5000
+    },
+    {
+      "type": "header",
+      "content": "Product Grid Settings"
+    },
+    {
+      "type": "text",
+      "id": "products_title",
+      "label": "Products Section Title",
+      "default": "Consigue El Look"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_count",
+      "label": "Show Product Count",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

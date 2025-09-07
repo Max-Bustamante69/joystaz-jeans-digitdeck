@@ -9,30 +9,16 @@
  */
 {
   "sections": {
-    "product_carousel_Y33Hjq": {
-      "type": "product-carousel",
-      "name": "Product Carousel",
+    "look_fit_main": {
+      "type": "look-fit",
+      "name": "Look Fit",
       "settings": {
-        "title": "Best Sellers",
-        "subtitle": "Best Sellers",
-        "show_view_all": true,
-        "view_all_text": "Ver todos",
-        "view_all_link": "",
-        "show_arrows": true,
-        "product_source": "collection",
-        "collection": "",
-        "product_tags": "",
-        "products": [],
-        "max_products": 12,
-        "show_badges": true,
-        "show_rating": true,
-        "show_color_swatches": true,
-        "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
+        "autoplay": false,
+        "autoplay_delay": 5000,
+        "products_title": "Consigue El Look",
+        "show_product_count": true
       }
     }
   },
-  "order": [
-    "product_carousel_Y33Hjq"
-  ]
+  "order": ["look_fit_main"]
 }

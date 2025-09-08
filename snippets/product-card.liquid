@@ -146,7 +146,7 @@
 
     <!-- Product Badges -->
     {% if show_badges and product.tags.size > 0 %}
-      <div class="absolute top-3 left-3 flex gap-1 z-30">
+      <div class="absolute top-3 left-3 flex gap-1 z-10">
         {% for tag in product.tags %}
           {% assign tag_lower = tag | downcase %}
           {% if tag_lower contains 'nuevo' %}

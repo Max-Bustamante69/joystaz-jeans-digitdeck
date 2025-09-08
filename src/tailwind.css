@@ -30,6 +30,12 @@
     margin: 0;
   }
 
+  html, body {
+    scrollbar-gutter: stable;
+  }
+
+  
+
   /* Headings */
   h1 {
     font-size: 40px;
@@ -76,7 +82,6 @@
 
   body {
     overflow-x: hidden;
-    width: 100dvw;
   }
 
   /* Responsive styles */

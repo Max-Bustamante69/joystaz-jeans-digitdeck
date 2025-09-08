@@ -254,7 +254,13 @@
     <div class="flex items-center col-span-2 lg:col-span-1 justify-end gap-4">
       {% render 'search-icon' %}
       {% render 'heart-icon', class: 'hidden lg:block' %}
-      {% render 'user-icon', class: 'size-6' %}
+      <a
+        href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
+        aria-label="Account"
+        class="inline-flex"
+      >
+        {% render 'user-icon', class: 'size-6' %}
+      </a>
       {% render 'cart-trigger', class: 'size-6' %}
     </div>
   </nav>

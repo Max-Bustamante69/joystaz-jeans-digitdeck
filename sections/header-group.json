@@ -14,10 +14,11 @@
     "header": {
       "type": "header",
       "settings": {
-        "menu": "header-menu",
-        "mobile_subcollections_count": 4
+        "menu": "header-menu"
       }
     }
   },
-  "order": ["header"]
+  "order": [
+    "header"
+  ]
 }

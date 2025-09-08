@@ -20,7 +20,7 @@
   {% endif %}
 >
   <!-- Product Image Container -->
-  <div class="relative  aspect-[3/4] w-full group/image max-w-full">
+  <div class="relative  aspect-[3/4.5] w-full group/image max-w-full">
     <!-- Single Image (Primary) -->
     <div class="w-full h-full" x-show="!currentImages || currentImages.length <= 1">
       <img
@@ -58,9 +58,9 @@
         </div>
 
         <!-- Navigation Arrows -->
-        <div class="absolute inset-0 pointer-events-none group-hover:block">
+        <div class="absolute hidden inset-0 pointer-events-none group-hover:block">
           <button
-            class="product-prev absolute  p-2  left-2 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100 transition-all duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -69,13 +69,13 @@
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              stroke-width="2.5"
+              stroke-width="1.5"
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
             </svg>
           </button>
           <button
-            class="product-next absolute  p-2  right-2 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100 transition-all duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -84,7 +84,7 @@
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              stroke-width="2.5"
+              stroke-width="1.5"
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
             </svg>
@@ -108,9 +108,9 @@
     {% endif %}
 
     <!-- Size Selector Plus Button - positioned in bottom right corner -->
-    {% if show_size_selector and product.options contains 'Talla' %}
+    {% if product.options contains 'Talla' %}
       <button
-        class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800 transition-all duration-200  z-30"
+        class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-30"
         @click="handlePlusClick"
         @mouseenter="isDesktop && (showSizeSelector = true)"
         type="button"
@@ -124,15 +124,15 @@
     <!-- Size Selector Grid - Only show if "Talla" is in product options -->
     {% if product.options contains 'Talla' %}
       <div
-        x-show="showSizeSelector"
+        x-show="showSizeSelector && isDesktop"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 transform translate-y-4"
         x-transition:enter-end="opacity-100 transform translate-y-0"
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform translate-y-4"
-        @click.outside="isDesktop ? null : (showSizeSelector = false)"
-        class="size-selector-hover absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border border-gray-200"
+        @click.outside="isDesktop ? (showSizeSelector = false) : null"
+        class="size-selector-hover absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border border-gray-200 hidden lg:block"
       >
         <div class="grid grid-cols-5 gap-1 ">
           {% comment %} Get all unique sizes and check their availability for selected color {% endcomment %}
@@ -226,78 +226,205 @@
           {% endfor %}
         </div>
       </div>
+
+      {%- comment -%} Mobile Bottom Drawer for Size Selection {%- endcomment -%}
+      <div
+        x-show="showSizeSelector && !isDesktop"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+        @click="showSizeSelector = false"
+        x-cloak
+      ></div>
+
+      <div
+        x-show="showSizeSelector && !isDesktop"
+        x-transition:enter="transition transform ease-out duration-300"
+        x-transition:enter-start="opacity-0 translate-y-full"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition transform ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 translate-y-full"
+        class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl lg:hidden"
+        x-cloak
+      >
+        <div class="p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="body font-semibold">Añadir a la cesta</h4>
+            <button class="p-2" @click="showSizeSelector = false" aria-label="Close">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="space-y-1">
+            {% comment %} Build sizes again for mobile list {% endcomment %}
+            {% assign unique_sizes = '' %}
+            {% for variant in product.variants %}
+              {% assign size_name = '' %}
+              {% for option in variant.options %}
+                {% assign is_size = true %}
+                {% for product_option in product.options_with_values %}
+                  {% if product_option.name == 'Color' %}
+                    {% for color_value in product_option.values %}
+                      {% if option == color_value %}
+                        {% assign is_size = false %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+                {% if is_size %}
+                  {% assign size_name = option %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% unless unique_sizes contains size_name %}
+                {% assign unique_sizes = unique_sizes | append: size_name | append: ',' %}
+              {% endunless %}
+            {% endfor %}
+
+            {% assign sizes_array = unique_sizes | split: ',' %}
+            {% for size_name in sizes_array %}
+              {% if size_name != blank %}
+                <button
+                  class="w-full text-left py-4 px-4 border-b border-gray-100 body font-semibold"
+                  :class="isSizeAvailable('{{ size_name }}') ? 'text-gray-900' : 'text-gray-400 cursor-not-allowed'"
+                  @click="isSizeAvailable('{{ size_name }}') && handleSizeClick('{{ size_name }}')"
+                >
+                  {{ size_name }}
+                </button>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
     {% endif %}
   </div>
 
   {% unless hide_info %}
-    <div class=" p-3 w-full  flex-1 flex flex-col justify-start z-10">
+    <div class=" py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
       <!-- Star Rating and Plus Icon -->
-      <div class="flex items-center justify-between">
-        {% if show_rating %}
-          {%
-            render 'star-rating',
-            rating: product.metafields.reviews.rating.value | default: 3.5,
-            size: 'sm',
-            color: 'text-[#f3a000]',
-            show_count: true,
-            show_rating_value: true,
-            show_review_count: true,
-            review_count: product.metafields.reviews.rating_count.value | default: 0
-          %}
-        {% else %}
-          <div></div>
-          <!-- Empty div for spacing when no rating -->
-        {% endif %}
-      </div>
-
-      <!-- Product Name and Price -->
-      <div class="flex items-start  justify-between">
-        <!-- Product Title Section -->
-        <div class="flex flex-col items-start justify-start">
-          <p class="body-sm lg:body font-semibold ">{{ product.title }}</p>
-
-          <!-- Color Circles - Using product.options_with_values for proper swatch access -->
-          <!-- Pattern: product_option.name == "Color" then product_option_value.swatch.color -->
-          {% for product_option in product.options_with_values %}
-            {% if product_option.name == 'Color' %}
-              <div class="flex items-center gap-2 mt-2">
-                {% for product_option_value in product_option.values %}
-                  {% comment %} Find a variant with this color to get its image {% endcomment %}
-                  {% assign color_variant = null %}
-                  {% for variant in product.variants %}
-                    {% for option in variant.options %}
-                      {% if option == product_option_value %}
-                        {% assign color_variant = variant %}
-                        {% break %}
-                      {% endif %}
-                    {% endfor %}
-                    {% if color_variant %}
+      <div class="flex items-start justify-between">
+        {% for product_option in product.options_with_values %}
+          {% if product_option.name == 'Color' %}
+            <div class="flex items-center gap-2">
+              {% for product_option_value in product_option.values %}
+                {% comment %} Find a variant with this color to get its image {% endcomment %}
+                {% assign color_variant = null %}
+                {% for variant in product.variants %}
+                  {% for option in variant.options %}
+                    {% if option == product_option_value %}
+                      {% assign color_variant = variant %}
                       {% break %}
                     {% endif %}
                   {% endfor %}
-
-                  <button
-                    @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                    class="w-4 h-4 rounded-xs border-1 transition-colors"
-                    :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
-                    {% if product_option_value.swatch.color %}
-                      style="background-color: {{ product_option_value.swatch.color }};"
-                    {% else %}
-                      style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                    {% endif %}
-                    title="{{ product_option_value }}"
-                  ></button>
+                  {% if color_variant %}
+                    {% break %}
+                  {% endif %}
                 {% endfor %}
-              </div>
-            {% endif %}
-          {% endfor %}
+
+                <button
+                  @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                  class="w-4 h-4 rounded-xs border-1 transition-colors"
+                  :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
+                  {% if product_option_value.swatch.color %}
+                    style="background-color: {{ product_option_value.swatch.color }};"
+                  {% else %}
+                    style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                  {% endif %}
+                  title="{{ product_option_value }}"
+                ></button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+        <div class="flex items-center gap-2">
+          {% if show_rating %}
+            {%
+              render 'star-rating',
+              rating: product.metafields.reviews.rating.value | default: 3.5,
+              size: 'sm',
+              color: 'text-[#f3a000]',
+              show_count: true,
+              show_rating_value: true,
+              show_review_count: true,
+              review_count: product.metafields.reviews.rating_count.value | default: 0
+            %}
+          {% else %}
+            <!-- Empty div for spacing when no rating -->
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Product Name and Price -->
+      <div class="flex flex-col gap-1 lg:flex-row items-start  justify-between">
+        <!-- Product Title Section -->
+        <div class="flex flex-col gap-2 items-start justify-start">
+          {% assign cleaned_title = product.title %}
+
+          {% assign cleaned_title = cleaned_title
+            | remove: '0'
+            | remove: '1'
+            | remove: '2'
+            | remove: '3'
+            | remove: '4'
+            | remove: '5'
+            | remove: '6'
+            | remove: '7'
+            | remove: '8'
+            | remove: '9'
+          %}
+
+          {% assign cleaned_title = cleaned_title
+            | remove: '!'
+            | remove: '@'
+            | remove: '#'
+            | remove: '$'
+            | remove: '%'
+            | remove: '^'
+            | remove: '&'
+            | remove: '*'
+            | remove: '('
+            | remove: ')'
+            | remove: '_'
+            | remove: '+'
+            | remove: '='
+            | remove: '-'
+            | remove: '['
+            | remove: ']'
+            | remove: '{'
+            | remove: '}'
+            | remove: ';'
+            | remove: ':'
+            | remove: ','
+            | remove: '.'
+            | remove: '<'
+            | remove: '>'
+            | remove: '?'
+            | remove: '~'
+            | remove: "'"
+            | remove: '"'
+            | remove: '\'
+            | remove: '/'
+          %}
+
+          <p class="body-sm lg:body font-semibold ">{{ cleaned_title }}</p>
+
+          <!-- Color Circles - Using product.options_with_values for proper swatch access -->
+          <!-- Pattern: product_option.name == "Color" then product_option_value.swatch.color -->
         </div>
 
         <!-- Price Section -->
-        <div class="flex flex-col items-end">
+        <div class="flex lg:flex-row-reverse gap-2 items-end">
           <span class="body-sm lg:body font-semibold">${{ product.price | money_without_currency }}</span>
           {% if product.compare_at_price > product.price %}
-            <span class="body-xs lg:body-sm text-gray-500 line-through">
+            <span class="body-sm lg:body text-black/40 line-through">
               ${{ product.compare_at_price | money_without_currency }}
             </span>
           {% endif %}
@@ -671,7 +798,7 @@
       showSuccessMessage() {
         // Create a temporary success message
         const message = document.createElement('div');
-        message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
+        message.className = 'fixed top-4 right-4 bg-green-500 text-white  py-2 rounded-lg z-50';
         message.textContent = 'Added to cart!';
         document.body.appendChild(message);
 

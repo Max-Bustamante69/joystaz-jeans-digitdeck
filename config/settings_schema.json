@@ -58,6 +58,13 @@
     "settings": [
       {
         "type": "color",
+        "id": "primary_color",
+        "default": "#3b2e10",
+        "label": "Primary Color",
+        "info": "Main brand color used throughout the theme"
+      },
+      {
+        "type": "color",
         "id": "background_color",
         "default": "#FFFFFF",
         "label": "t:labels.background"

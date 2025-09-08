@@ -7,7 +7,7 @@
   - Autoplay and navigation controls
 {% endcomment %}
 
-<div class="hero relative flex items-end" style="min-height: {{ section.settings.min_height }}vh;">
+<div class="hero relative flex items-end p-0" style="min-height: {{ section.settings.min_height }}vh;">
   {% comment %} overlay gradient {% endcomment %}
 
   {% if section.blocks.size > 0 %}
@@ -353,7 +353,7 @@
       const swiperConfig = {
         slidesPerView: 1,
         spaceBetween: 0,
-        loop: false,
+        loop: true,
         speed: {{ section.settings.animation_duration | default: 1000 }},
         grabCursor: false,
         freeMode: { enabled: true, sticky: true },
@@ -797,11 +797,11 @@
           "label": "Button Style",
           "options": [
             {
-              "value": "",
+              "value": "h-11 px-6",
               "label": "Default"
             },
             {
-              "value": "px-6 py-3 border border-white",
+              "value": "h-11 px-6 border border-1 border-white capitalize",
               "label": "Transparent"
             },
             {
@@ -809,7 +809,7 @@
               "label": "Underlined"
             }
           ],
-          "default": ""
+          "default": "h-11 px-6 border border-1 border-white capitalize"
         }
       ]
     }

@@ -1,0 +1,121 @@
+{% render 'ticker',
+  items: section.blocks,
+  duration: section.settings.animation_duration,
+  mobile_duration: section.settings.mobile_animation_duration
+%}
+
+<style>
+  /* Smart Ticker Animation */
+  .ticker-container {
+    position: relative;
+  }
+
+  .ticker-wrap {
+    animation: ticker linear infinite;
+    animation-duration: {{ section.settings.animation_duration | default: 40 }}s;
+    transform: translateX(0%);
+    display: flex;
+    align-items: center;
+  }
+
+  @keyframes ticker {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      /* Calculate distance based on content width */
+      /* We have 6 duplicates, so we move by 1/6th of the total width */
+      transform: translateX(calc(-100% / 6));
+    }
+  }
+
+  .ticker-item {
+    flex-shrink: 0;
+  }
+
+  .ticker-bullet {
+    flex-shrink: 0;
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .ticker-wrap {
+      animation-duration: {{ section.settings.mobile_animation_duration | default: 25 }}s;
+    }
+
+    .ticker-bullet {
+      margin: 0 0.75rem; /* Smaller spacing on mobile */
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Ticker",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation Duration (Desktop)",
+      "default": 40,
+      "info": "Duration of the ticker animation in seconds"
+    },
+    {
+      "type": "range",
+      "id": "mobile_animation_duration",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation Duration (Mobile)",
+      "default": 25,
+      "info": "Duration of the ticker animation on mobile devices"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ticker_item",
+      "name": "Ticker Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Item Text",
+          "default": "Class Is in Session",
+          "info": "Enter the text for this ticker item"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Ticker",
+      "blocks": [
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "Class Is in Session"
+          }
+        },
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "New Arrivals"
+          }
+        },
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "Free Shipping"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

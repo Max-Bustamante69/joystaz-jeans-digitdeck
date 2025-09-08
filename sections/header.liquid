@@ -1,6 +1,6 @@
 <header
-  class="flex flex-col fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-  :class="(isScrolled || isHovered) ? 'bg-white shadow-lg' : 'bg-transparent'"
+  class=" transition-all duration-300 px-4  lg:pl-9 lg:pr-12 "
+  :class="(isScrolled || isHovered) ? 'bg-white ' : 'bg-transparent'"
   x-data="
     {
       mobileMenuOpen: false,
@@ -13,37 +13,41 @@
         window.addEventListener('scroll', this.handleScroll.bind(this));
       },
       handleScroll() {
-        this.isScrolled = window.scrollY > 50;
+        // Calculate 100dvh - 35px
+        const viewportHeight = window.innerHeight;
+        const scrollThreshold = viewportHeight - 35;
+        this.isScrolled = window.scrollY > scrollThreshold;
       },
       openCartDrawer() { this.cartDrawerOpen = true; },
       showMegaMenu(collectionHandle) { this.activeMegaMenu = collectionHandle; },
-      hideMegaMenu() { this.activeMegaMenu = null; }
+      hideMegaMenu() { this.activeMegaMenu = null; },
+      toggleMobileMenu() {
+        this.mobileMenuOpen = !this.mobileMenuOpen;
+        if (this.mobileMenuOpen) {
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.width = '100%';
+          document.body.style.top = `-${window.scrollY}px`;
+        } else {
+          const scrollY = document.body.style.top;
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+          document.body.style.top = '';
+          window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+      }
     }
   "
   @mouseenter="isHovered = true"
   @mouseleave="isHovered = false"
 >
-  <div class="w-screen overflow-hidden bg-primary h-8 whitespace-nowrap">
-    <div class="ticker-wrap inline-block">
-      <span class="ticker-item text-white text-md font-medium tracking-wide">
-        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull;
-      </span>
-      <span class="ticker-item text-white text-md font-medium tracking-wide">
-        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull;
-      </span>
-    </div>
-  </div>
-
   <nav
-    class="grid grid-cols-3 h-20 px-20 z-50 bg-transparent w-full relative transition-colors duration-300"
+    class="grid grid-cols-3 h-15  z-50 bg-transparent w-full relative"
     :class="(isScrolled || isHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
-    <div class="header__menu hidden xl:flex items-center justify-start gap-6">
+    <div class="header__menu hidden lg:flex items-center justify-center lg:justify-start ">
       {% for link in section.settings.menu.links %}
         {% assign collection_handle = link.url | remove: '/collections/' | remove: '/' %}
         {% assign collection = collections[collection_handle] %}
@@ -54,7 +58,7 @@
         >
           <a
             href="{{ link.url }}"
-            class="font-semibold transition-colors duration-200 py-2 px-4"
+            class="font-semibold transition-colors duration-200 h-full flex items-center px-3"
             :class="(isScrolled || isHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
@@ -184,27 +188,51 @@
     </div>
 
     <!-- Mobile Menu Button -->
-    <div class="flex gap-6 items-center xl:hidden">
+    <div class="flex gap-6 items-center lg:hidden">
       <button
-        @click="mobileMenuOpen = !mobileMenuOpen"
+        @click="toggleMobileMenu()"
         class="transition-colors duration-200"
         :class="(isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
         {% render 'menu-icon' %}
       </button>
-      {% render 'search-icon' %}
+
+      <h2 class="header__title flex items-center justify-center">
+        <a href="{{ routes.root_url }}">
+          {% if section.settings.logo != blank %}
+            <img
+              src="{{ section.settings.logo | image_url: width: 120 }}"
+              alt="{{ shop.name }}"
+              height="{{ section.settings.logo.height | default: 40 }}"
+              width="{{ section.settings.logo.width | default: 'auto' }}"
+              class="transition-all duration-300"
+              :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              loading="eager"
+            >
+          {% else %}
+            <img
+              src="{{ 'logo.png' | asset_url }}"
+              alt="Logo"
+              class="transition-all duration-300 h-12"
+              :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              width="60"
+              height="40"
+            >
+          {% endif %}
+        </a>
+      </h2>
     </div>
 
     <!-- Logo -->
-    <h2 class="header__title flex items-center justify-center">
+    <h2 class="header__title hidden lg:flex items-center justify-center">
       <a href="{{ routes.root_url }}">
         {% if section.settings.logo != blank %}
           <img
             src="{{ section.settings.logo | image_url: width: 120 }}"
             alt="{{ shop.name }}"
-            width="{{ section.settings.logo.width | default: 60 }}"
             height="{{ section.settings.logo.height | default: 40 }}"
+            width="{{ section.settings.logo.width | default: 'auto' }}"
             class="transition-all duration-300"
             :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             loading="eager"
@@ -213,7 +241,7 @@
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class="transition-all duration-300"
+            class="transition-all duration-300 h-12"
             :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
@@ -223,11 +251,11 @@
     </h2>
 
     <!-- Desktop Icons -->
-    <div class="flex items-center justify-end gap-4">
-      {% render 'search-icon', class: 'hidden xl:block' %}
-      {% render 'heart-icon', class: 'hidden xl:block' %}
-      {% render 'user-icon' %}
-      {% render 'cart-trigger' %}
+    <div class="flex items-center col-span-2 lg:col-span-1 justify-end gap-4">
+      {% render 'search-icon' %}
+      {% render 'heart-icon', class: 'hidden lg:block' %}
+      {% render 'user-icon', class: 'size-6' %}
+      {% render 'cart-trigger', class: 'size-6' %}
     </div>
   </nav>
 
@@ -241,8 +269,8 @@
     x-transition:leave="transition ease-in duration-400"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black/70 z-40 xl:hidden"
-    @click="mobileMenuOpen = false"
+    class="fixed inset-0 bg-black/70 z-40 lg:hidden"
+    @click="toggleMobileMenu()"
   ></div>
 
   <!-- Mobile Menu Panel -->
@@ -255,7 +283,7 @@
     x-transition:leave="transform transition ease-in duration-400"
     x-transition:leave-start="transform translate-x-0"
     x-transition:leave-end="transform -translate-x-full"
-    class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-100 xl:hidden overflow-y-auto"
+    class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-100 lg:hidden overflow-y-auto"
     x-data="mobileMenu()"
   >
     <div class="p-4" x-show="!showTertiaryView">
@@ -269,7 +297,7 @@
           </button>
         </div>
         <button
-          @click="mobileMenuOpen = false"
+          @click="toggleMobileMenu()"
           class="text-gray-500 hover:text-gray-700 transition-colors"
           aria-label="Close mobile menu"
         >
@@ -328,7 +356,6 @@
             {% if link.links.size > 0 %}
               <button
                 @click="activeTab = {{ tab_index }}"
-                class="transition-all duration-400"
                 :class="activeTab === {{ tab_index }} ? 'border-b-2 border-black text-black' : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'"
               >
                 <h5 class="uppercase my-3 ">
@@ -379,7 +406,7 @@
                   data-carousel-id="mobile-subcollections-{{ section.id }}-{{ tab_index }}"
                   data-carousel-type="mobile-subcollections"
                 >
-                  <div class="swiper-wrapper px-4">
+                  <div class="swiper-wrapper ">
                     {% for subcollection_item in collection.metafields.custom.subcollections.value
                       limit: section.settings.mobile_subcollections_count
                     %}
@@ -458,26 +485,6 @@
 </header>
 
 {% stylesheet %}
-  /* Ticker animation */
-  .ticker-wrap {
-    animation: ticker linear infinite;
-    animation-duration: 40s;
-    transform: translateX(0%);
-  }
-  @keyframes ticker {
-    0% {
-      transform: translateX(0%);
-    }
-    100% {
-      transform: translateX(-50%);
-    }
-  }
-  @media (max-width: 768px) {
-    .ticker-wrap {
-      animation-duration: 25s;
-    }
-  }
-
   /* Mega Menu Styling */
   .mega-menu {
     backdrop-filter: blur(10px);

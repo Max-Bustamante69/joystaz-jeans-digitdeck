@@ -9,13 +9,15 @@
   - Same styling as content carousel
 {% endcomment %}
 
-<div class="py-7 md:py-8" id="product-carousel-{{ section.id }}">
-  <div class=" w-full">
+<div class="py-12 lg:py-10" id="product-carousel-{{ section.id }}">
+  <div class=" w-full flex flex-col gap-8">
     {% if section.settings.title != blank %}
-      <div class="flex justify-between items-center mb-8 mx-4 lg:mx-12">
+      <div class="flex justify-between items-end  mx-4 lg:mx-12">
         <div class="flex  flex-col gap-2">
-          <h3 class="body-md uppercase opacity-50  ">{{ section.settings.subtitle }}</h3>
           <h2>{{ section.settings.title }}</h2>
+          {% if section.settings.rich_text != blank %}
+            <div class="rich-text">{{ section.settings.rich_text }}</div>
+          {% endif %}
         </div>
         <div class="flex items-center gap-8">
           {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
@@ -62,11 +64,11 @@
     {% if available_count > 0 %}
       <div class="relative">
         <div
-          class="product-carousel swiper-main-carousel-{{ section.id }}  px-12"
+          class="product-carousel px-4 lg:px-12 swiper-main-carousel-{{ section.id }}    "
           data-carousel-id="{{ section.id }}"
           data-carousel-type="main-carousel"
         >
-          <div class="swiper-wrapper">
+          <div class="swiper-wrapper ">
             {% assign products_shown = 0 %}
             {% for product in products %}
               {% if product.available and products_shown < section.settings.max_products %}
@@ -113,8 +115,9 @@
       const enableDesktopCarousel = totalProducts > 4;
 
       const swiper = new Swiper(carouselElement, {
-        slidesPerView: 1.5,
+        slidesPerView: 1,
         spaceBetween: 2,
+        peek: 10,
         freeMode: {
           enabled: true,
           sticky: true,
@@ -130,22 +133,9 @@
           prevEl: '.carousel-prev',
         },
         breakpoints: {
-          768: {
-            slidesPerView: 2.2,
-
-          },
           1024: {
-            slidesPerView: enableDesktopCarousel ? 4 : 3.2,
-            freeMode: enableDesktopCarousel ? false : {
-              enabled: true,
-              sticky: true,
-              momentum: true,
-            },
-          },
-          1280: {
-            slidesPerView: enableDesktopCarousel ? 4 : 4.2,
-              spaceBetween: 4,
-            freeMode: enableDesktopCarousel ? false : {
+            slidesPerView: 4,
+            freeMode:  {
               enabled: true,
               sticky: true,
               momentum: true,
@@ -180,13 +170,15 @@
       const prevArrow = sectionContainer.querySelector('.carousel-prev');
       const nextArrow = sectionContainer.querySelector('.carousel-next');
 
+
       if (prevArrow) {
         if (swiper.isBeginning) {
-          prevArrow.style.opacity = '0.3';
+          prevArrow.style.backgroundColor = '#e7e7e7';
+          prevArrow.style.color = 'black';
           prevArrow.style.cursor = 'not-allowed';
-          prevArrow.disabled = true;
         } else {
-          prevArrow.style.opacity = '1';
+          prevArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          prevArrow.style.color = 'white';
           prevArrow.style.cursor = 'pointer';
           prevArrow.disabled = false;
         }
@@ -194,11 +186,12 @@
 
       if (nextArrow) {
         if (swiper.isEnd) {
-          nextArrow.style.opacity = '0.3';
-          nextArrow.style.cursor = 'not-allowed';
-          nextArrow.disabled = true;
+          prevArrow.style.backgroundColor = '#e7e7e7';
+          prevArrow.style.color = 'black';
+          prevArrow.style.cursor = 'not-allowed';
         } else {
-          nextArrow.style.opacity = '1';
+          nextArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          nextArrow.style.color = 'white';
           nextArrow.style.cursor = 'pointer';
           nextArrow.disabled = false;
         }
@@ -220,10 +213,10 @@
       "default": "Best Sellers"
     },
     {
-      "type": "text",
-      "id": "subtitle",
-      "label": "Carousel Subtitle",
-      "default": "Best Sellers"
+      "type": "richtext",
+      "id": "rich_text",
+      "label": "Rich Text",
+      "info": "Optional rich text content below the title"
     },
     {
       "type": "header",

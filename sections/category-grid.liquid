@@ -34,7 +34,7 @@
       {% if section.settings.mobile_layout == 'slider' %}
         <!-- Mobile Slider -->
         <div class="lg:hidden">
-          <div id="category-mobile-slider-{{ section.id }}" class="px-4 lg:px-12">
+          <div id="category-mobile-slider-{{ section.id }}" class=" ">
             <div class="swiper-wrapper">
               {% for block in section.blocks %}
                 {% case block.type %}
@@ -59,7 +59,7 @@
         {% if section.blocks.size > 4 %}
           <!-- Desktop Carousel for more than 4 slides -->
           <div class="hidden lg:block">
-            <div id="category-desktop-slider-{{ section.id }}" class="px-4 lg:px-12 ">
+            <div id="category-desktop-slider-{{ section.id }}" class="  ">
               <div class="swiper-wrapper ">
                 {% for block in section.blocks %}
                   {% case block.type %}

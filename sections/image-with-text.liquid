@@ -10,22 +10,24 @@
 
 {% if section.settings.image_style == 'full_width' %}
   <!-- Full Width Layout -->
-  <div class="image-with-text-section py-16">
-    <div class="flex flex-col lg:flex-row items-center {% if section.settings.layout_direction == 'text_first' %}lg:flex-row-reverse{% endif %}">
+  <div class="image-with-text-section lg:py-12 py-10  lg:px-12">
+    <div class="flex flex-col gap-8 lg:gap-12 lg:justify-between lg:flex-row items-center {% if section.settings.layout_direction == 'text_first' %}lg:flex-row-reverse{% endif %}">
       <!-- Text Content -->
-      <div class="w-full  order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
-        <div class="text-content space-y-6 max-w-2xl mx-12 my-12">
-          {% if section.settings.title != blank %}
-            <h2 class="font-bold text-gray-900 leading-tight">
-              {{ section.settings.title }}
-            </h2>
-          {% endif %}
+      <div class="w-full lg:max-w-[400px] px-4 lg:px-0 lg:w-1/2 order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
+        <div class="text-content flex flex-col gap-8">
+          <div class="flex flex-col gap-3">
+            {% if section.settings.title != blank %}
+              <h2 class="font-bold text-gray-900 leading-tight">
+                {{ section.settings.title }}
+              </h2>
+            {% endif %}
 
-          {% if section.settings.text != blank %}
-            <p class="body text-gray-700 leading-relaxed">
-              {{ section.settings.text }}
-            </p>
-          {% endif %}
+            {% if section.settings.text != blank %}
+              <p class="body text-gray-700 text-balance">
+                {{ section.settings.text }}
+              </p>
+            {% endif %}
+          </div>
 
           {% if section.settings.subtitle != blank %}
             <h5 class="font-semibold text-gray-900">
@@ -88,10 +90,10 @@
           {% endif %}
 
           {% if section.settings.button_text != blank and section.settings.button_link != blank %}
-            <div class="button-container pt-4">
+            <div class="button-container">
               <a
                 href="{{ section.settings.button_link }}"
-                class="inline-block px-8 py-4 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
+                class="flex items-center justify-center w-fit px-6 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-1 border-black/50 hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
               >
                 <h6>
                   {{ section.settings.button_text }}
@@ -103,7 +105,7 @@
       </div>
 
       <!-- Full Width Image -->
-      <div class="w-full order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
+      <div class="w-full lg:w-1/2  order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
         <div class="image-container w-full">
           {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
           {% assign display_image = null %}
@@ -120,7 +122,7 @@
             {{
               display_image
               | image_url: width: 1200
-              | image_tag: class: 'w-full h-auto', alt: image_alt_text, loading: 'lazy'
+              | image_tag: class: 'w-full h-[90dvh] object-cover', alt: image_alt_text, loading: 'lazy'
             }}
           {% else %}
             <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
@@ -133,11 +135,11 @@
   </div>
 {% else %}
   <!-- Windowed Layout -->
-  <div class="image-with-text-section py-16 px-4 md:px-8">
-    <div class="max-w-7xl ml-12">
+  <div class="image-with-text-section py-12 lg:px-12  ">
+
       <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 {% if section.settings.layout_direction == 'text_first' %}lg:flex-row-reverse{% endif %}">
         <!-- Text Content -->
-        <div class="w-full lg:w-1/2 order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
+        <div class="w-full lg:w-1/2 px-4 lg:px-0 order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
           <div class="text-content space-y-6">
             {% if section.settings.title != blank %}
               <h2 class="font-bold text-gray-900 leading-tight">
@@ -146,7 +148,7 @@
             {% endif %}
 
             {% if section.settings.text != blank %}
-              <p class="body text-gray-700 leading-relaxed">
+              <p class="body text-gray-700 leading-relaxed text-balance line-clamp-2">
                 {{ section.settings.text }}
               </p>
             {% endif %}
@@ -215,7 +217,7 @@
               <div class="button-container pt-4">
                 <a
                   href="{{ section.settings.button_link }}"
-                  class="inline-block px-8 py-4 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
+                  class="flex items-center justify-center w-fit px-8 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
                 >
                   <h6>
                     {{ section.settings.button_text }}
@@ -228,7 +230,7 @@
 
         <!-- Windowed Image -->
         <div class="w-full lg:w-1/2 order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
-          <div class="image-container max-w-2xl mx-auto">
+          <div class="image-container ">
             {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
             {% assign display_image = null %}
             {% assign image_alt_text = section.settings.image_alt | default: section.settings.title %}
@@ -254,7 +256,7 @@
           </div>
         </div>
       </div>
-    </div>
+
   </div>
 {% endif %}
 

@@ -74,16 +74,15 @@
 
 {% if show_count %}
   <div class="body-sm flex gap-1">
-    {% if show_rating_value %}{{ rating }}{% endif %}
     {% if show_rating_value and show_review_count and review_count > 0 %} {% endif %}
     {% if show_review_count %}
       {% if review_count > 0 %}
         <p class="body-sm">
-          ( {{ review_count }} reseñas )
+          ( {{ review_count }} )
         </p>
       {% else %}
         <p class="body-sm">
-          ( Sin reseñas )
+          ( 0 )
         </p>
       {% endif %}
     {% endif %}

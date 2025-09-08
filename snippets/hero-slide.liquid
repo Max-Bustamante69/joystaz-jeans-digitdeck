@@ -55,31 +55,36 @@
 
     {% if slide.title or slide.description or slide.button_text %}
       <div
-        class="hero-slide-content absolute bottom-8 left-8 md:left-12 text-white space-y-6 z-10"
+        class="hero-slide-content absolute bottom-8 left-4 lg:left-12 text-white flex flex-col gap-7 z-10  lg:text-left"
       >
+      <div class="flex flex-col gap-3">
+
         {% if slide.title %}
           <h1>
             {{ slide.title }}
-          </h1>
-        {% endif %}
-
-        {% if slide.description %}
-          <p class="body text-white/90 max-w-md text-shadow">
+            </h1>
+          {% endif %}
+          
+          {% if slide.description %}
+            <p class="body text-white/90 text-balance lg:text-left max-w-md text-shadow">
             {{ slide.description }}
-          </p>
-        {% endif %}
+            </p>
+          {% endif %}
+          </div>
         {% if slide.button_text and slide.button_link %}
-          <h6>
-            <a
-              href="{{ slide.button_link }}"
-              class="
-                font-semibold
-                {{ slide.button_style }}
-              "
-            >
-              {{ slide.button_text }}
-            </a>
-          </h6>
+          <a
+            href="{{ slide.button_link }}"
+            class="
+              font-semibold w-fit flex items-center justify-center 
+              {{ slide.button_style }}
+            "
+          >
+            <button>
+              <h6 class="capitalize">
+                {{ slide.button_text }}
+              </h6>
+            </button>
+          </a>
         {% endif %}
       </div>
     {% endif %}

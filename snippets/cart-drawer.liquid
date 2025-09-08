@@ -47,8 +47,8 @@
     @click.outside="closeDrawer()"
   >
     <!-- Header -->
-    <div class="flex items-center justify-between p-6 border-b border-gray-200">
-      <h2 class="text-xl font-bold text-gray-900">Your Cart</h2>
+    <div class="flex items-center justify-between p-6 border-b border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-900">Tu Carrito <span x-text="cartItems.length"></span></h2>
       <button
         @click="closeDrawer()"
         class="text-gray-400 hover:text-gray-600 transition-colors"
@@ -60,22 +60,20 @@
     </div>
 
     <!-- Progress Bar for Free Shipping -->
-    <div class="p-4 bg-gray-50 border-b border-gray-200" x-show="freeShippingThreshold > 0">
-      <div class="flex items-center justify-between mb-2">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-100" x-show="freeShippingThreshold > 0">
+      <div class="flex items-center justify-between mb-3">
         <div class="flex items-center space-x-2">
-          <div class="flex items-center space-x-1">
-            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-            </svg>
-            <span class="text-sm font-medium text-green-600">Envío gratis</span>
-          </div>
+          <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-sm font-medium text-green-600">Envío gratis</span>
         </div>
       </div>
 
       <!-- Progress Bar -->
-      <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
+      <div class="w-full bg-gray-200 rounded-full h-1.5 mb-3">
         <div
-          class="bg-green-600 h-2 rounded-full transition-all duration-300"
+          class="bg-green-600 h-1.5 rounded-full transition-all duration-300"
           :style="`width: ${Math.min((cartTotal / freeShippingThreshold) * 100, 100)}%`"
         ></div>
       </div>
@@ -91,134 +89,40 @@
     </div>
 
     <!-- Cart Items -->
-    <div class="flex-1 overflow-y-auto overflow-x-hidden p-4 space-y-4" style="-webkit-overflow-scrolling: touch;">
+    <div class="flex-1 overflow-y-auto overflow-x-hidden" style="-webkit-overflow-scrolling: touch;">
       <template x-if="cartItems.length === 0">
-        <div class="text-center py-8">
+        <div class="text-center py-12 px-6">
           <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
           </svg>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">Your cart is empty</h3>
-          <p class="text-gray-500">Add some products to get started</p>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Tu carrito está vacío</h3>
+          <p class="text-gray-500">Agrega algunos productos para comenzar</p>
         </div>
       </template>
 
       <template x-for="item in cartItems" :key="item.key">
-        <div class="cart-product-card flex gap-4 p-4 border border-gray-200 rounded-lg bg-white">
-          <!-- Product Image -->
-          <div class="flex-shrink-0">
-            <img
-              :src="item.image"
-              :alt="item.product_title"
-              class="w-20 h-20 object-cover rounded-md"
-              width="80"
-              height="80"
-              loading="lazy"
-            >
-          </div>
-
-          <!-- Product Details -->
-          <div class="flex-1 min-w-0">
-            <!-- Product Title and Tag -->
-            <div class="flex items-start justify-between mb-1">
-              <h3 class="font-semibold text-gray-900 text-sm leading-tight truncate" x-text="item.product_title"></h3>
-              <span
-                class="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded font-bold ml-2 flex-shrink-0"
-                x-show="item.product_tags && item.product_tags.includes('nuevo')"
-              >
-                NUEVO
-              </span>
-            </div>
-
-            <!-- Variant Details -->
-            <p class="text-gray-600 text-sm mb-2" x-text="item.variant_title || ''"></p>
-
-            <!-- Rating -->
-            <div class="flex items-center gap-1 mb-2">
-              <div class="flex text-yellow-400">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <svg class="w-3 h-3" fill="#e5e7eb" viewBox="0 0 24 24">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-              </div>
-              <span class="text-xs text-gray-500">(0)</span>
-            </div>
-
-            <!-- Stock Availability -->
-            <p class="text-red-600 text-xs font-medium mb-2">Ultimas unidades disponibles</p>
-
-            <!-- Price -->
-            <div class="flex items-center justify-between">
-              <div class="flex items-center space-x-2">
-                <span class="font-bold text-gray-900 text-sm" x-text="'$' + formatMoney(item.final_line_price)"></span>
-                <span
-                  class="text-xs text-gray-500 line-through"
-                  x-show="item.original_line_price && item.original_line_price > item.final_line_price"
-                  x-text="'$' + formatMoney(item.original_line_price)"
-                ></span>
-              </div>
-
-              <!-- Quantity Controls -->
-              <div class="flex items-center gap-2">
-                <button
-                  @click="updateQuantity(item.key, item.quantity - 1)"
-                  :disabled="loading"
-                  :class="item.quantity <= 1 ? 'text-red-500 hover:text-red-700' : 'hover:bg-gray-50'"
-                  class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  :title="item.quantity <= 1 ? 'Remove item' : 'Decrease quantity'"
-                >
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                  </svg>
-                </button>
-
-                <span class="text-sm font-medium w-8 text-center" x-text="item.quantity"></span>
-
-                <button
-                  @click="updateQuantity(item.key, item.quantity + 1)"
-                  :disabled="loading"
-                  class="w-6 h-6 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                  title="Increase quantity"
-                >
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% render 'cart-product-card' %}
       </template>
     </div>
 
     <!-- Footer -->
-    <div class="border-t border-gray-200 p-4 space-y-4">
+    <div class="border-t border-gray-100 p-6 space-y-6">
       <!-- Subtotal -->
       <div class="flex justify-between items-center">
-        <span class="text-lg font-semibold">Subtotal:</span>
+        <span class="text-lg font-semibold text-gray-900">SUBTOTAL:</span>
         <div class="text-right">
-          <div class="flex items-center space-x-2">
-            <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded font-medium" x-show="cartSavings > 0">
+          <div class="flex items-center space-x-2 mb-1" x-show="cartSavings > 0">
+            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium">
               AHORRA $<span x-text="formatMoney(cartSavings)"></span>
             </span>
           </div>
           <div class="flex items-center space-x-2">
             <span
-              class="text-gray-500 line-through text-sm"
+              class="text-gray-400 line-through text-sm"
               x-show="cartSavings > 0"
               x-text="'$' + formatMoney(originalTotal)"
             ></span>
-            <span class="text-xl font-bold" x-text="'$' + formatMoney(cartTotal)"></span>
+            <span class="text-xl font-bold text-gray-900" x-text="'$' + formatMoney(cartTotal)"></span>
           </div>
         </div>
       </div>
@@ -227,23 +131,26 @@
       <button
         @click="proceedToCheckout()"
         :disabled="cartItems.length === 0"
-        class="w-full bg-primary text-white py-4 px-6  font-semibold hover:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="w-full bg-gray-900 text-white py-4 px-6 font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
         Paga de forma segura
       </button>
 
       <!-- Payment Methods -->
-      <div class="flex items-center justify-center space-x-4 pt-2">
-        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+      <div class="flex items-center justify-center space-x-4">
+        <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
-        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
-        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
-        <svg class="w-8 h-8 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
         </svg>
       </div>
@@ -664,13 +571,21 @@
       openDrawer() {
         this.isOpen = true;
         document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${window.scrollY}px`;
         document.body.classList.add('cart-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
+        const scrollY = document.body.style.top;
         document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
         document.body.classList.remove('cart-drawer-open');
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
       },
 
       async loadCart() {
@@ -753,7 +668,7 @@
       showRemoveMessage() {
         // Create a temporary success message
         const message = document.createElement('div');
-        message.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        message.className = 'fixed top-4 right-4 bg-red-500 text-white  py-2 rounded-lg shadow-lg z-50';
         message.textContent = 'Item removed from cart';
         document.body.appendChild(message);
 
@@ -779,6 +694,12 @@
       toggleWishlist(productId) {
         // Implement wishlist functionality here
         console.log('Toggle wishlist for product:', productId);
+      },
+
+      editItem(item) {
+        // Implement edit item functionality here
+        console.log('Edit item:', item);
+        // This could open a modal or navigate to product page
       },
 
       initializeCartCarousel() {

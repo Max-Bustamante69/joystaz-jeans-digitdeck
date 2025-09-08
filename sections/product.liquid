@@ -258,7 +258,7 @@
                   <span class="text-lg font-bold text-gray-900">
                     {{- section.settings.duo_option_title | default: 'Duo' -}}
                   </span>
-                  <span class="bg-green text-white text-sm  px-4 py-2 rounded-sm font-bold absolute -top-4 -right-1">
+                  <span class="bg-green text-white text-sm   py-2 rounded-sm font-bold absolute -top-4 -right-1">
                     {{- section.settings.best_value_text | default: 'BEST VALUE' -}}
                   </span>
                 </div>
@@ -356,7 +356,7 @@
                   {% if media.media_type == 'video' %}
                     <div class="swiper-slide">
                       <div
-                        class="video-slide-container relative  overflow-hidden bg-gray-100 h-64 md:h-80 lg:h-96"
+                        class="video-slide-container relative  overflow-hidden bg-gray-100 h-64 lg:h-80 lg:h-96"
                         x-data="videoSlide()"
                         @mouseenter="handleMouseEnter"
                         @mouseleave="handleMouseLeave"
@@ -414,26 +414,25 @@
           </div>
         </div>
 
-         {% render 'product-look-fits', product: product %}
+        {% render 'product-look-fits', product: product %}
 
-    {% if section.blocks.size > 0 %}
-      {% assign accordion_blocks = section.blocks | where: 'type', 'accordion_item' %}
-      {% if accordion_blocks.size > 0 %}
-        <div class="product-accordion w-full lg:w-2/3  mt-8 px-4 lg:px-0">
-          {% render 'accordion',
-            items: accordion_blocks,
-            accordion_id: 'product-accordion',
-            title_color: '#1f2937',
-            answer_color: '#374151'
-          %}
-        </div>
-      {% endif %}
-    {% endif %}
+        {% if section.blocks.size > 0 %}
+          {% assign accordion_blocks = section.blocks | where: 'type', 'accordion_item' %}
+          {% if accordion_blocks.size > 0 %}
+            <div class="product-accordion w-full lg:w-2/3  mt-8  lg:px-0">
+              {% render 'accordion',
+                items: accordion_blocks,
+                accordion_id: 'product-accordion',
+                title_color: '#1f2937',
+                answer_color: '#374151'
+              %}
+            </div>
+          {% endif %}
+        {% endif %}
       </div>
     </div>
 
     <!-- Look Fits Carousel -->
-   
   </div>
 
   <!-- Product Gallery Blocks (Full Width) -->
@@ -916,7 +915,7 @@
       showSuccessMessage() {
         // Create a temporary success message
         const message = document.createElement('div');
-        message.className = 'fixed bottom-4 left-4 bg-green text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        message.className = 'fixed bottom-4 left-4 bg-green text-white  py-2 rounded-lg shadow-lg z-50';
         message.textContent = 'Added to cart!';
         document.body.appendChild(message);
 
@@ -931,7 +930,7 @@
       showErrorToast(message) {
         // Create error toast message
         const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 left-4 bg-red-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 max-w-sm';
+        toast.className = 'fixed bottom-4 left-4 bg-red-500 text-white  py-3 rounded-lg shadow-lg z-50 max-w-sm';
         toast.innerHTML = `
           <div class="flex items-center gap-2">
             <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">

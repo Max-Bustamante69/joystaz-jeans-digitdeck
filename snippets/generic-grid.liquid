@@ -12,7 +12,7 @@
 
 <!-- Layout Toggle (only show when show_layout_toggle is true) -->
 {% if show_layout_toggle != false %}
-  <div class="flex items-center justify-between mt-15 px-4 h-10">
+  <div class="flex items-center justify-between mt-15  h-10">
     <div class="flex h-full items-center gap-4">
       <!-- Layout Toggle -->
       <button
@@ -57,11 +57,11 @@
   <div
     class="grid gap-0.5 transition-all duration-300"
     :class="
-    {
-      'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
-      'grid-cols-2 lg:grid-cols-4 gap-y-6': layoutOption === 2,
-      'grid-cols-3 lg:grid-cols-6': layoutOption === 3
-    }
+      {
+        'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
+        'grid-cols-2 lg:grid-cols-4 gap-y-6': layoutOption === 2,
+        'grid-cols-3 lg:grid-cols-6': layoutOption === 3
+      }
     "
   >
     {{ content }}

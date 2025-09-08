@@ -6,12 +6,11 @@
 {% comment %} Get collection filter from URL or section settings {% endcomment %}
 {% assign url_handle = request.path | split: '/' | last %}
 
-
-{{request.path}}
+{{ request.path }}
 
 {% comment %} If URL handle is a collection, use it as filter {% endcomment %}
-{% if url_handle  %}
-    {{url_handle}}
+{% if url_handle %}
+  {{ url_handle }}
   {% assign collection_by_handle = collections[url_handle] %}
   {% if collection_by_handle.size > 0 %}
     {% assign collection_filter = url_handle %}
@@ -19,12 +18,10 @@
   {% endif %}
 {% endif %}
 
-
-<div class="container mx-auto px-4 py-12">
-  <h1 class="text-4xl font-extrabold text-gray-900 mb-8">{{page_title}}</h1>
-  <h1>{{request.path | split: '/' | last}}</h1>
-  <h1>{{collection_by_handle.size}}</h1>
-  
+<div class="container mx-auto  py-12">
+  <h1 class="text-4xl font-extrabold text-gray-900 mb-8">{{ page_title }}</h1>
+  <h1>{{ request.path | split: '/' | last }}</h1>
+  <h1>{{ collection_by_handle.size }}</h1>
 
   <div class="mb-8 flex flex-col sm:flex-row gap-4 items-center">
     <!-- Filtro por Colecciones -->

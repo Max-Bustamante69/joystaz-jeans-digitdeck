@@ -84,12 +84,12 @@
       >
         {% if settings.search_show_featured_tags and settings.search_featured_collections != blank %}
           <div class="py-6  space-y-4 border-gray-200">
-            <h5 class="px-4 lg:px-6">
+            <h5 class=" lg:px-6">
               {{ settings.search_featured_tags_title | default: 'Popular Categories' }}
             </h5>
 
             <div class="search-tags-carousel swiper overflow-hidden" data-carousel-id="search-tags">
-              <div class="swiper-wrapper px-4 lg:px-6">
+              <div class="swiper-wrapper  lg:px-6">
                 {% for collection in settings.search_featured_collections %}
                   <div class="swiper-slide">
                     {% render 'collection-tag', collection: collection %}
@@ -157,12 +157,12 @@
         <!-- Categories -->
         {% if settings.search_show_category_grid %}
           <div class="py-6 ">
-            <h5 class="mb-4 px-4 lg:px-6">
+            <h5 class="mb-4  lg:px-6">
               {{ settings.search_category_grid_title | default: 'Shop by Category' }}
             </h5>
 
             <div class="search-categories-carousel swiper overflow-hidden" data-carousel-id="search-categories">
-              <div class="swiper-wrapper px-4 lg:px-6">
+              <div class="swiper-wrapper  lg:px-6">
                 {% for collection in settings.search_category_collections %}
                   <div class="swiper-slide">
                     {% render 'collection-card', category: collection, aspect_ratio: 'portrait' %}
@@ -176,7 +176,7 @@
         <!-- Products -->
         {% if settings.search_show_product_carousel %}
           <div class="py-6 space-y-4">
-            <div class="px-4 lg:px-6">
+            <div class=" lg:px-6">
               <h5>
                 {{ settings.search_product_carousel_title | default: 'Featured Products' }}
               </h5>
@@ -203,7 +203,7 @@
 
             {% if products != blank and products.size > 0 %}
               <div class="search-products-carousel swiper overflow-hidden" data-carousel-id="search-products">
-                <div class="swiper-wrapper px-4 lg:px-6">
+                <div class="swiper-wrapper  lg:px-6">
                   {% assign products_shown = 0 %}
                   {% for product in products %}
                     {% if product.available and products_shown < 8 %}
@@ -340,7 +340,11 @@
 
       openDrawer() {
         this.isOpen = true;
-        document.body.classList.add('overflow-hidden');
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${window.scrollY}px`;
+        document.body.classList.add('search-drawer-open');
         this.$nextTick(() => {
           const input = this.$el.querySelector('input[type="text"]');
           setTimeout(() => input?.focus(), 100);
@@ -349,8 +353,14 @@
 
       closeDrawer() {
         this.isOpen = false;
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        document.body.classList.remove('search-drawer-open');
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
         setTimeout(() => {
-          document.body.classList.remove('overflow-hidden');
           this.searchQuery = '';
           this.searchResults = [];
           this.matchingCategories = [];

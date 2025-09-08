@@ -8,8 +8,8 @@
 
 <button
   @click="$dispatch('cart:open')"
-  class="relative flex items-center justify-center w-10 h-10 transition-colors duration-200"
-  :class="($el.closest('header').__x.$data.isScrolled || $el.closest('header').__x.$data.isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
+  class="relative flex items-center justify-center transition-colors duration-200"
+  :class="(isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
   x-data="
     {
       cartCount: 0,
@@ -33,6 +33,6 @@
   <span
     x-show="cartCount > 0"
     x-text="cartCount"
-    class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
+    class="absolute -top-2 -right-3 border-3 border-transparent bg-black text-white body-xs rounded-full w-5 h-5 flex items-center justify-center font-bold"
   ></span>
 </button>

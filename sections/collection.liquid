@@ -8,7 +8,7 @@
 {% endcomment %}
 
 <!-- Main Container with Alpine.js data -->
-<div x-data="{ layoutOption: 1 }">
+<div x-data="collectionPage()">
   <!-- Collection Hero (only show if not in search context) -->
   {% unless template == 'search' %}
     {% render 'generic-hero', image: collection.image, title: collection.title, description: collection.description %}
@@ -26,50 +26,11 @@
       </h1>
 
       {% assign product_count = search.results.size %}
-      <p class="text-lg text-gray-600">{{ product_count }} product{{ product_count | pluralize: 's', 's' }} found</p>
+      <p class="text-lg text-gray-600" data-product-count>
+        {{ product_count }} product{{ product_count | pluralize: 's', 's' }} found
+      </p>
     </div>
   {% endif %}
-
-  <!-- Layout Toggle (only show when there are products) -->
-  {% unless template == 'search' and search.results.size == 0 %}
-    <div class="flex items-center justify-between mt-15 px-12 h-10">
-      <div class="flex h-full items-center gap-4">
-        <!-- Layout Toggle -->
-        <button
-          @click="layoutOption = layoutOption >= 3 ? 1 : layoutOption + 1"
-          class="flex h-full items-center gap-2 cursor-pointer"
-        >
-          <p
-            class="body"
-          >
-            Vista
-          </p>
-          <div class="flex gap-1">
-            <div
-              :class="layoutOption >= 1 ? 'bg-black' : 'bg-white border border-gray-300'"
-              class="size-4 transition-all duration-200"
-            ></div>
-            <div
-              :class="layoutOption >= 2 ? 'bg-black' : 'bg-white border border-gray-300'"
-              class="size-4 transition-all duration-200"
-            ></div>
-            <div
-              :class="layoutOption === 3 ? 'bg-black' : 'bg-white border border-gray-300'"
-              class="size-4 transition-all duration-200"
-            ></div>
-          </div>
-        </button>
-      </div>
-
-      <!-- Filters Button -->
-      <button class="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-        Filtros
-      </button>
-    </div>
-  {% endunless %}
 
   <!-- Products Grid Content -->
   {% capture grid_content %}
@@ -78,27 +39,23 @@
         {% assign products = search.results %}
         {% if products.size > 0 %}
           {% for product in products %}
-            <!-- Normal product card for layouts 1 and 2 -->
-            <div x-show="layoutOption !== 3">
-              {% render 'product-card',
-                product: product,
-                show_badges: true,
-                show_rating: true,
-                show_size_selector: true,
-                hide_info: false
-              %}
-            </div>
-
-            <!-- Compact product card for layout 3 -->
-            <div x-show="layoutOption === 3">
-              {% render 'product-card',
-                product: product,
-                show_badges: true,
-                show_rating: true,
-                show_size_selector: true,
-                hide_info: true
-              %}
-            </div>
+            <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
+              <div :style="`order: ${getProductOrder({{ product.id }})}`"
+                   :class="{
+                     'w-full lg:w-1/3': layoutOption === 1,
+                     'w-1/2 lg:w-1/4': layoutOption === 2,
+                     'w-1/3 lg:w-1/6': layoutOption === 3
+                   }"
+                   data-product-id="{{ product.id }}">
+                {% render 'product-card',
+                  product: product,
+                  show_badges: true,
+                  show_rating: true,
+                  show_size_selector: true,
+                  hide_info: layoutOption === 3
+                %}
+              </div>
+            </template>
           {% endfor %}
         {% else %}
           <!-- No Results Message -->
@@ -148,35 +105,347 @@
         <!-- Collection Products -->
         {% paginate collection.products by 18 %}
           {% for product in collection.products %}
-            <!-- Normal product card for layouts 1 and 2 -->
-            <div x-show="layoutOption !== 3">
-              {% render 'product-card',
-                product: product,
-                show_badges: true,
-                show_rating: true,
-                show_size_selector: true,
-                hide_info: false
-              %}
-            </div>
-
-            <!-- Compact product card for layout 3 -->
-            <div x-show="layoutOption === 3">
-              {% render 'product-card',
-                product: product,
-                show_badges: true,
-                show_rating: true,
-                show_size_selector: true,
-                hide_info: true
-              %}
-            </div>
+            <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
+              <div :style="`order: ${getProductOrder({{ product.id }})}`"
+                   :class="{
+                     'w-full lg:w-1/3': layoutOption === 1,
+                     'w-1/2 lg:w-1/4': layoutOption === 2,
+                     'w-1/3 lg:w-1/6': layoutOption === 3
+                   }"
+                   data-product-id="{{ product.id }}">
+                {% render 'product-card',
+                  product: product,
+                  show_badges: true,
+                  show_rating: true,
+                  show_size_selector: true,
+                  hide_info: layoutOption === 3
+                %}
+              </div>
+            </template>
           {% endfor %}
         {% endpaginate %}
       {% endif %}
   {% endcapture %}
 
   <!-- Render Grid with Content -->
-  {% render 'generic-grid', content: grid_content, show_layout_toggle: false, show_filters: true %}
+  {% render 'generic-grid', content: grid_content, show_layout_toggle: true, show_filters: true %}
 </div>
+
+<!-- Filter Drawer (outside collection page scope) -->
+{% if template == 'search' %}
+  {% render 'filter-drawer', products: search.results %}
+{% else %}
+  {% render 'filter-drawer', products: collection.products %}
+{% endif %}
+
+<script>
+  function collectionPage() {
+    return {
+      layoutOption: 1,
+      allProducts: [],
+      filteredProducts: [],
+      currentFilters: {
+        styles: [],
+        colors: [],
+        sizes: [],
+        collections: [],
+        showOnlyOnSale: false,
+        sortOption: 'default'
+      },
+
+      init() {
+        this.loadProducts();
+        this.setupFilterListener();
+      },
+
+      loadProducts() {
+        // Get all products from the current collection or search results
+        {% if template == 'search' %}
+          this.allProducts = [
+            {% for product in search.results %}
+              {
+                id: {{ product.id }},
+                title: "{{ product.title | escape }}",
+                handle: "{{ product.handle }}",
+                url: "{{ product.url }}",
+                price: {{ product.price }},
+                compare_at_price: {{ product.compare_at_price | default: 0 }},
+                featured_image: "{{ product.featured_image | image_url: width: 400 }}",
+                tags: {{ product.tags | json }},
+                colors: [
+                  {% for option in product.options_with_values %}
+                    {% if option.name == 'Color' %}
+                      {% for value in option.values %}
+                        "{{ value }}"{% unless forloop.last %},{% endunless %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                ],
+                sizes: [
+                  {% for option in product.options_with_values %}
+                    {% if option.name == 'Talla' or option.name == 'Size' %}
+                      {% for value in option.values %}
+                        "{{ value }}"{% unless forloop.last %},{% endunless %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                ],
+                styles: {{ product.tags | json }},
+                collections: [
+                  {% for collection in product.collections %}
+                    "{{ collection.title | escape }}"{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                ],
+                isOnSale: {% if product.compare_at_price > product.price %}true{% else %}false{% endif %},
+                created_at: "{{ product.created_at | date: '%Y-%m-%d' }}"
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ];
+        {% else %}
+          this.allProducts = [
+            {% for product in collection.products %}
+              {
+                id: {{ product.id }},
+                title: "{{ product.title | escape }}",
+                handle: "{{ product.handle }}",
+                url: "{{ product.url }}",
+                price: {{ product.price }},
+                compare_at_price: {{ product.compare_at_price | default: 0 }},
+                featured_image: "{{ product.featured_image | image_url: width: 400 }}",
+                tags: {{ product.tags | json }},
+                colors: [
+                  {% for option in product.options_with_values %}
+                    {% if option.name == 'Color' %}
+                      {% for value in option.values %}
+                        "{{ value }}"{% unless forloop.last %},{% endunless %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                ],
+                sizes: [
+                  {% for option in product.options_with_values %}
+                    {% if option.name == 'Talla' or option.name == 'Size' %}
+                      {% for value in option.values %}
+                        "{{ value }}"{% unless forloop.last %},{% endunless %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                ],
+                styles: {{ product.tags | json }},
+                collections: [
+                  {% for collection in product.collections %}
+                    "{{ collection.title | escape }}"{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                ],
+                isOnSale: {% if product.compare_at_price > product.price %}true{% else %}false{% endif %},
+                created_at: "{{ product.created_at | date: '%Y-%m-%d' }}"
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          ];
+        {% endif %}
+
+        this.filteredProducts = [...this.allProducts];
+        console.log('=== PRODUCTS LOADED ===');
+        console.log('Total products loaded:', this.allProducts.length);
+        console.log('Initial filtered products:', this.filteredProducts.length);
+        console.log('Product IDs:', this.allProducts.map(p => p.id));
+        
+        // Update display after loading products
+        this.updateProductDisplay();
+      },
+
+      setupFilterListener() {
+        window.addEventListener('filters:applied', (event) => {
+          this.currentFilters = event.detail;
+          this.applyFilters();
+        });
+      },
+
+      applyFilters() {
+        console.log('=== APPLYING FILTERS ===');
+        console.log('Current filters:', this.currentFilters);
+        console.log('Total products before filtering:', this.allProducts.length);
+        console.log('Sample product data:', this.allProducts[0]);
+        
+        // Check if any filters are active
+        const hasActiveFilters = this.currentFilters.styles.length > 0 || 
+                                this.currentFilters.colors.length > 0 || 
+                                this.currentFilters.sizes.length > 0 || 
+                                this.currentFilters.collections.length > 0 || 
+                                this.currentFilters.showOnlyOnSale;
+        
+        console.log('Has active filters:', hasActiveFilters);
+        
+        let filteredProducts = this.allProducts.filter(product => {
+          console.log(`\n--- Checking product: ${product.title} ---`);
+          console.log('Product data:', {
+            colors: product.colors,
+            styles: product.styles,
+            sizes: product.sizes,
+            collections: product.collections,
+            isOnSale: product.isOnSale
+          });
+          // Style filter
+          if (this.currentFilters.styles.length > 0) {
+            console.log('Checking style filter...');
+            console.log('Selected styles:', this.currentFilters.styles);
+            console.log('Product styles:', product.styles);
+            const hasMatchingStyle = this.currentFilters.styles.some(style =>
+              product.styles.some(productStyle =>
+                productStyle.toLowerCase() === style.toLowerCase()
+              )
+            );
+            console.log('Has matching style:', hasMatchingStyle);
+            if (!hasMatchingStyle) {
+              console.log('❌ Product excluded: No matching style');
+              return false;
+            }
+            console.log('✅ Product passed style filter');
+          }
+
+          // Color filter
+          if (this.currentFilters.colors.length > 0) {
+            console.log('Checking color filter...');
+            console.log('Selected colors:', this.currentFilters.colors);
+            console.log('Product colors:', product.colors);
+            const hasMatchingColor = this.currentFilters.colors.some(color =>
+              product.colors.some(productColor =>
+                productColor.toLowerCase() === color.toLowerCase()
+              )
+            );
+            console.log('Has matching color:', hasMatchingColor);
+            if (!hasMatchingColor) {
+              console.log('❌ Product excluded: No matching color');
+              return false;
+            }
+            console.log('✅ Product passed color filter');
+          }
+
+          // Size filter
+          if (this.currentFilters.sizes.length > 0) {
+            console.log('Checking size filter...');
+            console.log('Selected sizes:', this.currentFilters.sizes);
+            console.log('Product sizes:', product.sizes);
+            const hasMatchingSize = this.currentFilters.sizes.some(size =>
+              product.sizes.some(productSize =>
+                productSize.toLowerCase() === size.toLowerCase()
+              )
+            );
+            console.log('Has matching size:', hasMatchingSize);
+            if (!hasMatchingSize) {
+              console.log('❌ Product excluded: No matching size');
+              return false;
+            }
+            console.log('✅ Product passed size filter');
+          }
+
+          // Collection filter
+          if (this.currentFilters.collections.length > 0) {
+            console.log('Checking collection filter...');
+            console.log('Selected collections:', this.currentFilters.collections);
+            console.log('Product collections:', product.collections);
+            const hasMatchingCollection = this.currentFilters.collections.some(collection =>
+              product.collections.some(productCollection =>
+                productCollection.toLowerCase() === collection.toLowerCase()
+              )
+            );
+            console.log('Has matching collection:', hasMatchingCollection);
+            if (!hasMatchingCollection) {
+              console.log('❌ Product excluded: No matching collection');
+              return false;
+            }
+            console.log('✅ Product passed collection filter');
+          }
+
+
+          // Sale filter
+          if (this.currentFilters.showOnlyOnSale && !product.isOnSale) {
+            console.log('❌ Product excluded: Not on sale');
+            return false;
+          }
+
+          console.log('✅ Product passed ALL filters');
+          return true;
+        });
+
+        console.log(`\n=== FILTERING RESULTS ===`);
+        console.log(`Products after filtering: ${filteredProducts.length}`);
+        console.log('Filtered products:', filteredProducts.map(p => p.title));
+        
+        // If no filters are active, show all products
+        if (!hasActiveFilters) {
+          console.log('No active filters - showing all products');
+          filteredProducts = [...this.allProducts];
+        }
+        
+        // Apply sorting
+        this.filteredProducts = this.sortProducts(filteredProducts);
+        console.log(`Products after sorting: ${this.filteredProducts.length}`);
+        console.log('Final product order:', this.filteredProducts.map(p => p.title));
+        
+        this.updateProductDisplay();
+      },
+
+      sortProducts(products) {
+        const sortOption = this.currentFilters.sortOption;
+
+        // Create a copy of the array to avoid mutating the original
+        const sortedProducts = [...products];
+
+        switch (sortOption) {
+          case 'name-asc':
+            return sortedProducts.sort((a, b) => a.title.localeCompare(b.title));
+          case 'name-desc':
+            return sortedProducts.sort((a, b) => b.title.localeCompare(a.title));
+          case 'price-asc':
+            return sortedProducts.sort((a, b) => a.price - b.price);
+          case 'price-desc':
+            return sortedProducts.sort((a, b) => b.price - a.price);
+          case 'newest':
+            return sortedProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          default:
+            return sortedProducts; // Keep original order
+        }
+      },
+
+
+      getProductOrder(productId) {
+        const index = this.filteredProducts.findIndex(product => product.id === productId);
+        return index !== -1 ? index : 9999; // Return high number for non-visible products
+      },
+
+      isProductVisible(productId) {
+        const isVisible = this.filteredProducts.some(product => product.id === productId);
+        console.log(`Product ${productId} visibility: ${isVisible}`);
+        console.log('Filtered products IDs:', this.filteredProducts.map(p => p.id));
+        return isVisible;
+      },
+
+
+      updateProductDisplay() {
+        console.log('=== UPDATING PRODUCT DISPLAY ===');
+        console.log('Filtered products count:', this.filteredProducts.length);
+        console.log('Filtered products:', this.filteredProducts.map(p => ({ id: p.id, title: p.title })));
+        
+        // Update product count
+        this.updateProductCount();
+        
+        // Force Alpine.js to re-evaluate visibility by triggering a reactive update
+        this.$nextTick(() => {
+          console.log('Alpine.js DOM updated');
+        });
+      },
+
+      updateProductCount() {
+        const countElement = document.querySelector('[data-product-count]');
+        if (countElement) {
+          countElement.textContent = this.filteredProducts.length;
+        }
+      },
+
+    };
+  }
+</script>
 
 {% schema %}
 {

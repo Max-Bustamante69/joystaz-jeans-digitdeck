@@ -21,11 +21,22 @@
 >
   <!-- Product Image Container -->
   <div class="relative  aspect-[3/4] w-full group/image max-w-full">
-    <!-- Product Image Carousel -->
-    <div class="h-full" x-show="currentImages.length > 1">
+    <!-- Single Image (Primary) -->
+    <div class="w-full h-full" x-show="!currentImages || currentImages.length <= 1">
+      <img
+        :src="currentImages && currentImages[0] ? currentImages[0] : '{{ product.featured_image | image_url: width: 1800 }}'"
+        alt="{{ product.title }}"
+        class="w-full h-full object-cover"
+        width="1800"
+        height="1800"
+        loading="eager"
+      >
+    </div>
+
+    <!-- Product Image Carousel (Fallback for multiple images) -->
+    <div class="h-full" x-show="currentImages && currentImages.length > 1" x-cloak>
       <div
-        class="product-image-carousel swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
-        data-product-id="{{ product.id }}"
+        class="product-image-carousel block!important swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
         data-section-id="{{ section.id }}"
         data-carousel-type="product-images"
         id="product-images-carousel-{{ product.id }}-{{ section.id }}"
@@ -81,17 +92,6 @@
         </div>
       </div>
     </div>
-    <!-- Single Image Fallback -->
-    <div x-show="currentImages.length <= 1">
-      <img
-        :src="currentImages[0] || '{{ product.featured_image | image_url: width: 1800 }}'"
-        alt="{{ product.title }}"
-        class="w-full h-full object-cover"
-        width="1800"
-        height="1800"
-        loading="eager"
-      >
-    </div>
 
     <!-- Product Badges -->
     {% if show_badges and product.tags.size > 0 %}
@@ -132,12 +132,11 @@
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform translate-y-4"
         @click.outside="isDesktop ? null : (showSizeSelector = false)"
-        class="size-selector-hover absolute bottom-0 left-0 right-0 bg-white/80 backdrop-blur-md border border-gray-200 shadow-lg z-30"
+        class="size-selector-hover absolute bottom-0 left-0 right-0 z-0 bg-white/80 backdrop-blur-md border border-gray-200  z-30"
       >
         <div class="grid grid-cols-5 gap-1 ">
           {% comment %} Get all unique sizes and check their availability for selected color {% endcomment %}
           {% assign unique_sizes = '' %}
-          {% assign size_data = '' %}
 
           {% comment %} First pass: collect all unique sizes {% endcomment %}
           {% for variant in product.variants %}
@@ -170,11 +169,7 @@
           {% for size_name in sizes_array %}
             {% if size_name != blank %}
               {% comment %} Find variant that matches current selected color and this size {% endcomment %}
-              {% assign size_available = false %}
-              {% assign matching_variant_id = null %}
-
               {% for variant in product.variants %}
-                {% assign variant_color = '' %}
                 {% assign variant_size = '' %}
 
                 {% comment %} Extract color and size from variant options {% endcomment %}
@@ -184,7 +179,6 @@
                     {% if product_option.name == 'Color' %}
                       {% for color_value in product_option.values %}
                         {% if option == color_value %}
-                          {% assign variant_color = option %}
                           {% assign is_color = true %}
                           {% break %}
                         {% endif %}
@@ -201,8 +195,7 @@
                 {% if variant_size == size_name %}
                   {% comment %} For now, check if variant is available - color matching will be handled by Alpine.js {% endcomment %}
                   {% if variant.available %}
-                    {% assign size_available = true %}
-                    {% assign matching_variant_id = variant.id %}
+                    {% break %}
                   {% endif %}
                 {% endif %}
               {% endfor %}
@@ -237,7 +230,7 @@
   </div>
 
   {% unless hide_info %}
-    <div class=" p-3 w-full  flex-1 flex flex-col justify-start">
+    <div class=" p-3 w-full  flex-1 flex flex-col justify-start z-10">
       <!-- Star Rating and Plus Icon -->
       <div class="flex items-center justify-between">
         {% if show_rating %}
@@ -341,7 +334,7 @@
         {% endfor %}
         {% if first_color != '' %}{% break %}{% endif %}
       {% endfor %}
-      
+
       selectedVariantId: {{ first_color_variant.id | default: product.selected_or_first_available_variant.id }},
       selectedVariantImage: null,
       selectedColor: '{{ first_color | default: product.selected_or_first_available_variant.option1 }}',
@@ -352,7 +345,7 @@
       currentImages: [],
       totalSlides: 0,
       currentSlide: 0,
-      
+
       // Variant data with metafields (same as product page)
       variantData: [
         {% for variant in product.variants %}
@@ -386,7 +379,7 @@
           }{% unless forloop.last %},{% endunless %}
         {% endfor %}
       ],
-      
+
       // Fallback product images
       productImages: [
         {% for image in product.images %}
@@ -395,19 +388,19 @@
       ],
 
       init() {
+
         // Update isDesktop on window resize
         window.addEventListener('resize', () => {
           this.isDesktop = window.innerWidth >= 1024;
         });
-        
+
         // Ensure size selector is hidden by default on desktop
         if (this.isDesktop) {
           this.showSizeSelector = false;
         }
-        
+
         // Initialize other components
         this.initializeColorSelection();
-        this.debugStockLevels();
         this.initializeGallery();
         this.initializeCarousel();
       },
@@ -418,16 +411,13 @@
         this.selectedColor = color;
         this.selectedVariantId = variantId;
 
-        // Debug stock levels when color changes
-        console.log(`Color changed to: ${color}`);
-        this.debugStockLevels();
 
         // Update gallery for selected color (same as product page)
         this.updateGalleryForColor(color);
       },
 
       // === CORE DATA METHODS ===
-      
+
       getVariants() {
         return [
           {% for variant in product.variants %}
@@ -468,7 +458,7 @@
       },
 
       // === GALLERY METHODS (same as product page) ===
-      
+
       // Check if product has color variants (updated version)
       hasColorVariantsForGallery() {
         // Check if there are multiple different colors in variants
@@ -482,30 +472,30 @@
         if (!this.hasColorVariantsForGallery()) {
           return this.productImages;
         }
-        
+
         // Find the first variant with this color that has gallery images
-        const variantWithGallery = this.variantData.find(variant => 
+        const variantWithGallery = this.variantData.find(variant =>
           variant.color === color && variant.gallery.length > 0
         );
-        
+
         if (variantWithGallery && variantWithGallery.gallery.length > 0) {
           return variantWithGallery.gallery;
         }
-        
+
         // Fallback to product images
         return this.productImages;
       },
-      
+
       // Update gallery for selected color
       updateGalleryForColor(color) {
         this.currentImages = this.getImagesForColor(color);
         this.totalSlides = this.currentImages.length;
         this.currentSlide = 0;
-        
+
         // Update carousel after Alpine.js updates the DOM
         this.updateCarousel();
       },
-      
+
       // Update carousel after image changes
       updateCarousel() {
         if (this.carouselSwiper) {
@@ -533,11 +523,11 @@
       },
 
       // === VARIANT MATCHING ABSTRACTION ===
-      
+
       findVariant(size, colorRequired = true) {
         const variants = this.getVariants();
         const hasColors = this.hasColorVariants();
-        
+
         return variants.find(variant => {
           const matchesSize = variant.options.includes(size);
           const matchesColor = !hasColors || !colorRequired || variant.options.includes(this.selectedColor);
@@ -551,14 +541,14 @@
       },
 
       // === SIMPLIFIED PUBLIC METHODS ===
-      
+
       isSizeAvailable(size) {
         return !!this.findAvailableVariant(size);
       },
 
       getSizeStock(size) {
         const variant = this.findVariant(size, true);
-        
+
         if (!variant) {
           return { available: false, stock: 0, policy: 'deny', variantId: null };
         }
@@ -572,38 +562,23 @@
       },
 
       // === UTILITY METHODS ===
-      
+
       getAllSizes() {
         const variants = this.getVariants();
         const allOptions = variants.map(v => v.options).flat();
-        
+
         if (!this.hasColorVariants()) {
           return [...new Set(allOptions)];
         }
-        
+
         // Filter out colors to get only sizes
         return [...new Set(allOptions.filter(option => option !== this.selectedColor))];
       },
 
-      debugStockLevels() {
-        const hasColors = this.hasColorVariants();
-        const title = hasColors 
-          ? `=== Stock Debug for Product ${this.productId} - Color: ${this.selectedColor} ===`
-          : `=== Stock Debug for Product ${this.productId} - No Color Variants ===`;
-        
-        console.log(title);
-        
-        this.getAllSizes().forEach(size => {
-          const stockInfo = this.getSizeStock(size);
-          console.log(`Size ${size}:`, stockInfo);
-        });
-        
-        console.log('=== End Stock Debug ===');
-      },
 
       handleSizeClick(size) {
         if (!this.isSizeAvailable(size)) return;
-        
+
         const variant = this.findAvailableVariant(size);
         if (variant) {
           this.selectSize(size, variant.id);
@@ -611,9 +586,7 @@
       },
 
       handlePlusClick() {
-        // Debug stock levels when opening size selector
-        this.debugStockLevels();
-        
+
         // Check if product has Talla option using the product data
         const productOptions = {{ product.options | json }};
         const hasTalla = productOptions.includes('Talla');
@@ -698,7 +671,7 @@
       showSuccessMessage() {
         // Create a temporary success message
         const message = document.createElement('div');
-        message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+        message.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg z-50';
         message.textContent = 'Added to cart!';
         document.body.appendChild(message);
 
@@ -755,20 +728,17 @@
 
       initializeColorSelection() {
         if (!this.hasColorVariants()) {
-          console.log(`Initializing Product Card ${this.productId} - No Color Variants`);
           return;
         }
-        
+
         const firstColor = this.getFirstColorWithSwatch();
         if (firstColor && firstColor !== this.selectedColor) {
-          console.log(`Correcting selected color from ${this.selectedColor} to ${firstColor}`);
           this.selectedColor = firstColor;
         }
-        console.log(`Initializing Product Card ${this.productId} - Selected Color: ${this.selectedColor}`);
       },
 
       initializeCarousel() {
-        
+
         this.$nextTick(() => {
           const carouselElement = this.$el.querySelector('.product-image-carousel');
           if (carouselElement && typeof Swiper !== 'undefined') {
@@ -864,13 +834,13 @@
             // Add click event to go to product page (only if not clicking on controls)
             carouselElement.addEventListener('click', (e) => {
               // Check if click is on navigation buttons or size selector
-              if (e.target.closest('.product-prev') || 
-                  e.target.closest('.product-next') || 
+              if (e.target.closest('.product-prev') ||
+                  e.target.closest('.product-next') ||
                   e.target.closest('.size-selector-hover') ||
                   e.target.closest('[data-carousel-id]')) {
                 return; // Don't navigate if clicking on controls
               }
-              
+
               // Navigate to product page
               window.location.href = '{{ product.url }}';
             });
@@ -891,12 +861,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Ensure size selector is properly positioned and styled */
-  .product-card .size-selector-hover {
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(229, 231, 235, 0.8);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  }
+
 
   /* Size button hover effects */
   .size-selector-hover button {

@@ -30,6 +30,7 @@
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     class="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl flex flex-col"
+    @click.outside="closeDrawer()"
   >
     <!-- Header -->
     <div class="lg:p-6 p-4  flex-shrink-0">

@@ -1,45 +1,39 @@
 <header
-  class="flex flex-col bg-transparent absolute top-0 left-0 right-0 z-50 "
+  class="flex flex-col bg-transparent absolute top-0 left-0 right-0 z-50"
   x-data="
     {
       mobileMenuOpen: false,
       cartDrawerOpen: false,
-      activeMegaMenu: null, // Stores the handle of the primary link's collection
-      openCartDrawer() {
-        this.cartDrawerOpen = true;
-      },
-      showMegaMenu(collectionHandle) {
-        this.activeMegaMenu = collectionHandle;
-      },
-      hideMegaMenu() {
-        this.activeMegaMenu = null;
-      }
+      activeMegaMenu: null,
+      openCartDrawer() { this.cartDrawerOpen = true; },
+      showMegaMenu(collectionHandle) { this.activeMegaMenu = collectionHandle; },
+      hideMegaMenu() { this.activeMegaMenu = null; }
     }
   "
 >
-  <div class="w-screen  bg-primary h-8 whitespace-nowrap">
+  <div class="w-screen overflow-hidden bg-primary h-8 whitespace-nowrap">
     <div class="ticker-wrap inline-block">
-      <span class="ticker-item text-white text-md font-medium tracking-wide"
-        >Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
+      <span class="ticker-item text-white text-md font-medium tracking-wide">
         Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull;</span
-      >
-      <!-- Repeat the content to ensure smooth looping -->
-      <span class="ticker-item text-white text-md font-medium tracking-wide"
-        >Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
         Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
-        Class Is in Session &bull; Class Is in Session &bull;</span
-      >
+        Class Is in Session &bull; Class Is in Session &bull;
+      </span>
+      <span class="ticker-item text-white text-md font-medium tracking-wide">
+        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
+        Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull; Class Is in Session &bull;
+        Class Is in Session &bull; Class Is in Session &bull;
+      </span>
     </div>
   </div>
-  <nav class="grid grid-cols-3 h-20 px-20 z-50 bg-transparent text-white w-full relative">
+
+  <nav class="grid grid-cols-3 h-20 px-20 z-50 bg-transparent bg-white text-white w-full relative">
     <!-- Desktop Menu -->
     <div class="header__menu hidden xl:flex items-center justify-start gap-6">
       {% for link in section.settings.menu.links %}
         {% assign collection_handle = link.url | remove: '/collections/' | remove: '/' %}
         {% assign collection = collections[collection_handle] %}
         <div
-          class=" h-full flex items-center"
+          class="h-full flex items-center"
           @mouseenter="showMegaMenu('{{ collection_handle }}')"
           @mouseleave="hideMegaMenu()"
         >
@@ -50,47 +44,72 @@
           >
             {{ link.title }}
           </a>
-          <!-- Mega Menu for current link -->
-          {% if link.links.size > 0 or collection.metafields.custom.subcollections %}
+
+          {% if link.links.size > 0 %}
+            <!-- Mega Menu Panel -->
             <div
               x-cloak
               x-show="activeMegaMenu === '{{ collection_handle }}'"
-              x-transition:enter="transition ease-out duration-300"
-              x-transition:enter-start="opacity-0 transform -translate-y-2 scale-y-0"
-              x-transition:enter-end="opacity-100 transform translate-y-0 scale-y-100"
-              class="absolute top-full left-0 w-screen bg-white shadow-2xl z-50 mega-menu origin-top"
+              x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
+              x-transition:enter-end="opacity-100 max-h-screen overflow-visible"
+              :class="
+                [
+                  'absolute top-full left-0 w-screen bg-white pl-12 py-4  z-50 mega-menu',
+                  activeMegaMenu === '{{ collection_handle }}' ? 'is-active' : ''
+                ]
+              "
+              style="
+                --anim-base-delay: 40ms;   /* delay before first child */
+                --anim-step: 60ms;         /* stagger step between items */
+                --anim-duration: 420ms;    /* each child animation duration */
+                --anim-distance: 16px;     /* slide distance from left */
+              "
+              data-anim-container
             >
-              <div class=" mx-12 my-4">
-                <div class="grid grid-cols-12 gap-8">
-                  <!-- Menu Columns (Secondary and Tertiary Links) -->
-                  <div class="col-span-8">
-                    <div class="grid grid-cols-3 gap-8">
-                      {% comment %} Iterate over the secondary links of the current main link {% endcomment %}
+              <div class="">
+                <div class="flex gap-8">
+                  <!-- Left: Menu Columns -->
+                  <div class="flex w-full">
+                    <div class="w-full flex gap-8">
+                      {% comment %} Running order counter for global stagger across all items {% endcomment %}
+                      {% assign order_counter = 0 %}
 
                       {% for sub_link in link.links %}
-                        <div class="space-y-4 mega-menu-column">
-                          <!-- Column Title (Secondary Level) -->
-                          <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider">
-                            <p class="hover:text-gray-700 transition-colors">
+                        {% assign order_counter = order_counter | plus: 1 %}
+                        <div
+                          class="space-y-4 w-full mega-menu-column"
+                          data-anim
+                          style="--anim-order: {{ order_counter }};"
+                        >
+                          <!-- Column Title (not animated separately; remove data-anim above if you want only links) -->
+
+                            <p class="body-sm uppercase text-black/40  ">
                               {{- sub_link.title -}}
                             </p>
-                          </h3>
+                      
+
                           <!-- Tertiary Links -->
                           <div class="space-y-2">
                             {% if sub_link.links.size > 0 %}
                               {% for tertiary_link in sub_link.links %}
+                                {% assign order_counter = order_counter | plus: 1 %}
                                 <a
                                   href="{{ tertiary_link.url }}"
-                                  class="block text-sm text-gray-700 hover:text-gray-900 transition-colors duration-200 mega-menu-link"
+                                  class="body font-medium capitalize text-black mega-menu-link"
+                                  data-anim
+                                  style="--anim-order: {{ order_counter }};"
                                 >
                                   {{ tertiary_link.title }}
                                 </a>
                               {% endfor %}
                             {% else %}
                               {% comment %} Fallback for secondary links without tertiary links {% endcomment %}
+                              {% assign order_counter = order_counter | plus: 1 %}
                               <a
                                 href="{{ sub_link.url }}"
-                                class="block text-sm text-gray-700 hover:text-gray-900 transition-colors duration-200 mega-menu-link"
+                                class="body font-medium capitalize text-black mega-menu-link"
+                                data-anim
+                                style="--anim-order: {{ order_counter }};"
                               >
                                 Ver {{ sub_link.title }}
                               </a>
@@ -100,17 +119,18 @@
                       {% endfor %}
                     </div>
                   </div>
-                  <!-- Collection Cards (Right Side) -->
-                  <div class="col-span-4">
-                    <div class="grid grid-cols-2 gap-4">
-                      {% if collection.metafields.custom.subcollections.value.count > 0 %}
-                        {% for subcollection_item in collection.metafields.custom.subcollections.value
+
+                  <!-- Right: Collection Cards -->
+                  <div class="flex w-full">
+                    <div class="w-full flex  gap-1">
+                      {% if collection.metafields.custom.subcollections.value.size > 0 %}
+                        {% for subcollection_item_handle in collection.metafields.custom.subcollections.value
                           limit: 2
                         %}
-                   
-                          {% assign subcollection = collections[subcollection_item.handle] %}
+                          {% assign subcollection = collections[subcollection_item_handle] %}
                           {% if subcollection %}
-                            <div class="h-48">
+                            {% assign order_counter = order_counter | plus: 1 %}
+                            <div class="h-48 w-full" data-anim style="--anim-order: {{ order_counter }};">
                               {% render 'collection-card',
                                 collection: subcollection,
                                 text_position: 'bottom-left',
@@ -120,11 +140,21 @@
                           {% endif %}
                         {% endfor %}
                       {% else %}
-                        {% comment %} Fallback for when no subcollections metafield or it's empty {% endcomment %}
-                        <div class="h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                        {% assign order_counter = order_counter | plus: 1 %}
+                        <div
+                          class="h-48 w-full bg-gray-100 flex items-center justify-center"
+                          data-anim
+                          style="--anim-order: {{ order_counter }};"
+                        >
                           <span class="text-gray-500 text-sm text-center">Colección Relacionada 1</span>
                         </div>
-                        <div class="h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+
+                        {% assign order_counter = order_counter | plus: 1 %}
+                        <div
+                          class="h-48 w-full bg-gray-100 rounded-lg flex items-center justify-center"
+                          data-anim
+                          style="--anim-order: {{ order_counter }};"
+                        >
                           <span class="text-gray-500 text-sm text-center">Colección Relacionada 2</span>
                         </div>
                       {% endif %}
@@ -137,6 +167,7 @@
         </div>
       {% endfor %}
     </div>
+
     <!-- Mobile Menu Button -->
     <div class="flex gap-6 items-center xl:hidden">
       <button
@@ -148,6 +179,7 @@
       </button>
       {% render 'search-icon' %}
     </div>
+
     <!-- Logo -->
     <h2 class="header__title flex items-center justify-center">
       <a href="{{ routes.root_url }}">
@@ -165,6 +197,7 @@
         {% endif %}
       </a>
     </h2>
+
     <!-- Desktop Icons -->
     <div class="flex items-center justify-end gap-4">
       {% render 'search-icon', class: 'hidden xl:block' %}
@@ -173,6 +206,7 @@
       {% render 'cart-trigger' %}
     </div>
   </nav>
+
   <!-- Mobile Menu Overlay -->
   <div
     x-cloak
@@ -186,6 +220,7 @@
     class="fixed inset-0 bg-black/70 z-40 xl:hidden"
     @click="mobileMenuOpen = false"
   ></div>
+
   <!-- Mobile Menu Panel -->
   <div
     x-cloak
@@ -199,7 +234,7 @@
     class="fixed top-0 left-0 h-full w-4/5 bg-white text-black z-100 xl:hidden overflow-y-auto"
     x-data="mobileMenu()"
   >
-    <div class="p-6">
+    <div class="p-4" x-show="!showTertiaryView">
       <!-- Header with Heart Icon and Close Button -->
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
@@ -219,314 +254,249 @@
           </svg>
         </button>
       </div>
-      <!-- Collection Tabs -->
-      {% if section.settings.mobile_menu_collections %}
-        <div class="flex gap-6 mb-6 border-b border-gray-200">
-          {% for collection_item in section.settings.mobile_menu_collections %}
-            {% assign collection = collections[collection_item.handle] %} {# Get collection object by handle #}
-            {% if collection %}
-              <button
-                @click="activeTab = {{ forloop.index0 }}"
-                :class="activeTab === {{ forloop.index0 }} ? 'border-b-2 border-black text-black' : 'text-gray-500 hover:text-gray-700'"
-                class="pb-2 font-medium transition-colors uppercase tracking-wide"
-              >
-                {{ collection.title }}
-              </button>
-            {% endif %}
-          {% endfor %}
-        </div>
-        <!-- Tab Content -->
-        {% for collection_item in section.settings.mobile_menu_collections %}
-          {% assign collection = collections[collection_item.handle] %} {# Get collection object by handle #}
 
-          {% if collection %}
-            <div x-show="activeTab === {{ forloop.index0 }}" class="space-y-3">
-              <!-- Subcollections from Metafield -->
-              {% if collection.metafields.custom.subcollections %}
-                {% assign subcollections = collection.metafields.custom.subcollections.value %}
-                {% if subcollections.size > 0 %}
-                  <div class="space-y-3">
-                    {% for subcollection_handle in subcollections %}
-                      {% assign subcollection = collections[subcollection_handle] %}
-                      {% if subcollection %}
-                        <a
-                          href="{{ subcollection.url }}"
-                          class="flex items-center justify-between py-3 text-gray-700 hover:text-gray-900 transition-colors border-b border-gray-100"
-                          @click="mobileMenuOpen = false"
-                        >
-                          <p class="text-sm">{{ subcollection.title }}</p>
-                          {% if subcollection.image %}
-                            {{
-                              subcollection.image
-                              | image_url: width: 400
-                              | image_tag:
-                                class: 'aspect-square w-16 h-16 object-cover transition-transform duration-300',
-                                alt: subcollection.title,
-                                loading: 'lazy'
-                            }}
-                          {% else %}
-                            <div class="w-16 h-16 bg-gray-200 flex items-center justify-center rounded-md">
-                              <span class="text-gray-400 text-sm text-center">No image</span>
-                            </div>
-                          {% endif %}
-                        </a>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                {% endif %}
-              {% endif %}
-              <!-- Subcollections Carousel -->
-              {% if collection.metafields.custom.subcollections %}
-                {% assign subcollections_handles = collection.metafields.custom.subcollections.value %}
-
-                {% if subcollections_handles.size > 0 %}
-                  <div class="pt-6 pb-4">
-                    <div
-                      class="subcollections-carousel swiper-subcollections-{{ collection.id }}-{{ forloop.index0 }} overflow-hidden"
-                      data-carousel-id="subcollections-{{ collection.id }}-{{ forloop.index0 }}"
-                      data-carousel-type="subcollections"
-                    >
-                      <div class="swiper-wrapper">
-                        {% for subcollection_handle in subcollections_handles %}
-                          {% assign subcollection = collections[subcollection_handle] %}
-                          {% if subcollection %}
-                            <div class="swiper-slide">
-                              <div class="w-full">
-                                {% comment %} Ensure the 'collection-card' snippet expects a 'collection' object directly {% endcomment %}
-                                {% render 'collection-card',
-                                  collection: subcollection,
-                                  text_position: 'bottom-left',
-                                  aspect_ratio: 'portrait'
-                                %}
-                              </div>
-                            </div>
-                          {% endif %}
-                        {% endfor %}
-                      </div>
+      <!-- Mobile Menu Featured Sections Carousel -->
+      {% if section.blocks.size > 0 %}
+        <div class="mb-6">
+          <div
+            class="mobile-featured-carousel swiper overflow-hidden"
+            data-carousel-id="mobile-featured-{{ section.id }}"
+            data-carousel-type="mobile-featured"
+          >
+            <div class="swiper-wrapper">
+              {% for block in section.blocks %}
+                {% if block.type == 'mobile_card' %}
+                  <div class="swiper-slide" {{ block.shopify_attributes }}>
+                    <div class="w-full">
+                      {% render 'generic-card',
+                        image: block.settings.image,
+                        title: block.settings.title,
+                        link: block.settings.link,
+                        aspect_ratio: block.settings.aspect_ratio,
+                        text_position: block.settings.text_position
+                      %}
                     </div>
                   </div>
                 {% endif %}
-              {% endif %}
-              <!--
-                Additional Menu Items (These would typically come from the actual menu links assigned to the collection)
-              -->
-              <div class="space-y-3 pt-4 border-t border-gray-200">
-                {# Added border-top #}
-                <a href="{{ collection.url }}" class="block py-2 text-gray-700 hover:text-gray-900 transition-colors">
-                  Ver todo {{ collection.title }}
-                </a>
-                {# These links assume specific sub-collection handles or manual pages #}
-                <a
-                  href="{{ collection.url }}/tendencias"
-                  class="block py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                >
-                  Tendencias
-                </a>
-                <a
-                  href="{{ collection.url }}/mas-vendidos"
-                  class="block py-2 text-gray-700 hover:text-gray-900 transition-colors"
-                >
-                  Más Vendidos
-                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% comment %} Filter primary links to separate links with sublinks from those without {% endcomment %}
+      {% assign links_with_sublinks_count = 0 %}
+      {% assign links_without_sublinks_count = 0 %}
+
+      {% comment %} First pass: count links with and without sublinks {% endcomment %}
+      {% for link in section.settings.menu.links %}
+        {% if link.links.size > 0 %}
+          {% assign links_with_sublinks_count = links_with_sublinks_count | plus: 1 %}
+        {% else %}
+          {% assign links_without_sublinks_count = links_without_sublinks_count | plus: 1 %}
+        {% endif %}
+      {% endfor %}
+
+      {% if links_with_sublinks_count > 0 %}
+        <div class="flex gap-4 mb-6 border-b border-gray-200">
+          {% assign tab_index = 0 %}
+          {% for link in section.settings.menu.links %}
+            {% if link.links.size > 0 %}
+              <button
+                @click="activeTab = {{ tab_index }}"
+                class="transition-all duration-400"
+                :class="activeTab === {{ tab_index }} ? 'border-b-2 border-black text-black' : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'"
+                
+              >
+              <h5 class="uppercase my-3 " >
+
+                {{ link.title }}
+                </h5>
+              </button>
+              {% assign tab_index = tab_index | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% assign tab_index = 0 %}
+        {% for link in section.settings.menu.links %}
+          {% if link.links.size > 0 %}
+            <div x-show="activeTab === {{ tab_index }}" class="space-y-3">
+              {% comment %} Display secondary links as cards {% endcomment %}
+              <div class="space-y-1">
+                {% for sub_link in link.links %}
+                  {% assign has_sub_links = false %}
+                  {% if sub_link.links.size > 0 %}
+                    {% assign has_sub_links = true %}
+                  {% endif %}
+                  {% render 'link-card', link: sub_link, has_sub_links: has_sub_links %}
+                {% endfor %}
               </div>
             </div>
+            {% assign tab_index = tab_index | plus: 1 %}
           {% endif %}
         {% endfor %}
       {% endif %}
-      <!-- Footer Links -->
+
+      {% comment %} Subcollections Carousel - Show for collection tabs {% endcomment %}
+      {% if links_with_sublinks_count > 0 %}
+        {% assign tab_index = 0 %}
+        {% for link in section.settings.menu.links %}
+          {% if link.links.size > 0 %}
+            {% comment %} Check if this link is a collection {% endcomment %}
+            {% assign link_handle = link.url | remove: '/collections/' | remove: '/' %}
+            {% assign collection = collections[link_handle] %}
+
+            {% if collection and collection.metafields.custom.subcollections.value.count > 0 %}
+              <div x-show="activeTab === {{ tab_index }}" class="mb-6 mt-8 -mx-4 z-0" >
+                <div class="mb-4 mx-4">
+                  <p class="body-sm  uppercase text-black/40">Subcollections</p>
+                </div>
+                <div
+                  class="mobile-subcollections-carousel swiper  overflow-hidden"
+                  data-carousel-id="mobile-subcollections-{{ section.id }}-{{ tab_index }}"
+                  data-carousel-type="mobile-subcollections"
+                >
+                  <div class="swiper-wrapper px-4">
+                    {% for subcollection_item in collection.metafields.custom.subcollections.value
+                      limit: section.settings.mobile_subcollections_count
+                    %}
+                      {% assign subcollection = collections[subcollection_item.handle] %}
+                      {% if subcollection %}
+                        <div class="swiper-slide">
+                          <div class="w-full">
+                            {% render 'collection-card',
+                              collection: subcollection,
+                              text_position: 'bottom-left',
+                              aspect_ratio: 'portrait'
+                            %}
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            {% assign tab_index = tab_index | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
       <div class="mt-8 pt-6 border-t border-gray-200 space-y-2">
-        <a href="/pages/company" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
-          Compañia
-        </a>
-        <a href="/pages/brand" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors"> Marca </a>
-        <a href="/pages/terms-privacy" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
-          Términos y privacidad
-        </a>
+        {% comment %} Add primary links without sublinks {% endcomment %}
+        {% for link in section.settings.menu.links %}
+          {% unless link.links.size > 0 %}
+            <a href="{{ link.url }}" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+              {{- link.title -}}
+            </a>
+          {% endunless %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tertiary Links View -->
+    <div
+      x-show="showTertiaryView"
+      x-transition:enter="transform transition ease-out duration-300"
+      x-transition:enter-start="transform translate-x-full"
+      x-transition:enter-end="transform translate-x-0"
+      x-transition:leave="transform transition ease-in duration-300"
+      x-transition:leave-start="transform translate-x-0"
+      x-transition:leave-end="transform translate-x-full"
+      class="absolute inset-0 bg-white p-6 overflow-y-auto"
+    >
+      <!-- Back Button and Title -->
+      <div class="flex items-center gap-3 mb-6">
+        <button
+          @click="goBackToMainMenu()"
+          class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span class="font-medium" x-text="currentTertiaryTitle"></span>
+        </button>
+      </div>
+
+      <!-- Tertiary Links List -->
+      <div class="space-y-3">
+        <template x-for="link in currentTertiaryLinks" :key="link.url">
+          <a
+            :href="link.url"
+            class="block text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-b-0"
+            @click="mobileMenuOpen = false"
+          >
+            <h5  x-text="link.title"></h5>
+          </a>
+        </template>
       </div>
     </div>
   </div>
-  <!-- Cart Drawer -->
 </header>
 
 {% stylesheet %}
   /* Ticker animation */
-
   .ticker-wrap {
-
-  animation: ticker linear infinite;
-
-  animation-duration: 40s;
-
-  transform: translateX(0%);
-
+    animation: ticker linear infinite;
+    animation-duration: 40s;
+    transform: translateX(0%);
   }
-
   @keyframes ticker {
-
-  0% {
-
-  transform: translateX(0%);
-
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
-
-  100% {
-
-  transform: translateX(-50%);
-
-  }
-
-  }
-
-  /* Mobile responsive ticker */
-
   @media (max-width: 768px) {
-
-  .ticker-wrap {
-
-  animation-duration: 25s;
-
+    .ticker-wrap {
+      animation-duration: 25s;
+    }
   }
 
-  }
 
-  /* Hide scrollbar for collection carousel /
 
-  .scrollbar-hide {
 
-  -ms-overflow-style: none; / Internet Explorer 10+ /
 
-  scrollbar-width: none; / Firefox */
 
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-
-  display: none; /* Safari and Chrome */
-
-  }
-
-  /* Mobile menu collection carousel styling /
-
-  .mobile-menu-carousel .collection-card {
-
-  min-width: 128px; / w-32 = 8rem = 128px /
-
-  height: 170px; / aspect-[3/4] with w-32 */
-
-  }
-
-  /* Mega Menu Styling /
-
+  /* Mega Menu Styling */
   .mega-menu {
-
-  backdrop-filter: blur(10px);
-
-  -webkit-backdrop-filter: blur(10px);
-
-  background-color: rgba(255, 255, 255, 0.9);
-
-  / Remove max-height: 0 and overflow: hidden; here directly /
-
-  / Let x-show manage display, opacity and transform will handle transition */
-
-  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
-
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    background-color: white;
+    transition:  max-height 1.6s ease-out;
+    transform-origin: top;
   }
 
-  /* Alpine.js will apply x-show/x-transition classes /
 
-  / These will be handled by x-transition:enter/leave */
 
-  .mega-menu-column {
-
-  position: relative;
-
-  padding-left: 1rem;
-
+  /* ========== Modular Sweep-in Animation (supports N children) ========== */
+  @keyframes sweep-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(calc(var(--anim-distance, 16px) * -1));
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
-  .mega-menu-column::before {
-
-  content: '';
-
-  position: absolute;
-
-  top: 0;
-
-  left: 0;
-
-  width: 1px;
-
-  height: 100%;
-
-  background: linear-gradient(to bottom, transparent, #e5e7eb, transparent);
-
+  /* Initial hidden state for animatable elements */
+  [data-anim] {
+    opacity: 0;
+    transform: translateX(calc(var(--anim-distance, 16px) * -1));
   }
 
-  .mega-menu-column:first-child::before {
-
-  display: none;
-
-  }
-
-  .mega-menu-link {
-
-  position: relative;
-
-  transition: all 0.2s ease;
-
-  padding-left: 0.5rem;
-
-  }
-
-  .mega-menu-link::before {
-
-  content: '';
-
-  position: absolute;
-
-  left: 0;
-
-  top: 50%;
-
-  transform: translateY(-50%);
-
-  width: 0;
-
-  height: 1px;
-
-  background-color: #374151;
-
-  transition: width 0.2s ease;
-
-  }
-
-  .mega-menu-link:hover::before {
-
-  width: 0.25rem;
-
-  }
-
-  .mega-menu-link:hover {
-
-  padding-left: 0.75rem;
-
-  }
-
-  /* Collection cards in mega menu */
-
-  .mega-menu .collection-card {
-
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-
-  }
-
-  .mega-menu .collection-card:hover {
-
-  transform: translateY(-2px);
-
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-
+  /* Activate animation for all children when container is active */
+  .is-active [data-anim] {
+    animation-name: sweep-in-left;
+    animation-duration: var(--anim-duration, 420ms);
+    animation-timing-function: ease-out;
+    animation-fill-mode: forwards;
+    animation-delay: calc(var(--anim-base-delay, 40ms) + var(--anim-step, 60ms) * var(--anim-order, 0));
   }
 {% endstylesheet %}
 
@@ -535,51 +505,65 @@
   function mobileMenu() {
     return {
       activeTab: 0,
-      init() {
-        // Initialize subcollections carousels when tab changes
-        this.$watch('activeTab', () => {
-          this.$nextTick(() => {
-            this.initializeSubcollectionsCarousels();
-          });
-        });
+      showTertiaryView: false,
+      currentTertiaryTitle: '',
+      currentTertiaryLinks: [],
 
-        // Initialize carousels on initial load
+      init() {
         this.$nextTick(() => {
-          this.initializeSubcollectionsCarousels();
+          this.initializeMobileFeaturedCarousel();
+          this.initializeMobileSubcollectionsCarousels();
         });
       },
 
-      initializeSubcollectionsCarousels() {
-        const carousels = document.querySelectorAll('[data-carousel-type="subcollections"]');
+      initializeMobileFeaturedCarousel() {
+        const carousel = document.querySelector('[data-carousel-type="mobile-featured"]');
+        if (carousel && carousel.swiper) return; // Already initialized
+
+        if (carousel && typeof Swiper !== 'undefined') {
+          const swiper = new Swiper(carousel, {
+            slidesPerView: 2,
+            spaceBetween: 16,
+            loop: true,
+            navigation: {
+              nextEl: carousel.querySelector('.carousel-next'),
+              prevEl: carousel.querySelector('.carousel-prev'),
+            },
+            breakpoints: {
+              480: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+              },
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 24,
+              },
+            },
+          });
+          carousel.swiper = swiper;
+        }
+      },
+
+      initializeMobileSubcollectionsCarousels() {
+        const carousels = document.querySelectorAll('[data-carousel-type="mobile-subcollections"]');
         carousels.forEach((carousel) => {
-          if (carousel.swiper) return; // Already initialized
+          if (carousel && carousel.swiper) return; // Already initialized
 
-          if (typeof Swiper !== 'undefined') {
+          if (carousel && typeof Swiper !== 'undefined') {
             const swiper = new Swiper(carousel, {
-              slidesPerView: 1.5,
-              spaceBetween: 12,
-              freeMode: {
-                enabled: true,
-                sticky: true,
-                momentum: true,
-              },
-              grabCursor: false,
-              breakpoints: {
-                480: {
-                  slidesPerView: 2.2,
-                  spaceBetween: 16,
-                },
-                640: {
-                  slidesPerView: 3.2,
-                  spaceBetween: 20,
-                },
-              },
+              slidesPerView: 2.2,
+              spaceBetween: 4,
+              loop: false,
             });
-
-            // Store swiper instance
             carousel.swiper = swiper;
           }
         });
+      },
+
+      goBackToMainMenu() {
+        this.showTertiaryView = false;
+        this.currentTertiaryTitle = '';
+        this.currentTertiaryLinks = [];
       },
     };
   }
@@ -590,23 +574,13 @@
       await removeCartItem(itemKey);
       return;
     }
-
     try {
       const response = await fetch('/cart/change.js', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: itemKey,
-          quantity: newQuantity,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: itemKey, quantity: newQuantity }),
       });
-
-      if (response.ok) {
-        // Reload the page to update cart drawer
-        window.location.reload();
-      }
+      if (response.ok) window.location.reload();
     } catch (error) {
       console.error('Error updating quantity:', error);
     }
@@ -616,26 +590,16 @@
     try {
       const response = await fetch('/cart/change.js', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          id: itemKey,
-          quantity: 0,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: itemKey, quantity: 0 }),
       });
-
-      if (response.ok) {
-        // Reload the page to update cart drawer
-        window.location.reload();
-      }
+      if (response.ok) window.location.reload();
     } catch (error) {
       console.error('Error removing item:', error);
     }
   }
 
   function toggleWishlist(productId) {
-    // Implement wishlist functionality here
     console.log('Toggle wishlist for product:', productId);
   }
 </script>
@@ -643,42 +607,115 @@
 {% schema %}
 {
   "name": "t:general.header",
-
+  "max_blocks": 10,
   "settings": [
     {
       "type": "image_picker",
-
       "id": "logo",
-
       "label": "Logo",
-
       "info": "Upload your logo image. If no logo is uploaded, the default logo from assets will be used."
     },
-
     {
       "type": "link_list",
-
       "id": "menu",
-
       "label": "t:labels.menu",
-
       "info": "Define your main menu. This menu supports up to 3 levels for the mega menu functionality."
     },
-
+    { "type": "header", "content": "Mobile Menu" },
     {
-      "type": "header",
-
-      "content": "Mobile Menu"
-    },
-
+      "type": "range",
+      "id": "mobile_subcollections_count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "label": "Number of Subcollections to Show",
+      "default": 4,
+      "info": "Number of subcollections to display in the mobile menu carousel for collection tabs"
+    }
+  ],
+  "blocks": [
     {
-      "type": "collection_list",
-
-      "id": "mobile_menu_collections",
-
-      "label": "Mobile Menu Collections",
-
-      "info": "Select collections to display as tabs in the mobile menu. Each collection will show its subcollections from the 'custom.subcollections' metafield."
+      "type": "mobile_card",
+      "name": "Featured Section",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card Image",
+          "info": "Upload an image for this card. If no image is provided, a placeholder will be shown."
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card Title",
+          "default": "Card Title",
+          "info": "Enter the title text for this card."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Card Link",
+          "info": "Enter the URL this card should link to."
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Aspect Ratio",
+          "options": [
+            {
+              "value": "square",
+              "label": "Square (1:1)"
+            },
+            {
+              "value": "portrait",
+              "label": "Portrait (3:4)"
+            },
+            {
+              "value": "landscape",
+              "label": "Landscape (4:3)"
+            },
+            {
+              "value": "wide",
+              "label": "Wide (16:9)"
+            },
+            {
+              "value": "ultra-wide",
+              "label": "Ultra Wide (21:9)"
+            },
+            {
+              "value": "tall",
+              "label": "Tall (2:3)"
+            }
+          ],
+          "default": "portrait",
+          "info": "Choose the aspect ratio for this card."
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Text Position",
+          "options": [
+            {
+              "value": "bottom-left",
+              "label": "Bottom Left"
+            },
+            {
+              "value": "bottom-center",
+              "label": "Bottom Center"
+            },
+            {
+              "value": "bottom-right",
+              "label": "Bottom Right"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ],
+          "default": "bottom-left",
+          "info": "Choose where the title text should be positioned on the card."
+        }
+      ]
     }
   ]
 }

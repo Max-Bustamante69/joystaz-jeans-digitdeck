@@ -1,0 +1,79 @@
+{% comment %}
+  Link Card Snippet
+  Usage: {% render 'link-card', link: link_object, title: 'Title', has_sub_links: true/false %}
+
+  Displays a simple card with just text and link, no image
+  Parameters:
+  - link: Link object with url and title (required)
+  - title: String title (optional, defaults to link.title)
+  - has_sub_links: Boolean indicating if this link has sub-links (optional, defaults to false)
+{% endcomment %}
+
+{% assign card_title = title | default: link.title %}
+{% assign card_url = link.url %}
+{% assign has_sub_links = has_sub_links | default: false %}
+
+{% if has_sub_links %}
+  <button
+    @click="
+      currentTertiaryTitle = '{{ link.title | escape }}';
+      currentTertiaryLinks = [
+        {% for sub_link in link.links %}
+          { title: '{{ sub_link.title | escape }}', url: '{{ sub_link.url | escape }}' }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ];
+      showTertiaryView = true;
+    "
+    class="link-card  relative  items-center bg-gray-50 hover:bg-gray-100 border pl-4 border-gray-200 hover:border-gray-300 h-23 transition-all duration-200 group w-full text-left"
+  >
+    <div class="flex gap-2 items-center justify-between">
+  
+        <h5 class="text-black">{{ card_title }}</h5>
+ 
+  
+        <svg
+          class="w-4 h-4 text-black mt-1 transition-colors"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+  
+    </div>
+  </button>
+{% else %}
+  <a
+    href="{{ card_url }}"
+    class="link-card  relative  items-center bg-gray-50 hover:bg-gray-100 border pl-4 border-gray-200 hover:border-gray-300 h-23 transition-all duration-200 group w-full text-left"
+  >
+    <div class="flex gap-2 items-center justify-between">
+      <div class="flex-1">
+        <h5 class="text-black">
+          {{ card_title }}
+        </h5>
+      </div>
+      <div class="ml-3">
+        <svg
+          class="w-4 h-4 text-black mt-1 transition-colors"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </div>
+    </div>
+  </a>
+{% endif %}
+
+<style>
+  .link-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .link-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+</style>

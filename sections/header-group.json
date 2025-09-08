@@ -15,14 +15,9 @@
       "type": "header",
       "settings": {
         "menu": "header-menu",
-        "mobile_menu_collections": [
-          "men",
-          "women"
-        ]
+        "mobile_subcollections_count": 4
       }
     }
   },
-  "order": [
-    "header"
-  ]
+  "order": ["header"]
 }

@@ -111,7 +111,7 @@
     {% if product.options contains 'Talla' %}
       <button
         class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-30"
-        @click="handlePlusClick"
+        @click.stop.prevent="handlePlusClick"
         @mouseenter="isDesktop && (showSizeSelector = true)"
         type="button"
       >
@@ -237,7 +237,7 @@
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         class="fixed inset-0 bg-black/50 z-40 lg:hidden"
-        @click="showSizeSelector = false"
+        @click="closeMobileDrawer()"
         x-cloak
       ></div>
 
@@ -255,7 +255,7 @@
         <div class="p-4">
           <div class="flex items-center justify-between mb-3">
             <h4 class="body font-semibold">Añadir a la cesta</h4>
-            <button class="p-2" @click="showSizeSelector = false" aria-label="Close">
+            <button class="p-2" @click="closeMobileDrawer()" aria-label="Close">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -722,7 +722,7 @@
         if (hasTalla) {
           // If product has sizes, open size selector (only on mobile, desktop uses hover)
           if (!this.isDesktop) {
-            this.toggleSizeSelector();
+            this.openMobileDrawer();
           } else {
             // On desktop, ensure size selector is visible when plus is clicked
             this.showSizeSelector = true;
@@ -734,7 +734,26 @@
       },
 
       toggleSizeSelector() {
-        this.showSizeSelector = !this.showSizeSelector;
+        // Backward compatibility: toggle appropriate UI depending on device
+        if (!this.isDesktop) {
+          if (this.showSizeSelector) {
+            this.closeMobileDrawer();
+          } else {
+            this.openMobileDrawer();
+          }
+        } else {
+          this.showSizeSelector = !this.showSizeSelector;
+        }
+      },
+
+      openMobileDrawer() {
+        // Simply show overlay without manipulating page scroll
+        this.showSizeSelector = true;
+      },
+
+      closeMobileDrawer() {
+        // Simply hide overlay without changing scroll position
+        this.showSizeSelector = false;
       },
 
       selectSize(size, variantId) {
@@ -761,6 +780,9 @@
         }
 
         this.showSizeSelector = false;
+        if (!this.isDesktop) {
+          this.closeMobileDrawer();
+        }
       },
 
 

@@ -93,6 +93,19 @@
       </div>
     </div>
 
+    <!-- Wishlist Heart Button -->
+    <button
+      class="absolute top-3 right-3 z-30 wishlist-toggle text-black/70 hover:text-black"
+      :class="isInWishlist ? 'text-red-500' : ''"
+      @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
+      aria-pressed="isInWishlist"
+      aria-label="Toggle wishlist"
+      title="Añadir a la lista de deseos"
+      type="button"
+    >
+      {% render 'heart-icon', class: 'w-6 h-6' %}
+    </button>
+
     <!-- Product Badges -->
     {% if show_badges and product.tags.size > 0 %}
       <div class="absolute top-3 left-3 flex gap-1 z-30">
@@ -532,6 +545,9 @@
         this.initializeColorSelection();
         this.initializeGallery();
         this.initializeCarousel();
+
+        // Initialize wishlist state from LocalStorage
+        this.isInWishlist = this.isProductInWishlist('{{ product.handle }}');
       },
 
 
@@ -891,9 +907,41 @@
         return targetVariant ? targetVariant.id : null;
       },
 
-      toggleWishlist() {
-        this.isInWishlist = !this.isInWishlist;
-        // Here you would typically make an API call to add/remove from wishlist
+      // === WISHLIST (LocalStorage) ===
+      getWishlist() {
+        try {
+          const raw = localStorage.getItem('wishlist_v1');
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      },
+
+      setWishlist(list) {
+        try {
+          localStorage.setItem('wishlist_v1', JSON.stringify(list));
+        } catch (e) {
+          // ignore
+        }
+      },
+
+      isProductInWishlist(handle) {
+        const list = this.getWishlist();
+        return list.includes(String(handle));
+      },
+
+      toggleWishlistHandle(handle) {
+        const list = this.getWishlist();
+        const idx = list.indexOf(String(handle));
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          this.isInWishlist = false;
+        } else {
+          list.push(String(handle));
+          this.isInWishlist = true;
+        }
+        this.setWishlist(list);
+        this.$dispatch('wishlist:updated', { handles: list });
       },
 
       // === INITIALIZATION ===

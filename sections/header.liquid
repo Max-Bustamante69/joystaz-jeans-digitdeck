@@ -253,7 +253,10 @@
     <!-- Desktop Icons -->
     <div class="flex items-center col-span-2 lg:col-span-1 justify-end gap-4">
       {% render 'search-icon' %}
-      {% render 'heart-icon', class: 'hidden lg:block' %}
+      <a href="/pages/wishlist" aria-label="Wishlist" class="inline-flex">
+
+        {% render 'heart-icon', class: 'hidden lg:block' %}
+        </a>
       <a
         href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
         aria-label="Account"

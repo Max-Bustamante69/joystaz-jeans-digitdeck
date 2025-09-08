@@ -1,0 +1,87 @@
+<section class="container mx-auto px-4 py-10">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Lista de deseos</h1>
+    <a href="{{ routes.all_products_collection_url }}" class="text-sm underline">Seguir comprando</a>
+  </div>
+
+  <div id="wishlist-empty" class="text-center py-16 hidden">
+    <p class="mb-4">No tienes productos en tu lista de deseos.</p>
+    <a href="{{ routes.all_products_collection_url }}" class="inline-block bg-black text-white px-6 py-3"
+      >Explorar productos</a
+    >
+  </div>
+
+  <div id="wishlist-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+</section>
+
+<script>
+  (function () {
+    const KEY = 'wishlist_v1';
+
+    function getWishlist() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY)) || [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    async function fetchProduct(handle) {
+      try {
+        const res = await fetch('/products/' + handle + '.js');
+        if (!res.ok) return null;
+        return await res.json();
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function renderCard(p) {
+      const price = (p.price / 100).toLocaleString(undefined, { minimumFractionDigits: 0 });
+      const compare = p.compare_at_price
+        ? (p.compare_at_price / 100).toLocaleString(undefined, { minimumFractionDigits: 0 })
+        : null;
+      const img = p.images && p.images[0] ? p.images[0] : '';
+      return `
+        <div class="w-full">
+          <a href="/products/${p.handle}" class="block">
+            <div class="relative aspect-[3/4.5] w-full">
+              <img src="${img}" alt="${p.title}" class="w-full h-full object-cover" loading="lazy" />
+            </div>
+            <div class="py-3">
+              <div class="body-sm font-semibold line-clamp-2">${p.title}</div>
+              <div class="flex items-end gap-2">
+                <span class="body-sm font-semibold">$${price}</span>
+                ${compare ? `<span class="body-sm text-black/40 line-through">$${compare}</span>` : ''}
+              </div>
+            </div>
+          </a>
+        </div>`;
+    }
+
+    async function render() {
+      const grid = document.getElementById('wishlist-grid');
+      const empty = document.getElementById('wishlist-empty');
+      if (!grid || !empty) return;
+      const handles = getWishlist();
+      if (!handles.length) {
+        empty.classList.remove('hidden');
+        grid.innerHTML = '';
+        return;
+      }
+      empty.classList.add('hidden');
+      const products = await Promise.all(handles.map(fetchProduct));
+      grid.innerHTML = products.filter(Boolean).map(renderCard).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', render);
+    document.addEventListener('wishlist:updated', render);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Wishlist",
+  "settings": []
+}
+{% endschema %}

@@ -27,6 +27,7 @@
     font-family: theme(fontFamily.sans);
     letter-spacing: -0.04em;
     text-wrap: balance;
+    margin: 0;
   }
 
   /* Headings */

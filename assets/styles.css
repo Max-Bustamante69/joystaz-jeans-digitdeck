@@ -2356,6 +2356,7 @@
     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     letter-spacing: -0.04em;
     text-wrap: balance;
+    margin: 0;
   }
   h1 {
     font-size: 40px;

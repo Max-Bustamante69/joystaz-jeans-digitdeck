@@ -229,6 +229,7 @@
 
       {%- comment -%} Mobile Bottom Drawer for Size Selection {%- endcomment -%}
       <div
+        x-ref="mobileBackdrop"
         x-show="showSizeSelector && !isDesktop"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0"
@@ -242,6 +243,7 @@
       ></div>
 
       <div
+        x-ref="mobileDrawer"
         x-show="showSizeSelector && !isDesktop"
         x-transition:enter="transition transform ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-full"
@@ -249,7 +251,7 @@
         x-transition:leave="transition transform ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 translate-y-full"
-        class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl lg:hidden"
+        class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl lg:hidden w-[100dvw]"
         x-cloak
       >
         <div class="p-4">
@@ -747,13 +749,34 @@
       },
 
       openMobileDrawer() {
-        // Simply show overlay without manipulating page scroll
+        // Show viewport-level drawer
         this.showSizeSelector = true;
+        // Ensure drawer/backdrop are appended to body for viewport-relative positioning
+        this.$nextTick(() => {
+          const backdrop = this.$refs.mobileBackdrop;
+          const drawer = this.$refs.mobileDrawer;
+          if (backdrop && backdrop.parentElement !== document.body) {
+            document.body.appendChild(backdrop);
+          }
+          if (drawer && drawer.parentElement !== document.body) {
+            document.body.appendChild(drawer);
+          }
+        });
       },
 
       closeMobileDrawer() {
         // Simply hide overlay without changing scroll position
         this.showSizeSelector = false;
+        // Optionally move nodes back to component root if needed
+        const backdrop = this.$refs.mobileBackdrop;
+        const drawer = this.$refs.mobileDrawer;
+        const rootEl = this.$el;
+        if (backdrop && backdrop.parentElement === document.body) {
+          rootEl.appendChild(backdrop);
+        }
+        if (drawer && drawer.parentElement === document.body) {
+          rootEl.appendChild(drawer);
+        }
       },
 
       selectSize(size, variantId) {

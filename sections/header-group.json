@@ -13,10 +13,6 @@
   "sections": {
     "ticker": {
       "type": "ticker",
-      "settings": {
-        "animation_duration": 40,
-        "mobile_animation_duration": 25
-      },
       "blocks": {
         "item_1": {
           "type": "ticker_item",
@@ -37,14 +33,26 @@
           }
         }
       },
-      "block_order": ["item_1", "item_2", "item_3"]
+      "block_order": [
+        "item_1",
+        "item_2",
+        "item_3"
+      ],
+      "settings": {
+        "animation_duration": 40,
+        "mobile_animation_duration": 30
+      }
     },
     "header": {
       "type": "header",
       "settings": {
-        "menu": "header-menu"
+        "menu": "header-menu",
+        "mobile_subcollections_count": 4
       }
     }
   },
-  "order": ["ticker", "header"]
+  "order": [
+    "ticker",
+    "header"
+  ]
 }

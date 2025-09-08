@@ -14,6 +14,7 @@
     "footer": {
       "type": "footer",
       "settings": {
+        "logo": "shopify://shop_images/Captura.png",
         "tagline": "The next wave of natural skincare.",
         "show_payment_icons": true,
         "credit_text": "Desarrollado por DigitDeck"

@@ -1,0 +1,17 @@
+{% layout none %}
+
+{%- comment -%}
+  Server-rendered single product card for wishlist usage.
+  Usage: /products/{handle}?view=wishlist-card
+{%- endcomment -%}
+
+<div class="w-full" data-wishlist-container data-handle="{{ product.handle }}">
+  {%- render 'product-card',
+    product: product,
+    wishlist_mode: true,
+    show_badges: true,
+    show_rating: true,
+    show_size_selector: true,
+    hide_info: false
+  -%}
+</div>

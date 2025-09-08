@@ -1,16 +1,47 @@
+{% assign header_mode = '' %}
+{% if template.name == 'product' %}
+  {% assign header_mode = 'solid-desktop' %}
+{% endif %}
+{% if template.name == 'search' %}
+  {% assign header_mode = 'solid' %}
+{% endif %}
+{% if template.name == 'page'
+  and template.suffix == 'wishlist'
+  or template.name == 'page'
+  and template.suffix == 'wish-list'
+%}
+  {% assign header_mode = 'solid' %}
+{% endif %}
+
 <header
   class=" transition-all duration-300  "
-  :class="(isScrolled || isHovered) ? 'bg-white ' : 'bg-transparent'"
+  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'bg-white ' : 'bg-transparent'"
+  data-header-mode="{{ header_mode }}"
   x-data="
     {
       mobileMenuOpen: false,
       cartDrawerOpen: false,
       activeMegaMenu: null,
       isScrolled: false,
+      isDesktop: window.innerWidth >= 1024,
+      forceSolid: false,
+      solidOnDesktop: false,
+      solidOnMobile: false,
       isHovered: false,
       init() {
         this.handleScroll();
         window.addEventListener('scroll', this.handleScroll.bind(this));
+        window.addEventListener('resize', () => { this.isDesktop = window.innerWidth >= 1024; });
+
+        // Configure header behavior based on data attribute from Liquid
+        const mode = this.$el.dataset.headerMode || '';
+        if (mode === 'solid') {
+          this.forceSolid = true;
+        } else if (mode === 'solid-desktop') {
+          this.solidOnDesktop = true;
+        } else if (mode === 'solid-mobile') {
+          this.solidOnMobile = true;
+        }
       },
       handleScroll() {
         // Calculate 100dvh - 35px
@@ -44,7 +75,7 @@
 >
   <nav
     class="grid grid-cols-3 h-15 px-4  lg:pl-9 lg:pr-12   bg-transparent w-full relative"
-    :class="(isScrolled || isHovered) ? 'text-black' : 'text-white'"
+    :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
     <div class="header__menu hidden lg:flex items-center justify-center lg:justify-start ">
@@ -207,7 +238,7 @@
               height="{{ section.settings.logo.height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
               class="transition-all duration-300"
-              :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
               loading="eager"
             >
           {% else %}
@@ -215,7 +246,7 @@
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
               class="transition-all duration-300 h-12"
-              :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
               width="60"
               height="40"
             >
@@ -234,7 +265,7 @@
             height="{{ section.settings.logo.height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
             class="transition-all duration-300"
-            :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
         {% else %}
@@ -242,7 +273,7 @@
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
             class="transition-all duration-300 h-12"
-            :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
           >
@@ -254,9 +285,8 @@
     <div class="flex items-center col-span-2 lg:col-span-1 justify-end gap-4">
       {% render 'search-icon' %}
       <a href="/pages/wishlist" aria-label="Wishlist" class="inline-flex">
-
         {% render 'heart-icon', class: 'hidden lg:block' %}
-        </a>
+      </a>
       <a
         href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
         aria-label="Account"

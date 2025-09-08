@@ -1,4 +1,4 @@
-<section class="container mx-auto px-4 py-10">
+<section class="w-full  px-4 lg:px-12 mt-24" x-data="wishlistPage()">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-semibold">Lista de deseos</h1>
     <a href="{{ routes.all_products_collection_url }}" class="text-sm underline">Seguir comprando</a>
@@ -11,12 +11,23 @@
     >
   </div>
 
-  <div id="wishlist-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+  {% capture wishlist_grid_content %}
+  {% endcapture %}
+  {% render 'generic-grid', content: wishlist_grid_content, show_layout_toggle: true, show_filters: false %}
 </section>
 
 <script>
   (function () {
     const KEY = 'wishlist_v1';
+    async function fetchCardHtml(handle) {
+      try {
+        const res = await fetch('/products/' + handle + '?view=wishlist-card');
+        if (!res.ok) return null;
+        return await res.text();
+      } catch (e) {
+        return null;
+      }
+    }
 
     function getWishlist() {
       try {
@@ -41,26 +52,412 @@
       const compare = p.compare_at_price
         ? (p.compare_at_price / 100).toLocaleString(undefined, { minimumFractionDigits: 0 })
         : null;
-      const img = p.images && p.images[0] ? p.images[0] : '';
-      return `
-        <div class="w-full">
-          <a href="/products/${p.handle}" class="block">
-            <div class="relative aspect-[3/4.5] w-full">
-              <img src="${img}" alt="${p.title}" class="w-full h-full object-cover" loading="lazy" />
+      const firstImg = p.images && p.images[0] ? p.images[0] : '';
+
+      // Pull option objects (Shopify product.js exposes array of {name, position, values})
+      const optionObjects = Array.isArray(p.options) && typeof p.options[0] === 'object' ? p.options : [];
+      const colorOption = optionObjects.find((o) => (o.name || '').toLowerCase() === 'color');
+      const sizeOption = optionObjects.find((o) => (o.name || '').toLowerCase() === 'talla');
+
+      const colors = colorOption ? colorOption.values || [] : [];
+      const sizes = sizeOption ? sizeOption.values || [] : [];
+
+      // Build swatches and size buttons markup (initial, will be wired up after insert)
+      const swatches = colors.length
+        ? `<div class="flex items-center gap-2 mt-2" data-role="swatches">
+            ${colors
+              .map(
+                (c) =>
+                  `<button type="button" class="w-4 h-4 rounded-xs border-1 border-gray-300 hover:border-gray-400" title="${c}" data-color="${c}" data-color-swatch="${c}"></button>`
+              )
+              .join('')}
+          </div>`
+        : `<div class="flex items-center gap-2 mt-2" data-role="swatches">
+             <button type="button" class="w-4 h-4 rounded-xs border-1 border-gray-300" title="Sin color" style="background-color: transparent; cursor: default;" aria-disabled="true"></button>
+           </div>`; // placeholder transparent swatch when no colors
+
+      const sizeGrid = sizes.length
+        ? `<div class="mt-2 hidden" data-role="sizes">
+             <div class="grid grid-cols-5 gap-1">
+               ${sizes
+                 .map(
+                   (s) => `
+                 <button type="button" class="relative px-4 py-2 text-sm font-semibold border border-gray-200"
+                         data-size="${s}">${s}
+                   <span class="pointer-events-none hidden" data-soldout="" aria-hidden="true"></span>
+                 </button>
+               `
+                 )
+                 .join('')}
+             </div>
+           </div>`
+        : '';
+
+      // Controls: add to cart and remove
+      const controls = `
+        <div class="mt-3 space-y-2">
+          <button type="button" class="w-full bg-primary text-white py-2 font-semibold" data-role="add">Añadir al carrito</button>
+          <button type="button" class="w-full text-sm text-gray-600 underline" data-role="remove">Remover</button>
+        </div>`;
+
+      const cleanedTitle = String(p.title || '')
+        .replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s]+/g, '')
+        .trim();
+
+      // Build carousel from product images (fallback)
+      const carousel = `
+        <div class=\"relative w-full h-full\">
+          <div class=\"swiper wishlist-images h-full\" data-role=\"carousel\">
+            <div class=\"swiper-wrapper h-full\">
+              ${(p.images || [])
+                .map(
+                  (src) =>
+                    `<div class=\"swiper-slide h-full\"><img data-role=\"image\" src=\"${src}\" alt=\"${p.title}\" class=\"w-full h-full object-cover\" loading=\"lazy\"/></div>`
+                )
+                .join('')}
             </div>
-            <div class="py-3">
-              <div class="body-sm font-semibold line-clamp-2">${p.title}</div>
-              <div class="flex items-end gap-2">
-                <span class="body-sm font-semibold">$${price}</span>
-                ${compare ? `<span class="body-sm text-black/40 line-through">$${compare}</span>` : ''}
+          </div>
+          <div class=\"absolute hidden inset-0 pointer-events-none group-hover:block\">
+            <button class=\"product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation\" data-role=\"prev\" type=\"button\">\n              <svg class=\"w-5 h-5 md:w-5 md:h-5 text-black drop-shadow-md\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\">\n                <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M15 19l-7-7 7-7\"/>\n              </svg>\n            </button>
+            <button class=\"product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation\" data-role=\"next\" type=\"button\">\n              <svg class=\"w-5 h-5 md:w-5 md:h-5 text-black drop-shadow-md\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\">\n                <path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M9 5l7 7-7 7\"/>\n              </svg>\n            </button>
+          </div>
+        </div>`;
+
+      return `
+        <div class="w-full" data-wishlist-card data-handle="${p.handle}">
+          <div class="relative aspect-[3/4] w-full group">
+            ${carousel}
+          </div>
+          <div class="py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-2">${swatches}</div>
+              <div class="flex items-center gap-2"></div>
+            </div>
+            <div class="flex flex-col gap-1 lg:flex-row items-start  justify-between">
+              <div class="flex flex-col gap-2 items-start justify-start">
+                <a href="/products/${p.handle}" class="block">
+                  <p class="body-sm lg:body font-semibold ">${cleanedTitle}</p>
+                </a>
+              </div>
+              <div class="flex lg:flex-row-reverse gap-2 items-end">
+                <span class="body-sm lg:body font-semibold">$${price}</span>
+                ${compare ? `<span class="body-sm lg:body text-black/40 line-through">$${compare}</span>` : ''}
               </div>
             </div>
-          </a>
+            ${sizeGrid}
+            ${controls}
+          </div>
         </div>`;
     }
 
+    function buildVariantIndex(p) {
+      // Map variants to structure with options array and availability
+      // product.js variants expose option1/option2/option3 and available
+      return (p.variants || []).map((v) => ({
+        id: v.id,
+        options: [v.option1, v.option2, v.option3].filter(Boolean),
+        available: !!v.available,
+        featured_image: v.featured_image && v.featured_image.src ? v.featured_image.src : null,
+      }));
+    }
+
+    function hasOption(p, name) {
+      const optionObjects = Array.isArray(p.options) && typeof p.options[0] === 'object' ? p.options : [];
+      return !!optionObjects.find((o) => (o.name || '').toLowerCase() === name.toLowerCase());
+    }
+
+    function getValues(p, name) {
+      const optionObjects = Array.isArray(p.options) && typeof p.options[0] === 'object' ? p.options : [];
+      const opt = optionObjects.find((o) => (o.name || '').toLowerCase() === name.toLowerCase());
+      return opt ? opt.values || [] : [];
+    }
+
+    function findVariant(variants, { color, size }) {
+      return (
+        variants.find((v) => {
+          const hasColor = !color || v.options.includes(String(color));
+          const hasSize = !size || v.options.includes(String(size));
+          return hasColor && hasSize && v.available;
+        }) || null
+      );
+    }
+
+    async function addToCart(variantId) {
+      try {
+        const response = await fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [{ id: variantId, quantity: 1 }] }),
+        });
+        if (response.ok) {
+          showToast('Añadido a la cesta');
+          document.dispatchEvent(new CustomEvent('cart:updated'));
+          document.dispatchEvent(new CustomEvent('cart:open'));
+        }
+      } catch (e) {
+        /* noop */
+      }
+    }
+
+    function showToast(text) {
+      const el = document.createElement('div');
+      el.className = 'fixed top-4 right-4 bg-green-500 text-white px-3 py-2 rounded-lg z-50';
+      el.textContent = text;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 1800);
+    }
+
+    function initWishlistCard(root, p) {
+      const variants = buildVariantIndex(p);
+      const hasColors = hasOption(p, 'Color');
+      const hasSizes = hasOption(p, 'Talla');
+      const colorValues = getValues(p, 'Color');
+
+      const state = {
+        color: colorValues[0] || null,
+        size: null,
+      };
+
+      const imgEls = root.querySelectorAll('[data-role="image"]');
+      const sizesWrap = root.querySelector('[data-role="sizes"]');
+      const addBtn = root.querySelector('[data-role="add"]');
+      const removeBtn = root.querySelector('[data-role="remove"]');
+      const carouselEl = root.querySelector('[data-role="carousel"]');
+      const prevEl = root.querySelector('[data-role="prev"]');
+      const nextEl = root.querySelector('[data-role="next"]');
+
+      function getImagesForColor(selectedColor) {
+        const allImages = Array.isArray(p.images) ? p.images : [];
+        if (!hasColors || !colorValues.length || !allImages.length) return allImages;
+        const colorIndex = Math.max(0, colorValues.indexOf(selectedColor));
+        const totalColors = colorValues.length;
+
+        const base = Math.floor(allImages.length / totalColors);
+        const remainder = allImages.length % totalColors;
+        const start = colorIndex * base + Math.min(colorIndex, remainder);
+        const length = base + (colorIndex < remainder ? 1 : 0);
+        const slice = allImages.slice(start, start + Math.max(length, 1));
+        return slice.length ? slice : allImages;
+      }
+
+      function normalizeUrl(u) {
+        try {
+          const url = new URL(u, window.location.origin);
+          return url.pathname + url.search; // drop protocol/host hash
+        } catch (e) {
+          return String(u);
+        }
+      }
+
+      function updateImageForSelection() {
+        // Prefer variant image that matches current selection
+        const matched = findVariant(variants, { color: state.color, size: state.size });
+        const variantForColor = findVariant(variants, { color: state.color, size: null });
+        const firstImage = (matched && matched.featured_image) || (variantForColor && variantForColor.featured_image);
+        let sources = getImagesForColor(state.color);
+        // Prepend selected variant image if present
+        if (firstImage) {
+          const normFirst = normalizeUrl(firstImage);
+          sources = [firstImage, ...sources];
+          // De-duplicate by normalized URL, keep first occurrence
+          const seen = new Set();
+          sources = sources.filter((src) => {
+            const key = normalizeUrl(src);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          // Ensure the very first remains the variant image
+          const firstIdx = sources.findIndex((s) => normalizeUrl(s) === normFirst);
+          if (firstIdx > 0) {
+            const [img] = sources.splice(firstIdx, 1);
+            sources.unshift(img);
+          }
+        } else {
+          // Even when no variant image, still de-duplicate the color slice
+          const seen = new Set();
+          sources = sources.filter((src) => {
+            const key = normalizeUrl(src);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+        }
+
+        if (carouselEl) {
+          const wrapper = carouselEl.querySelector('.swiper-wrapper');
+          if (wrapper) {
+            wrapper.innerHTML = (sources || [])
+              .map(
+                (src) =>
+                  `<div class=\"swiper-slide h-full\"><img data-role=\"image\" src=\"${src}\" alt=\"${p.title}\" class=\"w-full h-full object-cover\" loading=\"lazy\"/></div>`
+              )
+              .join('');
+          }
+          if (carouselEl.swiper) {
+            carouselEl.swiper.update();
+            carouselEl.swiper.slideTo(0);
+          }
+        }
+      }
+
+      // Apply true background for swatches
+      (function applySwatchStyles() {
+        const isValidCssColor = (value) => {
+          if (!value) return false;
+          const s = document.createElement('span');
+          s.style.backgroundColor = '';
+          s.style.backgroundColor = String(value);
+          return !!s.style.backgroundColor;
+        };
+        root.querySelectorAll('[data-color-swatch]').forEach((el) => {
+          const value = el.getAttribute('data-color-swatch');
+          if (isValidCssColor(value)) {
+            el.style.backgroundColor = value;
+          } else if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) {
+            el.style.backgroundColor = value;
+          } else {
+            const map = {
+              negro: '#000000',
+              black: '#000000',
+              blanco: '#ffffff',
+              white: '#ffffff',
+              stone: '#c8b8a6',
+              beige: '#d9c8b4',
+              brown: '#6b4f3a',
+              azul: '#1e3a8a',
+              blue: '#1e3a8a',
+              rojo: '#b91c1c',
+              red: '#b91c1c',
+              verde: '#15803d',
+              green: '#15803d',
+            };
+            const key = String(value || '').toLowerCase();
+            el.style.backgroundColor = map[key] || '#e5e7eb';
+          }
+        });
+      })();
+
+      function refreshSizes() {
+        if (!sizesWrap) return;
+        const btns = sizesWrap.querySelectorAll('[data-size]');
+        btns.forEach((btn) => {
+          const s = btn.getAttribute('data-size');
+          const v = findVariant(variants, { color: hasColors ? state.color : null, size: s });
+          const enabled = !!v;
+          btn.disabled = !enabled;
+          btn.classList.toggle('text-gray-400', !enabled);
+          btn.classList.toggle('cursor-not-allowed', !enabled);
+        });
+      }
+
+      // Wire swatches
+      root.querySelectorAll('[data-color]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          state.color = btn.getAttribute('data-color');
+          // Visual selection
+          root
+            .querySelectorAll('[data-color]')
+            .forEach((b) => b.classList.remove('ring-1', 'ring-black', 'ring-offset-2', 'border-transparent'));
+          btn.classList.add('ring-1', 'ring-black', 'ring-offset-2', 'border-transparent');
+          updateImageForSelection();
+          refreshSizes();
+        });
+      });
+
+      // Wire sizes
+      root.querySelectorAll('[data-size]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const size = btn.getAttribute('data-size');
+          const v = findVariant(variants, { color: hasColors ? state.color : null, size });
+          if (!v) return;
+          state.size = size;
+          await addToCart(v.id);
+          // hide size grid after add
+          if (sizesWrap) sizesWrap.classList.add('hidden');
+        });
+      });
+
+      // Initialize swiper if available
+      if (carouselEl && typeof Swiper !== 'undefined') {
+        const instance = new Swiper(carouselEl, {
+          slidesPerView: 1,
+          spaceBetween: 0,
+          allowTouchMove: true,
+          navigation: {
+            nextEl: nextEl,
+            prevEl: prevEl,
+          },
+        });
+        carouselEl.swiper = instance;
+
+        // Arrow visibility like product card
+        const updateArrowStates = () => {
+          const prev = prevEl;
+          const next = nextEl;
+          if (prev) {
+            if (instance.isBeginning) {
+              prev.style.opacity = '0';
+              prev.style.pointerEvents = 'none';
+              prev.style.visibility = 'hidden';
+            } else {
+              prev.style.opacity = '';
+              prev.style.pointerEvents = '';
+              prev.style.visibility = '';
+            }
+          }
+          if (next) {
+            if (instance.isEnd) {
+              next.style.opacity = '0';
+              next.style.pointerEvents = 'none';
+              next.style.visibility = 'hidden';
+            } else {
+              next.style.opacity = '';
+              next.style.pointerEvents = '';
+              next.style.visibility = '';
+            }
+          }
+        };
+        instance.on('slideChange', updateArrowStates);
+        instance.on('reachBeginning', updateArrowStates);
+        instance.on('reachEnd', updateArrowStates);
+        setTimeout(updateArrowStates, 100);
+      }
+
+      // Wire add button
+      if (addBtn) {
+        addBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          if (hasSizes) {
+            if (sizesWrap) sizesWrap.classList.toggle('hidden');
+            refreshSizes();
+          } else {
+            const v =
+              findVariant(variants, { color: hasColors ? state.color : null, size: null }) ||
+              variants.find((x) => x.available);
+            if (v) await addToCart(v.id);
+          }
+        });
+      }
+      // Wire remove button
+      if (removeBtn) {
+        removeBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const list = getWishlist();
+          const idx = list.indexOf(String(p.handle));
+          if (idx >= 0) list.splice(idx, 1);
+          localStorage.setItem(KEY, JSON.stringify(list));
+          document.dispatchEvent(new CustomEvent('wishlist:updated', { detail: { handles: list } }));
+        });
+      }
+
+      // Initial paint
+      updateImageForSelection();
+      if (sizesWrap) refreshSizes();
+    }
+
     async function render() {
-      const grid = document.getElementById('wishlist-grid');
+      const grid = document.getElementById('generic-grid');
       const empty = document.getElementById('wishlist-empty');
       if (!grid || !empty) return;
       const handles = getWishlist();
@@ -70,13 +467,214 @@
         return;
       }
       empty.classList.add('hidden');
-      const products = await Promise.all(handles.map(fetchProduct));
-      grid.innerHTML = products.filter(Boolean).map(renderCard).join('');
+      window.WISHLIST_PRODUCTS = handles.filter(Boolean).map((h) => ({ handle: h }));
+      window.dispatchEvent(new CustomEvent('wishlist:loaded', { detail: { products: window.WISHLIST_PRODUCTS } }));
+      await renderGrid(window.WISHLIST_PRODUCTS);
+    }
+
+    async function renderGrid(products) {
+      const grid = document.getElementById('generic-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+      const executeScripts = (root) => {
+        const scripts = root.querySelectorAll('script');
+        scripts.forEach((oldScript) => {
+          const newScript = document.createElement('script');
+          // Copy type if present
+          if (oldScript.type) newScript.type = oldScript.type;
+          // Inline content
+          newScript.text = oldScript.text || oldScript.innerHTML || '';
+          // Append to body so it executes
+          document.body.appendChild(newScript);
+          // Remove after execution to keep DOM clean
+          setTimeout(() => newScript.remove(), 0);
+        });
+      };
+
+      // Fetch all cards concurrently then append to preserve order
+      const htmlResults = await Promise.all(
+        products.map(async (p) => {
+          const handle = typeof p === 'string' ? p : p.handle;
+          return await fetchCardHtml(handle);
+        })
+      );
+
+      htmlResults.forEach((html) => {
+        if (!html) return;
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        const card = wrapper.firstElementChild;
+        if (!card) return;
+        grid.appendChild(card);
+        executeScripts(card);
+        if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+          window.Alpine.initTree(card);
+        }
+      });
+
+      // Notify Alpine controller to update visibility based on layout
+      window.dispatchEvent(new CustomEvent('wishlist:rendered'));
     }
 
     document.addEventListener('DOMContentLoaded', render);
     document.addEventListener('wishlist:updated', render);
   })();
+
+  // Alpine controller for layout + filtering similar to collections
+  function wishlistPage() {
+    return {
+      layoutOption: 1,
+      allProducts: [],
+      filteredProducts: [],
+      currentFilters: { colors: [], sizes: [], showOnlyOnSale: false },
+
+      init() {
+        window.addEventListener('wishlist:loaded', (e) => {
+          this.allProducts = e.detail.products || [];
+          this.filteredProducts = [...this.allProducts];
+        });
+
+        // Open a lightweight filter drawer on the same event name used in grid
+        window.addEventListener('filter:open', () => this.openFilterDrawer());
+
+        // Toggle info visibility on render and when layout changes
+        window.addEventListener('wishlist:rendered', () => this.updateInfoVisibility());
+        this.$watch('layoutOption', () => this.updateInfoVisibility());
+      },
+
+      openFilterDrawer() {
+        const overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 z-50';
+        overlay.innerHTML = `
+          <div class="absolute inset-0 bg-black/70" data-role="backdrop"></div>
+          <div class="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl flex flex-col" data-role="drawer">
+            <div class="p-6 border-b border-gray-200 flex items-center justify-between">
+              <button data-role="close" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+              <h2 class="text-lg font-semibold">Filtrar</h2>
+              <button data-role="apply" class="text-sm font-medium text-gray-900">Aplicar</button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+              <div>
+                <div class="flex items-center justify-between mb-3"><p class="body-lg font-medium">Color</p></div>
+                <div class="flex flex-wrap gap-2" data-role="colors"></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-3"><p class="body-lg font-medium">Talla</p></div>
+                <div class="flex flex-wrap gap-2" data-role="sizes"></div>
+              </div>
+              <div>
+                <div class="flex items-center justify-between mb-3"><p class="body-lg font-medium">Ofertas</p></div>
+                <label class="inline-flex items-center gap-2"><input type="checkbox" data-role="sale"> <span class="text-sm">Solo productos en oferta</span></label>
+              </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex gap-3">
+              <button data-role="clear" class="flex-1 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg">Limpiar</button>
+              <button data-role="done" class="flex-1 py-3 bg-black text-white font-medium rounded-lg">Hecho</button>
+            </div>
+          </div>`;
+
+        document.body.appendChild(overlay);
+
+        const colorsEl = overlay.querySelector('[data-role="colors"]');
+        const sizesEl = overlay.querySelector('[data-role="sizes"]');
+
+        const colorSet = new Set();
+        const sizeSet = new Set();
+        (this.allProducts || []).forEach((p) => {
+          const options = Array.isArray(p.options) ? p.options : [];
+          options.forEach((o) => {
+            const name = (o.name || '').toLowerCase();
+            if (name === 'color') (o.values || []).forEach((v) => colorSet.add(v));
+            if (name === 'talla' || name === 'size') (o.values || []).forEach((v) => sizeSet.add(v));
+          });
+        });
+
+        const makeChip = (label, group) => {
+          const btn = document.createElement('button');
+          btn.className = 'px-3 py-2 rounded-full body-sm border border-gray-300';
+          btn.textContent = label;
+          btn.addEventListener('click', () => {
+            const arr = group === 'color' ? this.currentFilters.colors : this.currentFilters.sizes;
+            const idx = arr.indexOf(label);
+            if (idx >= 0) arr.splice(idx, 1);
+            else arr.push(label);
+            btn.classList.toggle('bg-black');
+            btn.classList.toggle('text-white');
+          });
+          return btn;
+        };
+
+        Array.from(colorSet)
+          .sort()
+          .forEach((c) => colorsEl.appendChild(makeChip(c, 'color')));
+        Array.from(sizeSet)
+          .sort()
+          .forEach((s) => sizesEl.appendChild(makeChip(s, 'size')));
+
+        const saleEl = overlay.querySelector('[data-role="sale"]');
+        saleEl.checked = this.currentFilters.showOnlyOnSale;
+        saleEl.addEventListener('change', () => (this.currentFilters.showOnlyOnSale = saleEl.checked));
+
+        const close = () => overlay.remove();
+        overlay.querySelector('[data-role="backdrop"]').addEventListener('click', close);
+        overlay.querySelector('[data-role="close"]').addEventListener('click', close);
+        overlay.querySelector('[data-role="done"]').addEventListener('click', () => {
+          this.applyFilters();
+          close();
+        });
+        overlay.querySelector('[data-role="apply"]').addEventListener('click', () => {
+          this.applyFilters();
+          close();
+        });
+        overlay.querySelector('[data-role="clear"]').addEventListener('click', () => {
+          this.clearFilters();
+          this.applyFilters();
+        });
+      },
+
+      clearFilters() {
+        this.currentFilters = { colors: [], sizes: [], showOnlyOnSale: false };
+      },
+
+      applyFilters() {
+        let products = [...this.allProducts];
+        if (this.currentFilters.colors.length) {
+          products = products.filter((p) => {
+            const opts = Array.isArray(p.options) ? p.options : [];
+            const colorOpt = opts.find((o) => (o.name || '').toLowerCase() === 'color');
+            const values = (colorOpt && colorOpt.values) || [];
+            return this.currentFilters.colors.some((c) => values.includes(c));
+          });
+        }
+        if (this.currentFilters.sizes.length) {
+          products = products.filter((p) => {
+            const opts = Array.isArray(p.options) ? p.options : [];
+            const sizeOpt = opts.find((o) => ['talla', 'size'].includes((o.name || '').toLowerCase()));
+            const values = (sizeOpt && sizeOpt.values) || [];
+            return this.currentFilters.sizes.some((s) => values.includes(s));
+          });
+        }
+        if (this.currentFilters.showOnlyOnSale) {
+          products = products.filter((p) => Number(p.compare_at_price || 0) > Number(p.price || 0));
+        }
+        this.filteredProducts = products;
+        renderGrid(this.filteredProducts);
+      },
+
+      updateInfoVisibility() {
+        // Hide product-information when layoutOption === 3
+        const grid = document.getElementById('generic-grid');
+        if (!grid) return;
+        const infos = grid.querySelectorAll('.product-information');
+        const shouldHide = this.layoutOption === 3;
+        infos.forEach((el) => {
+          el.style.display = shouldHide ? 'none' : '';
+        });
+      },
+    };
+  }
 </script>
 
 {% schema %}

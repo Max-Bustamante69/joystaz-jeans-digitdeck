@@ -915,7 +915,7 @@
       showSuccessMessage() {
         // Create a temporary success message
         const message = document.createElement('div');
-        message.className = 'fixed bottom-4 left-4 bg-green text-white  py-2 rounded-lg shadow-lg z-50';
+        message.className = 'fixed bottom-4 left-4 bg-green text-white  py-2 rounded-lg shadow-lg z-10';
         message.textContent = 'Added to cart!';
         document.body.appendChild(message);
 
@@ -930,7 +930,7 @@
       showErrorToast(message) {
         // Create error toast message
         const toast = document.createElement('div');
-        toast.className = 'fixed bottom-4 left-4 bg-red-500 text-white  py-3 rounded-lg shadow-lg z-50 max-w-sm';
+        toast.className = 'fixed bottom-4 left-4 bg-red-500 text-white  py-3 rounded-lg shadow-lg z-10 max-w-sm';
         toast.innerHTML = `
           <div class="flex items-center gap-2">
             <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">

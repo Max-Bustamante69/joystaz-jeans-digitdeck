@@ -12,55 +12,91 @@
 {% endcomment %}
 
 <div
-  class="product-card relative group w-full flex flex-col  h-full max-w-full"
+  class="product-card relative  w-full flex flex-col  h-full max-w-full"
   x-data="productCard{{ product.id }}()"
+  {% if wishlist_mode %}
+    data-wishlist-card data-handle="{{ product.handle }}"
+  {% endif %}
   {% if product.options contains 'Talla' %}
     @mouseenter="isDesktop && (showSizeSelector = true)"
     @mouseleave="isDesktop && (showSizeSelector = false)"
   {% endif %}
 >
   <!-- Product Image Container -->
-  <div class="relative  aspect-[3/4.5] w-full group/image max-w-full">
-    <!-- Single Image (Primary) -->
-    <div class="w-full h-full" x-show="!currentImages || currentImages.length <= 1">
-      <img
-        :src="currentImages && currentImages[0] ? currentImages[0] : '{{ product.featured_image | image_url: width: 1800 }}'"
-        alt="{{ product.title }}"
-        class="w-full h-full object-cover"
-        width="1800"
-        height="1800"
-        loading="eager"
-      >
-    </div>
-
-    <!-- Product Image Carousel (Fallback for multiple images) -->
-    <div class="h-full" x-show="currentImages && currentImages.length > 1" x-cloak>
+  <div class="relative  aspect-[3/4.5] w-full  max-w-full">
+    <!-- Unified Product Image Carousel (handles 1, 2, or many images) -->
+    <div class="h-full" x-show="currentImages && currentImages.length >= 1" x-cloak>
       <div
-        class="product-image-carousel block!important swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
+        class="product-image-carousel group block!important swiper-product-images-{{ product.id }}-{{ section.id }} w-full h-full"
         data-section-id="{{ section.id }}"
         data-carousel-type="product-images"
         id="product-images-carousel-{{ product.id }}-{{ section.id }}"
         style="touch-action: pan-y;"
       >
-        <div class="swiper-wrapper h-full">
-          <template x-for="(imageUrl, index) in currentImages" :key="imageUrl">
+        <div class="swiper-wrapper h-full" @mouseenter="imageHovered = true" @mouseleave="imageHovered = false">
+          <!-- Build slides: overlay for first two, then remaining singles -->
+          <template
+            x-for="
+              (slide, index) in (() => {
+                const imgs = currentImages || [];
+                if (imgs.length <= 1) {
+                  return imgs.length === 1
+                    ? [{ type: 'single', src: imgs[0], eager: true }]
+                    : [];
+                }
+                const slides = [{ type: 'overlay', srcA: imgs[0], srcB: imgs[1], eager: true }];
+                for (let i = 2; i < imgs.length; i++) {
+                  slides.push({ type: 'single', src: imgs[i], eager: false });
+                }
+                return slides;
+              })()
+            "
+            :key="slide.type === 'overlay' ? 'overlay' : slide.src"
+          >
             <div class="swiper-slide w-full h-full flex-shrink-0" @click="window.location.href = '{{ product.url }}'">
-              <img
-                :src="imageUrl"
-                :alt="`{{ product.title }} - Image ${index + 1}`"
-                class="w-full h-full object-cover pointer-events-none"
-                width="1800"
-                height="1800"
-                :loading="index === 0 ? 'eager' : 'lazy'"
-              >
+              <template x-if="slide.type === 'overlay'">
+                <div class="relative w-full h-full">
+                  <img
+                    :src="slide.srcA"
+                    alt="{{ product.title }} - Image 1"
+                    class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+                    width="1800"
+                    height="1800"
+                    :loading="slide.eager ? 'eager' : 'lazy'"
+                  >
+                  <img
+                    :src="slide.srcB"
+                    alt="{{ product.title }} - Image 2"
+                    :class="imageHovered ? 'opacity-100' : 'opacity-0'"
+                    class="absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 ease-in-out pointer-events-none"
+                    width="1800"
+                    height="1800"
+                    loading="lazy"
+                  >
+                </div>
+              </template>
+              <template x-if="slide.type === 'single'">
+                <img
+                  :src="slide.src || '{{ product.featured_image | image_url: width: 1800 }}'"
+                  alt="{{ product.title }}"
+                  class="w-full h-full object-cover pointer-events-none"
+                  width="1800"
+                  height="1800"
+                  :loading="slide.eager ? 'eager' : 'lazy'"
+                >
+              </template>
             </div>
           </template>
         </div>
 
         <!-- Navigation Arrows -->
-        <div class="absolute hidden inset-0 pointer-events-none group-hover:block">
+        <div
+          class="absolute hidden inset-0 pointer-events-none group-hover:block"
+          @mouseenter.stop="imageHovered = false"
+          @mouseleave.stop
+        >
           <button
-            class="product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -75,7 +111,7 @@
             </svg>
           </button>
           <button
-            class="product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-40 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -93,18 +129,20 @@
       </div>
     </div>
 
-    <!-- Wishlist Heart Button -->
-    <button
-      class="absolute top-3 right-3 z-30 wishlist-toggle text-black/70 hover:text-black"
-      :class="isInWishlist ? 'text-red-500' : ''"
-      @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
-      aria-pressed="isInWishlist"
-      aria-label="Toggle wishlist"
-      title="Añadir a la lista de deseos"
-      type="button"
-    >
-      {% render 'heart-icon', class: 'w-6 h-6' %}
-    </button>
+    {% if wishlist_mode != true %}
+      <!-- Wishlist Heart Button -->
+      <button
+        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70 hover:text-black"
+        :class="isInWishlist ? 'text-red-500' : ''"
+        @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
+        aria-pressed="isInWishlist"
+        aria-label="Toggle wishlist"
+        title="Añadir a la lista de deseos"
+        type="button"
+      >
+        {% render 'heart-icon', class: 'w-6 h-6' %}
+      </button>
+    {% endif %}
 
     <!-- Product Badges -->
     {% if show_badges and product.tags.size > 0 %}
@@ -121,7 +159,7 @@
     {% endif %}
 
     <!-- Size Selector Plus Button - positioned in bottom right corner -->
-    {% if product.options contains 'Talla' %}
+    {% if product.options contains 'Talla' and wishlist_mode != true %}
       <button
         class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-30"
         @click.stop.prevent="handlePlusClick"
@@ -323,7 +361,7 @@
   </div>
 
   {% unless hide_info %}
-    <div class=" py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
+    <div class="product-information py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
       <!-- Star Rating and Plus Icon -->
       <div class="flex items-start justify-between">
         {% for product_option in product.options_with_values %}
@@ -447,6 +485,31 @@
       </div>
     </div>
   {% endunless %}
+  {% if wishlist_mode %}
+    <div class="mt-2 space-y-2 px-2 product-information">
+      <button
+        type="button"
+        class="w-full bg-primary text-white py-2 font-semibold"
+        @click.stop.prevent="handlePlusClick"
+      >
+        Añadir al carrito
+      </button>
+      <button
+        type="button"
+        class="w-full text-sm text-gray-600 underline"
+        @click.stop.prevent="
+          (function(evt){try{const KEY='wishlist_v1';const raw=localStorage.getItem(KEY)||'[]';const list=JSON.parse(raw);const handle='{{ product.handle }}';const i=list.indexOf(handle);if(i>=0){list.splice(i,1);localStorage.setItem(KEY, JSON.stringify(list));}
+            var el = evt && evt.currentTarget;while(el && !el.hasAttribute('data-wishlist-card')){el = el.parentElement;}if(!el){el = document.querySelector('[data-wishlist-card][data-handle=\''+handle+'\']');}
+            var container = el;while(container && !container.hasAttribute('data-wishlist-container')){container = container.parentElement;}
+            if(container){container.style.display='none';container.remove();}
+            var remaining = document.querySelectorAll('[data-wishlist-container]').length;var empty = document.getElementById('wishlist-empty');if(remaining===0 && empty){empty.classList.remove('hidden');}
+          }catch(e){}})(event)
+        "
+      >
+        Remover
+      </button>
+    </div>
+  {% endif %}
   <!-- Product Information -->
 </div>
 
@@ -487,6 +550,7 @@
       currentImages: [],
       totalSlides: 0,
       currentSlide: 0,
+      imageHovered: false,
 
       // Variant data with metafields (same as product page)
       variantData: [

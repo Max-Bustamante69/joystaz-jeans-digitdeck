@@ -8,7 +8,8 @@
 
 <button
   @click="$dispatch('cart:open')"
-  class="relative flex items-center justify-center w-10 h-10 text-white hover:text-gray-200 transition-colors"
+  class="relative flex items-center justify-center w-10 h-10 transition-colors duration-200"
+  :class="($el.closest('header').__x.$data.isScrolled || $el.closest('header').__x.$data.isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
   x-data="
     {
       cartCount: 0,

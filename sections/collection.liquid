@@ -41,19 +41,27 @@
           {% for product in products %}
             <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
               <div :style="`order: ${getProductOrder({{ product.id }})}`"
-                   :class="{
-                     'w-full lg:w-1/3': layoutOption === 1,
-                     'w-1/2 lg:w-1/4': layoutOption === 2,
-                     'w-1/3 lg:w-1/6': layoutOption === 3
-                   }"
+                   class="w-full "
+                   
                    data-product-id="{{ product.id }}">
-                {% render 'product-card',
-                  product: product,
-                  show_badges: true,
-                  show_rating: true,
-                  show_size_selector: true,
-                  hide_info: layoutOption === 3
-                %}
+                <div x-show="layoutOption !== 3">
+                  {% render 'product-card',
+                    product: product,
+                    show_badges: true,
+                    show_rating: true,
+                    show_size_selector: true,
+                    hide_info: false
+                  %}
+                </div>
+                <div x-show="layoutOption === 3">
+                  {% render 'product-card',
+                    product: product,
+                    show_badges: true,
+                    show_rating: true,
+                    show_size_selector: true,
+                    hide_info: false
+                  %}
+                </div>
               </div>
             </template>
           {% endfor %}
@@ -107,19 +115,26 @@
           {% for product in collection.products %}
             <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
               <div :style="`order: ${getProductOrder({{ product.id }})}`"
-                   :class="{
-                     'w-full lg:w-1/3': layoutOption === 1,
-                     'w-1/2 lg:w-1/4': layoutOption === 2,
-                     'w-1/3 lg:w-1/6': layoutOption === 3
-                   }"
+                   class="w-full"
                    data-product-id="{{ product.id }}">
-                {% render 'product-card',
-                  product: product,
-                  show_badges: true,
-                  show_rating: true,
-                  show_size_selector: true,
-                  hide_info: layoutOption === 3
-                %}
+                <div x-show="layoutOption !== 3">
+                  {% render 'product-card',
+                    product: product,
+                    show_badges: true,
+                    show_rating: true,
+                    show_size_selector: true,
+                    hide_info: false
+                  %}
+                </div>
+                <div x-show="layoutOption === 3">
+                  {% render 'product-card',
+                    product: product,
+                    show_badges: true,
+                    show_rating: false,
+                    show_size_selector: false,
+                    hide_info: true
+                  %}
+                </div>
               </div>
             </template>
           {% endfor %}

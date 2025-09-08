@@ -132,7 +132,7 @@
         x-transition:leave-start="opacity-100 transform translate-y-0"
         x-transition:leave-end="opacity-0 transform translate-y-4"
         @click.outside="isDesktop ? null : (showSizeSelector = false)"
-        class="size-selector-hover absolute bottom-0 left-0 right-0 z-0 bg-white/80 backdrop-blur-md border border-gray-200  z-30"
+        class="size-selector-hover absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border border-gray-200"
       >
         <div class="grid grid-cols-5 gap-1 ">
           {% comment %} Get all unique sizes and check their availability for selected color {% endcomment %}
@@ -860,8 +860,6 @@
   .product-card .size-selector-hover {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-
 
   /* Size button hover effects */
   .size-selector-hover button {

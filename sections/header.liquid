@@ -1,15 +1,27 @@
 <header
-  class="flex flex-col bg-transparent absolute top-0 left-0 right-0 z-50"
+  class="flex flex-col fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+  :class="(isScrolled || isHovered) ? 'bg-white shadow-lg' : 'bg-transparent'"
   x-data="
     {
       mobileMenuOpen: false,
       cartDrawerOpen: false,
       activeMegaMenu: null,
+      isScrolled: false,
+      isHovered: false,
+      init() {
+        this.handleScroll();
+        window.addEventListener('scroll', this.handleScroll.bind(this));
+      },
+      handleScroll() {
+        this.isScrolled = window.scrollY > 50;
+      },
       openCartDrawer() { this.cartDrawerOpen = true; },
       showMegaMenu(collectionHandle) { this.activeMegaMenu = collectionHandle; },
       hideMegaMenu() { this.activeMegaMenu = null; }
     }
   "
+  @mouseenter="isHovered = true"
+  @mouseleave="isHovered = false"
 >
   <div class="w-screen overflow-hidden bg-primary h-8 whitespace-nowrap">
     <div class="ticker-wrap inline-block">
@@ -26,7 +38,10 @@
     </div>
   </div>
 
-  <nav class="grid grid-cols-3 h-20 px-20 z-50 bg-transparent bg-white text-white w-full relative">
+  <nav
+    class="grid grid-cols-3 h-20 px-20 z-50 bg-transparent w-full relative transition-colors duration-300"
+    :class="(isScrolled || isHovered) ? 'text-black' : 'text-white'"
+  >
     <!-- Desktop Menu -->
     <div class="header__menu hidden xl:flex items-center justify-start gap-6">
       {% for link in section.settings.menu.links %}
@@ -39,8 +54,9 @@
         >
           <a
             href="{{ link.url }}"
-            class="font-semibold hover:text-gray-300 transition-colors duration-200 py-2 px-4"
-            :class="activeMegaMenu === '{{ collection_handle }}' ? 'text-gray-300' : ''"
+            class="font-semibold transition-colors duration-200 py-2 px-4"
+            :class="(isScrolled || isHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
+            :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
             {{ link.title }}
           </a>
@@ -83,10 +99,9 @@
                         >
                           <!-- Column Title (not animated separately; remove data-anim above if you want only links) -->
 
-                            <p class="body-sm uppercase text-black/40  ">
-                              {{- sub_link.title -}}
-                            </p>
-                      
+                          <p class="body-sm uppercase text-black/40  ">
+                            {{- sub_link.title -}}
+                          </p>
 
                           <!-- Tertiary Links -->
                           <div class="space-y-2">
@@ -172,7 +187,8 @@
     <div class="flex gap-6 items-center xl:hidden">
       <button
         @click="mobileMenuOpen = !mobileMenuOpen"
-        class="text-white hover:text-gray-300 transition-colors"
+        class="transition-colors duration-200"
+        :class="(isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
         {% render 'menu-icon' %}
@@ -189,11 +205,19 @@
             alt="{{ shop.name }}"
             width="{{ section.settings.logo.width | default: 60 }}"
             height="{{ section.settings.logo.height | default: 40 }}"
-            class="invert-100"
+            class="transition-all duration-300"
+            :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
         {% else %}
-          <img src="{{ 'logo.png' | asset_url }}" alt="Logo" class="invert-100" width="60" height="40">
+          <img
+            src="{{ 'logo.png' | asset_url }}"
+            alt="Logo"
+            class="transition-all duration-300"
+            :class="(isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+            width="60"
+            height="40"
+          >
         {% endif %}
       </a>
     </h2>
@@ -306,11 +330,9 @@
                 @click="activeTab = {{ tab_index }}"
                 class="transition-all duration-400"
                 :class="activeTab === {{ tab_index }} ? 'border-b-2 border-black text-black' : 'border-b-2 border-transparent text-gray-500 hover:text-gray-700'"
-                
               >
-              <h5 class="uppercase my-3 " >
-
-                {{ link.title }}
+                <h5 class="uppercase my-3 ">
+                  {{ link.title }}
                 </h5>
               </button>
               {% assign tab_index = tab_index | plus: 1 %}
@@ -348,7 +370,7 @@
             {% assign collection = collections[link_handle] %}
 
             {% if collection and collection.metafields.custom.subcollections.value.count > 0 %}
-              <div x-show="activeTab === {{ tab_index }}" class="mb-6 mt-8 -mx-4 z-0" >
+              <div x-show="activeTab === {{ tab_index }}" class="mb-6 mt-8 -mx-4 z-0">
                 <div class="mb-4 mx-4">
                   <p class="body-sm  uppercase text-black/40">Subcollections</p>
                 </div>
@@ -427,7 +449,7 @@
             class="block text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-b-0"
             @click="mobileMenuOpen = false"
           >
-            <h5  x-text="link.title"></h5>
+            <h5 x-text="link.title"></h5>
           </a>
         </template>
       </div>
@@ -456,21 +478,14 @@
     }
   }
 
-
-
-
-
-
   /* Mega Menu Styling */
   .mega-menu {
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     background-color: white;
-    transition:  max-height 1.6s ease-out;
+    transition: max-height 2s ease-out;
     transform-origin: top;
   }
-
-
 
   /* ========== Modular Sweep-in Animation (supports N children) ========== */
   @keyframes sweep-in-left {

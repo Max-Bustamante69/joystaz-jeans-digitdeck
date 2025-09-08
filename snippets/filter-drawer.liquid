@@ -60,12 +60,14 @@
         <!-- Style Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Estilo</h3>
-            <span
-              x-show="selectedStyles.length > 0"
-              x-text="selectedStyles.length"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            ></span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Estilo</p>
+              <span
+                x-show="selectedStyles.length > 0"
+                x-text="selectedStyles.length"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              ></span>
+            </div>
             <button
               @click="toggleStyleSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -98,7 +100,7 @@
                 <button
                   @click="toggleStyle(style)"
                   :class="selectedStyles.includes(style) ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                  class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                  class="px-3 py-2 rounded-full body-sm capitalize font-medium transition-all duration-200"
                   x-text="style"
                 ></button>
               </template>
@@ -109,12 +111,15 @@
         <!-- Color Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Color</h3>
-            <span
-              x-show="selectedColors.length > 0"
-              x-text="selectedColors.length"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            ></span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Color</p>
+              <span
+                x-show="selectedColors.length > 0"
+                x-text="selectedColors.length"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              ></span>
+            </div>
+         
             <button
               @click="toggleColorSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -146,7 +151,7 @@
               <template x-for="color in availableColors" :key="color.name">
                 <button
                   @click="toggleColor(color.name)"
-                  class="flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 hover:bg-gray-50"
+                  class="flex items-center gap-3 p-3 rounded-lg border   transition-all duration-200 "
                   :class="selectedColors.includes(color.name) ? 'border-black bg-gray-50' : 'border-gray-200'"
                 >
                   <div
@@ -163,12 +168,15 @@
         <!-- Size Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Talla</h3>
-            <span
-              x-show="selectedSizes.length > 0"
-              x-text="selectedSizes.length"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            ></span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Talla</p>
+              <span
+                x-show="selectedSizes.length > 0"
+                x-text="selectedSizes.length"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              ></span>
+            </div>
+            
             <button
               @click="toggleSizeSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -212,12 +220,15 @@
         <!-- Collection Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Colección</h3>
-            <span
-              x-show="selectedCollections.length > 0"
-              x-text="selectedCollections.length"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            ></span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Colección</p>
+              <span
+                x-show="selectedCollections.length > 0"
+                x-text="selectedCollections.length"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              ></span>
+            </div>
+            
             <button
               @click="toggleCollectionSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -261,13 +272,15 @@
         <!-- Sale Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Ofertas</h3>
-            <span
-              x-show="showOnlyOnSale"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            >
-              1
-            </span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Ofertas</p>
+              <span
+                x-show="showOnlyOnSale"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              >
+                1
+            </div>
+            
             <button
               @click="toggleSaleSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -307,13 +320,15 @@
         <!-- Sort Filter -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <h3 class="text-base font-medium text-gray-900">Ordenar</h3>
-            <span
-              x-show="sortOption !== 'default'"
-              class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
-            >
-              1
-            </span>
+            <div class="flex items-center gap-2">
+              <p class="body-lg font-medium capitalize">Ordenar</p>
+              <span
+                x-show="sortOption !== 'default'"
+                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+              >
+                1
+            </div>
+            
             <button
               @click="toggleSortSection()"
               class="text-gray-400 hover:text-gray-600 transition-colors duration-200"

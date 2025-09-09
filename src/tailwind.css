@@ -30,11 +30,10 @@
     margin: 0;
   }
 
-  html, body {
+  html,
+  body {
     scrollbar-gutter: stable;
   }
-
-  
 
   /* Headings */
   h1 {
@@ -164,22 +163,42 @@
     line-height: 1.5;
   }
 
-
-  .p-inline{
+  .p-inline {
     padding-inline: 16px;
   }
-  .p-block{
+  .p-block {
     padding-block: 40px;
   }
 
+  /* Animated hover line effect */
+  .hover-line {
+    position: relative;
+  }
+
+  .hover-line::after {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .hover-line:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
 
   /* Responsive variants */
   @media (min-width: 1024px) {
-
-    .p-inline{
+    .p-inline {
       padding-inline: 48px;
     }
-    .p-block{
+    .p-block {
       padding-block: 48px;
     }
 

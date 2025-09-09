@@ -92,7 +92,10 @@
             :class="(isScrolled || isHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
+            <span class="hover-line">
+
             {{ link.title }}
+            </span>
           </a>
 
           {% if link.links.size > 0 %}
@@ -148,7 +151,10 @@
                                   data-anim
                                   style="--anim-order: {{ order_counter }};"
                                 >
+                                <span class="hover-line"> 
+
                                   {{ tertiary_link.title }}
+                                  </span>
                                 </a>
                               {% endfor %}
                             {% else %}

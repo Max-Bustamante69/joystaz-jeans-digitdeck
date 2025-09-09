@@ -14,6 +14,20 @@
     "footer": {
       "type": "footer",
       "blocks": {
+        "social_media_TajqQU": {
+          "type": "social_media",
+          "settings": {
+            "platform": "tiktok",
+            "url": "https://www.tiktok.com/es/"
+          }
+        },
+        "social_media_rEfWLb": {
+          "type": "social_media",
+          "settings": {
+            "platform": "instagram",
+            "url": "https://www.instagram.com/"
+          }
+        },
         "menu_nteyx3": {
           "type": "menu",
           "settings": {
@@ -44,6 +58,8 @@
         }
       },
       "block_order": [
+        "social_media_TajqQU",
+        "social_media_rEfWLb",
         "menu_nteyx3",
         "menu_iiyBGV",
         "menu_aqhbw7",

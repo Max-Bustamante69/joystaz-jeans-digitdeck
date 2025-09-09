@@ -3,12 +3,15 @@
   Features:
   - Product image with color variant switching
   - Product badges (New, Best Seller)
-  - Wishlist heart icon
+  - Wishlist heart icon (optional)
   - Star rating
   - Product name and price
   - Color swatches with image switching
   - Size selection grid that appears on plus icon click
   - Add to cart functionality
+
+  Parameters:
+  - show_wishlist: boolean (default: true) - Show/hide wishlist heart icon
 {% endcomment %}
 
 <div
@@ -102,7 +105,7 @@
           @mouseleave.stop
         >
           <button
-            class="product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-prev absolute  flex items-center justify-start  left-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-10 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -117,7 +120,7 @@
             </svg>
           </button>
           <button
-            class="product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-50 pointer-events-auto cursor-pointer touch-manipulation"
+            class="product-next absolute  flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 md:w-10 md:h-10  md:opacity-0 group-hover:opacity-100  duration-300 z-10 pointer-events-auto cursor-pointer touch-manipulation"
             data-carousel-id="product-images-carousel-{{ product.id }}-{{ section.id }}"
             type="button"
           >
@@ -135,11 +138,11 @@
       </div>
     </div>
 
-    {% if wishlist_mode != true %}
+    {% if wishlist_mode != true and show_wishlist != false %}
       <!-- Wishlist Heart Button -->
       <button
-        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70 hover:text-red-800 "
-        :class="isInWishlist ? 'text-red-800 fill-red-800 ' : 'fill-transparent '"
+        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70 hover:text-red-700 "
+        :class="isInWishlist ? 'text-red-700 fill-red-800 ' : 'fill-transparent '"
         @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
         aria-pressed="isInWishlist"
         aria-label="Toggle wishlist"
@@ -405,16 +408,7 @@
         {% endfor %}
         <div class="flex items-center gap-2">
           {% if show_rating %}
-            {%
-              render 'star-rating',
-              rating: product.metafields.reviews.rating.value | default: 3.5,
-              size: 'sm',
-              color: 'text-[#f3a000]',
-              show_count: true,
-              show_rating_value: true,
-              show_review_count: true,
-              review_count: product.metafields.reviews.rating_count.value | default: 0
-            %}
+            {% render 'product-rating', product: product, size: 'sm', color: 'text-[#f3a000]' %}
           {% else %}
             <!-- Empty div for spacing when no rating -->
           {% endif %}

@@ -1,0 +1,378 @@
+{% comment %}
+  Product Reviews Renderer
+  Renders reviews from product.metafields.custom.ratings.value (metaobjects array)
+  Place on product page where you want reviews to appear.
+{% endcomment %}
+
+{% assign ratings_metafield = product.metafields.custom.ratings %}
+{% assign reviews = ratings_metafield.value | default: empty %}
+
+<div class="product-reviews w-full mt-8 space-y-6 px-4 lg:px-12">
+  <h3 class="text-lg font-semibold text-gray-900">Reseñas</h3>
+
+  {% if reviews == empty or reviews.size == 0 %}
+    <p class="text-gray-600">Aún no hay reseñas para este producto.</p>
+  {% else %}
+    {%- comment -%} Compute distribution & average {%- endcomment -%}
+    {% assign total_reviews = 0 %}
+    {% assign sum_ratings = 0 %}
+    {% assign c1 = 0 -%}
+    {%- assign c2 = 0 -%}
+    {%- assign c3 = 0 -%}
+    {%- assign c4 = 0 -%}
+    {%- assign c5 = 0 %}
+    {% for review in reviews %}
+      {% assign rv = 0 %}
+      {% if review.rating and review.rating != blank %}
+        {% assign rv = review.rating | plus: 0 %}
+      {% elsif review.rating and review.rating.value %}
+        {% assign rv = review.rating.value | plus: 0 %}
+      {% endif %}
+      {% if rv > 0 %}
+        {% assign sum_ratings = sum_ratings | plus: rv %}
+        {% assign total_reviews = total_reviews | plus: 1 %}
+        {% case rv %}
+          {% when 5 -%}
+            {%- assign c5 = c5 | plus: 1 %}
+          {% when 4 -%}
+            {%- assign c4 = c4 | plus: 1 %}
+          {% when 3 -%}
+            {%- assign c3 = c3 | plus: 1 %}
+          {% when 2 -%}
+            {%- assign c2 = c2 | plus: 1 %}
+          {% else -%}
+            {%- assign c1 = c1 | plus: 1 %}
+        {% endcase %}
+      {% endif %}
+    {% endfor %}
+
+    {% if total_reviews > 0 %}
+      {% assign avg = sum_ratings | divided_by: total_reviews | round: 1 %}
+    {% else %}
+      {% assign avg = 0 %}
+    {% endif %}
+
+    {%- comment -%} Ratings summary left + media carousel right {%- endcomment -%}
+    <div id="reviews-media-{{ product.id }}" class="w-full flex items-en justify-between">
+      <div class="w-full lg:w-1/3 space-y-4">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl font-bold text-gray-900">{{ avg }}</span>
+          {% render 'star-rating', rating: avg, size: 'md', show_count: false %}
+          <span class="text-sm text-gray-600">Basado en {{ total_reviews }} opiniones</span>
+        </div>
+
+        <div class="space-y-2">
+          {% assign bars = '5|4|3|2|1' | split: '|' %}
+          {% for label in bars %}
+            {% case label %}
+              {% when '5' -%}
+                {%- assign count = c5 %}
+              {% when '4' -%}
+                {%- assign count = c4 %}
+              {% when '3' -%}
+                {%- assign count = c3 %}
+              {% when '2' -%}
+                {%- assign count = c2 %}
+              {% when '1' -%}
+                {%- assign count = c1 %}
+            {% endcase %}
+            {% if total_reviews > 0 %}
+              {% assign percent = count | times: 100 | divided_by: total_reviews %}
+            {% else %}
+              {% assign percent = 0 %}
+            {% endif %}
+            <div class="flex items-center gap-3">
+              <div class="w-3 text-sm text-gray-700">{{ label }}</div>
+              <svg class="w-4 h-4 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <div class="flex-1 h-2 bg-gray-200 rounded">
+                <div class="h-2 bg-[#3b2e10] rounded" style="width: {{ percent }}%"></div>
+              </div>
+              <div class="w-6 text-right text-sm text-gray-700">{{ count }}</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="w-full lg:w-1/3">
+        <div class="reviews-media group relative rounded overflow-hidden bg-white ">
+          <div
+            class="swiper reviews-media-swiper w-full"
+            id="reviews-media-carousel-{{ product.id }}"
+            style="touch-action: pan-y;"
+          >
+            <div class="swiper-wrapper justify-end">
+              {% for review in reviews %}
+                {% if review.image %}
+                  <div class="swiper-slide">
+                    <img
+                      src="{{ review.image | image_url: width: 800 }}"
+                      alt="Review image"
+                      height="800"
+                      width="320"
+                      class="w-full h-40 object-cover"
+                    >
+                  </div>
+                {% endif %}
+                {% if review.video %}
+                  <div class="swiper-slide">
+                    <video controls class="w-full h-40 object-cover">
+                      <source src="{{ review.video | file_url }}" type="video/mp4">
+                    </video>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Arrows overlay -->
+          <div class="absolute inset-0 pointer-events-none">
+            <button
+              class="reviews-media-prev absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center lg:opacity-0 group-hover:opacity-100 duration-300 z-10 pointer-events-auto cursor-pointer"
+              type="button"
+              aria-label="Prev"
+            >
+              <svg
+                class="w-5 h-5 text-black drop-shadow-md"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <button
+              class="reviews-media-next absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center lg:opacity-0 group-hover:opacity-100 duration-300 z-10 pointer-events-auto cursor-pointer"
+              type="button"
+              aria-label="Next"
+            >
+              <svg
+                class="w-5 h-5 text-black drop-shadow-md"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Pagination -->
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} Reviews list {%- endcomment -%}
+    <div class="space-y-4">
+      {% for review in reviews %}
+        <div class="bg-white rounded-lg">
+          <div class="flex flex-col lg:flex-row gap-4 items-start justify-between">
+            <div class="w-1/2 space-y-2 flex gap-4">
+
+            
+            <!-- Left: reviewer meta -->
+            <div class="w-full lg:w-1/2">
+              <div class="flex items-center gap-2">
+                {% if review.author_name %}
+                  <span class="font-medium text-gray-900">{{ review.author_name }}</span>
+                {% endif %}
+                {% if review.is_verified_buyer %}
+                  <span class="inline-flex items-center gap-1 text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded">
+                    <span class="w-1.5 h-1.5 bg-green-600 rounded-full"></span>
+                    Comprador verificado
+                  </span>
+                {% endif %}
+              </div>
+              <div class="text-xs text-gray-600 space-y-1">
+                {% if review.age_range %}
+                  <div><span class="font-semibold">Rango de edad:</span> {{ review.age_range }}</div>
+                {% endif %}
+                {% if review.size_purchased %}
+                  <div><span class="font-semibold">Talla comprada:</span> {{ review.size_purchased }}</div>
+                {% endif %}
+                {% if review.dress_size %}
+                  <div><span class="font-semibold">Talla de vestido:</span> {{ review.dress_size }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Middle: content + fit bar -->
+            <div class="w-1/2 space-y-2">
+              <div class="flex items-center gap-2">
+                {% render 'star-rating', rating: review.rating | default: review.rating.value | default: 0, size: 'sm', show_count: false %}
+                <span class="text-xs text-gray-500">
+                  {{- review.created_at | default: review.created_at.value | date: '%b %d, %Y' -}}
+                </span>
+              </div>
+              {% if review.title %}
+                <div class="font-semibold text-gray-900">{{ review.title }}</div>
+              {% endif %}
+              <div class="text-sm text-gray-700">{{ review.body }}</div>
+
+              {% comment %} Fit rating bar (1 muy pequeño → 5 muy grande) {% endcomment %}
+              {% assign fit_rating_value = 0 %}
+              {% if review.fit_rating and review.fit_rating != blank %}
+                {% assign fit_rating_value = review.fit_rating | plus: 0 %}
+              {% elsif review.fit_rating and review.fit_rating.value %}
+                {% assign fit_rating_value = review.fit_rating.value | plus: 0 %}
+              {% endif %}
+              {% if fit_rating_value > 0 %}
+                {% assign fit_percent = fit_rating_value | minus: 1 | times: 100 | divided_by: 4 %}
+                {% case fit_rating_value %}
+                  {% when 1 -%}
+                    {%- assign fit_label = 'Muy pequeño' %}
+                  {% when 2 -%}
+                    {%- assign fit_label = 'Pequeño' %}
+                  {% when 3 -%}
+                    {%- assign fit_label = 'Perfecto' %}
+                  {% when 4 -%}
+                    {%- assign fit_label = 'Grande' %}
+                  {% when 5 -%}
+                    {%- assign fit_label = 'Muy grande' %}
+                  {% else -%}
+                    {%- assign fit_label = '' %}
+                {% endcase %}
+                <div class="mt-3">
+                  <div class="flex items-center justify-between text-xs text-gray-600">
+                    <span>Muy pequeño</span>
+                    <span>Tamaño real</span>
+                    <span>Muy grande</span>
+                  </div>
+                  <div class="mt-2 relative h-2 bg-gray-200 rounded">
+                    <div class="absolute inset-0 flex items-center justify-between px-1">
+                      <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+                      <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+                      <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+                    </div>
+                    <div class="absolute top-1/2 -translate-y-1/2" style="left: calc({{ fit_percent }}% - 8px);">
+                      <span class="block w-3 h-3 bg-[#3b2e10] rounded-full"></span>
+                    </div>
+                  </div>
+                  {% if fit_label != '' %}
+                    <div class="mt-2 text-xs text-gray-700">
+                      Ajuste: <span class="font-medium">{{ fit_label }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+            </div>
+
+            <!-- Right: media -->
+            <div class="lg:col-span-2 lg:justify-self-end w-full lg:w-auto">
+              {% if review.image %}
+                <img
+                  src="{{ review.image | image_url: width: 320 }}"
+                  alt="Review image"
+                  width="320"
+                  height="384"
+                  class="w-32 h-40 lg:w-36 lg:h-44 object-cover rounded"
+                >
+              {% elsif review.video %}
+                <video controls class="w-32 h-40 lg:w-36 lg:h-44 object-cover rounded">
+                  <source src="{{ review.video | file_url }}" type="video/mp4">
+                </video>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  (function () {
+    function initReviewsSwiper() {
+      var el = document.getElementById('reviews-media-carousel-{{ product.id }}');
+      if (!el) return;
+      if (el.swiper) return;
+      if (typeof Swiper === 'undefined') return;
+
+      var slides = el.querySelectorAll('.swiper-slide');
+      if (!slides || slides.length === 0) return;
+
+      var prevEl = el.parentElement.querySelector('.reviews-media-prev');
+      var nextEl = el.parentElement.querySelector('.reviews-media-next');
+      var paginationEl = el.parentElement.querySelector('.swiper-pagination');
+
+      var swiper = new Swiper(el, {
+        slidesPerView: 4,
+        spaceBetween: 8,
+        allowTouchMove: true,
+        simulateTouch: true,
+        grabCursor: true,
+        centeredSlides: false,
+        loop: false,
+        navigation: {
+          nextEl: nextEl,
+          prevEl: prevEl,
+        },
+        pagination: {
+          el: paginationEl,
+          clickable: true,
+        },
+        watchOverflow: true,
+      });
+
+      function updateArrowStates() {
+        if (!prevEl || !nextEl) return;
+        if (swiper.isBeginning || swiper.slides.length <= swiper.params.slidesPerView) {
+          prevEl.style.opacity = '0';
+          prevEl.style.pointerEvents = 'none';
+          prevEl.style.visibility = 'hidden';
+        } else {
+          prevEl.style.opacity = '';
+          prevEl.style.pointerEvents = '';
+          prevEl.style.visibility = '';
+        }
+        if (swiper.isEnd || swiper.slides.length <= swiper.params.slidesPerView) {
+          nextEl.style.opacity = '0';
+          nextEl.style.pointerEvents = 'none';
+          nextEl.style.visibility = 'hidden';
+        } else {
+          nextEl.style.opacity = '';
+          nextEl.style.pointerEvents = '';
+          nextEl.style.visibility = '';
+        }
+      }
+
+      swiper.on('slideChange', updateArrowStates);
+      swiper.on('reachBeginning', updateArrowStates);
+      swiper.on('reachEnd', updateArrowStates);
+      setTimeout(updateArrowStates, 120);
+
+      el.swiper = swiper;
+    }
+
+    function safeInitWithRetry(attempts) {
+      if (attempts <= 0) return;
+      if (typeof Swiper !== 'undefined') {
+        requestAnimationFrame(initReviewsSwiper);
+        return;
+      }
+      setTimeout(function () {
+        safeInitWithRetry(attempts - 1);
+      }, 200);
+    }
+
+    // Initial tries: on DOM ready and on window load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function () {
+        safeInitWithRetry(15);
+      });
+    } else {
+      safeInitWithRetry(15);
+    }
+    window.addEventListener('load', function () {
+      safeInitWithRetry(5);
+    });
+
+    // Re-init when the section is (re)loaded in the theme editor or dynamically
+    document.addEventListener('shopify:section:load', safeInitWithRetry.bind(null, 10));
+    document.addEventListener('shopify:section:select', safeInitWithRetry.bind(null, 10));
+  })();
+</script>

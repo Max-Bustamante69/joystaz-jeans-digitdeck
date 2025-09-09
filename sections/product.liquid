@@ -111,20 +111,11 @@
             <div class="flex flex-col gap-0.5">
               <h6>{{ product.title }}</h6>
               <div class="flex items-center gap-2">
-                {% comment %} Fix the metafield references {% endcomment %}
-                {%
-                  render 'star-rating',
-                  rating: product.metafields.reviews.rating.value | default: 0,
-                  size: 'md',
-                  show_count: true,
-                  show_rating_value: true,
-                  show_review_count: true,
-                  review_count: product.metafields.reviews.rating_count.value | default: 0
-                %}
+                {% render 'product-rating', product: product, size: 'lg' %}
               </div>
             </div>
             <div class="flex flex-col items-end gap-0.5">
-              <h6 class=" {%if product.compare_at_price > product.price %} text-red-800  {% else %} text-black {% endif %} ">
+              <h6 class=" {%if product.compare_at_price > product.price %} text-red-700  {% else %} text-black {% endif %} ">
                 ${{ product.price | money_without_currency }}
               </h6>
               {% if product.compare_at_price > product.price %}
@@ -449,14 +440,8 @@
   <!-- Product Reviews Section -->
   <div class="product-reviews-section mt-12 space-y-6">
     <div class="reviews-container">
-      <!-- Review Statistics -->
-      <div class="reviews-stats" id="reviews-stats-{{ product.id }}">
-        <div class="flex items-center justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p class="ml-3 text-gray-600">Loading review statistics...</p>
-        </div>
-      </div>
-
+      {% comment %} Reviews Summary + List inside the same container as the form {% endcomment %}
+      {% render 'product-reviews', product: product, show_avg: section.settings.show_reviews_average, show_count: section.settings.show_reviews_count %}
       <!-- Review Form Toggle -->
       <div class="review-form-toggle">
         <button
@@ -470,23 +455,19 @@
 
       <!-- Review Form (Hidden by default) -->
       <div
-        class="review-form-container bg-white border border-gray-200 rounded-lg shadow-sm"
+        class="review-form-container fixed inset-0 z-50 hidden"
         id="review-form-container-{{ product.id }}"
         style="display: none;"
       >
-        <div class="review-form-header flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 class="text-xl font-semibold text-gray-900">Write a Review</h3>
-          <button
-            class="close-form-btn text-gray-400 hover:text-gray-600 text-2xl font-bold"
-            id="close-form-btn-{{ product.id }}"
-          >
-            &times;
-          </button>
-        </div>
-
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative mx-auto my-8 w-[95vw] max-w-2xl bg-white rounded-xl shadow-2xl overflow-hidden">
+          <div class="review-form-header flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-xl font-semibold text-gray-900">Escribir una Reseña</h3>
+            <button class="close-form-btn text-gray-400 hover:text-gray-600 text-2xl font-bold" id="close-form-btn-{{ product.id }}">&times;</button>
+          </div>
+          <div class="p-6">
         <!-- Native Review Form -->
-        <!-- Native Review Form -->
-        <form id="review-form-{{ product.id }}" class="review-form p-6 space-y-6">
+        <form id="review-form-{{ product.id }}" class="review-form space-y-6">
           <div class="form-group">
             <label for="rating-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
               >Overall Rating *</label
@@ -519,7 +500,7 @@
                   >★</span
                 >
               </div>
-              <span id="ratingText-{{ product.id }}" class="text-sm text-gray-600">Click to rate</span>
+              <span id="ratingText-{{ product.id }}" class="text-sm text-gray-800 font-medium">Calificación: <span class="font-semibold">Click para calificar</span></span>
             </div>
             <input type="hidden" id="rating-{{ product.id }}" name="rating" required>
           </div>
@@ -705,7 +686,7 @@
                   <span>Muy grande</span>
                 </div>
                 <div class="fit-value text-center mt-2">
-                  <span id="fit-value-{{ product.id }}" class="text-sm font-medium text-blue-600">Perfecto</span>
+                  <span id="fit-value-{{ product.id }}" class="text-sm font-medium text-gray-900">Perfecto</span>
                 </div>
               </div>
             </div>
@@ -786,13 +767,7 @@
         </div>
       </div>
 
-      <!-- Reviews List -->
-      <div class="reviews-list" id="reviews-list-{{ product.id }}">
-        <div class="flex items-center justify-center py-8">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-          <p class="ml-3 text-gray-600">Loading reviews...</p>
-        </div>
-      </div>
+      <!-- Reviews List (rendered above via snippet) -->
     </div>
   </div>
 </div>
@@ -1984,8 +1959,8 @@
     }
 
     function initializeReviews() {
-      loadReviewStats();
-      loadReviews();
+      if (reviewsStats) { loadReviewStats(); }
+      if (reviewsList) { loadReviews(); }
       setupEventListeners();
       initializeStarRatings();
       initializeFitSlider();
@@ -2244,11 +2219,12 @@
 
     // API Calls
     async function loadReviewStats() {
+      if (!reviewsStats) return;
       try {
         const response = await fetch(`${API_BASE_URL}/stats/${productId}`);
         if (response.ok) {
           const stats = await response.json();
-          displayReviewStats(stats);
+          if (stats) displayReviewStats(stats);
         } else {
           reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews yet</p>';
         }
@@ -2259,11 +2235,16 @@
     }
 
     async function loadReviews() {
+      if (!reviewsList) return;
       try {
         const response = await fetch(`${API_BASE_URL}/product/${productId}`);
         if (response.ok) {
           const reviews = await response.json();
-          displayReviews(reviews);
+          if (Array.isArray(reviews)) {
+            displayReviews(reviews);
+          } else {
+            reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
+          }
         } else {
           reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
         }
@@ -2275,26 +2256,33 @@
 
     // Display Functions
     function displayReviewStats(stats) {
+      if (!reviewsStats || !stats) return;
+      const average = Number(stats.averageRating || 0);
+      const total = Number(stats.totalReviews || 0);
+      const verified = Number(stats.verifiedBuyers || 0);
+      const rec = Number(Math.round(stats.recommendationRate || 0));
+      const fiveStar = (stats.ratingDistribution && stats.ratingDistribution[5]) || 0;
+
       const statsHtml = `
         <div class="bg-gray-50 rounded-lg p-6 mb-6">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="text-center">
-              <div class="text-3xl font-bold text-gray-900">${stats.averageRating.toFixed(1)}</div>
+              <div class="text-3xl font-bold text-gray-900">${average.toFixed(1)}</div>
               <div class="flex justify-center mt-1">
-                ${generateStars(stats.averageRating)}
+                ${generateStars(average)}
               </div>
-              <div class="text-sm text-gray-600 mt-1">${stats.totalReviews} review${stats.totalReviews !== 1 ? 's' : ''}</div>
+              <div class="text-sm text-gray-600 mt-1">${total} review${total !== 1 ? 's' : ''}</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${stats.verifiedBuyers}</div>
+              <div class="text-2xl font-semibold text-gray-900">${verified}</div>
               <div class="text-sm text-gray-600">Verified Buyers</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${Math.round(stats.recommendationRate)}%</div>
+              <div class="text-2xl font-semibold text-gray-900">${rec}%</div>
               <div class="text-sm text-gray-600">Recommend</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${stats.ratingDistribution[5] || 0}</div>
+              <div class="text-2xl font-semibold text-gray-900">${fiveStar}</div>
               <div class="text-sm text-gray-600">5-Star Reviews</div>
             </div>
           </div>
@@ -2304,7 +2292,8 @@
     }
 
     function displayReviews(reviews) {
-      if (!reviews || reviews.length === 0) {
+      if (!reviewsList) return;
+      if (!Array.isArray(reviews) || reviews.length === 0) {
         reviewsList.innerHTML = '<p class="text-gray-500 text-center py-8">No reviews yet. Be the first to review this product!</p>';
         return;
       }
@@ -2551,6 +2540,18 @@
     {
       "type": "header",
       "content": "Mobile Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews_average",
+      "label": "Show reviews average value",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reviews_count",
+      "label": "Show reviews count",
+      "default": true
     },
     {
       "type": "checkbox",

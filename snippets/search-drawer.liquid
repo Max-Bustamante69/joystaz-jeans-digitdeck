@@ -10,26 +10,35 @@
   x-cloak
   x-data="searchDrawer()"
   x-show="isOpen"
-  x-transition.opacity.duration.500ms
   class="fixed inset-0 z-50 overflow-hidden"
   @click.self="closeDrawer()"
   @keydown.escape.window="closeDrawer()"
   @search:open.window="openDrawer()"
 >
   <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/70"></div>
+  <div
+    x-cloak
+    x-show="isOpen"
+    x-transition:enter="transition ease-out duration-500"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-400"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="absolute inset-0 bg-black/70"
+  ></div>
 
   <!-- Drawer -->
   <div
     x-cloak
     x-show="isOpen"
-    x-transition:enter="transform transition ease-out duration-500"
-    x-transition:enter-start="translate-x-full"
-    x-transition:enter-end="translate-x-0"
+    x-transition:enter="transform transition ease-out duration-350"
+    x-transition:enter-start="translate-x-full "
+    x-transition:enter-end="translate-x-0 "
     x-transition:leave="transform transition ease-in duration-300"
-    x-transition:leave-start="translate-x-0"
-    x-transition:leave-end="translate-x-full"
-    class="absolute right-0 top-0 h-full w-full max-w-2xl bg-white shadow-2xl flex flex-col"
+    x-transition:leave-start="translate-x-0 "
+    x-transition:leave-end="translate-x-full "
+    class="absolute right-0 top-0 h-full  w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform-gpu will-change-transform"
     @click.outside="closeDrawer()"
   >
     <!-- Header -->
@@ -55,7 +64,6 @@
           @keydown.enter="viewAllResults"
           placeholder="Search products, categories..."
           class="w-full pl-12 py-3 border-b border-gray-300  focus:ring-0 focus:outline-none   transition-all duration-200"
-          autofocus
         >
         {% render 'search-icon', class: 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black' %}
 
@@ -345,9 +353,10 @@
         document.body.style.width = '100%';
         document.body.style.top = `-${window.scrollY}px`;
         document.body.classList.add('search-drawer-open');
+        // Focus after the transition to prevent abrupt scroll/focus jump
         this.$nextTick(() => {
           const input = this.$el.querySelector('input[type="text"]');
-          setTimeout(() => input?.focus(), 100);
+          setTimeout(() => input?.focus(), 380);
         });
       },
 

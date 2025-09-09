@@ -18,4 +18,4 @@
 {% assign discounted_price = product.price | plus: product.price | minus: item_discount %}
 
 <span class="text-xl text-semibold text-gray-900 ml-2">${{ discounted_price | money_without_currency }}</span>
-<span class="text-xl text-semibold line-through text-red-800">${{ duo_original_price | money_without_currency }}</span>
+<span class="text-xl text-semibold line-through text-red-700">${{ duo_original_price | money_without_currency }}</span>

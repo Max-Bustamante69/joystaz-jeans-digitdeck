@@ -73,18 +73,9 @@
 </div>
 
 {% if show_count %}
-  <div class="body-sm flex gap-1">
-    {% if show_rating_value and show_review_count and review_count > 0 %} {% endif %}
+  <div class="body-sm flex items-center gap-1">
     {% if show_review_count %}
-      {% if review_count > 0 %}
-        <p class="body-sm">
-          ( {{ review_count }} )
-        </p>
-      {% else %}
-        <p class="body-sm">
-          ( 0 )
-        </p>
-      {% endif %}
+      <span class="body-sm">( {{ review_count | default: 0 }} )</span>
     {% endif %}
   </div>
 {% endif %}

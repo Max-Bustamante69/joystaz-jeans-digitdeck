@@ -45,6 +45,20 @@
     },
     "header": {
       "type": "header",
+      "blocks": {
+        "mobile_card_7GXENa": {
+          "type": "mobile_card",
+          "settings": {
+            "title": "Card Title",
+            "link": "",
+            "aspect_ratio": "portrait",
+            "text_position": "bottom-left"
+          }
+        }
+      },
+      "block_order": [
+        "mobile_card_7GXENa"
+      ],
       "settings": {
         "menu": "header-menu",
         "mobile_subcollections_count": 4

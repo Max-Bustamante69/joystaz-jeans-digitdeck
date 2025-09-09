@@ -15,6 +15,7 @@
         "slide_kF6V7J": {
           "type": "slide",
           "settings": {
+            "media_type": "image",
             "image_url": "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             "title": "Viste el espíritu",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
@@ -26,6 +27,7 @@
         "slide_7EQ4Qm": {
           "type": "slide",
           "settings": {
+            "media_type": "image",
             "image_url": "https://plus.unsplash.com/premium_photo-1708110921398-1fc68e98eacc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             "title": "Viste el espíritu",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
@@ -37,6 +39,7 @@
         "slide_wfyam9": {
           "type": "slide",
           "settings": {
+            "media_type": "image",
             "image": "shopify://shop_images/adelante2_b6edc962-0ada-47ae-9a84-1bc0f085eaac.png",
             "image_url": "",
             "title": "Marcos",
@@ -45,12 +48,25 @@
             "button_link": "",
             "button_style": ""
           }
+        },
+        "slide_zUM439": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image_url": "",
+            "title": "Viste el espíritu",
+            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": "h-11 px-6 border border-1 border-white capitalize"
+          }
         }
       },
       "block_order": [
         "slide_kF6V7J",
         "slide_7EQ4Qm",
-        "slide_wfyam9"
+        "slide_wfyam9",
+        "slide_zUM439"
       ],
       "settings": {
         "min_height": 100,
@@ -67,6 +83,8 @@
         "category_pwLXdi": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "square"
           }
@@ -74,6 +92,8 @@
         "category_eVzi4H": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "square"
           }
@@ -117,6 +137,8 @@
         "category_QC8xmk": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
@@ -124,6 +146,8 @@
         "category_V68LeD": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
@@ -131,6 +155,8 @@
         "category_pPrFBF": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
@@ -138,6 +164,8 @@
         "category_gatxCg": {
           "type": "category",
           "settings": {
+            "collection": "",
+            "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
@@ -175,6 +203,7 @@
         "slide_4rHAFr": {
           "type": "slide",
           "settings": {
+            "media_type": "image",
             "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             "title": "FLAWLESS FUNDATION",
             "description": "Transform your business etc",
@@ -280,6 +309,7 @@
       "name": "Product Carousel",
       "settings": {
         "title": "Best Sellers",
+        "rich_text": "",
         "show_view_all": true,
         "view_all_text": "Ver todos",
         "view_all_link": "",

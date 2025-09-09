@@ -14,7 +14,6 @@
 {% endif %}
 
 <header
-  class=" transition-all duration-300  "
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   x-data="
@@ -89,7 +88,7 @@
         >
           <a
             href="{{ link.url }}"
-            class="font-semibold transition-colors duration-200 h-full flex items-center px-3"
+            class="font-semibold  duration-200 h-full flex items-center px-3"
             :class="(isScrolled || isHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
@@ -222,7 +221,7 @@
     <div class="flex gap-6 items-center lg:hidden">
       <button
         @click="toggleMobileMenu()"
-        class="transition-colors duration-200"
+        class=" duration-200"
         :class="(isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
@@ -237,7 +236,7 @@
               alt="{{ shop.name }}"
               height="{{ section.settings.logo.height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
-              class="transition-all duration-300"
+              class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
               loading="eager"
             >
@@ -245,7 +244,7 @@
             <img
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
-              class="transition-all duration-300 h-12"
+              class=" h-12"
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
               width="60"
               height="40"
@@ -264,7 +263,7 @@
             alt="{{ shop.name }}"
             height="{{ section.settings.logo.height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
-            class="transition-all duration-300"
+            class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
@@ -272,7 +271,7 @@
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class="transition-all duration-300 h-12"
+            class=" h-12"
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
@@ -285,7 +284,7 @@
     <div class="flex items-center col-span-2 lg:col-span-1 justify-end gap-4">
       {% render 'search-icon' %}
       <a href="/pages/wishlist" aria-label="Wishlist" class="inline-flex">
-        {% render 'heart-icon', class: 'hidden lg:block' %}
+        {% render 'heart-icon' %}
       </a>
       <a
         href="{% if customer %}{{ routes.account_url }}{% else %}{{ routes.account_login_url }}{% endif %}"
@@ -329,7 +328,7 @@
       <!-- Header with Heart Icon and Close Button -->
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
-          <button class="text-gray-600 hover:text-gray-800 transition-colors">
+          <button class="text-gray-600 hover:text-gray-800 ">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
@@ -337,7 +336,7 @@
         </div>
         <button
           @click="toggleMobileMenu()"
-          class="text-gray-500 hover:text-gray-700 transition-colors"
+          class="text-gray-500 hover:text-gray-700 "
           aria-label="Close mobile menu"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -441,11 +440,11 @@
                   <p class="body-sm  uppercase text-black/40">Subcollections</p>
                 </div>
                 <div
-                  class="mobile-subcollections-carousel swiper  overflow-hidden"
+                  class="mobile-subcollections-carousel  px-4  overflow-hidden"
                   data-carousel-id="mobile-subcollections-{{ section.id }}-{{ tab_index }}"
                   data-carousel-type="mobile-subcollections"
                 >
-                  <div class="swiper-wrapper ">
+                  <div class=" swiper-wrapper ">
                     {% for subcollection_item in collection.metafields.custom.subcollections.value
                       limit: section.settings.mobile_subcollections_count
                     %}
@@ -475,7 +474,7 @@
         {% comment %} Add primary links without sublinks {% endcomment %}
         {% for link in section.settings.menu.links %}
           {% unless link.links.size > 0 %}
-            <a href="{{ link.url }}" class="block text-sm text-gray-600 hover:text-gray-800 transition-colors">
+            <a href="{{ link.url }}" class="block text-sm text-gray-600 hover:text-gray-800 ">
               {{- link.title -}}
             </a>
           {% endunless %}
@@ -498,7 +497,7 @@
       <div class="flex items-center gap-3 mb-6">
         <button
           @click="goBackToMainMenu()"
-          class="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+          class="flex items-center gap-2 text-gray-600 hover:text-gray-800 "
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -512,7 +511,7 @@
         <template x-for="link in currentTertiaryLinks" :key="link.url">
           <a
             :href="link.url"
-            class="block text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-b-0"
+            class="block text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg  border-b border-gray-100 last:border-b-0"
             @click="mobileMenuOpen = false"
           >
             <h5 x-text="link.title"></h5>
@@ -612,7 +611,7 @@
 
           if (carousel && typeof Swiper !== 'undefined') {
             const swiper = new Swiper(carousel, {
-              slidesPerView: 2.2,
+              slidesPerView: 2,
               spaceBetween: 4,
               loop: false,
             });
@@ -629,7 +628,7 @@
     };
   }
 
-  // Cart functionality
+// Cart functionality
   async function updateCartQuantity(itemKey, newQuantity) {
     if (newQuantity < 1) {
       await removeCartItem(itemKey);

@@ -3,19 +3,19 @@
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
       <div class="space-y-4 col-span-2">
         {% if section.settings.tagline != blank %}
-          <p class="text-gray-500">{{ section.settings.tagline }}</p>
+          <p class="body opacity-50">{{ section.settings.tagline }}</p>
         {% endif %}
 
-        <form action="{{ routes.search_url }}" method="get" role="search" class="mt-4 flex items-stretch max-w-md">
+        <form action="{{ routes.search_url }}" method="get" role="search" class="mt-4 gap-2 flex items-stretch max-w-md">
           <input
             type="search"
             name="q"
             value="{{ search.terms | escape }}"
             placeholder="Tu correo"
-            class="w-full border border-gray-300 border-none placeholder:text-white placeholder:body placeholder:font-semibold px-3 py-2"
+            class="w-full border-b border-gray-300  placeholder:text-white placeholder:body placeholder:font-semibold px-3 py-2"
           >
           <input type="hidden" name="type" value="product">
-          <button type="submit" class=" py-1 bg-white text-black body font-semibold">Enviar</button>
+          <button type="submit" class=" py-2 px-7 bg-white text-black body font-semibold">Enviar</button>
         </form>
 
         <a href="{{ routes.root_url }}" class="inline-block">

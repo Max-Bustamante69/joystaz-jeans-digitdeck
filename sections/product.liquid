@@ -10,7 +10,7 @@
 {% endcomment %}
 
 <div
-  class="product-page bg-white lg:mt-48"
+  class="product-page bg-white mt-23"
   x-data="productPage({{ product.id }}, {{ section.settings.delivery_days | default: 7 }})"
 >
   <div class="w-full lg:pr-12">
@@ -104,7 +104,7 @@
       </div>
 
       <!-- Product Information Section -->
-      <div class="product-info-section space-y-6 mx-4 ">
+      <div class="product-info-section space-y-6 ">
         <!-- Product Title and Price -->
         <div class="space-y-2">
           <div class="flex items-start gap-2 justify-between">

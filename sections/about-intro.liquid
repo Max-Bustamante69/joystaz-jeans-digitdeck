@@ -1,0 +1,32 @@
+{% comment %}
+  About Page - Intro Section
+  Subtitle + large text underneath
+{% endcomment %}
+
+<section class="container mx-auto px-4 py-12">
+  {% if section.settings.subtitle != blank %}
+    <h2 class="text-sm uppercase tracking-wide text-gray-700 mb-4">{{ section.settings.subtitle }}</h2>
+  {% endif %}
+
+  {% if section.settings.large_text != blank %}
+    <div class="prose max-w-none">
+      <p class="text-2xl lg:text-4xl font-semibold leading-tight">{{ section.settings.large_text }}</p>
+    </div>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "About - Intro",
+  "settings": [
+    { "type": "text", "id": "subtitle", "label": "Subtítulo", "default": "ABOUT" },
+    {
+      "type": "text",
+      "id": "large_text",
+      "label": "Texto grande",
+      "default": "Your Skin Is Alive And Needs Nutrition To Be Fit."
+    }
+  ],
+  "presets": [{ "name": "About - Intro" }]
+}
+{% endschema %}

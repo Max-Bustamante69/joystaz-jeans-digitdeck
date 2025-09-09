@@ -1,0 +1,41 @@
+{% comment %}
+  Contact Page - Customer Care Section
+  Editable title and repeatable blocks for items (title + rich text description).
+{% endcomment %}
+
+<section class="container mx-auto px-4 py-12">
+  {% if section.settings.title != blank %}
+    <h2 class="text-3xl font-semibold mb-8">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    {% for block in section.blocks %}
+      <div class="space-y-2" {{ block.shopify_attributes }}>
+        {% if block.settings.item_title != blank %}
+          <h3 class="text-sm uppercase tracking-wide text-gray-700">{{ block.settings.item_title }}</h3>
+        {% endif %}
+        {% if block.settings.item_richtext != blank %}
+          <div class="prose max-w-none">{{ block.settings.item_richtext }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contacto - Customer Care",
+  "settings": [{ "type": "text", "id": "title", "label": "Título", "default": "Customer Care" }],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "item_title", "label": "Título" },
+        { "type": "richtext", "id": "item_richtext", "label": "Descripción" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Contacto - Customer Care" }]
+}
+{% endschema %}

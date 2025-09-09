@@ -1,0 +1,25 @@
+{% comment %}
+  Reusable Page Hero Section
+  Uses the shared `generic-hero` snippet for image + title + description.
+  Can be used for About, Contact, or any other page.
+{% endcomment %}
+
+<section class="w-full">
+  {%- render 'generic-hero',
+    image: section.settings.image,
+    title: section.settings.title,
+    description: section.settings.description
+  -%}
+</section>
+
+{% schema %}
+{
+  "name": "Page Hero",
+  "settings": [
+    { "type": "image_picker", "id": "image", "label": "Imagen de fondo" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Page Title" },
+    { "type": "text", "id": "description", "label": "Descripción", "default": "Description" }
+  ],
+  "presets": [{ "name": "Page Hero" }]
+}
+{% endschema %}

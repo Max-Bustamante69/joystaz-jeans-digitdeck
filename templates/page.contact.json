@@ -9,12 +9,19 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "page",
-      "settings": {}
+    "hero": { "type": "page-hero", "settings": { "title": "Contacto" } },
+    "care": {
+      "type": "contact-customer-care",
+      "settings": { "title": "Customer Care" }
+    },
+    "inquiry": {
+      "type": "contact-inquiry",
+      "settings": { "title": "General Inquiry" }
+    },
+    "social": {
+      "type": "contact-social",
+      "settings": { "title": "Social Media" }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["hero", "care", "inquiry", "social"]
 }

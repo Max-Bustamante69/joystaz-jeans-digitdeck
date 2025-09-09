@@ -39,6 +39,11 @@
             x-for="
               (slide, index) in (() => {
                 const imgs = currentImages || [];
+                // Mobile: always render all images as single slides (first eager)
+                if (!isDesktop) {
+                  return imgs.map((src, i) => ({ type: 'single', src, eager: i === 0 }));
+                }
+                // Desktop: overlay behavior for first two
                 if (imgs.length <= 1) {
                   return imgs.length === 1
                     ? [{ type: 'single', src: imgs[0], eager: true }]
@@ -91,7 +96,8 @@
 
         <!-- Navigation Arrows -->
         <div
-          class="absolute hidden inset-0 pointer-events-none group-hover:block"
+          :class="isDesktop ? 'hidden group-hover:block' : 'block'"
+          class="absolute inset-0 pointer-events-none"
           @mouseenter.stop="imageHovered = false"
           @mouseleave.stop
         >

@@ -1,0 +1,72 @@
+{% comment %}
+  About Page - Content Section
+  Three-column layout with title, divider, and text for each block
+{% endcomment %}
+
+<section class="container mx-auto px-4 py-12">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {% for block in section.blocks %}
+      <div class="space-y-4" {{ block.shopify_attributes }}>
+        {% if block.settings.title != blank %}
+          <h3 class="text-lg font-semibold uppercase tracking-wide">{{ block.settings.title }}</h3>
+          <div class="w-full h-px bg-black"></div>
+        {% endif %}
+
+        {% if block.settings.content != blank %}
+          <div class="prose max-w-none">
+            <p class="text-gray-700 leading-relaxed">{{ block.settings.content }}</p>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "About - Content",
+  "blocks": [
+    {
+      "type": "content_block",
+      "name": "Content Block",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título", "default": "OUR MISSION" },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Contenido",
+          "default": "We are committed to creating high-quality, plant-powered skincare that nurtures the skin without compromise."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "About - Content",
+      "blocks": [
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "OUR MISSION",
+            "content": "We are committed to creating high-quality, plant-powered skincare that nurtures the skin without compromise, to blend nature and innovation, offering effective, sustainable beauty solutions that inspire confidence and well-being."
+          }
+        },
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "OUR VALUES",
+            "content": "We believe in purity, transparency, and sustainability. Every ingredient we use is carefully selected for its efficacy and sourced responsibly to ensure both skin health and environmental harmony."
+          }
+        },
+        {
+          "type": "content_block",
+          "settings": {
+            "title": "OUR ETHOS",
+            "content": "Skincare should be simple, effective, and kind—to the skin, to people, and to the planet. We honor tradition while embracing modern science, ensuring that every product delivers results you can trust."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

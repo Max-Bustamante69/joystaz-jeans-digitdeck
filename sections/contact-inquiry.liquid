@@ -1,0 +1,189 @@
+{% comment %}
+  Contact Page - General Inquiry Form
+  Dynamic fields via blocks. Submits to Shopify's native contact endpoint.
+  Notes:
+  - Each block renders an input with validation based on settings.
+  - All values are sent as contact[<handle>] so they appear in the email and in admin timeline.
+{% endcomment %}
+
+<section class="container mx-auto px-4 py-12">
+  {% if section.settings.title != blank %}
+    <h2 class="text-2xl font-semibold mb-6">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  {% form 'contact' %}
+    {% if form.posted_successfully? %}
+      <p class="bg-green-100 text-green-800 p-3 mb-4">
+        {{ section.settings.success_text | default: '¡Tu mensaje fue enviado!' }}
+      </p>
+    {% endif %}
+
+    {% if form.errors %}
+      <ul class="bg-red-50 text-red-700 p-3 mb-4">
+        {% for field in form.errors %}
+          <li>{{ form.errors.translated_fields[field] | capitalize }}: {{ form.errors.messages[field] }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for block in section.blocks %}
+        {% assign name_handle = block.settings.label | default: block.id | handleize %}
+        <div class="flex flex-col gap-2" {{ block.shopify_attributes }}>
+          {% if block.settings.label != blank %}
+            <label class="text-sm text-gray-700">
+              {{- block.settings.label -}}
+              {%- if block.settings.required %}*{% endif -%}
+            </label>
+          {% endif %}
+
+          {% case block.type %}
+            {% when 'text' %}
+              <input
+                class="border p-3"
+                type="text"
+                name="contact[{{ name_handle }}]"
+                placeholder="{{ block.settings.placeholder }}"
+                {% if block.settings.required %}
+                  required
+                {% endif %}
+              >
+            {% when 'email' %}
+              <input
+                class="border p-3"
+                type="email"
+                name="contact[email]"
+                placeholder="{{ block.settings.placeholder | default: 'Email' }}"
+                required
+              >
+            {% when 'tel' %}
+              <input
+                class="border p-3"
+                type="tel"
+                name="contact[{{ name_handle }}]"
+                placeholder="{{ block.settings.placeholder }}"
+                {% if block.settings.required %}
+                  required
+                {% endif %}
+                pattern="[0-9()+\-\s]{6,}"
+              >
+            {% when 'textarea' %}
+              <textarea
+                class="border p-3"
+                rows="6"
+                name="contact[{{ name_handle }}]"
+                placeholder="{{ block.settings.placeholder }}"
+                {% if block.settings.required %}
+                  required
+                {% endif -%}
+              ></textarea>
+            {% when 'select' %}
+              <select
+                class="border p-3"
+                name="contact[{{ name_handle }}]"
+                {% if block.settings.required %}
+                  required
+                {% endif %}
+              >
+                {% assign __options = block.settings.options | split: ',' %}
+                {% for opt in __options %}
+                  {% assign opt_trim = opt | strip %}
+                  <option value="{{ opt_trim }}">{{ opt_trim }}</option>
+                {% endfor %}
+              </select>
+          {% endcase %}
+
+          {% if block.settings.help_text != blank %}
+            <p class="text-xs text-gray-500">{{ block.settings.help_text }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="mt-6 bg-primary text-white px-5 py-3 font-semibold">
+      {{ section.settings.submit_label | default: 'Enviar' }}
+    </button>
+  {% endform %}
+
+  {% if section.settings.notes != blank %}
+    <p class="mt-4 text-sm text-gray-600">{{ section.settings.notes }}</p>
+  {% endif %}
+</section>
+
+{% schema %}
+{
+  "name": "Contacto - Inquiry",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Título", "default": "General Inquiry" },
+    { "type": "text", "id": "submit_label", "label": "Texto botón", "default": "Submit" },
+    { "type": "text", "id": "success_text", "label": "Mensaje de éxito", "default": "Gracias por Contactarnos" },
+    { "type": "text", "id": "notes", "label": "Notas" }
+  ],
+  "blocks": [
+    {
+      "type": "text",
+      "name": "Campo de texto",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Nombre" },
+        { "type": "text", "id": "placeholder", "label": "Placeholder" },
+        { "type": "checkbox", "id": "required", "label": "Requerido", "default": true },
+        { "type": "text", "id": "help_text", "label": "Ayuda" }
+      ]
+    },
+    {
+      "type": "email",
+      "name": "Email",
+      "limit": 1,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Email Address" },
+        { "type": "text", "id": "placeholder", "label": "Placeholder", "default": "email@example.com" }
+      ]
+    },
+    {
+      "type": "tel",
+      "name": "Teléfono",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Teléfono" },
+        { "type": "text", "id": "placeholder", "label": "Placeholder" },
+        { "type": "checkbox", "id": "required", "label": "Requerido", "default": false },
+        { "type": "text", "id": "help_text", "label": "Ayuda" }
+      ]
+    },
+    {
+      "type": "textarea",
+      "name": "Mensaje",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Mensaje" },
+        { "type": "text", "id": "placeholder", "label": "Placeholder" },
+        { "type": "checkbox", "id": "required", "label": "Requerido", "default": true }
+      ]
+    },
+    {
+      "type": "select",
+      "name": "Select",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Etiqueta", "default": "Motivo" },
+        {
+          "type": "text",
+          "id": "options",
+          "label": "Opciones (separadas por coma)",
+          "default": "Soporte, Ventas, Prensa"
+        },
+        { "type": "checkbox", "id": "required", "label": "Requerido", "default": false }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contacto - General Inquiry",
+      "blocks": [
+        { "type": "email", "settings": { "label": "Email Address", "placeholder": "email@example.com" } },
+        {
+          "type": "textarea",
+          "settings": { "label": "Mensaje", "placeholder": "Escribe tu mensaje", "required": true }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

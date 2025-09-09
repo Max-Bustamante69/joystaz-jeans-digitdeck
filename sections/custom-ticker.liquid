@@ -1,0 +1,254 @@
+{% comment %}
+  Customizable Ticker Section
+  Enhanced version of the ticker with customizable styling
+{% endcomment %}
+
+{% assign ticker_items = section.blocks %}
+{% assign has_items = false %}
+{% assign item_count = 0 %}
+
+{% comment %} Check if we have items to display and count them {% endcomment %}
+{% if ticker_items.size > 0 %}
+  {% assign has_items = true %}
+  {% for item in ticker_items %}
+    {% if item.type == 'ticker_item' and item.settings.text != blank %}
+      {% assign item_count = item_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Fallback items if no items are provided {% endcomment %}
+{% unless has_items %}
+  {% assign fallback_items = 'Class Is in Session,New Arrivals,Free Shipping' | split: ',' %}
+  {% assign item_count = fallback_items.size %}
+{% endunless %}
+
+<div
+  class="ticker-container flex items-center w-screen overflow-hidden"
+  style="background-color: {{ section.settings.background_color | default: 'var(--color-primary)' }}; height: {{ section.settings.height | default: '2rem' }};"
+>
+  <div class="ticker-wrap flex items-center" style="width: max-content;">
+    {% comment %} Create enough duplicates to fill screen + buffer {% endcomment %}
+    {% for i in (1..12) %}
+      {% comment %} First set of items {% endcomment %}
+      {% if has_items %}
+        {% for item in ticker_items %}
+          {% if item.type == 'ticker_item' and item.settings.text != blank %}
+            <span
+              class="ticker-item flex items-center whitespace-nowrap"
+              style="
+                color: {{ section.settings.text_color | default: '#ffffff' }};
+                font-size: {{ section.settings.font_size | default: '0.875rem' }};
+                font-weight: {{ section.settings.font_weight | default: '400' }};
+              "
+            >
+              {{ item.settings.text }}
+            </span>
+            {% unless forloop.last %}
+              <span
+                class="ticker-bullet mx-3"
+                style="
+                  color: {{ section.settings.text_color | default: '#ffffff' }};
+                  font-size: {{ section.settings.font_size | default: '0.875rem' }};
+                  opacity: 0.8;
+                "
+                >&bull;</span
+              >
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {% for fallback_item in fallback_items %}
+          <span
+            class="ticker-item flex items-center whitespace-nowrap"
+            style="
+              color: {{ section.settings.text_color | default: '#ffffff' }};
+              font-size: {{ section.settings.font_size | default: '0.875rem' }};
+              font-weight: {{ section.settings.font_weight | default: '400' }};
+            "
+          >
+            {{ fallback_item }}
+          </span>
+          {% unless forloop.last %}
+            <span
+              class="ticker-bullet mx-3"
+              style="
+                color: {{ section.settings.text_color | default: '#ffffff' }};
+                font-size: {{ section.settings.font_size | default: '0.875rem' }};
+                opacity: 0.8;
+              "
+              >&bull;</span
+            >
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+
+      {% comment %} Add bullet between sets (except for the last set) {% endcomment %}
+      {% unless forloop.last %}
+        <span
+          class="ticker-bullet mx-3"
+          style="
+            color: {{ section.settings.text_color | default: '#ffffff' }};
+            font-size: {{ section.settings.font_size | default: '0.875rem' }};
+            opacity: 0.8;
+          "
+          >&bull;</span
+        >
+      {% endunless %}
+    {% endfor %}
+  </div>
+</div>
+
+<style>
+  /* Smart Ticker Animation */
+  .ticker-container {
+    position: relative;
+  }
+
+  .ticker-wrap {
+    animation: ticker linear infinite;
+    animation-duration: {{ section.settings.animation_duration | default: 40 }}s;
+    transform: translateX(0%);
+    display: flex;
+    align-items: center;
+  }
+
+  @keyframes ticker {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      /* Calculate distance based on content width */
+      /* We have 6 duplicates, so we move by 1/6th of the total width */
+      transform: translateX(calc(-100% / 6));
+    }
+  }
+
+  .ticker-item {
+    flex-shrink: 0;
+  }
+
+  .ticker-bullet {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .ticker-wrap {
+      animation-duration: {{ section.settings.mobile_animation_duration | default: 25 }}s;
+    }
+
+    .ticker-bullet {
+      margin: 0 0.75rem; /* Smaller spacing on mobile */
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Custom Ticker",
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#3b2e10"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "font_size",
+      "label": "Font Size",
+      "default": "0.875rem",
+      "info": "Enter any CSS font-size value (e.g., 14px, 1rem, 1.2em, 16px)"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font Weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semibold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "text",
+      "id": "height",
+      "label": "Height",
+      "default": "2rem",
+      "info": "CSS height value (e.g., 2rem, 3rem, 60px)"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 10,
+      "max": 120,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation Duration (Desktop)",
+      "default": 40,
+      "info": "Duration of the ticker animation in seconds"
+    },
+    {
+      "type": "range",
+      "id": "mobile_animation_duration",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Animation Duration (Mobile)",
+      "default": 25,
+      "info": "Duration of the ticker animation on mobile devices"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "ticker_item",
+      "name": "Ticker Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Item Text",
+          "default": "Class Is in Session",
+          "info": "Enter the text for this ticker item"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Ticker",
+      "blocks": [
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "Class Is in Session"
+          }
+        },
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "New Arrivals"
+          }
+        },
+        {
+          "type": "ticker_item",
+          "settings": {
+            "text": "Free Shipping"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

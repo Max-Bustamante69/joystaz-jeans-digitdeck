@@ -1,0 +1,43 @@
+{% comment %}
+  Contact Page - Social Media Links
+  Repeatable items with label and URL.
+{% endcomment %}
+
+<section class="container mx-auto px-4 py-12">
+  {% if section.settings.title != blank %}
+    <h2 class="text-2xl font-semibold mb-6">{{ section.settings.title }}</h2>
+  {% endif %}
+
+  <ul class="space-y-3">
+    {% for block in section.blocks %}
+      <li {{ block.shopify_attributes }}>
+        <a
+          class="underline text-black hover:text-gray-700"
+          href="{{ block.settings.url }}"
+          target="_blank"
+          rel="noopener"
+        >
+          {{ block.settings.label | default: block.settings.url }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</section>
+
+{% schema %}
+{
+  "name": "Contacto - Social Media",
+  "settings": [{ "type": "text", "id": "title", "label": "Título", "default": "Social Media" }],
+  "blocks": [
+    {
+      "type": "link",
+      "name": "Enlace",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Texto del enlace", "default": "Instagram" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ],
+  "presets": [{ "name": "Contacto - Social Media" }]
+}
+{% endschema %}

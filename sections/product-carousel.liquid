@@ -9,7 +9,7 @@
   - Same styling as content carousel
 {% endcomment %}
 
-<div class="py-12 lg:py-10" id="product-carousel-{{ section.id }}">
+<div class="py-12 lg:py-10 overflow-x-hidden" id="product-carousel-{{ section.id }}">
   <div class=" w-full flex flex-col gap-8">
     {% if section.settings.title != blank %}
       <div class="flex justify-between items-end  mx-4 lg:mx-12">

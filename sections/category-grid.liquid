@@ -29,7 +29,7 @@
 
   {% if section.blocks.size > 0 %}
     <!-- Dynamic flex layout -->
-    <div class="category-grid-container">
+    <div class="category-grid-container overflow-x-hidden">
       <!-- Mobile Layout -->
       {% if section.settings.mobile_layout == 'slider' %}
         <!-- Mobile Slider -->
@@ -102,7 +102,7 @@
 
       {% else %}
         <!-- Mobile Column + Desktop Flex -->
-        <div class="flex flex-col lg:flex-row gap-1">
+        <div class="flex flex-col overflow-x-hidden lg:flex-row gap-1">
           {% for block in section.blocks %}
             {% case block.type %}
               {% when 'category' %}

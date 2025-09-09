@@ -82,6 +82,7 @@
 
   body {
     overflow-x: hidden;
+    position: relative;
   }
 
   /* Responsive styles */

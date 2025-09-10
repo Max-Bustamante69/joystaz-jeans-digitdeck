@@ -8,7 +8,12 @@
   - Responsive design
 {% endcomment %}
 
-<div class="video-carousel-section py-8 lg:py-16" id="video-carousel-section-{{ section.id }}" x-data="videoCarousel()">
+<div
+  class="video-carousel-section py-8 lg:py-16"
+  id="video-carousel-section-{{ section.id }}"
+  x-data="videoCarousel()"
+  @open-video-gallery.window="openVideoGallery($event.detail.carousel, $event.detail.videoIndex)"
+>
   <div class="container mx-auto  sm:px-6 lg:px-8">
     <!-- Section Header -->
     {% if section.settings.title != blank or section.settings.subtitle != blank %}
@@ -41,11 +46,13 @@
           id="video-carousel-{{ section.id }}"
         >
           <div class="swiper-wrapper">
+            {% assign video_index_counter = 0 %}
             {% for block in section.blocks %}
-              {% if block.type == 'video_slide' %}
+              {% if block.type == 'video_slide' and block.settings.video_file != blank %}
                 <div class="swiper-slide">
-                  {% render 'video-slide', block: block, aspect_ratio: '3/4' %}
+                  {% render 'video-slide', block: block, aspect_ratio: '3/4', video_index: video_index_counter %}
                 </div>
+                {% assign video_index_counter = video_index_counter | plus: 1 %}
               {% endif %}
             {% endfor %}
           </div>
@@ -69,12 +76,175 @@
       </div>
     {% endif %}
   </div>
+
+  <!-- Video Gallery Overlay -->
+  <div
+    x-show="showVideoGallery"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-200"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="fixed inset-0 bg-black z-50"
+    x-cloak
+  >
+    <!-- Top Navigation Bar -->
+    <div class="absolute top-0 left-0 right-0 bg-black/20 backdrop-blur-sm z-10 p-4">
+      <div class="flex items-center justify-between">
+        <!-- Left: Three Dots Menu -->
+        <button
+          class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+          @click.stop="toggleMenu"
+          type="button"
+        >
+          <svg class="w-5 h-5 text-gray-800" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+        </button>
+
+        <!-- Center: Video Title -->
+        <div class="text-white text-sm font-medium" x-text="currentVideoTitle"></div>
+
+        <!-- Right: Mute and Close Buttons -->
+        <div class="flex items-center gap-2">
+          <!-- Mute/Unmute Button -->
+          <button
+            class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+            @click.stop="toggleMute"
+            type="button"
+          >
+            <svg
+              x-show="!isMuted"
+              class="w-5 h-5 text-gray-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+            </svg>
+            <svg
+              x-show="isMuted"
+              class="w-5 h-5 text-gray-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/>
+            </svg>
+          </button>
+
+          <!-- Close Button -->
+          <button
+            class="w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+            @click.stop="closeVideoGallery"
+            type="button"
+          >
+            <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Navigation Arrows -->
+    <div class="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-4">
+      <!-- Previous Video Arrow -->
+      <button
+        class="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+        @click.stop="previousVideo"
+        type="button"
+      >
+        <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+        </svg>
+      </button>
+
+      <!-- Next Video Arrow -->
+      <button
+        class="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg"
+        @click.stop="nextVideo"
+        type="button"
+      >
+        <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Gallery Videos Container - Swiper with Native Scroll -->
+    <div class="h-full w-full">
+      <div
+        class="video-gallery-swiper swiper h-full w-full"
+        data-carousel-id="video-gallery-swiper-{{ section.id }}"
+        id="video-gallery-swiper-{{ section.id }}"
+        x-ref="gallerySwiper"
+      >
+        <div class="swiper-wrapper h-full">
+          {% assign gallery_index_counter = 0 %}
+          {% for block in section.blocks %}
+            {% if block.type == 'video_slide' and block.settings.video_file != blank %}
+              <div class="swiper-slide w-full h-full">
+                <div
+                  class="video-gallery-item relative overflow-hidden bg-gray-100 w-full h-full cursor-pointer"
+                  data-video-id="{{ block.id }}"
+                  x-data="videoGalleryItem()"
+                  x-init="initVideoGalleryItem({{ gallery_index_counter }})"
+                  x-intersect="handleVideoIntersect($el, {{ gallery_index_counter }})"
+                  x-intersect:leave="handleVideoLeave($el, {{ gallery_index_counter }})"
+                  @click="pauseVideo"
+                >
+                  <!-- Video Element - Same structure as video-slide.liquid -->
+                  <video
+                    x-ref="galleryVideo"
+                    class="absolute inset-0 w-full h-full object-cover"
+                    muted
+                    loop
+                    playsinline
+                    preload="metadata"
+                  >
+                    {% for source in block.settings.video_file.sources %}
+                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                    {% endfor %}
+                    Your browser does not support the video tag.
+                  </video>
+
+                  <!-- Video Title Overlay -->
+                  {% if block.settings.video_title != blank or block.settings.video_description != blank %}
+                    <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 z-10">
+                      {% if block.settings.video_title != blank %}
+                        <h3 class="text-white font-semibold text-lg mb-1">{{ block.settings.video_title }}</h3>
+                      {% endif %}
+                      {% if block.settings.video_description != blank %}
+                        <p class="text-white/90 text-sm">{{ block.settings.video_description }}</p>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              {% assign gallery_index_counter = gallery_index_counter | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
   function videoCarousel() {
     return {
       swiper: null,
+      gallerySwiper: null,
+      showVideoGallery: false,
+      isMuted: false,
+      currentVideoTitle: '',
+      currentVideoIndex: 0,
+      totalVideos: 0,
 
       init() {
         this.$nextTick(() => {
@@ -140,6 +310,14 @@
               },
               slideChange: function() {
                 updateVideoArrowStates(this);
+                // Don't close gallery if it's open
+                const sectionContainer = document.getElementById('video-carousel-section-{{ section.id }}');
+                if (sectionContainer && sectionContainer._x_dataStack) {
+                  const sectionData = sectionContainer._x_dataStack[0];
+                  if (sectionData && sectionData.showVideoGallery) {
+                    console.log('Main carousel slide changed, but gallery is open - keeping it open');
+                  }
+                }
               },
               reachBeginning: function() {
                 updateVideoArrowStates(this);
@@ -175,8 +353,427 @@
           this.swiper.destroy();
           this.swiper = null;
         }
+        if (this.gallerySwiper) {
+          this.gallerySwiper.destroy();
+          this.gallerySwiper = null;
+        }
+      },
+
+      // Video Gallery Methods
+      openVideoGallery(carousel, clickedVideoIndex = 0) {
+        // Only respond if the event came from this section's carousel
+        if (carousel && !this.$el.contains(carousel)) {
+          return;
+        }
+
+        this.showVideoGallery = true;
+        this.currentVideoIndex = clickedVideoIndex;
+        this.isMuted = false;
+        // Prevent body scroll when overlay is open
+        document.body.style.overflow = 'hidden';
+        
+        // Initialize gallery swiper after overlay is shown
+        this.$nextTick(() => {
+          setTimeout(() => {
+            // Try to extract videoId from the triggering carousel slide
+            let clickedVideoId = null;
+            if (carousel) {
+              const activeSlide = carousel.querySelector('.swiper-slide:not(.swiper-slide-duplicate) .video-slide-container[data-video-index="' + clickedVideoIndex + '"]');
+              if (activeSlide && activeSlide.dataset && activeSlide.dataset.videoId) {
+                clickedVideoId = activeSlide.dataset.videoId;
+              }
+            }
+            this.initializeGallerySwiper(clickedVideoIndex, clickedVideoId);
+          }, 200);
+        });
+      },
+
+      closeVideoGallery() {
+        console.log('Closing video gallery...');
+        this.showVideoGallery = false;
+        // Pause all videos in gallery
+        this.pauseAllGalleryVideos();
+        // Destroy gallery swiper and cleanup native scroll listener
+        if (this.gallerySwiper) {
+          const swiperContainer = this.gallerySwiper.el;
+          if (swiperContainer && this.gallerySwiper._onNativeScroll) {
+            swiperContainer.removeEventListener('scroll', this.gallerySwiper._onNativeScroll);
+            this.gallerySwiper._onNativeScroll = null;
+          }
+          this.gallerySwiper.destroy(true, true);
+          this.gallerySwiper = null;
+        }
+        // Restore body scroll
+        document.body.style.overflow = '';
+      },
+
+
+
+      initializeGallerySwiper(clickedVideoIndex = 0, clickedVideoId = null) {
+        const galleryElement = this.$refs.gallerySwiper;
+
+        if (galleryElement && typeof Swiper !== 'undefined') {
+          // Check if already initialized
+          if (galleryElement.swiper) {
+            console.log('Gallery swiper already initialized, skipping...');
+            return;
+          }
+
+          console.log('Initializing gallery swiper with clicked video index:', clickedVideoIndex);
+
+          // Store reference to Alpine component for use in Swiper callbacks
+          const alpineComponent = this;
+
+          // Initialize vertical Swiper with native scroll
+          this.gallerySwiper = new Swiper(galleryElement, {
+            direction: 'vertical',
+            slidesPerView: 1,
+            spaceBetween: 0,
+            loop: false,
+            centeredSlides: false,
+            grabCursor: false, // Disable grab cursor
+            touchRatio: 0, // Disable touch/swipe
+            touchAngle: 0, // Disable touch angle
+            simulateTouch: false, // Disable touch simulation
+            allowTouchMove: false, // Disable touch move
+            speed: 0, // Instant transitions (we'll use native scroll)
+
+            // Disable all Swiper interactions - use native scroll
+            touchStartPreventDefault: false,
+            touchStartForcePreventDefault: false,
+            touchMoveStopPropagation: false,
+
+            // Events for video control
+            on: {
+              init: function() {
+                console.log('Gallery swiper initialized');
+                // Enable native scrolling on the swiper container
+                const swiperContainer = this.el;
+                if (swiperContainer) {
+                  swiperContainer.style.overflowY = 'auto';
+                  swiperContainer.style.scrollSnapType = 'y mandatory';
+                }
+
+                // Enable scroll snap on slides
+                this.slides.forEach(slide => {
+                  slide.style.scrollSnapAlign = 'start';
+                  slide.style.scrollSnapStop = 'always';
+                });
+
+                // Create a method to play current slide video (with guards)
+                const playCurrentSlideVideo = () => {
+                  // Guard: ensure swiper and slides exist
+                  if (!this || !this.slides || this.slides.length === 0) {
+                    return;
+                  }
+
+                  // Pause all videos first
+                  const allVideos = document.querySelectorAll('.video-gallery-item video');
+                  allVideos.forEach(video => {
+                    video.pause();
+                    video.muted = true;
+                  });
+
+                  // Pick the slide closest to the container center
+                  const slides = Array.from(this.slides || []);
+                  const containerRect = swiperContainer.getBoundingClientRect();
+                  const containerCenter = (containerRect.top + containerRect.bottom) / 2;
+
+                  let closestIndex = 0;
+                  let smallestDistance = Number.POSITIVE_INFINITY;
+
+                  slides.forEach((slide, index) => {
+                    const rect = slide.getBoundingClientRect();
+                    const slideCenter = (rect.top + rect.bottom) / 2;
+                    const distance = Math.abs(slideCenter - containerCenter);
+                    if (distance < smallestDistance) {
+                      smallestDistance = distance;
+                      closestIndex = index;
+                    }
+                  });
+
+                  const targetSlide = slides[closestIndex];
+                  const video = targetSlide ? targetSlide.querySelector('video') : null;
+                  if (video) {
+                    console.log('Playing video for slide (closest to center):', closestIndex);
+                    video.muted = false;
+                    video.play().catch(e => {
+                      console.log('Video play failed, trying muted:', e);
+                      video.muted = true;
+                      video.play();
+                    });
+                  }
+                  // Update Alpine component with the resolved index
+                  if (alpineComponent) {
+                    alpineComponent.currentVideoIndex = closestIndex;
+                    alpineComponent.updateCurrentVideoTitle(closestIndex);
+                  }
+                };
+
+                // Store the method on the swiper instance for later use
+                this.playCurrentSlideVideo = playCurrentSlideVideo;
+
+                // Set total videos count on Alpine component, not Swiper instance
+                if (alpineComponent) {
+                  alpineComponent.totalVideos = this.slides.length;
+                }
+                
+                // Update current video title (using the Alpine component context)
+                if (alpineComponent && alpineComponent.updateCurrentVideoTitle) {
+                  alpineComponent.updateCurrentVideoTitle(clickedVideoIndex);
+                }
+
+                // Scroll to the clicked video (prefer by stable videoId) and play it
+                setTimeout(() => {
+                  let targetSlide = null;
+                  if (clickedVideoId) {
+                    targetSlide = Array.from(this.slides || []).find(slide => {
+                      const idNode = slide.querySelector('.video-gallery-item');
+                      return idNode && idNode.dataset && idNode.dataset.videoId === String(clickedVideoId);
+                    });
+                  }
+                  if (!targetSlide && this.slides && this.slides[clickedVideoIndex]) {
+                    targetSlide = this.slides[clickedVideoIndex];
+                  }
+                  if (targetSlide) {
+                    targetSlide.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+                    
+                    // Play the video after scrolling
+                    setTimeout(() => {
+                      playCurrentSlideVideo();
+                    }, 500);
+                  } else {
+                    // Fallback: play first video
+                    playCurrentSlideVideo();
+                  }
+                }, 300);
+
+                // Add scroll event listener for video control (store reference for cleanup)
+                this._onNativeScroll = () => {
+                  playCurrentSlideVideo();
+                  // Update current video index based on scroll position
+                  if (alpineComponent && alpineComponent.updateCurrentVideoIndex) {
+                    alpineComponent.updateCurrentVideoIndex();
+                  }
+                };
+                swiperContainer.addEventListener('scroll', this._onNativeScroll);
+              },
+
+              slideChange: function() {
+                // Use the same method as scroll event
+                if (this.playCurrentSlideVideo) {
+                  this.playCurrentSlideVideo();
+                }
+              },
+            },
+          });
+
+          // Store swiper instance
+          galleryElement.swiper = this.gallerySwiper;
+        }
+      },
+
+      pauseAllGalleryVideos() {
+        // Pause all videos in the gallery overlay
+        const galleryVideos = document.querySelectorAll('.video-gallery-item video');
+        galleryVideos.forEach((video) => {
+          video.pause();
+          video.muted = true;
+        });
+      },
+
+      // Navigation Methods
+      nextVideo() {
+        // Keep totalVideos in sync with current slides
+        if (this.gallerySwiper && this.gallerySwiper.slides) {
+          this.totalVideos = this.gallerySwiper.slides.length;
+        }
+        console.log('nextVideo called - currentIndex:', this.currentVideoIndex, 'totalVideos:', this.totalVideos);
+        if (this.gallerySwiper && this.currentVideoIndex < this.totalVideos - 1) {
+          this.currentVideoIndex++;
+          console.log('Scrolling to video index:', this.currentVideoIndex);
+          this.scrollToVideo(this.currentVideoIndex);
+        } else {
+          console.log('Cannot go to next video - at end or no swiper');
+        }
+      },
+
+      previousVideo() {
+        // Keep totalVideos in sync with current slides
+        if (this.gallerySwiper && this.gallerySwiper.slides) {
+          this.totalVideos = this.gallerySwiper.slides.length;
+        }
+        if (this.gallerySwiper && this.currentVideoIndex > 0) {
+          this.currentVideoIndex--;
+          this.scrollToVideo(this.currentVideoIndex);
+        }
+      },
+
+      scrollToVideo(index) {
+        console.log('scrollToVideo called with index:', index);
+        if (this.gallerySwiper && this.gallerySwiper.slides && this.gallerySwiper.slides[index]) {
+          const targetSlide = this.gallerySwiper.slides[index];
+          console.log('Target slide found:', targetSlide);
+          
+          // Scroll to the target slide
+          targetSlide.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+          
+          // Update current video title
+          this.updateCurrentVideoTitle(index);
+        } else {
+          console.log('Cannot scroll to video - no swiper, slides, or invalid index');
+          console.log('gallerySwiper:', this.gallerySwiper);
+          console.log('slides:', this.gallerySwiper ? this.gallerySwiper.slides : 'no swiper');
+        }
+      },
+
+      updateCurrentVideoTitle(index) {
+        if (this.gallerySwiper && this.gallerySwiper.slides && this.gallerySwiper.slides[index]) {
+          const slide = this.gallerySwiper.slides[index];
+          const titleElement = slide.querySelector('h3');
+          this.currentVideoTitle = titleElement ? titleElement.textContent : `Video ${index + 1}`;
+        }
+      },
+
+      updateCurrentVideoIndex() {
+        if (this.gallerySwiper && this.gallerySwiper.slides) {
+          const container = this.gallerySwiper.el;
+          const containerRect = container.getBoundingClientRect();
+          
+          this.gallerySwiper.slides.forEach((slide, index) => {
+            const slideRect = slide.getBoundingClientRect();
+            const isInView = slideRect.top <= containerRect.top + 100 && slideRect.bottom >= containerRect.bottom - 100;
+            
+            if (isInView) {
+              this.currentVideoIndex = index;
+              this.updateCurrentVideoTitle(index);
+            }
+          });
+        }
+      },
+
+      // Mute Toggle
+      toggleMute() {
+        this.isMuted = !this.isMuted;
+        
+        // Apply mute state to all videos
+        const allVideos = document.querySelectorAll('.video-gallery-item video');
+        allVideos.forEach(video => {
+          video.muted = this.isMuted;
+        });
+      },
+
+      // Menu Toggle (placeholder for future functionality)
+      toggleMenu() {
+        // For now, just show an alert. In the future, this could open a menu with options
+        alert('Menu functionality coming soon!');
       }
     }
+  }
+
+  // Video Gallery Item functionality
+  function videoGalleryItem() {
+    return {
+      videoIndex: 0,
+      isPlaying: false,
+      videoLoaded: false,
+
+      initVideoGalleryItem(index) {
+        this.videoIndex = index;
+
+        // Initialize video when component is created
+        this.$nextTick(() => {
+          const video = this.$refs.galleryVideo;
+          if (video) {
+            video.muted = true; // Start muted
+            video.playsInline = true;
+            video.loop = true;
+
+            // Add event listeners
+            video.addEventListener('loadedmetadata', () => {
+              this.videoLoaded = true;
+              console.log('Video metadata loaded for index:', index);
+            });
+
+            video.addEventListener('error', (e) => {
+              console.error('Video loading error for index:', index, e);
+            });
+          }
+        });
+      },
+
+      onVideoLoaded() {
+        console.log('Video loaded for index:', this.videoIndex);
+        this.videoLoaded = true;
+      },
+
+      playVideoWithAudio() {
+        const video = this.$refs.galleryVideo;
+        if (video && !this.isPlaying) {
+          video.muted = false; // Enable audio
+          video
+            .play()
+            .then(() => {
+              console.log('Video playing with audio for index:', this.videoIndex);
+              this.isPlaying = true;
+            })
+            .catch((error) => {
+              console.log('Video play failed for index:', this.videoIndex, error);
+              // Fallback: try with muted
+              video.muted = true;
+              video.play().then(() => {
+                console.log('Video playing muted for index:', this.videoIndex);
+                this.isPlaying = true;
+              });
+            });
+        }
+      },
+
+      handleVideoIntersect(el, index) {
+        // When video comes into view, play with audio
+        const video = el.querySelector('video');
+        console.log('Video intersecting:', video, 'isPlaying:', this.isPlaying, 'index:', index);
+        if (video && !this.isPlaying) {
+          video.muted = false; // Enable audio
+          video
+            .play()
+            .then(() => {
+              console.log('Video playing successfully for index:', index);
+              this.isPlaying = true;
+            })
+            .catch((error) => {
+              console.log('Video play failed for index:', index, error);
+              // Fallback: try with muted
+              video.muted = true;
+              video.play().then(() => {
+                console.log('Video playing muted for index:', index);
+                this.isPlaying = true;
+              });
+            });
+        }
+      },
+
+      handleVideoLeave(el, index) {
+        // When video leaves view, pause and mute
+        const video = el.querySelector('video');
+        if (video && this.isPlaying) {
+          video.pause();
+          video.muted = true;
+          this.isPlaying = false;
+          console.log('Video paused for index:', index);
+        }
+      },
+
+      pauseVideo() {
+        // Pause the current video when clicked
+        const video = this.$refs.galleryVideo;
+        if (video && this.isPlaying) {
+          video.pause();
+          this.isPlaying = false;
+          console.log('Video paused by user click for index:', this.videoIndex);
+        }
+      },
+    };
   }
 
   // Function to update arrow states for video carousel
@@ -244,6 +841,28 @@
   /* Ensure videos maintain aspect ratio */
   .video-slide-container {
     width: 100%;
+  }
+
+  /* Scroll Snap Styles */
+  .snap-y {
+    scroll-snap-type: y mandatory;
+  }
+
+  .snap-mandatory {
+    scroll-snap-type: y mandatory;
+  }
+
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  .snap-always {
+    scroll-snap-stop: always;
+  }
+
+  /* Smooth scrolling */
+  .overflow-y-auto {
+    scroll-behavior: smooth;
   }
 </style>
 

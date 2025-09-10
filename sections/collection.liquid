@@ -261,11 +261,8 @@
         {% endif %}
 
         this.filteredProducts = [...this.allProducts];
-        console.log('=== PRODUCTS LOADED ===');
-        console.log('Total products loaded:', this.allProducts.length);
-        console.log('Initial filtered products:', this.filteredProducts.length);
-        console.log('Product IDs:', this.allProducts.map(p => p.id));
-        
+
+
         // Update display after loading products
         this.updateProductDisplay();
       },
@@ -278,127 +275,78 @@
       },
 
       applyFilters() {
-        console.log('=== APPLYING FILTERS ===');
-        console.log('Current filters:', this.currentFilters);
-        console.log('Total products before filtering:', this.allProducts.length);
-        console.log('Sample product data:', this.allProducts[0]);
-        
         // Check if any filters are active
-        const hasActiveFilters = this.currentFilters.styles.length > 0 || 
-                                this.currentFilters.colors.length > 0 || 
-                                this.currentFilters.sizes.length > 0 || 
-                                this.currentFilters.collections.length > 0 || 
+        const hasActiveFilters = this.currentFilters.styles.length > 0 ||
+                                this.currentFilters.colors.length > 0 ||
+                                this.currentFilters.sizes.length > 0 ||
+                                this.currentFilters.collections.length > 0 ||
                                 this.currentFilters.showOnlyOnSale;
-        
-        console.log('Has active filters:', hasActiveFilters);
-        
+
         let filteredProducts = this.allProducts.filter(product => {
-          console.log(`\n--- Checking product: ${product.title} ---`);
-          console.log('Product data:', {
-            colors: product.colors,
-            styles: product.styles,
-            sizes: product.sizes,
-            collections: product.collections,
-            isOnSale: product.isOnSale
-          });
           // Style filter
           if (this.currentFilters.styles.length > 0) {
-            console.log('Checking style filter...');
-            console.log('Selected styles:', this.currentFilters.styles);
-            console.log('Product styles:', product.styles);
             const hasMatchingStyle = this.currentFilters.styles.some(style =>
               product.styles.some(productStyle =>
                 productStyle.toLowerCase() === style.toLowerCase()
               )
             );
-            console.log('Has matching style:', hasMatchingStyle);
             if (!hasMatchingStyle) {
-              console.log('❌ Product excluded: No matching style');
               return false;
             }
-            console.log('✅ Product passed style filter');
           }
 
           // Color filter
           if (this.currentFilters.colors.length > 0) {
-            console.log('Checking color filter...');
-            console.log('Selected colors:', this.currentFilters.colors);
-            console.log('Product colors:', product.colors);
             const hasMatchingColor = this.currentFilters.colors.some(color =>
               product.colors.some(productColor =>
                 productColor.toLowerCase() === color.toLowerCase()
               )
             );
-            console.log('Has matching color:', hasMatchingColor);
             if (!hasMatchingColor) {
-              console.log('❌ Product excluded: No matching color');
               return false;
             }
-            console.log('✅ Product passed color filter');
           }
 
           // Size filter
           if (this.currentFilters.sizes.length > 0) {
-            console.log('Checking size filter...');
-            console.log('Selected sizes:', this.currentFilters.sizes);
-            console.log('Product sizes:', product.sizes);
             const hasMatchingSize = this.currentFilters.sizes.some(size =>
               product.sizes.some(productSize =>
                 productSize.toLowerCase() === size.toLowerCase()
               )
             );
-            console.log('Has matching size:', hasMatchingSize);
             if (!hasMatchingSize) {
-              console.log('❌ Product excluded: No matching size');
               return false;
             }
-            console.log('✅ Product passed size filter');
           }
 
           // Collection filter
           if (this.currentFilters.collections.length > 0) {
-            console.log('Checking collection filter...');
-            console.log('Selected collections:', this.currentFilters.collections);
-            console.log('Product collections:', product.collections);
             const hasMatchingCollection = this.currentFilters.collections.some(collection =>
               product.collections.some(productCollection =>
                 productCollection.toLowerCase() === collection.toLowerCase()
               )
             );
-            console.log('Has matching collection:', hasMatchingCollection);
             if (!hasMatchingCollection) {
-              console.log('❌ Product excluded: No matching collection');
               return false;
             }
-            console.log('✅ Product passed collection filter');
           }
-
 
           // Sale filter
           if (this.currentFilters.showOnlyOnSale && !product.isOnSale) {
-            console.log('❌ Product excluded: Not on sale');
             return false;
           }
 
-          console.log('✅ Product passed ALL filters');
           return true;
         });
 
-        console.log(`\n=== FILTERING RESULTS ===`);
-        console.log(`Products after filtering: ${filteredProducts.length}`);
-        console.log('Filtered products:', filteredProducts.map(p => p.title));
-        
         // If no filters are active, show all products
         if (!hasActiveFilters) {
-          console.log('No active filters - showing all products');
           filteredProducts = [...this.allProducts];
         }
-        
+
         // Apply sorting
         this.filteredProducts = this.sortProducts(filteredProducts);
-        console.log(`Products after sorting: ${this.filteredProducts.length}`);
-        console.log('Final product order:', this.filteredProducts.map(p => p.title));
-        
+
         this.updateProductDisplay();
       },
 
@@ -432,23 +380,17 @@
 
       isProductVisible(productId) {
         const isVisible = this.filteredProducts.some(product => product.id === productId);
-        console.log(`Product ${productId} visibility: ${isVisible}`);
-        console.log('Filtered products IDs:', this.filteredProducts.map(p => p.id));
         return isVisible;
       },
 
 
       updateProductDisplay() {
-        console.log('=== UPDATING PRODUCT DISPLAY ===');
-        console.log('Filtered products count:', this.filteredProducts.length);
-        console.log('Filtered products:', this.filteredProducts.map(p => ({ id: p.id, title: p.title })));
-        
         // Update product count
         this.updateProductCount();
-        
+
         // Force Alpine.js to re-evaluate visibility by triggering a reactive update
         this.$nextTick(() => {
-          console.log('Alpine.js DOM updated');
+          // DOM updated
         });
       },
 

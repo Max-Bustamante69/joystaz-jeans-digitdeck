@@ -340,6 +340,7 @@
       searchHistory: [],
       isSearching: false,
       searchTimeout: null,
+      scrollY: 0, // Store scroll position for drawer
 
       init() {
         this.loadSearchHistory();
@@ -348,10 +349,12 @@
 
       openDrawer() {
         this.isOpen = true;
+        // Store current scroll position
+        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
-        document.body.style.top = `-${window.scrollY}px`;
+        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('search-drawer-open');
         // Focus after the transition to prevent abrupt scroll/focus jump
         this.$nextTick(() => {
@@ -362,13 +365,13 @@
 
       closeDrawer() {
         this.isOpen = false;
-        const scrollY = document.body.style.top;
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
         document.body.style.top = '';
         document.body.classList.remove('search-drawer-open');
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        // Restore scroll position
+        window.scrollTo(0, this.scrollY || 0);
         setTimeout(() => {
           this.searchQuery = '';
           this.searchResults = [];

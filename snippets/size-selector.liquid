@@ -24,30 +24,32 @@
   {% if product_option.name == 'Talla' %}
     <div class="space-y-2">
       {% if show_main_label %}
-          <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-            
-          <p class="body font-semibold">
-            Elije una talla
-            {% if product_number %}
-              <p
-                class="body font-semibold text-gray-400"
-                x-show="{{ selected_size_variable | remove: "'" }}.size"
-                x-text="{{ selected_size_variable | remove: "'" }}.size"
-              ></p>
-            {% else %}
-              <p
-                class="body font-semibold text-gray-400"
-                x-show="{{ selected_size_variable }}"
-                x-text="{{ selected_size_variable }}"
-              ></p>
-            {% endif %}
-          </p>
+            <p class="body font-semibold">
+              Elije una talla
+              {% if product_number %}
+                <p
+                  class="body font-semibold text-gray-400"
+                  x-show="{{ selected_size_variable | remove: "'" }}.size"
+                  x-text="{{ selected_size_variable | remove: "'" }}.size"
+                ></p>
+              {% else %}
+                <p
+                  class="body font-semibold text-gray-400"
+                  x-show="{{ selected_size_variable }}"
+                  x-text="{{ selected_size_variable }}"
+                ></p>
+              {% endif %}
+            </p>
           </div>
           {% if show_size_guide %}
-            <button class="text-sm text-gray-600 underline hover:text-gray-900 transition-colors">
-              Guía de tallas
-            </button>
+            <div class="flex items-center gap-1">
+              {% render 'size-chart', class: 'w-5 h-5' %}
+              <button class="text-sm text-gray-600 underline hover:text-gray-900 transition-colors ">
+                Guía de tallas
+              </button>
+            </div>
           {% endif %}
         </div>
       {% else %}
@@ -99,7 +101,7 @@
               "
               :disabled="!isSizeAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="relative size-12 p-2 text-lg flex items-center justify-center font-medium border-2 rounded-full transition-all duration-200 overflow-hidden"
+            class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border-2 rounded-full transition-all duration-200 overflow-hidden"
           >
             {{ product_option_value }}
             <!-- Diagonal line for unavailable sizes -->

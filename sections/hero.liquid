@@ -7,7 +7,7 @@
   - Autoplay and navigation controls
 {% endcomment %}
 
-<div class="hero relative flex items-end p-0" style="min-height: {{ section.settings.min_height }}vh;">
+<div class="hero relative flex items-end p-0" style="min-height: {{ section.settings.min_height }}dvh;">
   {% comment %} overlay gradient {% endcomment %}
 
   {% if section.blocks.size > 0 %}
@@ -581,32 +581,32 @@
     font-weight: 600;
     color: white;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
-    
+
     /* Perfect centering using flexbox */
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     /* Full coverage of button */
     width: 100%;
     height: 100%;
-    
+
     /* Absolute positioning to overlay properly */
     position: absolute;
     top: 0;
     left: 0;
-    
+
     /* High z-index to appear above progress ring */
     z-index: 4;
-    
+
     /* Remove any margins/padding */
     margin: 0;
     padding: 0;
-    
+
     /* Perfect text centering */
     line-height: 1;
     text-align: center;
-    
+
     /* Make it round to match button */
     border-radius: 50%;
   }

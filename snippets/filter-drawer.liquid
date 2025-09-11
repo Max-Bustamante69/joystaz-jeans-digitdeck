@@ -427,6 +427,7 @@
   function filterDrawer() {
     return {
       isOpen: false,
+      scrollY: 0, // Store scroll position for drawer
 
       // Filter states
       selectedStyles: [],
@@ -462,22 +463,24 @@
 
       openDrawer() {
         this.isOpen = true;
+        // Store current scroll position
+        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
-        document.body.style.top = `-${window.scrollY}px`;
+        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('filter-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
-        const scrollY = document.body.style.top;
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
         document.body.style.top = '';
         document.body.classList.remove('filter-drawer-open');
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        // Restore scroll position
+        window.scrollTo(0, this.scrollY || 0);
       },
 
       toggleStyleSection() {

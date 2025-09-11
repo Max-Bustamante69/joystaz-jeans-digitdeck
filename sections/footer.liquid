@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-4 w-full">
       <div class="flex flex-col gap-8">
         <div class="lg:w-[385px]">
-          <h3 class="body-lg font-semibold uppercase text-white/50 mb-4">NEWSLETTER</h3>
+          <p class="body-sm font-semibold uppercase text-white/50 mb-4">NEWSLETTER</p>
           <form
             action="{{ routes.search_url }}"
             method="get"
@@ -82,12 +82,12 @@
           {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
             <div class="w-fit flex flex-col gap-4" {{ block.shopify_attributes }}>
               {% if block.settings.title != blank %}
-                <p class="body-lg font-semibold uppercase text-white/50 ">{{ block.settings.title }}</p>
+                <p class="body-sm font-semibold uppercase text-white/50 ">{{ block.settings.title }}</p>
               {% endif %}
               <ul class="space-y-2">
                 {% for link in block.settings.menu.links %}
                   <li>
-                    <a href="{{ link.url }}" class="body-sm font-semibold">
+                    <a href="{{ link.url }}" class="body font-semibold">
                       <span class="hover-line">{{ link.title }}</span>
                     </a>
                   </li>
@@ -168,7 +168,7 @@
         <img
           src="{{ section.settings.logo | image_url }}"
           alt="{{ shop.name }}"
-          class="w-[35%] h-auto object-cover"
+          class="w-1/6 h-auto object-cover"
           width="{{ section.settings.logo.width }}"
           height="{{ section.settings.logo.height }}"
           loading="lazy"
@@ -178,7 +178,7 @@
         <img
           src="{{ 'logo.png' | asset_url }}"
           alt="{{ shop.name }}"
-          class="w-[35%] h-auto object-cover"
+          class="w-1/6 h-auto object-cover"
           width="{{ section.settings.logo.width }}"
           height="{{ section.settings.logo.height }}"
           loading="lazy"

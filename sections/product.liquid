@@ -14,9 +14,9 @@
   x-data="productPage({{ product.id }}, {{ section.settings.delivery_days | default: 7 }})"
 >
   <div class="w-full lg:pr-12">
-    <div class="grid grid-cols-1 lg:grid-cols-4  gap-8">
+    <div class="flex flex-col lg:flex-row  gap-8">
       <!-- Product Images Section - 2/3 width -->
-      <div class="product-images-section lg:col-span-3">
+      <div class="product-images-section lg:w-3/4">
         <!-- Desktop: Product Images Grid -->
         <div class="hidden lg:grid grid-cols-2 gap-1" x-ref="desktopGallery">
           <template x-for="(imageUrl, index) in currentImages" :key="imageUrl">
@@ -158,7 +158,7 @@
       </div>
 
       <!-- Product Information Section -->
-      <div class="product-info-section space-y-6 px-4 lg:px-0 ">
+      <div class="product-info-section space-y-6 px-4 lg:px-0 min-w-[350px] w-full lg:w-1/4">
         <!-- Product Title and Price -->
         <div class="space-y-2">
           <div class="flex items-start gap-2 justify-between">
@@ -316,86 +316,89 @@
 
         <!-- Purchase Options -->
         <!-- Single Purchase Option -->
-        <label class="flex items-center gap-3 cursor-pointer p-4 border border-gray-900  bg-white hover:bg-gray-50 transition-colors">
-          <input
-            type="radio"
-            name="purchase_option"
-            value="single"
-            x-model="purchaseOption"
-            class="w-4 h-4 "
-          >
-          <div class="flex-1">
-            <h5 class="font-semibold">
-              {{ section.settings.single_option_title | default: 'Único' }}
-            </h5>
-            <div class="leading-tight text-lg text-gray-600">
-              {{ section.settings.single_option_subtitle | default: 'Standard price' }}
-            </div>
-          </div>
-          <span class="text-xl  text-gray-900 ">${{ product.price | money_without_currency }}</span>
-        </label>
+         <div class="flex flex-col gap-2">
 
-        {% if show_duo_option %}
-          <div class="border border-gray-900 p-4  bg-white hover:bg-gray-50 transition-colors relative">
-            <!-- Duo Purchase Option -->
-            <label class="flex items-center gap-3 cursor-pointer ">
-              <input
-                type="radio"
-                name="purchase_option"
-                value="duo"
-                x-model="purchaseOption"
-                class="w-4 h-4 "
-              >
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-lg font-bold text-gray-900">
-                    {{- section.settings.duo_option_title | default: 'Duo' -}}
-                  </span>
-                  <span class="bg-green text-white text-sm   py-2 rounded-sm font-bold absolute -top-4 -right-1">
-                    {{- section.settings.best_value_text | default: 'BEST VALUE' -}}
-                  </span>
-                </div>
-                <div class="leading-tight text-lg text-gray-600">
-                  {{ section.settings.duo_option_subtitle | default: 'Compra más y ahorra' }}
-                </div>
-              </div>
-              {% render 'duo-price-display',
-                product: product,
-                discount_percentage: section.settings.duo_discount_percentage
-              %}
-            </label>
-            <!-- Duo Selection Interface -->
-            <div x-show="purchaseOption === 'duo'" x-transition class="space-y-6  divide-y divide-gray-400">
-
-              <!-- Product 1 Selection -->
-              {% render 'duo-product-selector', product: product, product_number: 1, product_title: 'Primera prenda' %}
-
-              <!-- Product 2 Selection -->
-              {% render 'duo-product-selector', product: product, product_number: 2, product_title: 'Segunda prenda' %}
-            </div>
-          </div>
-        {% endif %}
+           <label class="flex items-center  cursor-pointer p-3 gap-2 border border-gray-900  bg-white hover:bg-gray-50 transition-colors">
+             <input
+               type="radio"
+               name="purchase_option"
+               value="single"
+               x-model="purchaseOption"
+               class="w-4 h-4 "
+             >
+             <div class="flex-1">
+               <h6 class="font-semibold">
+                 {{ section.settings.single_option_title | default: 'Único' }}
+               </h6>
+               <div class="body-sm text-black/80">
+                 {{ section.settings.single_option_subtitle | default: 'Standard price' }}
+               </div>
+             </div>
+             <h6>${{ product.price | money_without_currency }}</h6>
+           </label>
+   
+           {% if show_duo_option %}
+             <div class="border border-gray-900 p-3  bg-white hover:bg-gray-50 transition-colors relative">
+               <!-- Duo Purchase Option -->
+               <label class="flex items-center gap-2 cursor-pointer ">
+                 <input
+                   type="radio"
+                   name="purchase_option"
+                   value="duo"
+                   x-model="purchaseOption"
+                   class="w-4 h-4 "
+                 >
+                 <div class="flex-1">
+                   <div class="flex items-center gap-2">
+                     <h6 class="font-semibold">
+                       {{- section.settings.duo_option_title | default: 'Duo' -}}
+                     </h6>
+                     <span class="bg-green body-sm text-white  uppercase py-1 px-2 rounded-sm font-semibold absolute -top-1 right-0">
+                       {{- section.settings.best_value_text | default: 'BEST VALUE' -}}
+                     </span>
+                   </div>
+                   <div class="body-sm text-black/80">
+                     {{ section.settings.duo_option_subtitle | default: 'Compra más y ahorra' }}
+                   </div>
+                 </div>
+                 {% render 'duo-price-display',
+                   product: product,
+                   discount_percentage: section.settings.duo_discount_percentage
+                 %}
+               </label>
+               <!-- Duo Selection Interface -->
+               <div x-show="purchaseOption === 'duo'" x-transition class="space-y-6  divide-y divide-gray-400">
+   
+                 <!-- Product 1 Selection -->
+                 {% render 'duo-product-selector', product: product, product_number: 1, product_title: 'Primera prenda' %}
+   
+                 <!-- Product 2 Selection -->
+                 {% render 'duo-product-selector', product: product, product_number: 2, product_title: 'Segunda prenda' %}
+               </div>
+             </div>
+           {% endif %}
+         </div>
 
         <div class="space-y-2">
           <!-- Availability and Delivery -->
           <div class="w-full flex justify-between items-center">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1">
               <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span class="font-medium text-gray-800">
+              <span class="body-sm font-medium text-black">
                 {{- section.settings.availability_text | default: 'Aún disponibles' -}}
               </span>
             </div>
-            <div class="flex items-center gap-2 text-gray-800 font-medium">
-              <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="flex items-center gap-1 text-gray-800 font-medium">
+              <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              <span x-text="deliveryDate"></span>
+              <span class="body-sm font-medium text-black" x-text="deliveryDate"></span>
             </div>
           </div>
           <!-- Add to Cart Button -->
           <button
             @click="addToCart"
-            class="w-full bg-primary text-white py-4 px-6  font-semibold text-lg hover:bg-primary/80 transition-colors duration-200"
+            class="w-full bg-primary text-white py-4 px-6  font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-200"
           >
             {{ section.settings.cta_button_text | default: 'Paga de forma segura' }}
           </button>

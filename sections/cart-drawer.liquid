@@ -514,6 +514,7 @@
       // Reactive wishlist state
       wishlistHandles: [],
       loading: false,
+      scrollY: 0, // Store scroll position for drawer
       freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
       
       // Cart thresholds
@@ -575,34 +576,60 @@
 
       openDrawer() {
         this.isOpen = true;
+        // Store current scroll position
+        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
         document.body.style.position = 'fixed';
         document.body.style.width = '100%';
-        document.body.style.top = `-${window.scrollY}px`;
+        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('cart-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
-        const scrollY = document.body.style.top;
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
         document.body.style.top = '';
         document.body.classList.remove('cart-drawer-open');
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        // Restore scroll position
+        window.scrollTo(0, this.scrollY || 0);
       },
 
       async loadCart() {
         try {
           const response = await fetch('/cart.js');
           const cart = await response.json();
-          this.cartItems = cart.items;
+          
+          // Clean product titles by removing numbers and special characters
+          this.cartItems = cart.items.map(item => ({
+            ...item,
+            product_title: this.cleanProductTitle(item.product_title)
+          }));
+          
           this.calculateTotals();
 
         } catch (error) {
           console.error('Error loading cart:', error);
         }
+      },
+
+      // Clean product title by removing numbers and special characters
+      cleanProductTitle(title) {
+        if (!title) return '';
+        
+        let cleaned = title;
+        
+        // Remove numbers
+        cleaned = cleaned.replace(/[0-9]/g, '');
+        
+        // Remove special characters
+        cleaned = cleaned.replace(/[!@#$%^&*()_+\-=\[\]{};:,.<>?~'"\\\/]/g, '');
+        
+        // Clean up extra spaces
+        cleaned = cleaned.replace(/\s+/g, ' ').trim();
+        
+        return cleaned;
       },
 
       calculateTotals() {

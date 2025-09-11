@@ -106,19 +106,19 @@
         "category_pwLXdi": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "women",
             "image_source": "collection_image",
             "text_position": "bottom-left",
-            "aspect_ratio": "square"
+            "aspect_ratio": "landscape"
           }
         },
         "category_eVzi4H": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "men",
             "image_source": "collection_image",
             "text_position": "bottom-left",
-            "aspect_ratio": "square"
+            "aspect_ratio": "landscape"
           }
         }
       },
@@ -127,7 +127,7 @@
         "category_eVzi4H"
       ],
       "settings": {
-        "title": "dwdawd",
+        "title": "",
         "subtitle": "",
         "mobile_layout": "column"
       }
@@ -192,19 +192,29 @@
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
+        },
+        "category_ya9Nif": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "image_source": "collection_image",
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
+          }
         }
       },
       "block_order": [
         "category_QC8xmk",
         "category_V68LeD",
         "category_pPrFBF",
-        "category_gatxCg"
+        "category_gatxCg",
+        "category_ya9Nif"
       ],
       "name": "Category Grid",
       "settings": {
         "title": "Best Sellers",
         "subtitle": "",
-        "mobile_layout": "column"
+        "mobile_layout": "slider"
       }
     },
     "quote_E6r7tE": {

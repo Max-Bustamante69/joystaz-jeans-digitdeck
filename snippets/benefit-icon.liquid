@@ -1,0 +1,22 @@
+{% comment %}
+  Benefit Icon Snippet
+
+  Renders custom uploaded icon images
+  Used in the product-benefits section
+{% endcomment %}
+
+{% if icon_image %}
+  <img
+    src="{{ icon_image | image_url: width: 24 }}"
+    alt="{{ icon_image.alt | default: 'Benefit icon' }}"
+    class="w-6 h-6 object-contain"
+    width="24"
+    height="24"
+    loading="lazy"
+  >
+{% else %}
+  <!-- Fallback icon if no image is uploaded -->
+  <svg class="w-6 h-6 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+  </svg>
+{% endif %}

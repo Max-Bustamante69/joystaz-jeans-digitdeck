@@ -1,0 +1,387 @@
+{% comment %}
+  Related Collections Carousel
+
+  Purpose:
+  - On a product page, show up to 5 carousels dynamically:
+    1) Products from the product's first non-gender, non-TODO collection
+    2) Products from the product's gender collection (Hombre/Mujer)
+    3-5) Products from other collections (excluding TODO)
+  - Exclude the current product
+  - Avoid duplicates between all carousels
+  - Filter products by gender when available
+  - Reuse the same visual language as the existing product carousel
+
+  Notes:
+  - Shopify does not support rendering a section inside another section.
+    We therefore replicate the carousel markup here and reuse the 'product-card' snippet
+    so the UI/UX stays consistent with your existing carousels.
+{% endcomment %}
+
+{% assign current_product = product %}
+{% assign all_collections = current_product.collections %}
+
+{% comment %} Determine requested number of carousels (1..5) {% endcomment %}
+{% assign carousels_count = section.settings.carousels_count | default: 2 %}
+{% if carousels_count > 5 %}{% assign carousels_count = 5 %}{% endif %}
+
+{% comment %}
+  Identify gender collection (Hombre/Mujer) and first non-gender, non-TODO category collection
+{% endcomment %}
+{% assign gender_collection = null %}
+{% assign gender_title = '' %}
+{% assign category_collection = null %}
+
+{% for c in all_collections %}
+  {% assign title_lower = c.title | downcase %}
+  {% if title_lower == 'hombre' or title_lower == 'mujer' %}
+    {% assign gender_collection = c %}
+    {% assign gender_title = c.title %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% for c in all_collections %}
+  {% assign title_lower = c.title | downcase %}
+  {% if title_lower != 'hombre' and title_lower != 'mujer' and title_lower != 'todo' %}
+    {% assign category_collection = c %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% comment %}
+  Fallbacks if missing: category_collection -> first non-TODO if exists; otherwise first.
+{% endcomment %}
+{% if category_collection == null %}
+  {% for c in all_collections %}
+    {% assign title_lower = c.title | downcase %}
+    {% if title_lower != 'todo' %}
+      {% assign category_collection = c %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% assign max_products = section.settings.max_products | default: 12 %}
+
+{% capture used_handles_csv %}{% endcapture %}
+{% capture selected_collection_ids_csv %}{% endcapture %}
+
+{% comment %} Build ordered list of up to N collections: category, gender, then others (excluding TODO) {% endcomment %}
+{% assign added_count = 0 %}
+{% if category_collection %}
+  {% capture selected_collection_ids_csv %}{{ selected_collection_ids_csv }}{{ category_collection.id }},{% endcapture %}
+  {% assign added_count = added_count | plus: 1 %}
+{% endif %}
+{% if added_count < carousels_count and gender_collection %}
+  {% unless selected_collection_ids_csv contains gender_collection.id %}
+    {% capture selected_collection_ids_csv %}{{ selected_collection_ids_csv }}{{ gender_collection.id }},{% endcapture %}
+    {% assign added_count = added_count | plus: 1 %}
+  {% endunless %}
+{% endif %}
+{% if added_count < carousels_count %}
+  {% for c in all_collections %}
+    {% assign title_lower = c.title | downcase %}
+    {% if title_lower != 'todo' %}
+      {% unless selected_collection_ids_csv contains c.id %}
+        {% capture selected_collection_ids_csv %}{{ selected_collection_ids_csv }}{{ c.id }},{% endcapture %}
+        {% assign added_count = added_count | plus: 1 %}
+      {% endunless %}
+    {% endif %}
+    {% if added_count >= carousels_count %}{% break %}{% endif %}
+  {% endfor %}
+{% endif %}
+
+<div class="py-12 lg:py-10 overflow-x-hidden">
+  <div class="w-full flex flex-col gap-12">
+    {% assign selected_ids = selected_collection_ids_csv | split: ',' %}
+    {% assign carousel_index = 0 %}
+    {% for sel_id in selected_ids %}
+      {% if sel_id != blank %}
+        {% assign source_collection = null %}
+        {% assign sel_id_num = sel_id | plus: 0 %}
+        {% for c in all_collections %}
+          {% if c.id == sel_id_num %}
+            {% assign source_collection = c %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if source_collection %}
+          {% assign products_list = source_collection.products %}
+          {% assign used_handles = used_handles_csv | split: ',' %}
+          {% assign picked_count = 0 %}
+          {% capture newly_picked_csv %}{% endcapture %}
+
+          {% for p in products_list %}
+            {% assign include_p = true %}
+            {% if p.id == current_product.id or p.available != true %}
+              {% assign include_p = false %}
+            {% endif %}
+            {% if include_p %}
+              {% if used_handles contains p.handle %}
+                {% assign include_p = false %}
+              {% endif %}
+            {% endif %}
+            {% if include_p and gender_collection %}
+              {% assign in_gender = false %}
+              {% for pc in p.collections %}
+                {% if pc.id == gender_collection.id %}
+                  {% assign in_gender = true %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+              {% if in_gender == false %}
+                {% assign include_p = false %}
+              {% endif %}
+            {% endif %}
+            {% if include_p and picked_count < max_products %}
+              {% capture newly_picked_csv %}{{ newly_picked_csv }}{{ p.handle }},{% endcapture %}
+              {% assign picked_count = picked_count | plus: 1 %}
+            {% endif %}
+          {% endfor %}
+
+          {% assign used_handles_csv = used_handles_csv | append: newly_picked_csv %}
+
+          {% if picked_count > 0 %}
+            {% assign carousel_index = carousel_index | plus: 1 %}
+            <div class="relative" id="related-carousel-{{ carousel_index }}">
+              <div class="flex justify-between items-end mx-4 lg:mx-12 mb-4">
+                <div class="flex flex-col gap-1">
+                  <h2>{{ source_collection.title }}</h2>
+                </div>
+                <div class="hidden lg:flex space-x-2">
+                  <button
+                    class="carousel-arrow carousel-prev carousel-prev-{{ carousel_index }} w-8 h-8 rounded-full bg-primary hover:bg-primary/80 transition-all duration-200 flex items-center justify-center text-white cursor-pointer"
+                    aria-label="Previous"
+                    disabled
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                  </button>
+                  <button
+                    class="carousel-arrow carousel-next carousel-next-{{ carousel_index }} w-8 h-8 rounded-full bg-primary hover:bg-primary/80 transition-all duration-200 flex items-center justify-center text-white cursor-pointer"
+                    aria-label="Next"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div
+                class="px-4 lg:px-12 swiper-related-carousel swiper-related-carousel-{{ carousel_index }}"
+                data-carousel-type="related-carousel"
+                data-carousel-index="{{ carousel_index }}"
+              >
+                <div class="swiper-wrapper">
+                  {% assign rendered_local = 0 %}
+                  {% for p in products_list %}
+                    {% assign include_p = true %}
+                    {% if p.id == current_product.id or p.available != true %}
+                      {% assign include_p = false %}
+                    {% endif %}
+                    {% if include_p and gender_collection %}
+                      {% assign in_gender = false %}
+                      {% for pc in p.collections %}
+                        {% if pc.id == gender_collection.id %}
+                          {% assign in_gender = true %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+                      {% if in_gender == false %}
+                        {% assign include_p = false %}
+                      {% endif %}
+                    {% endif %}
+                    {% if include_p and rendered_local < max_products %}
+                      {% unless used_handles contains p.handle %}
+                        <div class="swiper-slide">
+                          <div class="w-full">
+                            {% render 'product-card',
+                              product: p,
+                              show_badges: true,
+                              show_rating: true,
+                              show_color_swatches: true,
+                              show_size_selector: true
+                            %}
+                          </div>
+                        </div>
+                        {% assign rendered_local = rendered_local | plus: 1 %}
+                      {% endunless %}
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    function initSwiper(selector) {
+      const el = document.querySelector(selector);
+      if (!el || typeof Swiper === 'undefined') return;
+      if (el.swiper) return;
+
+      const swiper = new Swiper(el, {
+        slidesPerView: 1.35,
+        spaceBetween: 2,
+        centeredSlides: true,
+        centeredSlidesBounds: true,
+        peek: 10,
+        freeMode: {
+          enabled: true,
+          sticky: true,
+          momentum: true,
+          momentumRatio: 0.25,
+          momentumVelocityRatio: 0.5,
+          momentumBounce: true,
+          momentumBounceRatio: 0.3,
+        },
+        grabCursor: false,
+        navigation: {
+          nextEl: '.carousel-next',
+          prevEl: '.carousel-prev',
+        },
+        breakpoints: {
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 4,
+            centeredSlides: false,
+            freeMode: {
+              enabled: true,
+              sticky: true,
+              momentum: true,
+            },
+          },
+        },
+      });
+
+      el.swiper = swiper;
+    }
+
+    // Initialize all carousels dynamically
+    document.querySelectorAll('.swiper-related-carousel').forEach(function (el) {
+      if (!el.swiper) {
+        const carouselIndex = el.getAttribute('data-carousel-index');
+        const swiper = new Swiper(el, {
+          slidesPerView: 1.35,
+          spaceBetween: 2,
+          centeredSlides: true,
+          centeredSlidesBounds: true,
+          peek: 10,
+          freeMode: {
+            enabled: true,
+            sticky: true,
+            momentum: true,
+            momentumRatio: 0.25,
+            momentumVelocityRatio: 0.5,
+            momentumBounce: true,
+            momentumBounceRatio: 0.3,
+          },
+          grabCursor: false,
+          navigation: {
+            nextEl: `.carousel-next-${carouselIndex}`,
+            prevEl: `.carousel-prev-${carouselIndex}`,
+          },
+          breakpoints: {
+            1024: {
+              slidesPerView: 4,
+              spaceBetween: 4,
+              centeredSlides: false,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+                momentum: true,
+              },
+            },
+          },
+          on: {
+            init: function () {
+              updateRelatedCarouselArrowStates(this, carouselIndex);
+            },
+            slideChange: function () {
+              updateRelatedCarouselArrowStates(this, carouselIndex);
+            },
+            reachBeginning: function () {
+              updateRelatedCarouselArrowStates(this, carouselIndex);
+            },
+            reachEnd: function () {
+              updateRelatedCarouselArrowStates(this, carouselIndex);
+            },
+          },
+        });
+        el.swiper = swiper;
+      }
+    });
+
+    // Function to update arrow states for related carousels
+    function updateRelatedCarouselArrowStates(swiper, carouselIndex) {
+      const prevArrow = document.querySelector(`.carousel-prev-${carouselIndex}`);
+      const nextArrow = document.querySelector(`.carousel-next-${carouselIndex}`);
+
+      if (prevArrow) {
+        if (swiper.isBeginning) {
+          prevArrow.style.backgroundColor = '#e7e7e7';
+          prevArrow.style.color = 'black';
+          prevArrow.style.cursor = 'not-allowed';
+          prevArrow.disabled = true;
+        } else {
+          prevArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          prevArrow.style.color = 'white';
+          prevArrow.style.cursor = 'pointer';
+          prevArrow.disabled = false;
+        }
+      }
+
+      if (nextArrow) {
+        if (swiper.isEnd) {
+          nextArrow.style.backgroundColor = '#e7e7e7';
+          nextArrow.style.color = 'black';
+          nextArrow.style.cursor = 'not-allowed';
+          nextArrow.disabled = true;
+        } else {
+          nextArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          nextArrow.style.color = 'white';
+          nextArrow.style.cursor = 'pointer';
+          nextArrow.disabled = false;
+        }
+      }
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Related Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "carousels_count",
+      "label": "Number of carousels",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Maximum Products per Carousel",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

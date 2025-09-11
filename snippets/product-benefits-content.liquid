@@ -1,0 +1,53 @@
+{% comment %}
+  Product Benefits Content Snippet
+
+  Displays the section title, subtitle, and benefit blocks
+  Used in the product-benefits section
+{% endcomment %}
+
+<div class="product-benefits-content">
+  {% comment %} Section Header {% endcomment %}
+  {% if title != blank or subtitle != blank %}
+    <div class="mb-8">
+      {% if subtitle != blank %}
+        <p class="text-sm text-gray-500 uppercase tracking-wide mb-2">{{ subtitle }}</p>
+      {% endif %}
+      {% if title != blank %}
+        <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 leading-tight">{{ title }}</h2>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% comment %} Benefit Blocks {% endcomment %}
+  {% if benefit_blocks.size > 0 %}
+    <div class="space-y-6">
+      {% for block in benefit_blocks %}
+        {% if block.type == 'benefit_item' %}
+          <div
+            class="benefit-item border-b border-gray-200 pb-6 last:border-b-0 last:pb-0"
+            {{ block.shopify_attributes }}
+          >
+            <div class="flex items-start gap-4">
+              {% comment %} Icon {% endcomment %}
+              <div class="flex-shrink-0 w-6 h-6 mt-1">
+                {% render 'benefit-icon', icon_image: block.settings.icon %}
+              </div>
+
+              {% comment %} Content {% endcomment %}
+              <div class="flex-1">
+                {% if block.settings.title != blank %}
+                  <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ block.settings.title }}</h3>
+                {% endif %}
+                {% if block.settings.description != blank %}
+                  <div class="text-gray-600 leading-relaxed">
+                    {{ block.settings.description }}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

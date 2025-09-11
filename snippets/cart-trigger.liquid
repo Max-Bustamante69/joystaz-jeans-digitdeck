@@ -9,7 +9,7 @@
 <button
   @click="$dispatch('cart:open')"
   class="relative flex items-center justify-center transition-colors duration-200"
-  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
+  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled ) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
   x-data="
     {
       cartCount: 0,

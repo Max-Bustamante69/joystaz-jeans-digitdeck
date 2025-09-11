@@ -55,8 +55,10 @@
 
 {%- assign star_size = size | default: 'sm' -%}
 {%- assign star_color = color | default: 'text-[#f3a000]' -%}
-{%- assign show_count_flag = true -%}
-{%- assign show_review_count_flag = true -%}
+{%- assign show_count_flag = show_count_flag | default: false -%}
+{%- assign show_review_count_flag = show_review_count | default: false -%}
+{%- assign show_rating_value_flag = show_rating_value | default: false -%}
+
 
 {%- comment -%}
   Render the star-rating here so callers don't rely on snippet variables
@@ -68,6 +70,7 @@
     color: star_color,
     show_count: show_count_flag,
     show_review_count: show_review_count_flag,
+    show_rating_value: show_rating_value_flag,
     review_count: review_count
   %}
 {% else %}
@@ -77,6 +80,7 @@
     color: star_color,
     show_count: show_count_flag,
     show_review_count: show_review_count_flag,
+    show_rating_value: show_rating_value_flag,
     review_count: 0
   %}
 {% endif %}

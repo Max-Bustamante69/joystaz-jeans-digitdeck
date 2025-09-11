@@ -45,7 +45,7 @@
           </div>
           {% if show_size_guide %}
             <div class="flex items-center gap-1">
-              {% render 'size-chart', class: 'w-5 h-5' %}
+              {% render 'size-chart', class: 'w-4 h-4' %}
               <button class="text-sm text-gray-600 underline hover:text-gray-900 transition-colors ">
                 Guía de tallas
               </button>
@@ -95,13 +95,13 @@
               @click="isSizeAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', findVariantIdForSize('{{ product_option_value }}')) : null"
               :class="
                 [
-                  {{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400',
+                  {{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-black/10 text-black hover:border-primary',
                   isSizeAvailable('{{ product_option_value }}') ? '' : 'opacity-40 cursor-not-allowed text-gray-800'
                 ]
               "
               :disabled="!isSizeAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border-2 rounded-full transition-all duration-200 overflow-hidden"
+            class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border rounded-full  transition-all  duration-300 overflow-hidden"
           >
             {{ product_option_value }}
             <!-- Diagonal line for unavailable sizes -->

@@ -25,7 +25,7 @@
   {% when 'sm' %}
     {% assign star_size = 'w-3 h-3' %}
   {% when 'md' %}
-    {% assign star_size = 'w-4 h-4' %}
+    {% assign star_size = 'w-3.5 h-3.5' %}
   {% when 'lg' %}
     {% assign star_size = 'w-5 h-5' %}
   {% when 'xl' %}
@@ -74,8 +74,14 @@
 
 {% if show_count %}
   <div class="body-sm flex items-center gap-1">
+    {% if show_rating_value %}
+      <span class="body-sm">( {{ rating | default: 0 }} )</span>
+    {% endif %}
     {% if show_review_count %}
-      <span class="body-sm">( {{ review_count | default: 0 }} )</span>
+      <span class="body-sm">
+        {{- review_count | default: 0 }}
+        {% if rating == 1 %}Reseña{% else %}Reseñas{% endif -%}
+      </span>
     {% endif %}
   </div>
 {% endif %}

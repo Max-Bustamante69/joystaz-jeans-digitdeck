@@ -20,9 +20,7 @@
           }
         }
       },
-      "block_order": [
-        "product_gallery_JmAGCm"
-      ],
+      "block_order": ["product_gallery_JmAGCm"],
       "settings": {
         "delivery_days": 7,
         "availability_text": "Aún disponibles",
@@ -32,9 +30,7 @@
         "duo_option_subtitle": "Compra más y ahorra",
         "best_value_text": "BEST VALUE",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": [
-          "bermuda-cargo-764018"
-        ],
+        "duo_eligible_products": ["bermuda-cargo-764018"],
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío gratis En ordenes +500.000",
         "free_returns_text": "Devoluciones gratis y intercambiables",
@@ -44,6 +40,46 @@
         "show_slide_counter": true,
         "show_mobile_navigation": true
       }
+    },
+    "related_collections_carousel_1": {
+      "type": "related-collections-carousel",
+      "settings": {
+        "max_products": 12
+      }
+    },
+    "product_benefits_xxxxxx": {
+      "type": "product-benefits",
+      "settings": {
+        "title": "Adios A La Incomodidad",
+        "subtitle": "WDWDA"
+      },
+      "blocks": {
+        "benefit_1": {
+          "type": "benefit_item",
+          "settings": {
+            "icon": "truck",
+            "title": "El Doble De Suavidad Que El Algodón",
+            "description": "<p>Your refuge for skin wellbeing—hydrating, enhancing, and protecting every day.</p>"
+          }
+        },
+        "benefit_2": {
+          "type": "benefit_item",
+          "settings": {
+            "icon": "heart",
+            "title": "Comfortable All Day",
+            "description": "<p>Experience unmatched comfort that lasts throughout your entire day.</p>"
+          }
+        },
+        "benefit_3": {
+          "type": "benefit_item",
+          "settings": {
+            "icon": "shield",
+            "title": "Premium Quality",
+            "description": "<p>Made with the finest materials and attention to detail.</p>"
+          }
+        }
+      },
+      "block_order": ["benefit_1", "benefit_2", "benefit_3"]
     },
     "product_carousel_pRd38z": {
       "type": "product-carousel",
@@ -70,6 +106,8 @@
   },
   "order": [
     "main",
+    "product_benefits_xxxxxx",
+    "related_collections_carousel_1",
     "product_carousel_pRd38z"
   ]
 }

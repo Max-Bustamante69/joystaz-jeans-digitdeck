@@ -14,7 +14,7 @@
 {% endif %}
 
 <header
-  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'bg-white ' : 'bg-transparent'"
+  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   x-data="
     {
@@ -26,7 +26,8 @@
       forceSolid: false,
       solidOnDesktop: false,
       solidOnMobile: false,
-      isHovered: false,
+      scrollY: 0,
+      isMenuHovered: false,
       init() {
         this.handleScroll();
         window.addEventListener('scroll', this.handleScroll.bind(this));
@@ -54,27 +55,25 @@
       toggleMobileMenu() {
         this.mobileMenuOpen = !this.mobileMenuOpen;
         if (this.mobileMenuOpen) {
+          this.scrollY = window.scrollY;
           document.body.style.overflow = 'hidden';
           document.body.style.position = 'fixed';
           document.body.style.width = '100%';
-          document.body.style.top = `-${window.scrollY}px`;
+          document.body.style.top = `-${this.scrollY}px`;
         } else {
-          const scrollY = document.body.style.top;
           document.body.style.overflow = '';
           document.body.style.position = '';
           document.body.style.width = '';
           document.body.style.top = '';
-          window.scrollTo(0, parseInt(scrollY || '0') * -1);
+          window.scrollTo(0, this.scrollY || 0);
         }
       }
     }
   "
-  @mouseenter="isHovered = true"
-  @mouseleave="isHovered = false"
 >
   <nav
     class="grid grid-cols-3 h-15 px-4  lg:pl-9 lg:pr-12   bg-transparent w-full relative"
-    :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'text-black' : 'text-white'"
+    :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
     <div class="header__menu hidden lg:flex items-center justify-center lg:justify-start ">
@@ -83,18 +82,17 @@
         {% assign collection = collections[collection_handle] %}
         <div
           class="h-full flex items-center"
-          @mouseenter="showMegaMenu('{{ collection_handle }}')"
-          @mouseleave="hideMegaMenu()"
+          @mouseenter="isMenuHovered = true; showMegaMenu('{{ collection_handle }}')"
+          @mouseleave="isMenuHovered = false; hideMegaMenu()"
         >
           <a
             href="{{ link.url }}"
             class="font-semibold  duration-200 h-full flex items-center px-3"
-            :class="(isScrolled || isHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
-            :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
+            :class="(isScrolled || isMenuHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
+            :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isMenuHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
             <span class="hover-line">
-
-            {{ link.title }}
+              {{ link.title }}
             </span>
           </a>
 
@@ -151,9 +149,8 @@
                                   data-anim
                                   style="--anim-order: {{ order_counter }};"
                                 >
-                                <span class="hover-line"> 
-
-                                  {{ tertiary_link.title }}
+                                  <span class="hover-line">
+                                    {{ tertiary_link.title }}
                                   </span>
                                 </a>
                               {% endfor %}
@@ -228,7 +225,7 @@
       <button
         @click="toggleMobileMenu()"
         class=" duration-200"
-        :class="(isScrolled || isHovered) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
+        :class="isScrolled ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
         {% render 'menu-icon' %}
@@ -243,7 +240,7 @@
               height="{{ section.settings.logo.height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
               class=""
-              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               loading="eager"
             >
           {% else %}
@@ -251,7 +248,7 @@
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
               class=" h-12"
-              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               width="60"
               height="40"
             >
@@ -270,7 +267,7 @@
             height="{{ section.settings.logo.height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
             class=""
-            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
         {% else %}
@@ -278,7 +275,7 @@
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
             class=" h-12"
-            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isHovered) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
           >
@@ -635,7 +632,7 @@
     };
   }
 
-// Cart functionality
+  // Cart functionality
   async function updateCartQuantity(itemKey, newQuantity) {
     if (newQuantity < 1) {
       await removeCartItem(itemKey);

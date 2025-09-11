@@ -1,0 +1,91 @@
+{% comment %}
+  Product Benefits Media Snippet
+
+  Displays the first video from the product, or falls back to the first image
+  Used in the product-benefits section
+{% endcomment %}
+
+{% assign media_to_show = null %}
+{% assign media_type = 'image' %}
+
+{% comment %} First, try to find a video {% endcomment %}
+{% for media in product.media %}
+  {% if media.media_type == 'video' %}
+    {% assign media_to_show = media %}
+    {% assign media_type = 'video' %}
+    {% break %}
+  {% endif %}
+{% endfor %}
+
+{% comment %} If no video found, use the first image {% endcomment %}
+{% if media_to_show == null %}
+  {% for media in product.media %}
+    {% if media.media_type == 'image' %}
+      {% assign media_to_show = media %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} If still no media, use the product's featured image {% endcomment %}
+{% if media_to_show == null and product.featured_image %}
+  {% assign media_to_show = product.featured_image %}
+{% endif %}
+
+<div class="product-benefits-media w-full">
+  {% if media_to_show %}
+    {% if media_type == 'video' %}
+      <!-- Video Display -->
+      <div class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
+        <video
+          class="w-full h-full object-cover"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          controls
+        >
+          {% if media_to_show.sources %}
+            {% for source in media_to_show.sources %}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {% endfor %}
+          {% else %}
+            <source src="{{ media_to_show | file_url }}" type="video/mp4">
+          {% endif %}
+          Your browser does not support the video tag.
+        </video>
+
+        <!-- Video Play Overlay -->
+        <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <div class="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-8 h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <!-- Image Display -->
+      <div class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
+        <img
+          src="{{ media_to_show | image_url: width: 800 }}"
+          alt="{{ product.title }} - {{ media_to_show.alt | default: 'Product image' }}"
+          class="w-full h-full object-cover"
+          width="800"
+          height="600"
+          loading="lazy"
+        >
+      </div>
+    {% endif %}
+  {% else %}
+    <!-- Fallback Placeholder -->
+    <div class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center">
+      <div class="text-center text-gray-500">
+        <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="text-sm">No media available</p>
+      </div>
+    </div>
+  {% endif %}
+</div>

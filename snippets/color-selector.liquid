@@ -26,24 +26,23 @@
       {% if show_main_label %}
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
-
             <p class="body font-semibold">
               Elije un color
               {% if product_number %}
                 <p
-                class="body font-semibold text-gray-400"
-                x-show="{{ selected_color_variable | remove: "'" }}.color"
-                x-text="{{ selected_color_variable | remove: "'" }}.color"
+                  class="body font-semibold text-gray-400"
+                  x-show="{{ selected_color_variable | remove: "'" }}.color"
+                  x-text="{{ selected_color_variable | remove: "'" }}.color"
                 ></p>
-                {% else %}
+              {% else %}
                 <p
-                class="body font-semibold text-gray-400"
-                x-show="{{ selected_color_variable }}"
-                x-text="{{ selected_color_variable }}"
+                  class="body font-semibold text-gray-400"
+                  x-show="{{ selected_color_variable }}"
+                  x-text="{{ selected_color_variable }}"
                 ></p>
               {% endif %}
-              </p>
-              </div>
+            </p>
+          </div>
           {% if show_wishlist %}
             <button
               @click="toggleWishlist"
@@ -110,13 +109,15 @@
               "
               :disabled="!isColorAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="relative w-8 h-8 border-2 transition-all duration-200"
-            {% if product_option_value.swatch.color %}
-              style="background-color: {{ product_option_value.swatch.color }};"
+            class="relative border-2 transition-all duration-200"
+            {% if color_variant and color_variant.featured_image %}
+              style="width: 40px; height: 40px; background-image: url({{ color_variant.featured_image | image_url: width: 200 }}); background-size: cover; background-position: center;"
             {% elsif product_option_value.swatch.image %}
-              style="background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center;"
+              style="width: 40px; height: 40px; background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center;"
+            {% elsif product_option_value.swatch.color %}
+              style="width: 32px; height: 32px; background-color: {{ product_option_value.swatch.color }};"
             {% else %}
-              style="background-color: #f3f4f6;"
+              style="width: 32px; height: 32px; background-color: #f3f4f6;"
             {% endif %}
             title="{{ product_option_value }}"
           >

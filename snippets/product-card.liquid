@@ -26,7 +26,7 @@
   {% endif %}
 >
   <!-- Product Image Container -->
-  <div class="relative  aspect-[3/4.5] w-full  max-w-full">
+  <div class="relative  aspect-[3/4.5] w-full overflow-hidden  max-w-full">
     <!-- Unified Product Image Carousel (handles 1, 2, or many images) -->
     <div class="h-full" x-show="currentImages && currentImages.length >= 1" x-cloak>
       <div
@@ -142,14 +142,14 @@
       <!-- Wishlist Heart Button -->
       <button
         class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70  "
-        :class="isInWishlist ? 'text-red-700 fill-red-800 ' : 'fill-transparent '"
+        :class="isInWishlist ? 'text-red-800 fill-red-800  ' : 'fill-transparent '"
         @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
         aria-pressed="isInWishlist"
         aria-label="Toggle wishlist"
         title="Añadir a la lista de deseos"
         type="button"
       >
-        {% render 'heart-icon', class: 'w-5 h-5 text-black' %}
+        {% render 'heart-icon', class: 'w-5 h-5' %}
       </button>
     {% endif %}
 
@@ -186,11 +186,11 @@
       <div
         x-show="showSizeSelector && isDesktop"
         x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 transform translate-y-4"
-        x-transition:enter-end="opacity-100 transform translate-y-0"
+        x-transition:enter-start="opacity-0 transform"
+        x-transition:enter-end="opacity-100 transform"
         x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100 transform translate-y-0"
-        x-transition:leave-end="opacity-0 transform translate-y-4"
+        x-transition:leave-start="opacity-100 transform"
+        x-transition:leave-end="opacity-0 transform"
         @click.outside="isDesktop ? (showSizeSelector = false) : null"
         class="size-selector-hover absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border border-gray-200 hidden lg:block"
       >
@@ -408,7 +408,7 @@
         {% endfor %}
         <div class="flex items-center gap-2">
           {% if show_rating %}
-            {% render 'product-rating', product: product, size: 'sm', color: 'text-[#f3a000]' %}
+            {% render 'product-rating', product: product, size: 'md', color: 'text-[#f3a000]', show_review_count: false %}
           {% else %}
             <!-- Empty div for spacing when no rating -->
           {% endif %}

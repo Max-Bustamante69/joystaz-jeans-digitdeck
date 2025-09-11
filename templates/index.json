@@ -258,7 +258,7 @@
             "icon_type": "svg",
             "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M184,80h42.58A8,8,0,0,1,234,85l14,35\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><line x1=\"24\" y1=\"144\" x2=\"184\" y2=\"144\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><circle cx=\"192\" cy=\"192\" r=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><circle cx=\"80\" cy=\"192\" r=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><line x1=\"168\" y1=\"192\" x2=\"104\" y2=\"192\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><path d=\"M184,120h64v64a8,8,0,0,1-8,8H216\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M56,192H32a8,8,0,0,1-8-8V72a8,8,0,0,1,8-8H184V169.37\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path></svg>",
             "title": "Envío gratis",
-            "description": "A todo Colombia En compras +$100.000"
+            "description": "A todo Colombia En compras +$100.000 y a todo el mundo por Ruufe"
           }
         },
         "badge_nymaqi": {
@@ -266,7 +266,7 @@
           "settings": {
             "icon_type": "svg",
             "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Customer service",
+            "title": "Compra Segura",
             "description": "Our customer service team is available Monday till Friday from 9am - 6pm"
           }
         },
@@ -275,17 +275,17 @@
           "settings": {
             "icon_type": "svg",
             "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Free shipping",
-            "description": "We offer free worldwide shipping on orders over $100"
+            "title": "Garantía de cambios",
+            "description": "Tienes 5 días para solicitar tu cambio sin complicaciones, te acompañamos por WhatsApp."
           }
         },
         "badge_4F9eFf": {
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Secure payments",
-            "description": "We offer secure payments using Creditcard, PayPal, ShopPay and Amazon Pay."
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M224,200v8a32,32,0,0,1-32,32H136\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M224,128H192a16,16,0,0,0-16,16v40a16,16,0,0,0,16,16h32V128a96,96,0,1,0-192,0v56a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16V144a16,16,0,0,0-16-16H32\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path></svg>",
+            "title": "Soporte en linea 24/7",
+            "description": "Escríbenos y recibe asesoría directa antes, durante y después de tu compra."
           }
         }
       },
@@ -299,9 +299,9 @@
       "settings": {
         "show_borders": true,
         "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "text_color": "#374151",
-        "icon_color": "#1f2937",
+        "title_color": "#000000",
+        "text_color": "#6b6b6b",
+        "icon_color": "#000000",
         "border_color": "#e5e7eb"
       }
     },

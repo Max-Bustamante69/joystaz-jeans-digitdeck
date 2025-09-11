@@ -141,17 +141,17 @@
         "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Self-Care Starts With Your Underwear",
-        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "title": "El jean que empieza contigo",
+        "text": "Creemos que tus jeans no son solo una prenda: son la base de tu seguridad, estilo y autenticidad. Creamos piezas que realzan tu figura, se mueven contigo y te hacen sentir poderosa en cada momento del día. Porque comodidad, diseño y confianza no deberían ser una elección, sino un estándar.",
         "subtitle": "Nuestra promesa",
-        "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
+        "rich_text": "<ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "button_style": "background",
         "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "subtitle_color": "#1f2937",
-        "text_color": "#374151"
+        "title_color": "#000000",
+        "subtitle_color": "#000000",
+        "text_color": "#000000"
       }
     },
     "category_grid_tiJRNW": {

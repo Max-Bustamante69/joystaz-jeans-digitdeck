@@ -322,9 +322,9 @@
         "button_link": "/collections/all",
         "button_style": "border",
         "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "subtitle_color": "#1f2937",
-        "text_color": "#374151"
+        "title_color": "#000000",
+        "subtitle_color": "#000000",
+        "text_color": "#525252"
       }
     },
     "product_carousel_VNfNQL": {

@@ -160,7 +160,7 @@
         "category_QC8xmk": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "shorts-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -169,7 +169,7 @@
         "category_V68LeD": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "jeans-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -178,7 +178,7 @@
         "category_pPrFBF": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "faldas-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -187,7 +187,7 @@
         "category_gatxCg": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "camisetas-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"

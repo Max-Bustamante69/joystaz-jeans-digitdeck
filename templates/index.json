@@ -192,29 +192,19 @@
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
-        },
-        "category_ya9Nif": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "image_source": "collection_image",
-            "text_position": "bottom-left",
-            "aspect_ratio": "portrait"
-          }
         }
       },
       "block_order": [
         "category_QC8xmk",
         "category_V68LeD",
         "category_pPrFBF",
-        "category_gatxCg",
-        "category_ya9Nif"
+        "category_gatxCg"
       ],
       "name": "Category Grid",
       "settings": {
         "title": "Best Sellers",
         "subtitle": "",
-        "mobile_layout": "slider"
+        "mobile_layout": "column"
       }
     },
     "quote_E6r7tE": {

@@ -211,12 +211,12 @@
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <em><strong>but so everyone can smell unforgettable. quote</strong></em>\"</p>",
+        "quote_text": "<p>\"Cada jean JoyStaz nace para que vivas tu estilo con confianza, comodidad y actitud. <em><strong>Porque cuando te sientes auténtico, todo lo demás fluye</strong></em>\"<br/><br/></p>",
         "background_color": "#ffffff",
         "text_color": "#6b7280",
         "emphasis_color": "#1f2937",
         "border_color": "#3b82f6",
-        "text_size": 1.5,
+        "text_size": 2,
         "padding": 3
       }
     },
@@ -230,8 +230,8 @@
             "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
             "title": "Encuentra tu fit perfecto",
             "description": "Descubre nuestros jeans skinny, cargo, rectos y palazzo. Diseñados para que te sientas segura, cómoda y siempre a la moda.",
-            "button_text": "shop now",
-            "button_link": "shopify://collections/jean-hombre",
+            "button_text": "Ver Jeans",
+            "button_link": "shopify://collections/jeans-mujer",
             "button_style": "text-xl px-6 py-3 border border-white"
           }
         }

@@ -32,11 +32,15 @@
         "duo_option_subtitle": "Compra más y ahorra",
         "best_value_text": "BEST VALUE",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": [],
+        "duo_eligible_products": [
+          "bermuda-cargo-764018"
+        ],
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío gratis En ordenes +500.000",
         "free_returns_text": "Devoluciones gratis y intercambiables",
         "cta_button_text": "Paga de forma segura",
+        "show_reviews_average": true,
+        "show_reviews_count": true,
         "show_slide_counter": true,
         "show_mobile_navigation": true
       }
@@ -46,7 +50,7 @@
       "name": "Product Carousel",
       "settings": {
         "title": "Best Sellers",
-        "subtitle": "Best Sellers",
+        "rich_text": "",
         "show_view_all": true,
         "view_all_text": "Ver todos",
         "view_all_link": "",

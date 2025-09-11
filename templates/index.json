@@ -228,8 +228,8 @@
           "settings": {
             "media_type": "image",
             "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "title": "FLAWLESS FUNDATION",
-            "description": "Transform your business etc",
+            "title": "Encuentra tu fit perfecto",
+            "description": "Descubre nuestros jeans skinny, cargo, rectos y palazzo. Diseñados para que te sientas segura, cómoda y siempre a la moda.",
             "button_text": "shop now",
             "button_link": "shopify://collections/jean-hombre",
             "button_style": "text-xl px-6 py-3 border border-white"
@@ -265,16 +265,16 @@
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Compra Segura",
-            "description": "Our customer service team is available Monday till Friday from 9am - 6pm"
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><rect x=\"40\" y=\"88\" width=\"176\" height=\"128\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></rect><path d=\"M88,88V56a40,40,0,0,1,80,0V88\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><circle cx=\"128\" cy=\"140\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><line x1=\"128\" y1=\"160\" x2=\"128\" y2=\"184\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line></svg>",
+            "title": "Compra fácil y segura",
+            "description": "Compra tranquilamente virtual y si estás en Medellín o el Área Metropolitana, también puedes pagar al recibir tu pedido"
           }
         },
         "badge_LeB4EC": {
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M48,208H16a8,8,0,0,1-8-8V160a8,8,0,0,1,8-8H48\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M112,160h32l67-15.41a16.61,16.61,0,0,1,21,16h0a16.59,16.59,0,0,1-9.18,14.85L184,192l-64,16H48V152l25-25a24,24,0,0,1,17-7H140a20,20,0,0,1,20,20h0a20,20,0,0,1-20,20Z\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><line x1=\"192\" y1=\"24\" x2=\"192\" y2=\"104\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><polyline points=\"160 56 192 24 224 56\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></polyline></svg>",
             "title": "Garantía de cambios",
             "description": "Tienes 5 días para solicitar tu cambio sin complicaciones, te acompañamos por WhatsApp."
           }

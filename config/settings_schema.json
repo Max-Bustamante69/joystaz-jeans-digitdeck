@@ -88,52 +88,6 @@
     ]
   },
   {
-    "name": "Cart Settings",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Free Shipping"
-      },
-      {
-        "type": "range",
-        "id": "free_shipping_threshold",
-        "min": 0,
-        "max": 1000,
-        "step": 10,
-        "unit": "USD",
-        "label": "Free Shipping Threshold",
-        "info": "Amount in dollars (e.g., 150 = $150.00). Set to 0 to disable free shipping progress bar.",
-        "default": 150
-      },
-      {
-        "type": "header",
-        "content": "Cart Product Carousel"
-      },
-      {
-        "type": "checkbox",
-        "id": "cart_show_product_carousel",
-        "label": "Show Product Carousel in Cart",
-        "default": true
-      },
-      {
-        "type": "range",
-        "id": "cart_carousel_max_products",
-        "min": 4,
-        "max": 20,
-        "step": 1,
-        "label": "Maximum Products in Cart Carousel",
-        "default": 8
-      },
-      {
-        "type": "collection_list",
-        "id": "cart_fallback_collections",
-        "label": "Fallback Collections for Empty Cart",
-        "info": "Collections to show in cart carousel when cart is empty",
-        "limit": 5
-      }
-    ]
-  },
-  {
     "name": "Search Drawer",
     "settings": [
       {

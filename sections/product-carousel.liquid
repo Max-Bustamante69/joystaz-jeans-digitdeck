@@ -115,8 +115,10 @@
       const enableDesktopCarousel = totalProducts > 4;
 
       const swiper = new Swiper(carouselElement, {
-        slidesPerView: 1,
+        slidesPerView: 1.35,
         spaceBetween: 2,
+        centeredSlides: true,
+        centeredSlidesBounds: true,
         peek: 10,
         freeMode: {
           enabled: true,
@@ -135,6 +137,8 @@
         breakpoints: {
           1024: {
             slidesPerView: 4,
+            spaceBetween: 4,
+            centeredSlides:false,
             freeMode:  {
               enabled: true,
               sticky: true,

@@ -141,7 +141,7 @@
     {% if wishlist_mode != true and show_wishlist != false %}
       <!-- Wishlist Heart Button -->
       <button
-        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70 hover:text-red-700 "
+        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70  "
         :class="isInWishlist ? 'text-red-700 fill-red-800 ' : 'fill-transparent '"
         @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
         aria-pressed="isInWishlist"
@@ -149,7 +149,7 @@
         title="Añadir a la lista de deseos"
         type="button"
       >
-        {% render 'heart-icon', class: 'w-6 h-6 ' %}
+        {% render 'heart-icon', class: 'w-5 h-5 text-black' %}
       </button>
     {% endif %}
 
@@ -920,18 +920,7 @@
         }
       },
 
-      showSuccessMessage() {
-        // Create a temporary success message
-        const message = document.createElement('div');
-        message.className = 'fixed top-4 right-4 bg-green-500 text-white  py-2 rounded-lg z-50';
-        message.textContent = 'Added to cart!';
-        document.body.appendChild(message);
 
-        // Remove after 2 seconds
-        setTimeout(() => {
-          document.body.removeChild(message);
-        }, 2000);
-      },
 
       findVariantByColor(color) {
         // Get all variants from the product with their options

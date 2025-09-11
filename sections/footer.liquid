@@ -1,25 +1,28 @@
-<footer class="w-full bg-[#262324] text-white" x-data="{ openItem: null }">
-  <div class="px-4 lg:px-12 py-10">
-    <div class="flex w-full flex-col lg:justify-between lg:flex-row ">
-      <div class="flex flex-col gap-4">
-        <!-- Newsletter Section -->
-        <div class="mb-8">
+<footer class="w-full px-4 lg:px-12 pt-10 pb-5  bg-[#262324] text-white" x-data="{ openItem: null }">
+  <div class="flex w-full flex-col lg:justify-between lg:flex-row ">
+    <div class="flex flex-col gap-4 w-full">
+      <div class="flex flex-col gap-8">
+        <div class="lg:w-[385px]">
           <h3 class="body-lg font-semibold uppercase text-white/50 mb-4">NEWSLETTER</h3>
-          <form action="{{ routes.search_url }}" method="get" role="search" class="gap-2 flex items-stretch">
+          <form
+            action="{{ routes.search_url }}"
+            method="get"
+            role="search"
+            class="gap-2 flex flex-row items-end"
+          >
             <input
               type="search"
               name="q"
               value="{{ search.terms | escape }}"
               placeholder="Tu correo"
-              class="w-full border-b border-gray-300 placeholder:text-white placeholder:body placeholder:font-semibold px-3 py-2 bg-transparent"
+              class="w-full border-b border-white/30 placeholder:text-white placeholder:body placeholder:font-semibold  pr-3 py-2 bg-transparent focus:outline-none transition-all duration-300 ease-in-out focus:border-white/80"
             >
             <input type="hidden" name="type" value="product">
-            <button type="submit" class="py-2 px-7 bg-white text-black body font-semibold">Enviar</button>
+            <button type="submit" class="h-9 px-6 bg-white text-black body font-semibold">Enviar</button>
           </form>
         </div>
-
         <!-- Social Media Section -->
-        <div class="mb-8">
+        <div>
           <div class="flex gap-4">
             {% for block in section.blocks %}
               {% if block.type == 'social_media' and block.settings.url != blank %}
@@ -70,19 +73,21 @@
           </div>
         </div>
       </div>
+    </div>
 
+    <div class="w-full flex flex-col justify-between">
       <!-- Navigation Links -->
-      <div class="hidden lg:grid lg:grid-cols-4 gap-8 mb-8">
+      <div class="hidden w-full justify-between lg:flex flex-wrap gap-8">
         {% for block in section.blocks %}
           {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
-            <div {{ block.shopify_attributes }}>
+            <div class="w-fit flex flex-col gap-4" {{ block.shopify_attributes }}>
               {% if block.settings.title != blank %}
-                <p class="body-lg font-semibold uppercase text-white/50 mb-3">{{ block.settings.title }}</p>
+                <p class="body-lg font-semibold uppercase text-white/50 ">{{ block.settings.title }}</p>
               {% endif %}
               <ul class="space-y-2">
                 {% for link in block.settings.menu.links %}
                   <li>
-                    <a href="{{ link.url }}" class="body font-semibold">
+                    <a href="{{ link.url }}" class="body-sm font-semibold">
                       <span class="hover-line">{{ link.title }}</span>
                     </a>
                   </li>
@@ -92,103 +97,107 @@
           {% endif %}
         {% endfor %}
       </div>
-
-      <div class="lg:hidden divide-y divide-gray-200 mt-8" x-data="{ openItem: null }">
-        {% for block in section.blocks %}
-          {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
-            <div class="py-2" {{ block.shopify_attributes }}>
-              <button
-                class="w-full flex items-center justify-between py-3"
-                @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
-                :aria-expanded="openItem === {{ forloop.index }}"
-              >
-                <span class="text-sm tracking-wide uppercase font-bold text-white/50">{{ block.settings.title }}</span>
-                <span class="text-white/50">
-                  <svg
-                    x-show="openItem !== {{ forloop.index }}"
-                    x-cloak
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"></path>
-                  </svg>
-                  <svg
-                    x-show="openItem === {{ forloop.index }}"
-                    x-cloak
-                    class="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>
-                  </svg>
-                </span>
-              </button>
-              <div
-                class="overflow-hidden"
-                x-show="openItem === {{ forloop.index }}"
-                x-transition:enter="transition ease-out duration-700"
-                x-transition:enter-start="opacity-0 max-h-0"
-                x-transition:enter-end="opacity-100 max-h-96"
-                x-transition:leave="transition ease-in-out duration-600"
-                x-transition:leave-start="opacity-100 max-h-96"
-                x-transition:leave-end="opacity-0 max-h-0"
-              >
-                <ul class="py-3 space-y-3">
-                  {% for link in block.settings.menu.links %}
-                    <li>
-                      <a
-                        href="{{ link.url }}"
-                        class="hover:underline font-bold body transition-all duration-300 ease-in-out"
-                      >
-                        {{- link.title -}}
-                      </a>
-                    </li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
     </div>
 
-    <!-- Bottom Section with Logo and Payment Icons -->
-    <div class="mt-8 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-      <!-- Logo Section -->
-      <div class="flex flex-col lg:flex-row lg:items-end gap-4">
-        <a href="{{ routes.root_url }}" class="inline-block">
-          {% if section.settings.logo != blank %}
-            <img
-              src="{{ section.settings.logo | image_url }}"
-              alt="{{ shop.name }}"
-              class="h-12 w-auto object-contain"
-              width="{{ section.settings.logo.width }}"
-              height="{{ section.settings.logo.height }}"
-              loading="lazy"
+    <div class="lg:hidden divide-y divide-gray-200 mt-8" x-data="{ openItem: null }">
+      {% for block in section.blocks %}
+        {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
+          <div class="py-2" {{ block.shopify_attributes }}>
+            <button
+              class="w-full flex items-center justify-between py-3"
+              @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
+              :aria-expanded="openItem === {{ forloop.index }}"
             >
-          {% else %}
-            <!-- Fallback to default logo from assets -->
-            <img
-              src="{{ 'logo.png' | asset_url }}"
-              alt="{{ shop.name }}"
-              class="h-12 w-auto object-contain"
-              loading="lazy"
+              <span class="text-sm tracking-wide uppercase font-bold text-white/50">{{ block.settings.title }}</span>
+              <span class="text-white/50">
+                <svg
+                  x-show="openItem !== {{ forloop.index }}"
+                  x-cloak
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"></path>
+                </svg>
+                <svg
+                  x-show="openItem === {{ forloop.index }}"
+                  x-cloak
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14"></path>
+                </svg>
+              </span>
+            </button>
+            <div
+              class="overflow-hidden"
+              x-show="openItem === {{ forloop.index }}"
+              x-transition:enter="transition ease-out duration-700"
+              x-transition:enter-start="opacity-0 max-h-0"
+              x-transition:enter-end="opacity-100 max-h-96"
+              x-transition:leave="transition ease-in-out duration-600"
+              x-transition:leave-start="opacity-100 max-h-96"
+              x-transition:leave-end="opacity-0 max-h-0"
             >
-          {% endif %}
-        </a>
+              <ul class="py-3 space-y-2">
+                {% for link in block.settings.menu.links %}
+                  <li>
+                    <a
+                      href="{{ link.url }}"
+                      class="hover:underline font-bold body transition-all duration-300 ease-in-out"
+                    >
+                      {{- link.title -}}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
 
-        <!-- Copyright Text -->
-        <div class="text-sm text-white/50">
-          &copy; {{ 'now' | date: '%Y' }}
-          {{ shop.name }}
-          {% if section.settings.credit_text != blank %}
-            <span class="mx-1">&middot;</span>{{ section.settings.credit_text }}
-          {% endif %}
-        </div>
+  <!-- Logo Section -->
+  <div class="w-full flex flex-col gap-4 lg:gap-0">
+    <a href="{{ routes.root_url }}" class="inline-block w-full">
+      {% if section.settings.logo != blank %}
+        <img
+          src="{{ section.settings.logo | image_url }}"
+          alt="{{ shop.name }}"
+          class="w-[35%] h-auto object-cover"
+          width="{{ section.settings.logo.width }}"
+          height="{{ section.settings.logo.height }}"
+          loading="lazy"
+        >
+      {% else %}
+        <!-- Fallback to default logo from assets -->
+        <img
+          src="{{ 'logo.png' | asset_url }}"
+          alt="{{ shop.name }}"
+          class="w-[35%] h-auto object-cover"
+          width="{{ section.settings.logo.width }}"
+          height="{{ section.settings.logo.height }}"
+          loading="lazy"
+        >
+      {% endif %}
+    </a>
+    <!-- Bottom Section with Logo and Payment Icons -->
+    <div class=" w-full  flex flex-col lg:flex-row lg:items-end lg:justify-end gap-6">
+      <!-- Copyright Text -->
+      <div class="text-sm lg:text-end text-white/50">
+        &copy; {{ 'now' | date: '%Y' }}
+        {{ shop.name }}
+        {% if section.settings.credit_text != blank %}
+          <span class="mx-1">&middot;</span>{{ section.settings.credit_text }}
+        {% endif %}
       </div>
+
+
+      <!-- Copyright Text -->
 
       <!-- Payment Icons -->
       {% if section.settings.show_payment_icons %}

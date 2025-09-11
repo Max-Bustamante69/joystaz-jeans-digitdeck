@@ -1,0 +1,1214 @@
+{% comment %}
+  Cart Drawer Section
+  Features:
+  - Slide-in drawer from right
+  - Cart items with quantity controls
+  - Progress bar for free shipping
+  - Secure payment button
+  - Responsive design
+  - Fully customizable via schema
+{% endcomment %}
+
+<div
+  x-cloak
+  x-data="cartDrawer()"
+  x-show="isOpen"
+  class="fixed inset-0 z-50 overflow-hidden"
+  @cart:open.window="openDrawer()"
+  @cart:updated.window="loadCart()"
+>
+  <!-- Backdrop -->
+  <div
+    x-show="isOpen"
+    x-transition:enter="transition ease-out duration-500"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-400"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="absolute inset-0 bg-black/70"
+  ></div>
+
+  <!-- Drawer -->
+  <div
+    x-show="isOpen"
+    x-transition:enter="transform transition ease-out duration-350"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform transition ease-in duration-300"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    class="absolute right-0 top-0 h-full px-4 lg:px-5 w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
+    @click.outside="closeDrawer()"
+  >
+    <!-- Header - Sticky at top -->
+    <div class="sticky top-0 z-10 bg-white flex items-center justify-between p-6 border-b border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-900">
+        {{ section.settings.cart_title | default: 'Tu Carrito' }}
+        <span class="opacity-50" x-text="cartItems.length"></span>
+      </h2>
+      <button
+        @click="closeDrawer()"
+        class="text-gray-400 hover:text-gray-600 transition-colors"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dynamic Cart Thresholds -->
+    {% assign sorted_thresholds = section.blocks | where: 'type', 'cart_threshold' | sort: 'settings.threshold_value' %}
+
+    {% if sorted_thresholds.size > 0 %}
+      <div class="py-4 border-gray-100">
+        <!-- Progress Bar with Dynamic Segments -->
+        <div class="w-full h-1.5 mb-3 flex gap-0.5">
+          {% for block in sorted_thresholds %}
+            <div
+              class="flex-1 bg-gray-200 overflow-hidden {% if forloop.first %}rounded-l-full{% endif %} {% if forloop.last %}rounded-r-full{% endif %}"
+              data-threshold
+              data-threshold-id="{{ block.id }}"
+              data-threshold-title="{{ block.settings.threshold_title }}"
+              data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
+              data-threshold-discount="{{ block.settings.discount_code }}"
+            >
+              <div
+                class="bg-[#468847] h-full transition-all duration-300"
+                :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
+              ></div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Current Threshold Status -->
+        <div class="text-center">
+          <template x-for="threshold in sortedThresholds" :key="threshold.id">
+            <div x-show="isCurrentThreshold(threshold)" class="text-sm">
+              <div class="flex items-center justify-center space-x-2 mb-1">
+                <svg class="w-4 h-4 text-[#468847]" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="font-medium text-[#468847]" x-text="threshold.title"></span>
+              </div>
+              <p class="text-gray-600" x-show="!isThresholdAchieved(threshold)">
+                {{ section.settings.progress_text | default: 'Estas a' }}
+                <span class="font-semibold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
+                {{ section.settings.goal_text | default: 'de conseguir' }}
+                <span class="font-medium" x-text="threshold.title"></span>
+              </p>
+              <p class="text-green-600 font-medium" x-show="isThresholdAchieved(threshold)">
+                {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
+                <span class="font-medium" x-text="threshold.title"></span>
+              </p>
+            </div>
+          </template>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Cart Items -->
+    <div class="flex-1 overflow-y-auto px-6 py-4" style="-webkit-overflow-scrolling: touch;">
+      <div class="flex flex-col gap-4">
+        <template x-if="cartItems.length === 0">
+          <div class="text-center py-12 px-6">
+            <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">
+              {{ section.settings.empty_cart_title | default: 'Tu carrito está vacío' }}
+            </h3>
+            <p class="text-gray-500">
+              {{ section.settings.empty_cart_text | default: 'Agrega algunos productos para comenzar' }}
+            </p>
+          </div>
+        </template>
+
+        <template x-for="item in cartItems" :key="item.key">
+          {% render 'cart-product-card' %}
+        </template>
+
+        {% if section.settings.show_product_carousel %}
+          <div>
+            <h3 class="text-lg font-semibold">
+              {{ section.settings.carousel_title | default: 'También te puede interesar' }}
+            </h3>
+
+            {% comment %} Calculate tag-based product selection logic {% endcomment %}
+            {% assign mujer_count = 0 %}
+            {% assign hombre_count = 0 %}
+            {% assign total_cart_items = 0 %}
+
+            {% comment %} Get cart items and count tags/collections {% endcomment %}
+            {% for item in cart.items %}
+              {% assign total_cart_items = total_cart_items | plus: item.quantity %}
+              {% assign item_is_mujer = false %}
+              {% assign item_is_hombre = false %}
+
+              {% comment %} Check product tags {% endcomment %}
+              {% for tag in item.product.tags %}
+                {% assign tag_lower = tag | downcase %}
+                {% if tag_lower == 'mujer' %}
+                  {% assign item_is_mujer = true %}
+                {% elsif tag_lower == 'hombre' %}
+                  {% assign item_is_hombre = true %}
+                {% endif %}
+              {% endfor %}
+
+              {% comment %} Check product collections if not found in tags {% endcomment %}
+              {% unless item_is_mujer or item_is_hombre %}
+                {% for collection in item.product.collections %}
+                  {% assign collection_handle = collection.handle | downcase %}
+                  {% if collection_handle contains 'mujer'
+                    or collection_handle contains 'women'
+                    or collection_handle contains 'female'
+                  %}
+                    {% assign item_is_mujer = true %}
+                  {% elsif collection_handle contains 'hombre'
+                    or collection_handle contains 'men'
+                    or collection_handle contains 'male'
+                  %}
+                    {% assign item_is_hombre = true %}
+                  {% endif %}
+                {% endfor %}
+              {% endunless %}
+
+              {% if item_is_mujer %}
+                {% assign mujer_count = mujer_count | plus: item.quantity %}
+              {% elsif item_is_hombre %}
+                {% assign hombre_count = hombre_count | plus: item.quantity %}
+              {% endif %}
+            {% endfor %}
+
+            {% comment %} Calculate percentages and product counts {% endcomment %}
+            {% assign max_products = section.settings.carousel_max_products | default: 8 %}
+            {% assign mujer_percentage = 0 %}
+            {% assign hombre_percentage = 0 %}
+            {% assign mujer_products_count = 0 %}
+            {% assign hombre_products_count = 0 %}
+
+            {% if total_cart_items > 0 %}
+              {% assign mujer_percentage = mujer_count | times: 100 | divided_by: total_cart_items %}
+              {% assign hombre_percentage = hombre_count | times: 100 | divided_by: total_cart_items %}
+              {% assign mujer_products_count = max_products | times: mujer_percentage | divided_by: 100 %}
+              {% assign hombre_products_count = max_products | times: hombre_percentage | divided_by: 100 %}
+            {% endif %}
+
+            {% comment %} Get products based on cart content or fallback collections {% endcomment %}
+            {% if total_cart_items > 0 and mujer_count > 0 or hombre_count > 0 %}
+              {% comment %} Find the specific hombre and mujer collections from cart items {% endcomment %}
+              {% assign mujer_collection = null %}
+              {% assign hombre_collection = null %}
+
+              {% comment %} First, find the collections from cart items {% endcomment %}
+              {% for item in cart.items %}
+                {% for collection in item.product.collections %}
+                  {% assign collection_handle = collection.handle | downcase %}
+                  {% if collection_handle == 'mujer' or collection_handle == 'women' or collection_handle == 'female' %}
+                    {% assign mujer_collection = collection %}
+                  {% elsif collection_handle == 'hombre' or collection_handle == 'men' or collection_handle == 'male' %}
+                    {% assign hombre_collection = collection %}
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
+
+              {% comment %} Get products from mujer collection - limited to calculated amount {% endcomment %}
+              {% if mujer_products_count > 0 and mujer_collection %}
+                {% assign mujer_products_filtered = '' %}
+                {% assign mujer_found_count = 0 %}
+
+                {% for product in mujer_collection.products %}
+                  {% if product.available and mujer_found_count < mujer_products_count %}
+                    {% comment %} Skip products that are already in cart {% endcomment %}
+                    {% assign product_in_cart = false %}
+                    {% for cart_item in cart.items %}
+                      {% if cart_item.product.handle == product.handle %}
+                        {% assign product_in_cart = true %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+
+                    {% unless product_in_cart %}
+                      {% assign mujer_products_filtered = mujer_products_filtered
+                        | append: product.handle
+                        | append: ','
+                      %}
+                      {% assign mujer_found_count = mujer_found_count | plus: 1 %}
+                    {% endunless %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              {% comment %} Get products from hombre collection - limited to calculated amount {% endcomment %}
+              {% if hombre_products_count > 0 and hombre_collection %}
+                {% assign hombre_products_filtered = '' %}
+                {% assign hombre_found_count = 0 %}
+
+                {% for product in hombre_collection.products %}
+                  {% if product.available and hombre_found_count < hombre_products_count %}
+                    {% comment %} Skip products that are already in cart {% endcomment %}
+                    {% assign product_in_cart = false %}
+                    {% for cart_item in cart.items %}
+                      {% if cart_item.product.handle == product.handle %}
+                        {% assign product_in_cart = true %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+
+                    {% unless product_in_cart %}
+                      {% assign hombre_products_filtered = hombre_products_filtered
+                        | append: product.handle
+                        | append: ','
+                      %}
+                      {% assign hombre_found_count = hombre_found_count | plus: 1 %}
+                    {% endunless %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% else %}
+              {% comment %} Use fallback collections when cart is empty or no gender tags {% endcomment %}
+              {% assign fallback_products = '' %}
+              {% assign fallback_collections_count = section.settings.fallback_collections.size %}
+
+              {% if fallback_collections_count > 0 %}
+                {% comment %} Calculate products per collection {% endcomment %}
+                {% assign products_per_collection = max_products | divided_by: fallback_collections_count %}
+                {% assign remaining_products = max_products | modulo: fallback_collections_count %}
+
+                {% for collection in section.settings.fallback_collections %}
+                  {% assign collection_products_added = 0 %}
+                  {% assign target_products = products_per_collection %}
+
+                  {% comment %} Add one extra product to first few collections if there's a remainder {% endcomment %}
+                  {% if forloop.index <= remaining_products %}
+                    {% assign target_products = target_products | plus: 1 %}
+                  {% endif %}
+
+                  {% for product in collection.products %}
+                    {% if product.available and collection_products_added < target_products %}
+                      {% assign fallback_products = fallback_products | append: product.handle | append: ',' %}
+                      {% assign collection_products_added = collection_products_added | plus: 1 %}
+                    {% endif %}
+                  {% endfor %}
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+
+            {% comment %} Build final product list with shuffling {% endcomment %}
+            {% assign final_products = '' %}
+            {% assign products_added = 0 %}
+
+            {% if total_cart_items > 0 and mujer_count > 0 or hombre_count > 0 %}
+              {% comment %} First, collect all products in separate arrays {% endcomment %}
+              {% assign mujer_products_array = '' %}
+              {% assign hombre_products_array = '' %}
+
+              {% comment %} Collect mujer products {% endcomment %}
+              {% if mujer_products_count > 0 and mujer_products_filtered != blank %}
+                {% assign mujer_handles = mujer_products_filtered | split: ',' %}
+                {% assign mujer_added = 0 %}
+                {% for handle in mujer_handles %}
+                  {% if handle != blank and mujer_added < mujer_products_count %}
+                    {% assign product = all_products[handle] %}
+                    {% if product and product.available %}
+                      {% assign mujer_products_array = mujer_products_array | append: product.handle | append: ',' %}
+                      {% assign mujer_added = mujer_added | plus: 1 %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              {% comment %} Collect hombre products {% endcomment %}
+              {% if hombre_products_count > 0 and hombre_products_filtered != blank %}
+                {% assign hombre_handles = hombre_products_filtered | split: ',' %}
+                {% assign hombre_added = 0 %}
+                {% for handle in hombre_handles %}
+                  {% if handle != blank and hombre_added < hombre_products_count %}
+                    {% assign product = all_products[handle] %}
+                    {% if product and product.available %}
+                      {% assign hombre_products_array = hombre_products_array | append: product.handle | append: ',' %}
+                      {% assign hombre_added = hombre_added | plus: 1 %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              {% comment %} Shuffle and mix the products {% endcomment %}
+              {% assign mujer_handles_array = mujer_products_array | split: ',' %}
+              {% assign hombre_handles_array = hombre_products_array | split: ',' %}
+              {% assign mujer_index = 0 %}
+              {% assign hombre_index = 0 %}
+              {% assign total_products_to_add = mujer_added | plus: hombre_added %}
+
+              {% comment %} Create a simple shuffle pattern: alternate with some randomness {% endcomment %}
+              {% for i in (1..total_products_to_add) %}
+                {% if products_added < max_products %}
+                  {% comment %} Simple alternating pattern with some variation {% endcomment %}
+                  {% assign should_add_mujer = false %}
+                  {% assign should_add_hombre = false %}
+
+                  {% if mujer_index < mujer_added and hombre_index < hombre_added %}
+                    {% comment %} Both arrays have products, alternate with some randomness {% endcomment %}
+                    {% assign random_factor = i | modulo: 3 %}
+                    {% if random_factor == 0 or random_factor == 1 %}
+                      {% assign should_add_mujer = true %}
+                    {% else %}
+                      {% assign should_add_hombre = true %}
+                    {% endif %}
+                  {% elsif mujer_index < mujer_added %}
+                    {% assign should_add_mujer = true %}
+                  {% elsif hombre_index < hombre_added %}
+                    {% assign should_add_hombre = true %}
+                  {% endif %}
+
+                  {% if should_add_mujer and mujer_index < mujer_handles_array.size %}
+                    {% assign handle = mujer_handles_array[mujer_index] %}
+                    {% if handle != blank %}
+                      {% assign final_products = final_products | append: handle | append: ',' %}
+                      {% assign products_added = products_added | plus: 1 %}
+                    {% endif %}
+                    {% assign mujer_index = mujer_index | plus: 1 %}
+                  {% elsif should_add_hombre and hombre_index < hombre_handles_array.size %}
+                    {% assign handle = hombre_handles_array[hombre_index] %}
+                    {% if handle != blank %}
+                      {% assign final_products = final_products | append: handle | append: ',' %}
+                      {% assign products_added = products_added | plus: 1 %}
+                    {% endif %}
+                    {% assign hombre_index = hombre_index | plus: 1 %}
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% comment %} Use same shuffling method for fallback products {% endcomment %}
+              {% if fallback_products != blank %}
+                {% assign fallback_handles = fallback_products | split: ',' %}
+                {% assign fallback_handles_count = fallback_handles.size | minus: 1 %}
+
+                {% comment %} Use same shuffling pattern as hombre/mujer products {% endcomment %}
+                {% for i in (1..fallback_handles_count) %}
+                  {% if products_added < max_products %}
+                    {% assign handle_index = i | minus: 1 %}
+                    {% assign handle = fallback_handles[handle_index] %}
+                    {% if handle != blank %}
+                      {% assign product = all_products[handle] %}
+                      {% if product and product.available %}
+                        {% assign final_products = final_products | append: product.handle | append: ',' %}
+                        {% assign products_added = products_added | plus: 1 %}
+                      {% endif %}
+                    {% endif %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+
+            {% comment %} Render the carousel if we have products {% endcomment %}
+            {% if final_products != blank %}
+              <div class="relative">
+                <div
+                  class="cart-product-carousel swiper-cart-carousel overflow-hidden touch-pan-y"
+                  data-carousel-id="cart-carousel"
+                  data-carousel-type="cart-carousel"
+                  @touchstart.stop
+                  @touchmove.stop
+                  @touchend.stop
+                  @mousedown.stop
+                  @mousemove.stop
+                  @mouseup.stop
+                >
+                  <div class="swiper-wrapper">
+                    {% assign product_handles = final_products | split: ',' %}
+                    {% for handle in product_handles %}
+                      {% if handle != blank %}
+                        {% assign product = all_products[handle] %}
+                        {% if product and product.available %}
+                          <div class="swiper-slide h-auto" @click.stop @touchstart.stop @touchend.stop>
+                            <div class="w-full h-full">
+                              {% render 'product-card',
+                                product: product,
+                                show_badges: false,
+                                show_rating: false,
+                                show_color_swatches: false,
+                                show_size_selector: true,
+                                hide_info: true,
+                                show_wishlist: true
+                              %}
+                            </div>
+                          </div>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Footer - Sticky at bottom -->
+    <div class="sticky bottom-0 z-10 bg-white border-t border-gray-100 p-6 space-y-6 shadow-lg">
+      <!-- Subtotal -->
+      <div class="flex justify-between items-center">
+        <span class="text-lg font-semibold text-gray-900">
+          {{- section.settings.subtotal_text | default: 'SUBTOTAL:' -}}
+        </span>
+        <div class="text-right">
+          <div class="flex items-center space-x-2 mb-1" x-show="cartSavings > 0">
+            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium">
+              {{ section.settings.savings_text | default: 'AHORRA' }} $<span x-text="formatMoney(cartSavings)"></span>
+            </span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span
+              class="text-gray-400 line-through text-sm"
+              x-show="cartSavings > 0"
+              x-text="'$' + formatMoney(originalTotal)"
+            ></span>
+            <span class="text-xl font-bold text-gray-900" x-text="'$' + formatMoney(cartTotal)"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Button -->
+      <button
+        @click="proceedToCheckout()"
+        :disabled="cartItems.length === 0"
+        class="w-full bg-primary text-white py-4 px-6 font-semibold hover:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+        </svg>
+        {{ section.settings.checkout_button_text | default: 'Paga de forma segura' }}
+      </button>
+
+      <!-- Payment Methods -->
+      {% if section.settings.show_payment_icons %}
+        <div class="flex items-center justify-center space-x-4">
+          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  function cartDrawer() {
+    return {
+      isOpen: false,
+      cartItems: [],
+      cartTotal: 0,
+      originalTotal: 0,
+      cartSavings: 0,
+      // Reactive wishlist state
+      wishlistHandles: [],
+      loading: false,
+      freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
+      
+      // Cart thresholds
+      sortedThresholds: [],
+      appliedDiscounts: new Set(),
+
+      init() {
+        this.loadCart();
+        this.tryGetShopifyFreeShippingThreshold();
+        this.initThresholds();
+        
+        // Use $nextTick to ensure DOM is ready
+        this.$nextTick(() => {
+          this.initializeCartCarousel();
+        });
+        
+        // Load wishlist state
+        try {
+          const raw = localStorage.getItem('wishlist_v1');
+          this.wishlistHandles = raw ? JSON.parse(raw) : [];
+        } catch(e) { this.wishlistHandles = []; }
+        
+        // Listen for cart updates to refresh product carousel
+        this.$watch('cartItems', () => {
+          this.refreshProductCarousel();
+        });
+      },
+
+      // Cleanup when component is destroyed
+      destroy() {
+        // Clean up any event listeners or timers
+        if (this.cartCarouselSwiper) {
+          this.cartCarouselSwiper.destroy(true, true);
+        }
+      },
+
+      async tryGetShopifyFreeShippingThreshold() {
+        // Try to get free shipping threshold from Shopify's shipping zones
+        try {
+          const response = await fetch('/admin/shipping_zones.json');
+          if (response.ok) {
+            const shippingZones = await response.json();
+            // Look for free shipping rates in shipping zones
+            for (const zone of shippingZones.shipping_zones) {
+              for (const rate of zone.weight_based_shipping_rates || []) {
+                if (rate.name.toLowerCase().includes('free') && rate.price === '0.00') {
+                  // Found a free shipping rate, but we need the threshold
+                  // This is limited as Shopify doesn't expose free shipping thresholds via API
+                  console.log('Found free shipping rate:', rate);
+                }
+              }
+            }
+          }
+        } catch (error) {
+          // Silently fail - we'll use the theme setting instead
+          console.log('Could not fetch shipping zones, using theme setting');
+        }
+      },
+
+      openDrawer() {
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${window.scrollY}px`;
+        document.body.classList.add('cart-drawer-open');
+      },
+
+      closeDrawer() {
+        this.isOpen = false;
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.top = '';
+        document.body.classList.remove('cart-drawer-open');
+        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+      },
+
+      async loadCart() {
+        try {
+          const response = await fetch('/cart.js');
+          const cart = await response.json();
+          this.cartItems = cart.items;
+          this.calculateTotals();
+
+        } catch (error) {
+          console.error('Error loading cart:', error);
+        }
+      },
+
+      calculateTotals() {
+        this.cartTotal = this.cartItems.reduce((total, item) => total + item.final_line_price, 0);
+        this.originalTotal = this.cartItems.reduce(
+          (total, item) => total + (item.original_line_price || item.final_line_price),
+          0
+        );
+        this.cartSavings = this.originalTotal - this.cartTotal;
+      },
+
+      async updateQuantity(itemKey, newQuantity) {
+        if (newQuantity < 1) {
+          await this.removeItem(itemKey);
+          return;
+        }
+
+        this.loading = true;
+        try {
+          const response = await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: itemKey,
+              quantity: newQuantity,
+            }),
+          });
+
+          if (response.ok) {
+            await this.loadCart();
+            this.$dispatch('cart:updated');
+          }
+        } catch (error) {
+          console.error('Error updating quantity:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      async removeItem(itemKey) {
+        this.loading = true;
+        try {
+          const response = await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: itemKey,
+              quantity: 0,
+            }),
+          });
+
+          if (response.ok) {
+            await this.loadCart();
+            this.$dispatch('cart:updated');
+            this.showRemoveMessage();
+          }
+        } catch (error) {
+          console.error('Error removing item:', error);
+        } finally {
+          this.loading = false;
+        }
+      },
+
+      showRemoveMessage() {
+        // Remove message removed as requested
+        // Item removed from cart silently
+      },
+
+      formatMoney(cents) {
+        return (cents / 100).toLocaleString('es-CO', {
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        });
+      },
+
+      proceedToCheckout() {
+        window.location.href = '/checkout';
+      },
+
+      // ===== Wishlist helpers (shared with product cards) =====
+      getWishlist() {
+        return Array.isArray(this.wishlistHandles) ? this.wishlistHandles : [];
+      },
+      setWishlist(list) {
+        try { localStorage.setItem('wishlist_v1', JSON.stringify(list)); } catch(e) { /* noop */ }
+        this.wishlistHandles = list;
+      },
+      isInWishlist(handle) {
+        if (!handle) return false;
+        return this.getWishlist().includes(String(handle));
+      },
+      normalizeHandleFromItem(item) {
+        if (!item) return '';
+        if (item.handle) return String(item.handle);
+        if (item.product_handle) return String(item.product_handle);
+        if (item.url && item.url.indexOf('/products/') >= 0) {
+          try {
+            const seg = item.url.split('/products/')[1];
+            return String(seg.split('?')[0]).replace(/\/$/, '');
+          } catch(e) { return ''; }
+        }
+        return '';
+      },
+      toggleWishlistByHandle(handle) {
+        if (!handle) return;
+        const list = [...this.getWishlist()];
+        const idx = list.indexOf(String(handle));
+        if (idx >= 0) { list.splice(idx, 1); } else { list.push(String(handle)); }
+        this.setWishlist(list);
+        this.$dispatch('wishlist:updated', { handles: list });
+      },
+
+      editItem(item) {
+        // Implement edit item functionality here
+        console.log('Edit item:', item);
+        // This could open a modal or navigate to product page
+      },
+
+      initializeCartCarousel() {
+        this.$nextTick(() => {
+          const carouselElement = this.$el.querySelector('.swiper-cart-carousel');
+          if (carouselElement && typeof Swiper !== 'undefined') {
+            // Check if this carousel is already initialized
+            if (carouselElement.swiper) {
+              return;
+            }
+
+            // Create swiper instance for cart carousel
+            const swiperInstance = new Swiper(carouselElement, {
+              slidesPerView: 2,
+              spaceBetween: 2,
+              freeMode: {
+                enabled: true,
+                sticky: true,
+                momentum: true,
+                momentumRatio: 0.25,
+                momentumVelocityRatio: 0.5,
+                momentumBounce: true,
+                momentumBounceRatio: 0.3,
+              },
+              grabCursor: false,
+              navigation: {
+                nextEl: carouselElement.querySelector('.cart-carousel-next'),
+                prevEl: carouselElement.querySelector('.cart-carousel-prev'),
+              },
+              breakpoints: {
+                1024: {
+                  spaceBetween: 2,
+                },
+              },
+              on: {
+                init: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                slideChange: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                reachBeginning: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+                reachEnd: function() {
+                  updateCartCarouselArrowStates(this);
+                },
+              },
+            });
+
+            // Function to update arrow states for cart carousel
+            function updateCartCarouselArrowStates(swiper) {
+              const prevArrow = carouselElement.querySelector('.cart-carousel-prev');
+              const nextArrow = carouselElement.querySelector('.cart-carousel-next');
+
+              if (prevArrow) {
+                if (swiper.isBeginning) {
+                  prevArrow.style.opacity = '0.3';
+                  prevArrow.style.cursor = 'not-allowed';
+                  prevArrow.disabled = true;
+                } else {
+                  prevArrow.style.opacity = '1';
+                  prevArrow.style.cursor = 'pointer';
+                  prevArrow.disabled = false;
+                }
+              }
+
+              if (nextArrow) {
+                if (swiper.isEnd) {
+                  nextArrow.style.opacity = '0.3';
+                  nextArrow.style.cursor = 'not-allowed';
+                  nextArrow.disabled = true;
+                } else {
+                  nextArrow.style.opacity = '1';
+                  nextArrow.style.cursor = 'pointer';
+                  nextArrow.disabled = false;
+                }
+              }
+            }
+
+            // Store the swiper instance on the element to avoid conflicts
+            carouselElement.swiper = swiperInstance;
+          }
+        });
+       },
+
+       // Refresh product carousel when cart items change
+       refreshProductCarousel() {
+         // Hide products that are now in cart by adding a CSS class
+         const carouselElement = this.$el.querySelector('.cart-product-carousel');
+         if (carouselElement) {
+           const slides = carouselElement.querySelectorAll('.swiper-slide');
+           slides.forEach(slide => {
+             const productCard = slide.querySelector('[data-wishlist-card]');
+             if (productCard) {
+               const productHandle = productCard.getAttribute('data-handle');
+               const isInCart = this.cartItems.some(item => item.handle === productHandle);
+               
+               if (isInCart) {
+                 slide.style.display = 'none';
+                 slide.classList.add('product-in-cart');
+               } else {
+                 slide.style.display = '';
+                 slide.classList.remove('product-in-cart');
+               }
+             }
+           });
+           
+           // Update swiper if it exists
+           if (carouselElement.swiper) {
+             carouselElement.swiper.update();
+           }
+         }
+       },
+
+       // Cart Thresholds methods
+       initThresholds() {
+         try {
+           // Get thresholds from Liquid template
+           const thresholdElements = this.$el.querySelectorAll('[data-threshold]');
+           this.sortedThresholds = Array.from(thresholdElements).map(el => ({
+             id: el.dataset.thresholdId,
+             title: el.dataset.thresholdTitle,
+             value: parseInt(el.dataset.thresholdValue),
+             discountCode: el.dataset.thresholdDiscount
+           })).sort((a, b) => a.value - b.value);
+           
+           // Set up watchers after thresholds are initialized
+           this.$watch('cartItems', () => {
+             this.calculateTotals();
+           });
+           this.$watch('cartTotal', () => {
+             this.checkThresholds();
+           });
+         } catch (error) {
+           console.error('Error initializing thresholds:', error);
+           this.sortedThresholds = [];
+         }
+       },
+
+       getThresholdProgress(thresholdValue) {
+         if (this.cartTotal >= thresholdValue) return 100;
+         return Math.min((this.cartTotal / thresholdValue) * 100, 100);
+       },
+
+       getThresholdSegmentProgress(thresholdValue, segmentIndex) {
+         try {
+           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
+           
+           const currentThresholdIndex = this.getCurrentThresholdIndex();
+           
+           // If this segment is before the current threshold, fill it completely
+           if (segmentIndex < currentThresholdIndex) {
+             return 100;
+           }
+           
+           // If this is the current threshold segment, show partial progress
+           if (segmentIndex === currentThresholdIndex) {
+             if (this.cartTotal >= thresholdValue) return 100;
+             return Math.min((this.cartTotal / thresholdValue) * 100, 100);
+           }
+           
+           // If this segment is after the current threshold, don't fill it
+           return 0;
+         } catch (error) {
+           console.error('Error calculating segment progress:', error);
+           return 0;
+         }
+       },
+
+       getCurrentThresholdIndex() {
+         try {
+           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
+           
+           for (let i = 0; i < this.sortedThresholds.length; i++) {
+             if (this.cartTotal < this.sortedThresholds[i].value) {
+               return i;
+             }
+           }
+           // If all thresholds are achieved, return the last index
+           return this.sortedThresholds.length - 1;
+         } catch (error) {
+           console.error('Error getting current threshold index:', error);
+           return 0;
+         }
+       },
+
+       isCurrentThreshold(threshold) {
+         try {
+           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return false;
+           
+           const currentIndex = this.sortedThresholds.findIndex(t => t.id === threshold.id);
+           
+           if (currentIndex === -1) return false;
+           
+           // Only show the next unachieved threshold
+           for (let i = 0; i < this.sortedThresholds.length; i++) {
+             if (this.cartTotal < this.sortedThresholds[i].value) {
+               return i === currentIndex;
+             }
+           }
+           
+           // If all thresholds are achieved, show the last one
+           return currentIndex === this.sortedThresholds.length - 1;
+         } catch (error) {
+           console.error('Error checking current threshold:', error);
+           return false;
+         }
+       },
+
+       isThresholdAchieved(threshold) {
+         return this.cartTotal >= threshold.value;
+       },
+
+       async checkThresholds() {
+         try {
+           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return;
+           
+           for (const threshold of this.sortedThresholds) {
+             if (this.cartTotal >= threshold.value && !this.appliedDiscounts.has(threshold.id)) {
+               await this.applyDiscount(threshold);
+               this.appliedDiscounts.add(threshold.id);
+             } else if (this.cartTotal < threshold.value && this.appliedDiscounts.has(threshold.id)) {
+               await this.removeDiscount(threshold);
+               this.appliedDiscounts.delete(threshold.id);
+             }
+           }
+         } catch (error) {
+           console.error('Error checking thresholds:', error);
+         }
+       },
+
+       async applyDiscount(threshold) {
+         if (!threshold.discountCode) return;
+         
+         try {
+           // Apply discount using Shopify's cart update API
+           const response = await fetch('/cart/update.js', {
+             method: 'POST',
+             headers: { 
+               'Content-Type': 'application/json',
+               'X-Requested-With': 'XMLHttpRequest'
+             },
+             body: JSON.stringify({ 
+               discount_code: threshold.discountCode 
+             })
+           });
+           
+           if (response.ok) {
+             const cartData = await response.json();
+             console.log('✅ Applied discount:', threshold.discountCode, 'for threshold:', threshold.title);
+             
+             // Reload cart to show applied discount
+             this.loadCart();
+             
+           } else {
+             const errorData = await response.json();
+             console.error('❌ Failed to apply discount:', errorData);
+           }
+         } catch (error) {
+           console.error('❌ Error applying discount:', error);
+         }
+       },
+
+       async removeDiscount(threshold) {
+         if (!threshold.discountCode) return;
+         
+         try {
+           // Remove discount by setting empty discount code
+           const response = await fetch('/cart/update.js', {
+             method: 'POST',
+             headers: { 
+               'Content-Type': 'application/json',
+               'X-Requested-With': 'XMLHttpRequest'
+             },
+             body: JSON.stringify({ 
+               discount_code: '' 
+             })
+           });
+           
+           if (response.ok) {
+             console.log('✅ Removed discount:', threshold.discountCode, 'for threshold:', threshold.title);
+             this.loadCart();
+           } else {
+             console.error('❌ Failed to remove discount');
+           }
+         } catch (error) {
+           console.error('❌ Error removing discount:', error);
+         }
+       },
+
+     };
+   }
+</script>
+
+{% schema %}
+{
+  "name": "Cart Drawer",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "text",
+      "id": "cart_title",
+      "label": "Cart Title",
+      "default": "Tu Carrito"
+    },
+    {
+      "type": "range",
+      "id": "drawer_width",
+      "min": 300,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Drawer Width (Desktop)",
+      "default": 420
+    },
+    {
+      "type": "header",
+      "content": "Cart Thresholds"
+    },
+    {
+      "type": "text",
+      "id": "progress_text",
+      "label": "Progress Text",
+      "default": "Estas a"
+    },
+    {
+      "type": "text",
+      "id": "goal_text",
+      "label": "Goal Text",
+      "default": "de conseguir"
+    },
+    {
+      "type": "text",
+      "id": "achieved_text",
+      "label": "Achieved Text",
+      "default": "¡Felicidades! Has conseguido"
+    },
+    {
+      "type": "header",
+      "content": "Empty Cart"
+    },
+    {
+      "type": "text",
+      "id": "empty_cart_title",
+      "label": "Empty Cart Title",
+      "default": "Tu carrito está vacío"
+    },
+    {
+      "type": "text",
+      "id": "empty_cart_text",
+      "label": "Empty Cart Text",
+      "default": "Agrega algunos productos para comenzar"
+    },
+    {
+      "type": "header",
+      "content": "Product Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_carousel",
+      "label": "Show Product Carousel",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "carousel_title",
+      "label": "Carousel Title",
+      "default": "También te puede interesar"
+    },
+    {
+      "type": "range",
+      "id": "carousel_max_products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Maximum Products in Carousel",
+      "default": 8
+    },
+    {
+      "type": "collection_list",
+      "id": "fallback_collections",
+      "label": "Fallback Collections for Empty Cart",
+      "info": "Collections to show in cart carousel when cart is empty",
+      "limit": 5
+    },
+    {
+      "type": "header",
+      "content": "Checkout"
+    },
+    {
+      "type": "text",
+      "id": "subtotal_text",
+      "label": "Subtotal Label",
+      "default": "SUBTOTAL:"
+    },
+    {
+      "type": "text",
+      "id": "savings_text",
+      "label": "Savings Label",
+      "default": "AHORRA"
+    },
+    {
+      "type": "text",
+      "id": "checkout_button_text",
+      "label": "Checkout Button Text",
+      "default": "Paga de forma segura"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show Payment Icons",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "cart_threshold",
+      "name": "Cart Threshold",
+      "settings": [
+        {
+          "type": "text",
+          "id": "threshold_title",
+          "label": "Threshold Title",
+          "default": "Free Shipping",
+          "info": "Title shown when this threshold is active"
+        },
+        {
+          "type": "number",
+          "id": "threshold_value",
+          "label": "Threshold Value (COP)",
+          "default": 150000,
+          "info": "Cart value needed to reach this threshold in Colombian Pesos"
+        },
+        {
+          "type": "text",
+          "id": "discount_code",
+          "label": "Discount Code",
+          "info": "Discount code to apply when threshold is reached (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Cart Drawer",
+      "blocks": [
+        {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "Free Shipping",
+            "threshold_value": 100000,
+            "discount_code": "FREESHIP100"
+          }
+        },
+        {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "10% Off",
+            "threshold_value": 200000,
+            "discount_code": "SAVE10"
+          }
+        },
+        {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "15% Off",
+            "threshold_value": 300000,
+            "discount_code": "SAVE15"
+          }
+        },
+        {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "20% Off",
+            "threshold_value": 500000,
+            "discount_code": "SAVE20"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

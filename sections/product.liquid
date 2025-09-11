@@ -163,7 +163,55 @@
         <div class="space-y-2">
           <div class="flex items-start gap-2 justify-between">
             <div class="flex flex-col gap-0.5">
-              <h6>{{ product.title }}</h6>
+              {% assign cleaned_title = product.title %}
+
+              {% assign cleaned_title = cleaned_title
+                | remove: '0'
+                | remove: '1'
+                | remove: '2'
+                | remove: '3'
+                | remove: '4'
+                | remove: '5'
+                | remove: '6'
+                | remove: '7'
+                | remove: '8'
+                | remove: '9'
+              %}
+
+              {% assign cleaned_title = cleaned_title
+                | remove: '!'
+                | remove: '@'
+                | remove: '#'
+                | remove: '$'
+                | remove: '%'
+                | remove: '^'
+                | remove: '&'
+                | remove: '*'
+                | remove: '('
+                | remove: ')'
+                | remove: '_'
+                | remove: '+'
+                | remove: '='
+                | remove: '-'
+                | remove: '['
+                | remove: ']'
+                | remove: '{'
+                | remove: '}'
+                | remove: ';'
+                | remove: ':'
+                | remove: ','
+                | remove: '.'
+                | remove: '<'
+                | remove: '>'
+                | remove: '?'
+                | remove: '~'
+                | remove: "'"
+                | remove: '"'
+                | remove: '\'
+                | remove: '/'
+              %}
+
+              <h6>{{ cleaned_title }}</h6>
               <div class="flex items-center gap-2">
                 {% render 'product-rating', product: product, size: 'lg' %}
               </div>
@@ -1280,18 +1328,8 @@
       },
 
       showSuccessMessage() {
-        // Create a temporary success message
-        const message = document.createElement('div');
-        message.className = 'fixed bottom-4 left-4 bg-green text-white  py-2 rounded-lg shadow-lg z-10';
-        message.textContent = 'Added to cart!';
-        document.body.appendChild(message);
-
-        // Remove after 2 seconds
-        setTimeout(() => {
-          if (document.body.contains(message)) {
-            document.body.removeChild(message);
-          }
-        }, 2000);
+        // Success message removed as requested
+        // Product added to cart silently
       },
 
       showErrorToast(message) {

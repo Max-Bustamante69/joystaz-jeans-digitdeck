@@ -1,0 +1,10 @@
+{
+  "type": "aside",
+  "name": "Cart Drawer Group",
+  "sections": {
+    "cart_drawer": {
+      "type": "cart-drawer"
+    }
+  },
+  "order": ["cart_drawer"]
+}

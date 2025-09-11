@@ -1,60 +1,37 @@
 {% comment %}
   Terms and Conditions Section
-  Left sidebar with navigation links + main content area with title and text
+  Dynamic navigation based on HTML content structure
 {% endcomment %}
 
-<section class="container mx-auto px-4 py-12">
-  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+<section class="container mx-auto px-4 py-12 mt-23">
+  <!-- Main Title -->
+
+  <div class="flex flex-col gap-8 items-center w-full">
     <!-- Left Sidebar Navigation -->
     <div class="lg:col-span-1">
       <div class="sticky top-8">
         <h3 class="text-sm font-semibold uppercase tracking-wide mb-4 border-b border-gray-300 pb-2">
-          {{ section.settings.nav_title | default: 'Overview' }}
+          {{ section.settings.nav_title | default: 'Table of Contents' }}
         </h3>
 
-        <nav class="space-y-2">
-          {% for block in section.blocks %}
-            {% if block.type == 'nav_item' %}
-              <a
-                href="#{{ block.settings.anchor_id | handleize }}"
-                class="block text-sm text-gray-700 hover:text-black transition-colors duration-200"
-                {{ block.shopify_attributes }}
-              >
-                {{ block.settings.nav_text }}
-              </a>
-            {% endif %}
-          {% endfor %}
+        <nav id="dynamic-nav" class="space-y-2">
+          <!-- Navigation will be generated dynamically by JavaScript -->
         </nav>
       </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="lg:col-span-3">
-      {% if section.settings.main_title != blank %}
-        <h1 class="text-4xl font-bold mb-8">{{ section.settings.main_title }}</h1>
-      {% endif %}
-
-      <div class="prose max-w-none">
-        {% for block in section.blocks %}
-          {% if block.type == 'content_section' %}
-            <div class="mb-8" {{ block.shopify_attributes }}>
-              {% if block.settings.section_title != blank %}
-                <h2
-                  id="{{ block.settings.anchor_id | handleize }}"
-                  class="text-2xl font-semibold mb-4 scroll-mt-20"
-                >
-                  {{ block.settings.section_title }}
-                </h2>
-              {% endif %}
-
-              {% if block.settings.content != blank %}
-                <div class="text-gray-700 leading-relaxed">
-                  {{ block.settings.content }}
-                </div>
-              {% endif %}
-            </div>
+    <div class=" max-w-[610px]">
+      <div id="policy-content" class="prose max-w-none">
+        {% if shop.terms_of_service and section.settings.show_shop_terms %}
+          {% if section.settings.main_title != blank %}
+            <h1 class="text-4xl font-bold mb-8 text-left">{{ section.settings.main_title }}</h1>
           {% endif %}
-        {% endfor %}
+
+          <div class="policy-body text-gray-700 leading-relaxed">
+            {{ shop.terms_of_service.body }}
+          </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -71,110 +48,192 @@
     color: #000;
     font-weight: 600;
   }
+
+  /* Policy content styling */
+  .policy-body h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .policy-body h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 1.5rem 0 0.75rem 0;
+  }
+
+  .policy-body h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin: 1.25rem 0 0.5rem 0;
+  }
+
+  .policy-body h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin: 1rem 0 0.5rem 0;
+  }
+
+  .policy-body p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+
+  .policy-body ul,
+  .policy-body ol {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+  }
+
+  .policy-body li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+  }
+
+  .policy-body strong {
+    font-weight: 600;
+    color: #374151;
+  }
+
+  /* Navigation styling */
+  .nav-h2 {
+    font-weight: 600;
+    color: #1f2937;
+    margin-left: 0;
+  }
+
+  .nav-h3 {
+    font-weight: 500;
+    color: #374151;
+    margin-left: 1rem;
+  }
+
+  .nav-h4 {
+    font-weight: 400;
+    color: #4b5563;
+    margin-left: 2rem;
+  }
+
+  .nav-h5 {
+    font-weight: 400;
+    color: #6b7280;
+    margin-left: 3rem;
+  }
+
+  .nav-h6 {
+    font-weight: 400;
+    color: #9ca3af;
+    margin-left: 4rem;
+  }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const policyContent = document.querySelector('.policy-body');
+    const dynamicNav = document.getElementById('dynamic-nav');
+
+    if (!policyContent || !dynamicNav) return;
+
+    // Parse HTML content and add IDs to headings (starting from h2 since h1 is the main title)
+    const headings = policyContent.querySelectorAll('h2, h3, h4, h5, h6');
+    const navItems = [];
+
+    headings.forEach((heading, index) => {
+      // Create anchor ID from heading text
+      const anchorId = heading.textContent
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+
+      // Add ID to heading if it doesn't exist
+      if (!heading.id) {
+        heading.id = anchorId;
+      }
+
+      // Add scroll margin for better positioning
+      heading.style.scrollMarginTop = '5rem';
+
+      // Create navigation item
+      const navItem = {
+        level: parseInt(heading.tagName.charAt(1)),
+        text: heading.textContent,
+        id: heading.id,
+        element: heading,
+      };
+
+      navItems.push(navItem);
+    });
+
+    // Generate navigation HTML
+    if (navItems.length > 0) {
+      const navHTML = navItems
+        .map((item) => {
+          const className = `nav-h${item.level}`;
+          return `
+        <a href="#${item.id}" class="block text-sm hover:text-black transition-colors duration-200 ${className}">
+          ${item.text}
+        </a>
+      `;
+        })
+        .join('');
+
+      dynamicNav.innerHTML = navHTML;
+    } else {
+      // Hide navigation if no headings found
+      dynamicNav.parentElement.style.display = 'none';
+    }
+
+    // Add active navigation highlighting
+    const navLinks = dynamicNav.querySelectorAll('a');
+
+    function updateActiveNav() {
+      const scrollPos = window.scrollY + 100;
+
+      navItems.forEach((item, index) => {
+        const element = item.element;
+        const nextElement = navItems[index + 1]?.element;
+
+        if (element.offsetTop <= scrollPos && (!nextElement || nextElement.offsetTop > scrollPos)) {
+          // Remove active class from all links
+          navLinks.forEach((link) => link.classList.remove('nav-item-active'));
+          // Add active class to current link
+          const currentLink = dynamicNav.querySelector(`a[href="#${item.id}"]`);
+          if (currentLink) {
+            currentLink.classList.add('nav-item-active');
+          }
+        }
+      });
+    }
+
+    // Update active nav on scroll
+    window.addEventListener('scroll', updateActiveNav);
+    updateActiveNav(); // Initial call
+  });
+</script>
 
 {% schema %}
 {
   "name": "Terms & Conditions",
   "settings": [
     { "type": "text", "id": "main_title", "label": "Main Title", "default": "Terms Of Service" },
-    { "type": "text", "id": "nav_title", "label": "Navigation Title", "default": "Overview" }
-  ],
-  "blocks": [
-    {
-      "type": "nav_item",
-      "name": "Navigation Item",
-      "settings": [
-        { "type": "text", "id": "nav_text", "label": "Navigation Text", "default": "Online store terms" },
-        {
-          "type": "text",
-          "id": "anchor_id",
-          "label": "Anchor ID",
-          "default": "online-store-terms",
-          "info": "Used for linking (no spaces, use hyphens)"
-        }
-      ]
-    },
-    {
-      "type": "content_section",
-      "name": "Content Section",
-      "settings": [
-        {
-          "type": "text",
-          "id": "section_title",
-          "label": "Section Title",
-          "default": "Section 1 - Online Store Terms"
-        },
-        {
-          "type": "text",
-          "id": "anchor_id",
-          "label": "Anchor ID",
-          "default": "online-store-terms",
-          "info": "Must match navigation item anchor ID"
-        },
-        {
-          "type": "richtext",
-          "id": "content",
-          "label": "Content",
-          "default": "<p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p><p>Additionally, when using this website's particular services, you shall be subject to any posted guidelines or rules applicable to such services.</p>"
-        }
-      ]
-    }
+    { "type": "text", "id": "nav_title", "label": "Navigation Title", "default": "Table of Contents" },
+    { "type": "checkbox", "id": "show_shop_terms", "label": "Show Shop Terms of Service", "default": true }
   ],
   "presets": [
     {
       "name": "Terms & Conditions",
       "settings": {
-        "main_title": "Terms Of Service",
-        "nav_title": "Overview"
-      },
-      "blocks": [
-        {
-          "type": "nav_item",
-          "settings": {
-            "nav_text": "Online store terms",
-            "anchor_id": "online-store-terms"
-          }
-        },
-        {
-          "type": "content_section",
-          "settings": {
-            "section_title": "Section 1 - Online Store Terms",
-            "anchor_id": "online-store-terms",
-            "content": "<p>By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.</p><p>Additionally, when using this website's particular services, you shall be subject to any posted guidelines or rules applicable to such services.</p>"
-          }
-        },
-        {
-          "type": "nav_item",
-          "settings": {
-            "nav_text": "General conditions",
-            "anchor_id": "general-conditions"
-          }
-        },
-        {
-          "type": "content_section",
-          "settings": {
-            "section_title": "Section 2 - General Conditions",
-            "anchor_id": "general-conditions",
-            "content": "<p>We reserve the right to refuse service to anyone for any reason at any time.</p><p>You understand that your content (not including credit card information), may be transferred unencrypted and involve transmissions over various networks.</p>"
-          }
-        },
-        {
-          "type": "nav_item",
-          "settings": {
-            "nav_text": "Accuracy and completeness",
-            "anchor_id": "accuracy-completeness"
-          }
-        },
-        {
-          "type": "content_section",
-          "settings": {
-            "section_title": "Section 3 - Accuracy and Completeness",
-            "anchor_id": "accuracy-completeness",
-            "content": "<p>We are not responsible if information made available on this site is not accurate, complete or current.</p><p>The material on this site is provided for general information only and should not be relied upon or used as the sole basis for making decisions.</p>"
-          }
-        }
-      ]
+        "main_title": "Terminos y Condiciones",
+        "nav_title": "Table of Contents",
+        "show_shop_terms": true
+      }
     }
   ]
 }

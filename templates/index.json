@@ -16,10 +16,11 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
+            "image": "shopify://shop_images/Promo_Septiembre_Web_a6281a7c-41ea-412e-b70e-c610c13d0318.svg",
             "image_url": "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "title": "Viste el espíritu",
+            "title": "Amor y amistad con JoyStaz",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
+            "button_text": "Descúbrelos",
             "button_link": "shopify://collections/jeans-mujer",
             "button_style": "underline  border-none text-sm"
           }
@@ -77,25 +78,47 @@
         "show_bullets": true
       }
     },
+    "product_carousel_WRxntn": {
+      "type": "product-carousel",
+      "name": "Product Carousel",
+      "settings": {
+        "title": "Best Sellers",
+        "rich_text": "",
+        "show_view_all": true,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "product_source": "collection",
+        "collection": "mas-buscados-vendidos",
+        "product_tags": "",
+        "products": [],
+        "max_products": 12,
+        "show_badges": true,
+        "show_rating": true,
+        "show_color_swatches": true,
+        "show_size_selector": true,
+        "no_products_message": "No hay productos disponibles en este momento."
+      }
+    },
     "category-grid": {
       "type": "category-grid",
       "blocks": {
         "category_pwLXdi": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "women",
             "image_source": "collection_image",
             "text_position": "bottom-left",
-            "aspect_ratio": "square"
+            "aspect_ratio": "landscape"
           }
         },
         "category_eVzi4H": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "men",
             "image_source": "collection_image",
             "text_position": "bottom-left",
-            "aspect_ratio": "square"
+            "aspect_ratio": "landscape"
           }
         }
       },
@@ -104,7 +127,7 @@
         "category_eVzi4H"
       ],
       "settings": {
-        "title": "dwdawd",
+        "title": "",
         "subtitle": "",
         "mobile_layout": "column"
       }
@@ -118,17 +141,17 @@
         "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Self-Care Starts With Your Underwear",
-        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "title": "El jean que empieza contigo",
+        "text": "Creemos que tus jeans no son solo una prenda: son la base de tu seguridad, estilo y autenticidad. Creamos piezas que realzan tu figura, se mueven contigo y te hacen sentir poderosa en cada momento del día. Porque comodidad, diseño y confianza no deberían ser una elección, sino un estándar.",
         "subtitle": "Nuestra promesa",
-        "rich_text": "<ul><li>Breathable, non-irritating fabrics that put your health first</li><li>OEKO-TEX® certified materials—clean, non-toxic, always</li><li>An extra-long antimicrobial gusset for everyday protection</li><li>Tested by real women, with over 1,000 five-star reviews</li><li>Recommended by leading female health experts</li></ul>",
+        "rich_text": "<ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "button_style": "background",
         "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "subtitle_color": "#1f2937",
-        "text_color": "#374151"
+        "title_color": "#000000",
+        "subtitle_color": "#000000",
+        "text_color": "#000000"
       }
     },
     "category_grid_tiJRNW": {
@@ -137,7 +160,7 @@
         "category_QC8xmk": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "shorts-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -146,7 +169,7 @@
         "category_V68LeD": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "jeans-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -155,7 +178,7 @@
         "category_pPrFBF": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "faldas-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -164,7 +187,7 @@
         "category_gatxCg": {
           "type": "category",
           "settings": {
-            "collection": "",
+            "collection": "camisetas-mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -181,19 +204,19 @@
       "settings": {
         "title": "Best Sellers",
         "subtitle": "",
-        "mobile_layout": "column"
+        "mobile_layout": "slider"
       }
     },
     "quote_E6r7tE": {
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p>\"Curating luxury fragrances with sincerity—not for profit, <em><strong>but so everyone can smell unforgettable. quote</strong></em>\"</p>",
+        "quote_text": "<p>\"Cada jean JoyStaz nace para que vivas tu estilo con confianza, comodidad y actitud. <em><strong>Porque cuando te sientes auténtico, todo lo demás fluye</strong></em>\"<br/><br/></p>",
         "background_color": "#ffffff",
         "text_color": "#6b7280",
         "emphasis_color": "#1f2937",
         "border_color": "#3b82f6",
-        "text_size": 1.5,
+        "text_size": 2,
         "padding": 3
       }
     },
@@ -205,10 +228,10 @@
           "settings": {
             "media_type": "image",
             "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "title": "FLAWLESS FUNDATION",
-            "description": "Transform your business etc",
-            "button_text": "shop now",
-            "button_link": "shopify://collections/jean-hombre",
+            "title": "Encuentra tu fit perfecto",
+            "description": "Descubre nuestros jeans skinny, cargo, rectos y palazzo. Diseñados para que te sientas segura, cómoda y siempre a la moda.",
+            "button_text": "Ver Jeans",
+            "button_link": "shopify://collections/jeans-mujer",
             "button_style": "text-xl px-6 py-3 border border-white"
           }
         }
@@ -233,36 +256,36 @@
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Free shipping",
-            "description": "We offer free worldwide shipping on orders over $100"
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M184,80h42.58A8,8,0,0,1,234,85l14,35\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><line x1=\"24\" y1=\"144\" x2=\"184\" y2=\"144\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><circle cx=\"192\" cy=\"192\" r=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><circle cx=\"80\" cy=\"192\" r=\"24\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><line x1=\"168\" y1=\"192\" x2=\"104\" y2=\"192\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><path d=\"M184,120h64v64a8,8,0,0,1-8,8H216\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M56,192H32a8,8,0,0,1-8-8V72a8,8,0,0,1,8-8H184V169.37\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path></svg>",
+            "title": "Envío gratis",
+            "description": "A todo Colombia En compras +$100.000 y a todo el mundo por Ruufe"
           }
         },
         "badge_nymaqi": {
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Customer service",
-            "description": "Our customer service team is available Monday till Friday from 9am - 6pm"
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><rect x=\"40\" y=\"88\" width=\"176\" height=\"128\" rx=\"8\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></rect><path d=\"M88,88V56a40,40,0,0,1,80,0V88\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><circle cx=\"128\" cy=\"140\" r=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></circle><line x1=\"128\" y1=\"160\" x2=\"128\" y2=\"184\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line></svg>",
+            "title": "Compra fácil y segura",
+            "description": "Compra tranquilamente virtual y si estás en Medellín o el Área Metropolitana, también puedes pagar al recibir tu pedido"
           }
         },
         "badge_LeB4EC": {
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Free shipping",
-            "description": "We offer free worldwide shipping on orders over $100"
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M48,208H16a8,8,0,0,1-8-8V160a8,8,0,0,1,8-8H48\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M112,160h32l67-15.41a16.61,16.61,0,0,1,21,16h0a16.59,16.59,0,0,1-9.18,14.85L184,192l-64,16H48V152l25-25a24,24,0,0,1,17-7H140a20,20,0,0,1,20,20h0a20,20,0,0,1-20,20Z\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><line x1=\"192\" y1=\"24\" x2=\"192\" y2=\"104\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></line><polyline points=\"160 56 192 24 224 56\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></polyline></svg>",
+            "title": "Garantía de cambios",
+            "description": "Tienes 5 días para solicitar tu cambio sin complicaciones, te acompañamos por WhatsApp."
           }
         },
         "badge_4F9eFf": {
           "type": "badge",
           "settings": {
             "icon_type": "svg",
-            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewbox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z\"></path></svg>",
-            "title": "Secure payments",
-            "description": "We offer secure payments using Creditcard, PayPal, ShopPay and Amazon Pay."
+            "icon_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewbox=\"0 0 256 256\"><rect width=\"256\" height=\"256\" fill=\"none\"></rect><path d=\"M224,200v8a32,32,0,0,1-32,32H136\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path><path d=\"M224,128H192a16,16,0,0,0-16,16v40a16,16,0,0,0,16,16h32V128a96,96,0,1,0-192,0v56a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16V144a16,16,0,0,0-16-16H32\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"12\"></path></svg>",
+            "title": "Soporte en linea 24/7",
+            "description": "Escríbenos y recibe asesoría directa antes, durante y después de tu compra."
           }
         }
       },
@@ -275,10 +298,10 @@
       "name": "Trust Badges",
       "settings": {
         "show_borders": true,
-        "background_color": "#f9fafb",
-        "title_color": "#1f2937",
-        "text_color": "#374151",
-        "icon_color": "#1f2937",
+        "background_color": "#ffffff",
+        "title_color": "#000000",
+        "text_color": "#6b6b6b",
+        "icon_color": "#000000",
         "border_color": "#e5e7eb"
       }
     },
@@ -291,17 +314,17 @@
         "image": "shopify://shop_images/1_1.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Self-Care Starts With Your Underwear",
-        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "title": "Nuestra Tienda en Medellín",
+        "text": "la moda se vive mejor cuando puedes sentirla de cerca. Por eso abrimos nuestro punto físico en la Zona Industrial de Belén: Calle 29D #55-178, Medellín. Aquí podrás probarte tus jeans favoritos, descubrir nuevos fits y recibir asesoría personalizada para encontrar el estilo que mejor se adapta a ti.",
         "subtitle": "",
         "rich_text": "",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "button_style": "border",
         "background_color": "#ffffff",
-        "title_color": "#1f2937",
-        "subtitle_color": "#1f2937",
-        "text_color": "#374151"
+        "title_color": "#000000",
+        "subtitle_color": "#000000",
+        "text_color": "#525252"
       }
     },
     "product_carousel_VNfNQL": {
@@ -329,6 +352,7 @@
   },
   "order": [
     "hero",
+    "product_carousel_WRxntn",
     "category-grid",
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",

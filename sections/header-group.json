@@ -17,19 +17,19 @@
         "item_1": {
           "type": "ticker_item",
           "settings": {
-            "text": "Class Is in Session"
+            "text": "Envío gratis en compras +$100.000"
           }
         },
         "item_2": {
           "type": "ticker_item",
           "settings": {
-            "text": "New Arrivals"
+            "text": "Pagos seguros"
           }
         },
         "item_3": {
           "type": "ticker_item",
           "settings": {
-            "text": "Free Shipping"
+            "text": "Confiados por +20.000 clientes"
           }
         }
       },

@@ -204,7 +204,7 @@
       "settings": {
         "title": "Best Sellers",
         "subtitle": "",
-        "mobile_layout": "column"
+        "mobile_layout": "slider"
       }
     },
     "quote_E6r7tE": {
@@ -314,8 +314,8 @@
         "image": "shopify://shop_images/1_1.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Self-Care Starts With Your Underwear",
-        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
+        "title": "Nuestra Tienda en Medellín",
+        "text": "la moda se vive mejor cuando puedes sentirla de cerca. Por eso abrimos nuestro punto físico en la Zona Industrial de Belén: Calle 29D #55-178, Medellín. Aquí podrás probarte tus jeans favoritos, descubrir nuevos fits y recibir asesoría personalizada para encontrar el estilo que mejor se adapta a ti.",
         "subtitle": "",
         "rich_text": "",
         "button_text": "Descubrelos",

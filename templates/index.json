@@ -298,7 +298,7 @@
       "name": "Trust Badges",
       "settings": {
         "show_borders": true,
-        "background_color": "#f9fafb",
+        "background_color": "#ffffff",
         "title_color": "#1f2937",
         "text_color": "#374151",
         "icon_color": "#1f2937",

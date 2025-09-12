@@ -17,24 +17,12 @@
           "settings": {
             "media_type": "image",
             "image": "shopify://shop_images/Promo_Septiembre_Web_a6281a7c-41ea-412e-b70e-c610c13d0318.svg",
-            "image_url": "https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "image_url": "",
             "title": "Amor y amistad con JoyStaz",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
             "button_text": "Descúbrelos",
             "button_link": "shopify://collections/jeans-mujer",
             "button_style": "underline  border-none text-sm"
-          }
-        },
-        "slide_7EQ4Qm": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "https://plus.unsplash.com/premium_photo-1708110921398-1fc68e98eacc?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": ""
           }
         },
         "slide_wfyam9": {
@@ -49,25 +37,11 @@
             "button_link": "",
             "button_style": ""
           }
-        },
-        "slide_zUM439": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": "h-11 px-6 border border-1 border-white capitalize"
-          }
         }
       },
       "block_order": [
         "slide_kF6V7J",
-        "slide_7EQ4Qm",
-        "slide_wfyam9",
-        "slide_zUM439"
+        "slide_wfyam9"
       ],
       "settings": {
         "min_height": 100,
@@ -207,14 +181,67 @@
         "mobile_layout": "slider"
       }
     },
+    "video_carousel_ed3exy": {
+      "type": "video-carousel",
+      "blocks": {
+        "video_slide_fCwDVC": {
+          "type": "video_slide",
+          "settings": {
+            "video_file": "shopify://files/videos/review-video-1757401012251.mp4",
+            "video_title": "dawda",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        },
+        "video_slide_NcUxpz": {
+          "type": "video_slide",
+          "settings": {
+            "video_title": "",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        },
+        "video_slide_XCKP8n": {
+          "type": "video_slide",
+          "settings": {
+            "video_title": "",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        }
+      },
+      "block_order": [
+        "video_slide_fCwDVC",
+        "video_slide_NcUxpz",
+        "video_slide_XCKP8n"
+      ],
+      "name": "Video Carousel",
+      "settings": {
+        "title": "Video Gallery",
+        "subtitle": "Discover our latest content",
+        "slides_mobile": 1,
+        "slides_tablet": 2,
+        "slides_desktop": 3,
+        "slides_large_desktop": 4,
+        "slide_spacing": 20,
+        "loop": true,
+        "show_pagination": true,
+        "autoplay": false,
+        "autoplay_delay": 5000,
+        "transition_speed": 800
+      }
+    },
     "quote_E6r7tE": {
       "type": "quote",
       "name": "Quote",
       "settings": {
         "quote_text": "<p>\"Cada jean JoyStaz nace para que vivas tu estilo con confianza, comodidad y actitud. <em><strong>Porque cuando te sientes auténtico, todo lo demás fluye</strong></em>\"<br/><br/></p>",
         "background_color": "#ffffff",
-        "text_color": "#6b7280",
-        "emphasis_color": "#1f2937",
+        "text_color": "#000000",
+        "emphasis_color": "#000000",
         "border_color": "#3b82f6",
         "text_size": 2,
         "padding": 3
@@ -356,6 +383,7 @@
     "category-grid",
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",
+    "video_carousel_ed3exy",
     "quote_E6r7tE",
     "hero_x9Qnqz",
     "trust_badges_bzGmPj",

@@ -1,39 +1,105 @@
 {% comment %}
   Product Benefits Media Snippet
 
-  Displays the first video from the product, or falls back to the first image
+  Displays product media based on image_count setting:
+  - If image_count is '1': Shows first video or first image
+  - If image_count is '2': Shows first two images side by side (no videos)
   Used in the product-benefits section
 {% endcomment %}
 
+{% assign image_count = image_count | default: '1' %}
 {% assign media_to_show = null %}
 {% assign media_type = 'image' %}
+{% assign second_image = null %}
 
-{% comment %} First, try to find a video {% endcomment %}
-{% for media in product.media %}
-  {% if media.media_type == 'video' %}
-    {% assign media_to_show = media %}
-    {% assign media_type = 'video' %}
-    {% break %}
-  {% endif %}
-{% endfor %}
-
-{% comment %} If no video found, use the first image {% endcomment %}
-{% if media_to_show == null %}
+{% if image_count == '2' %}
+  {% comment %} For 2 images, collect first two images (skip videos) {% endcomment %}
+  {% assign images_found = 0 %}
   {% for media in product.media %}
     {% if media.media_type == 'image' %}
+      {% if images_found == 0 %}
+        {% assign media_to_show = media %}
+        {% assign images_found = images_found | plus: 1 %}
+      {% elsif images_found == 1 %}
+        {% assign second_image = media %}
+        {% break %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {% comment %} If we don't have 2 images, fall back to featured image for second {% endcomment %}
+  {% if media_to_show and second_image == null and product.featured_image %}
+    {% unless media_to_show.id == product.featured_image.id %}
+      {% assign second_image = product.featured_image %}
+    {% endunless %}
+  {% endif %}
+{% else %}
+  {% comment %} For 1 image, try video first, then image {% endcomment %}
+  {% for media in product.media %}
+    {% if media.media_type == 'video' %}
       {% assign media_to_show = media %}
+      {% assign media_type = 'video' %}
       {% break %}
     {% endif %}
   {% endfor %}
-{% endif %}
 
-{% comment %} If still no media, use the product's featured image {% endcomment %}
-{% if media_to_show == null and product.featured_image %}
-  {% assign media_to_show = product.featured_image %}
+  {% comment %} If no video found, use the first image {% endcomment %}
+  {% if media_to_show == null %}
+    {% for media in product.media %}
+      {% if media.media_type == 'image' %}
+        {% assign media_to_show = media %}
+        {% break %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% comment %} If still no media, use the product's featured image {% endcomment %}
+  {% if media_to_show == null and product.featured_image %}
+    {% assign media_to_show = product.featured_image %}
+  {% endif %}
 {% endif %}
 
 <div class="product-benefits-media w-full">
-  {% if media_to_show %}
+  {% if image_count == '2' and media_to_show %}
+    <!-- Two Images Side by Side -->
+    <div class="flex gap-0">
+      <!-- First Image -->
+      <div class="relative w-1/2 aspect-[3/4] bg-gray-100 overflow-hidden">
+        <img
+          src="{{ media_to_show | image_url: width: 400 }}"
+          alt="{{ product.title }} - {{ media_to_show.alt | default: 'Product image 1' }}"
+          class="w-full h-full object-cover"
+          width="400"
+          height="533"
+          loading="lazy"
+        >
+      </div>
+
+      <!-- Second Image -->
+      {% if second_image %}
+        <div class="relative w-1/2 aspect-[3/4] bg-gray-100 overflow-hidden">
+          <img
+            src="{{ second_image | image_url: width: 400 }}"
+            alt="{{ product.title }} - {{ second_image.alt | default: 'Product image 2' }}"
+            class="w-full h-full object-cover"
+            width="400"
+            height="533"
+            loading="lazy"
+          >
+        </div>
+      {% else %}
+        <!-- Fallback for second image -->
+        <div class="relative w-1/2 aspect-[3/4] bg-gray-100 overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center">
+          <div class="text-center text-gray-500">
+            <svg class="w-8 h-8 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <p class="text-xs">No second image</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  {% elsif media_to_show %}
     {% if media_type == 'video' %}
       <!-- Video Display -->
       <div class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
@@ -65,8 +131,8 @@
         </div>
       </div>
     {% else %}
-      <!-- Image Display -->
-      <div class="relative w-full aspect-[4/3] bg-gray-100  overflow-hidden">
+      <!-- Single Image Display -->
+      <div class="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden">
         <img
           src="{{ media_to_show | image_url: width: 800 }}"
           alt="{{ product.title }} - {{ media_to_show.alt | default: 'Product image' }}"
@@ -79,7 +145,7 @@
     {% endif %}
   {% else %}
     <!-- Fallback Placeholder -->
-    <div class="relative w-full aspect-[4/3] bg-gray-100  overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center">
+    <div class="relative w-full aspect-[4/3] bg-gray-100 overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center">
       <div class="text-center text-gray-500">
         <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>

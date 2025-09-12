@@ -38,11 +38,11 @@
     x-transition:leave="transform transition ease-in duration-300"
     x-transition:leave-start="translate-x-0 "
     x-transition:leave-end="translate-x-full "
-    class="absolute right-0 top-0 h-full  w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform-gpu will-change-transform"
+    class="absolute right-0 top-0 h-full py-3  w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform-gpu will-change-transform"
     @click.outside="closeDrawer()"
   >
     <!-- Header -->
-    <div class="lg:p-6 p-4  flex-shrink-0">
+    <div class="lg:px-6 px-4  flex-shrink-0">
       <div class="flex items-center justify-between mb-4">
         <h5>Search</h5>
         <button
@@ -74,6 +74,25 @@
           class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-900 transition-colors duration-200"
         >
           <p class="body-sm lg:body underline cursor-pointer opacity-80">Clear</p>
+        </button>
+      </div>
+
+      <!-- View All Button (below search input) -->
+      <div
+        x-show="searchQuery.length > 0 && searchResults.length > 0"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 -translate-y-2"
+        x-transition:enter-end="opacity-100 translate-y-0"
+        x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100 translate-y-0"
+        x-transition:leave-end="opacity-0 -translate-y-2"
+        class="lg:px-6 px-4 pb-4"
+      >
+        <button
+          @click="viewAllResults"
+          class="w-full text-center py-2 text-gray-600 hover:text-gray-800 underline transition-colors duration-200"
+        >
+          {{ settings.search_view_all_text | default: 'Ver todos' }}
         </button>
       </div>
     </div>
@@ -124,17 +143,17 @@
               @click="clearHistory"
               class="text-sm text-gray-500 hover:text-gray-700 underline transition-colors duration-200"
             >
-              Clear all
+              {{ settings.search_clear_all_text | default: 'Clear all' }}
             </button>
           </div>
 
           <div class="space-y-2">
             <template x-for="term in searchHistory" :key="term">
-              <div class="flex items-center justify-between w-full p-2 text-left text-gray-700 hover:bg-gray-50 rounded-lg group transition-all duration-200">
-                <!-- Clickable search term area -->
+              <div class="flex items-center justify-start w-full p-2 text-left text-gray-700 rounded-lg">
+                <!-- Left side: Clock icon + search term -->
                 <button
                   @click="searchFromHistory(term)"
-                  class="flex items-center space-x-3 flex-1 min-w-0 text-left  transition-transform duration-200"
+                  class="flex items-center space-x-2  text-left"
                 >
                   <svg
                     class="w-4 h-4 text-gray-400 flex-shrink-0"
@@ -147,10 +166,10 @@
                   <span x-text="term" class="truncate"></span>
                 </button>
 
-                <!-- Remove button - always visible but subtle -->
+                <!-- Right side: Remove button close to text -->
                 <button
                   @click.stop="removeFromHistory(term)"
-                  class="flex-shrink-0 ml-2 p-1 text-gray-400 hover:text-black hover:bg-gray-200 rounded-full transition-all duration-200 "
+                  class="flex-shrink-0 ml-2 p-1 text-gray-400"
                   :title="`Remove '${term}' from history`"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,7 +281,7 @@
       >
         <h5>Productos encontrados (<span x-text="searchResults.length"></span>)</h5>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-0.5 lg:gap-1">
           <template x-for="result in searchResults" :key="result.id">
             <div class="product-result-card">
               <a
@@ -286,7 +305,7 @@
                 <div class="space-y-2">
                   <p
                     class="body-sm lg:body font-semibold"
-                    x-text="result.title"
+                    x-text="cleanProductTitle(result.title)"
                   ></p>
                 </div>
               </a>
@@ -299,7 +318,8 @@
             @click="viewAllResults"
             class="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 "
           >
-            Ver todos los <span x-text="searchResults.length"></span> resultados
+            {{ settings.search_view_all_text | default: 'Ver todos' }} los
+            <span x-text="searchResults.length"></span> resultados
           </button>
         </div>
       </div>
@@ -471,6 +491,61 @@
         this.addToHistory(this.searchQuery);
         this.closeDrawer();
         window.location.href = searchUrl;
+      },
+
+      cleanProductTitle(title) {
+        if (!title) return '';
+
+        // Remove numbers and special characters (same logic as product-card)
+        let cleanedTitle = title;
+
+        // Remove numbers
+        cleanedTitle = cleanedTitle
+          .replace(/0/g, '')
+          .replace(/1/g, '')
+          .replace(/2/g, '')
+          .replace(/3/g, '')
+          .replace(/4/g, '')
+          .replace(/5/g, '')
+          .replace(/6/g, '')
+          .replace(/7/g, '')
+          .replace(/8/g, '')
+          .replace(/9/g, '');
+
+        // Remove special characters
+        cleanedTitle = cleanedTitle
+          .replace(/!/g, '')
+          .replace(/@/g, '')
+          .replace(/#/g, '')
+          .replace(/\$/g, '')
+          .replace(/%/g, '')
+          .replace(/\^/g, '')
+          .replace(/&/g, '')
+          .replace(/\*/g, '')
+          .replace(/\(/g, '')
+          .replace(/\)/g, '')
+          .replace(/_/g, '')
+          .replace(/\+/g, '')
+          .replace(/=/g, '')
+          .replace(/-/g, '')
+          .replace(/\[/g, '')
+          .replace(/\]/g, '')
+          .replace(/\{/g, '')
+          .replace(/\}/g, '')
+          .replace(/;/g, '')
+          .replace(/:/g, '')
+          .replace(/,/g, '')
+          .replace(/\./g, '')
+          .replace(/</g, '')
+          .replace(/>/g, '')
+          .replace(/\?/g, '')
+          .replace(/~/g, '')
+          .replace(/'/g, '')
+          .replace(/"/g, '')
+          .replace(/\\/g, '')
+          .replace(/\//g, '');
+
+        return cleanedTitle.trim();
       },
 
       initializeCarousels() {

@@ -78,6 +78,19 @@
       },
       "block_order": ["benefit_1", "benefit_2", "benefit_3"]
     },
+    "product_reviews_section": {
+      "type": "product-reviews",
+      "settings": {
+        "show_review_form": true,
+        "write_review_text": "Write a Review",
+        "form_title": "Escribir una Reseña",
+        "submit_button_text": "Submit Review",
+        "allow_image_upload": true,
+        "allow_video_upload": true,
+        "show_additional_fields": true,
+        "api_base_url": "http://localhost:3001/api/reviews"
+      }
+    },
     "product_carousel_pRd38z": {
       "type": "product-carousel",
       "name": "Product Carousel",
@@ -105,6 +118,7 @@
     "main",
     "product_benefits_xxxxxx",
     "related_collections_carousel_1",
+    "product_reviews_section",
     "product_carousel_pRd38z"
   ]
 }

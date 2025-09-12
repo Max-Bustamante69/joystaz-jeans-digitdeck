@@ -117,6 +117,22 @@
         "default": "Recent Searches"
       },
       {
+        "type": "text",
+        "id": "search_clear_all_text",
+        "label": "Clear All Button Text",
+        "default": "Clear all"
+      },
+      {
+        "type": "header",
+        "content": "Search Results"
+      },
+      {
+        "type": "text",
+        "id": "search_view_all_text",
+        "label": "View All Button Text",
+        "default": "Ver todos"
+      },
+      {
         "type": "header",
         "content": "Category Grid"
       },

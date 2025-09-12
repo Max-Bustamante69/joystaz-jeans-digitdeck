@@ -1,0 +1,1017 @@
+{% comment %}
+  Product Reviews Section
+
+  Modular reviews section that can be placed anywhere in product templates
+  Features:
+  - Reviews statistics and list
+  - Review form drawer
+  - Fully self-contained JavaScript
+  - Works with any product context
+{% endcomment %}
+
+<div class="product-reviews-section py-12 lg:py-16 bg-white">
+  <div class="container lg:px-12">
+    <div class="reviews-container">
+      <!-- Reviews Statistics -->
+      <div id="reviews-stats-{{ product.id }}" class="reviews-stats mb-8">
+        <!-- Stats will be loaded dynamically -->
+      </div>
+
+      <!-- Reviews List -->
+      <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
+        <!-- Reviews will be loaded dynamically -->
+      </div>
+
+      <!-- Review Form Toggle Button -->
+      {% if section.settings.show_review_form %}
+        <div class="review-form-toggle">
+          <button
+            class="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2"
+            id="write-review-btn-{{ product.id }}"
+          >
+            <span class="text-xl">✍️</span>
+            {{ section.settings.write_review_text | default: 'Write a Review' }}
+          </button>
+        </div>
+      {% endif %}
+
+      <!-- Review Form Drawer (Hidden by default) -->
+      <div
+        class="review-form-container fixed inset-0 z-50 hidden"
+        id="review-form-container-{{ product.id }}"
+        style="display: none;"
+      >
+        <!-- Backdrop -->
+        <div
+          class="absolute inset-0 bg-black/70 opacity-0 transition ease-out duration-500"
+          id="review-overlay-{{ product.id }}"
+        ></div>
+
+        <!-- Drawer -->
+        <div
+          class="absolute right-0 top-0 h-full w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform transition ease-out duration-350 translate-x-full"
+          id="review-drawer-{{ product.id }}"
+        >
+          <!-- Header -->
+          <div class="review-form-header flex items-center justify-between p-6 border-b border-gray-200 bg-white">
+            <h3 class="text-lg font-semibold text-gray-900">
+              {{ section.settings.form_title | default: 'Escribir una Reseña' }}
+            </h3>
+            <button
+              class="close-form-btn text-gray-400 hover:text-gray-600 text-2xl font-bold"
+              id="close-form-btn-{{ product.id }}"
+            >
+              &times;
+            </button>
+          </div>
+
+          <!-- Scrollable Content -->
+          <div class="flex-1 overflow-y-auto p-0">
+            <div class="p-6">
+              <!-- Native Review Form -->
+              <form id="review-form-{{ product.id }}" class="review-form space-y-6">
+                <div class="form-group">
+                  <label for="rating-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                    >Overall Rating *</label
+                  >
+                  <div class="rating-group flex items-center gap-4">
+                    <div class="star-rating flex gap-1" id="overallRating-{{ product.id }}">
+                      <span
+                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                        data-rating="1"
+                        >★</span
+                      >
+                      <span
+                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                        data-rating="2"
+                        >★</span
+                      >
+                      <span
+                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                        data-rating="3"
+                        >★</span
+                      >
+                      <span
+                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                        data-rating="4"
+                        >★</span
+                      >
+                      <span
+                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                        data-rating="5"
+                        >★</span
+                      >
+                    </div>
+                    <span id="ratingText-{{ product.id }}" class="text-sm text-gray-800 font-medium"
+                      >Rating: <span class="font-semibold">Click to rate</span></span
+                    >
+                  </div>
+                  <input type="hidden" id="rating-{{ product.id }}" name="rating" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="title-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                    >Review Title *</label
+                  >
+                  <input
+                    type="text"
+                    id="title-{{ product.id }}"
+                    name="title"
+                    maxlength="200"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Summarize your experience"
+                  >
+                </div>
+
+                <div class="form-group">
+                  <label for="body-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                    >Review *</label
+                  >
+                  <textarea
+                    id="body-{{ product.id }}"
+                    name="body"
+                    maxlength="2000"
+                    placeholder="Tell us about your experience with this product..."
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32 resize-vertical"
+                  ></textarea>
+                </div>
+
+                <!-- Image Upload Section -->
+                {% if section.settings.allow_image_upload %}
+                  <div class="form-group">
+                    <label for="image-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                      >Product Photo *</label
+                    >
+                    <div class="image-upload-container">
+                      <input
+                        type="file"
+                        id="image-{{ product.id }}"
+                        name="image"
+                        accept="image/*"
+                        required
+                        class="hidden"
+                      >
+                      <div
+                        class="image-upload-area border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
+                        onclick="document.getElementById('image-{{ product.id }}').click()"
+                      >
+                        <div class="image-preview hidden mb-3" id="image-preview-{{ product.id }}">
+                          <img
+                            id="preview-img-{{ product.id }}"
+                            class="max-w-full h-32 object-cover rounded-lg mx-auto"
+                            width="200"
+                            height="128"
+                          >
+                        </div>
+                        <div class="upload-placeholder" id="upload-placeholder-{{ product.id }}">
+                          <svg
+                            class="mx-auto h-12 w-12 text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                          >
+                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <p class="mt-2 text-sm text-gray-600">Click to upload a photo</p>
+                          <p class="text-xs text-gray-500">PNG, JPG up to 10MB</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                <!-- Video Upload Section -->
+                {% if section.settings.allow_video_upload %}
+                  <div class="form-group">
+                    <label for="video-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                      >Product Video (Optional)</label
+                    >
+                    <div class="video-upload-container">
+                      <input
+                        type="file"
+                        id="video-{{ product.id }}"
+                        name="video"
+                        accept="video/*"
+                        class="hidden"
+                      >
+                      <div
+                        class="video-upload-area border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
+                        onclick="document.getElementById('video-{{ product.id }}').click()"
+                      >
+                        <div class="video-preview hidden mb-3" id="video-preview-{{ product.id }}">
+                          <video
+                            id="preview-video-{{ product.id }}"
+                            class="max-w-full h-32 object-cover rounded-lg mx-auto"
+                            controls
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                        </div>
+                        <div class="upload-placeholder" id="video-upload-placeholder-{{ product.id }}">
+                          <svg
+                            class="mx-auto h-12 w-12 text-gray-400"
+                            stroke="currentColor"
+                            fill="none"
+                            viewBox="0 0 48 48"
+                          >
+                            <path d="M15 10l4 4-4 4m6-8h8a2 2 0 012 2v12a2 2 0 01-2 2h-8m-6-4l4 4-4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                          </svg>
+                          <p class="mt-2 text-sm text-gray-600">Click to upload a video</p>
+                          <p class="text-xs text-gray-500">MP4, MOV up to 50MB</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div class="form-group">
+                    <label for="authorName-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                      >Your Name *</label
+                    >
+                    <input
+                      type="text"
+                      id="authorName-{{ product.id }}"
+                      name="authorName"
+                      maxlength="100"
+                      required
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                  </div>
+                  <div class="form-group">
+                    <label for="authorEmail-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                      >Your Email *</label
+                    >
+                    <input
+                      type="email"
+                      id="authorEmail-{{ product.id }}"
+                      name="authorEmail"
+                      required
+                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                  </div>
+                </div>
+
+                {% if section.settings.show_additional_fields %}
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="form-group">
+                      <label for="ageRange-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                        >Age Range</label
+                      >
+                      <select
+                        id="ageRange-{{ product.id }}"
+                        name="ageRange"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="">Select age range</option>
+                        <option value="18-24">18-24</option>
+                        <option value="25-34">25-34</option>
+                        <option value="35-44">35-44</option>
+                        <option value="45-54">45-54</option>
+                        <option value="55-64">55-64</option>
+                        <option value="65+">65+</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="sizePurchased-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
+                        >Size Purchased</label
+                      >
+                      <input
+                        type="text"
+                        id="sizePurchased-{{ product.id }}"
+                        name="sizePurchased"
+                        maxlength="50"
+                        placeholder="e.g., M, L, XL"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                    </div>
+                  </div>
+
+                  <!-- Fit Rating Slider -->
+                  <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                      >How well does the clothing item fit? *</label
+                    >
+                    <div class="fit-rating-container">
+                      <div class="fit-slider-wrapper relative">
+                        <input
+                          type="range"
+                          id="fitRating-{{ product.id }}"
+                          name="fitRating"
+                          min="1"
+                          max="5"
+                          value="3"
+                          step="1"
+                          class="fit-slider w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                        >
+                        <div class="fit-labels flex justify-between mt-2 text-xs text-gray-600">
+                          <span>Muy pequeño</span>
+                          <span>Pequeño</span>
+                          <span>Perfecto</span>
+                          <span>Grande</span>
+                          <span>Muy grande</span>
+                        </div>
+                        <div class="fit-value text-center mt-2">
+                          <span id="fit-value-{{ product.id }}" class="text-sm font-medium text-gray-900"
+                            >Perfecto</span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Shipping Rating -->
+                  <div class="form-group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Shipping Rating</label>
+                    <div class="rating-group">
+                      <div class="star-rating flex gap-1" id="shippingRating-{{ product.id }}">
+                        <span
+                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                          data-rating="1"
+                          >★</span
+                        >
+                        <span
+                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                          data-rating="2"
+                          >★</span
+                        >
+                        <span
+                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                          data-rating="3"
+                          >★</span
+                        >
+                        <span
+                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                          data-rating="4"
+                          >★</span
+                        >
+                        <span
+                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
+                          data-rating="5"
+                          >★</span
+                        >
+                      </div>
+                    </div>
+                    <input type="hidden" id="shippingRatingValue-{{ product.id }}" name="shippingRating">
+                  </div>
+                {% endif %}
+
+                <div class="space-y-4">
+                  <div class="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="isVerifiedBuyer-{{ product.id }}"
+                      name="isVerifiedBuyer"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    >
+                    <label for="isVerifiedBuyer-{{ product.id }}" class="ml-2 block text-sm text-gray-700">
+                      I am a verified buyer of this product
+                    </label>
+                  </div>
+                  <div class="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="recommendsProduct-{{ product.id }}"
+                      name="recommendsProduct"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    >
+                    <label for="recommendsProduct-{{ product.id }}" class="ml-2 block text-sm text-gray-700">
+                      I recommend this product
+                    </label>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  id="submitBtn-{{ product.id }}"
+                >
+                  {{ section.settings.submit_button_text | default: 'Submit Review' }}
+                </button>
+              </form>
+
+              <div class="loading hidden p-6 text-center" id="loading-{{ product.id }}">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
+                <p class="text-gray-600">Submitting your review...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Product Reviews JavaScript - Self-contained and modular
+  (function() {
+    const productId = {{ product.id }};
+    const API_BASE_URL = '{{ section.settings.api_base_url | default: "http://localhost:3001/api/reviews" }}';
+
+    // DOM Elements
+    const reviewsStats = document.getElementById('reviews-stats-' + productId);
+    const reviewsList = document.getElementById('reviews-list-' + productId);
+    const writeReviewBtn = document.getElementById('write-review-btn-' + productId);
+    const reviewFormContainer = document.getElementById('review-form-container-' + productId);
+    const closeFormBtn = document.getElementById('close-form-btn-' + productId);
+    const reviewForm = document.getElementById('review-form-' + productId);
+    const submitBtn = document.getElementById('submitBtn-' + productId);
+    const loading = document.getElementById('loading-' + productId);
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeReviews);
+    } else {
+      initializeReviews();
+    }
+
+    function initializeReviews() {
+      if (reviewsStats) { loadReviewStats(); }
+      if (reviewsList) { loadReviews(); }
+      setupEventListeners();
+      initializeStarRatings();
+      initializeFitSlider();
+      initializeFileUploads();
+    }
+
+    // Event Listeners
+    function setupEventListeners() {
+      if (writeReviewBtn) {
+        writeReviewBtn.addEventListener('click', toggleReviewForm);
+      }
+      if (closeFormBtn) {
+        closeFormBtn.addEventListener('click', toggleReviewForm);
+      }
+      if (reviewForm) {
+        reviewForm.addEventListener('submit', handleFormSubmit);
+      }
+    }
+
+    // Star Rating Functionality
+    function initializeStarRatings() {
+      const ratingGroups = [
+        { id: 'overallRating-' + productId, hiddenId: 'rating-' + productId, textId: 'ratingText-' + productId },
+        { id: 'shippingRating-' + productId, hiddenId: 'shippingRatingValue-' + productId }
+      ];
+
+      ratingGroups.forEach(group => {
+        const starContainer = document.getElementById(group.id);
+        const hiddenInput = document.getElementById(group.hiddenId);
+        const textElement = document.getElementById(group.textId);
+
+        if (starContainer) {
+          const stars = starContainer.querySelectorAll('.star');
+          let currentRating = 0;
+
+          stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+              currentRating = index + 1;
+              updateStarDisplay(stars, currentRating);
+              hiddenInput.value = currentRating;
+              
+              if (textElement) {
+                const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+                textElement.textContent = ratingTexts[currentRating] || 'Click to rate';
+              }
+            });
+
+            star.addEventListener('mouseenter', () => {
+              updateStarDisplay(stars, index + 1);
+            });
+          });
+
+          starContainer.addEventListener('mouseleave', () => {
+            updateStarDisplay(stars, currentRating);
+          });
+        }
+      });
+    }
+
+    // Fit Rating Slider
+    function initializeFitSlider() {
+      const fitSlider = document.getElementById('fitRating-' + productId);
+      const fitValue = document.getElementById('fit-value-' + productId);
+      
+      if (fitSlider && fitValue) {
+        const fitLabels = ['Muy pequeño', 'Pequeño', 'Perfecto', 'Grande', 'Muy grande'];
+        
+        fitSlider.addEventListener('input', function() {
+          const value = parseInt(this.value);
+          fitValue.textContent = fitLabels[value - 1];
+        });
+      }
+    }
+
+    // File Upload Functionality
+    function initializeFileUploads() {
+      // Image upload
+      const imageInput = document.getElementById('image-' + productId);
+      const imagePreview = document.getElementById('image-preview-' + productId);
+      const previewImg = document.getElementById('preview-img-' + productId);
+      const uploadPlaceholder = document.getElementById('upload-placeholder-' + productId);
+
+      if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              previewImg.src = e.target.result;
+              imagePreview.classList.remove('hidden');
+              uploadPlaceholder.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Video upload
+      const videoInput = document.getElementById('video-' + productId);
+      const videoPreview = document.getElementById('video-preview-' + productId);
+      const previewVideo = document.getElementById('preview-video-' + productId);
+      const videoUploadPlaceholder = document.getElementById('video-upload-placeholder-' + productId);
+
+      if (videoInput) {
+        videoInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            const url = URL.createObjectURL(file);
+            previewVideo.src = url;
+            videoPreview.classList.remove('hidden');
+            videoUploadPlaceholder.classList.add('hidden');
+          }
+        });
+      }
+    }
+
+    function updateStarDisplay(stars, rating) {
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.remove('text-gray-300');
+          star.classList.add('text-yellow-400');
+        } else {
+          star.classList.remove('text-yellow-400');
+          star.classList.add('text-gray-300');
+        }
+      });
+    }
+
+    // Form Handling
+    function toggleReviewForm() {
+      const isHidden = reviewFormContainer.style.display === 'none';
+      const overlay = document.getElementById('review-overlay-' + productId);
+      const drawer = document.getElementById('review-drawer-' + productId);
+
+      if (isHidden) {
+        // Open drawer
+        reviewFormContainer.style.display = 'block';
+
+        // Animate in
+        requestAnimationFrame(() => {
+          if (overlay) overlay.style.opacity = '1';
+          if (drawer) drawer.classList.remove('translate-x-full');
+        });
+
+        // Lock body scroll and preserve position
+        const y = window.scrollY || window.pageYOffset;
+        document.body.dataset.scrollY = String(y);
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.top = `-${y}px`;
+
+        // Close on overlay click
+        if (overlay) overlay.onclick = () => toggleReviewForm();
+        const closeBtn = document.getElementById('close-form-btn-' + productId);
+        if (closeBtn) closeBtn.onclick = () => toggleReviewForm();
+      } else {
+        // Animate out
+        if (overlay) overlay.style.opacity = '0';
+        if (drawer) drawer.classList.add('translate-x-full');
+
+        // After animation, hide and restore scroll
+        setTimeout(() => {
+          reviewFormContainer.style.display = 'none';
+          const topPx = document.body.style.top || '0';
+          const topVal = parseInt(topPx, 10) || 0;
+          const storedY = parseInt(document.body.dataset.scrollY || '0', 10) || 0;
+          const targetY = topVal ? Math.abs(topVal) : storedY;
+
+          // Clear fixed positioning first
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.width = '';
+          document.body.style.top = '';
+
+          // Restore scroll exactly on next frame to avoid jank
+          requestAnimationFrame(() => {
+            window.scrollTo(0, targetY);
+            delete document.body.dataset.scrollY;
+          });
+        }, 380);
+      }
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(reviewForm);
+      const reviewData = {
+        productId: productId,
+        rating: parseInt(formData.get('rating')),
+        title: formData.get('title'),
+        body: formData.get('body'),
+        authorName: formData.get('authorName'),
+        authorEmail: formData.get('authorEmail'),
+        ageRange: formData.get('ageRange') || null,
+        sizePurchased: formData.get('sizePurchased') || null,
+        fitRating: parseInt(formData.get('fitRating')),
+        shippingRating: parseInt(formData.get('shippingRating')) || null,
+        isVerifiedBuyer: formData.get('isVerifiedBuyer') === 'on',
+        recommendsProduct: formData.get('recommendsProduct') === 'on'
+      };
+
+      // Handle file uploads
+      const imageFile = formData.get('image');
+      const videoFile = formData.get('video');
+
+      if (imageFile && imageFile.size > 0) {
+        reviewData.image = await convertFileToBase64(imageFile);
+      }
+
+      if (videoFile && videoFile.size > 0) {
+        reviewData.video = await convertFileToBase64(videoFile);
+      }
+
+      // Show loading state
+      reviewForm.style.display = 'none';
+      loading.classList.remove('hidden');
+
+      try {
+        const response = await fetch(API_BASE_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(reviewData)
+        });
+
+        if (response.ok) {
+          // Show success message
+          showAlert('Thank you for your review! It will be published after moderation.', 'success');
+          
+          // Reset form
+          reviewForm.reset();
+          resetForm();
+          
+          // Hide form
+          reviewFormContainer.style.display = 'none';
+          
+          // Reload reviews and stats
+          loadReviewStats();
+          loadReviews();
+        } else {
+          const errorData = await response.json();
+          showAlert(errorData.message || 'Failed to submit review. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Error submitting review:', error);
+        showAlert('Network error. Please check your connection and try again.', 'error');
+      } finally {
+        // Hide loading state
+        loading.classList.add('hidden');
+        reviewForm.style.display = 'block';
+      }
+    }
+
+    function convertFileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    function resetForm() {
+      // Reset star ratings
+      const ratingGroups = ['overallRating-' + productId, 'shippingRating-' + productId];
+      ratingGroups.forEach(groupId => {
+        const stars = document.querySelectorAll('#' + groupId + ' .star');
+        stars.forEach(star => {
+          star.classList.remove('text-yellow-400');
+          star.classList.add('text-gray-300');
+        });
+      });
+      
+      // Reset rating text
+      const ratingText = document.getElementById('ratingText-' + productId);
+      if (ratingText) {
+        ratingText.textContent = 'Click to rate';
+      }
+
+      // Reset fit slider
+      const fitSlider = document.getElementById('fitRating-' + productId);
+      const fitValue = document.getElementById('fit-value-' + productId);
+      if (fitSlider && fitValue) {
+        fitSlider.value = 3;
+        fitValue.textContent = 'Perfecto';
+      }
+
+      // Reset file previews
+      const imagePreview = document.getElementById('image-preview-' + productId);
+      const videoPreview = document.getElementById('video-preview-' + productId);
+      const uploadPlaceholder = document.getElementById('upload-placeholder-' + productId);
+      const videoUploadPlaceholder = document.getElementById('video-upload-placeholder-' + productId);
+
+      if (imagePreview) imagePreview.classList.add('hidden');
+      if (videoPreview) videoPreview.classList.add('hidden');
+      if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
+      if (videoUploadPlaceholder) videoUploadPlaceholder.classList.remove('hidden');
+    }
+
+    // API Calls
+    async function loadReviewStats() {
+      if (!reviewsStats) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/stats/${productId}`);
+        if (response.ok) {
+          const stats = await response.json();
+          if (stats) displayReviewStats(stats);
+        } else {
+          reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews yet</p>';
+        }
+      } catch (error) {
+        console.error('Error loading review stats:', error);
+        reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading statistics</p>';
+      }
+    }
+
+    async function loadReviews() {
+      if (!reviewsList) return;
+      try {
+        const response = await fetch(`${API_BASE_URL}/product/${productId}`);
+        if (response.ok) {
+          const reviews = await response.json();
+          if (Array.isArray(reviews)) {
+            displayReviews(reviews);
+          } else {
+            reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
+          }
+        } else {
+          reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
+        }
+      } catch (error) {
+        console.error('Error loading reviews:', error);
+        reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading reviews</p>';
+      }
+    }
+
+    // Display Functions
+    function displayReviewStats(stats) {
+      if (!reviewsStats || !stats) return;
+      const average = Number(stats.averageRating || 0);
+      const total = Number(stats.totalReviews || 0);
+      const verified = Number(stats.verifiedBuyers || 0);
+      const rec = Number(Math.round(stats.recommendationRate || 0));
+      const fiveStar = (stats.ratingDistribution && stats.ratingDistribution[5]) || 0;
+
+      const statsHtml = `
+        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="text-center">
+              <div class="text-3xl font-bold text-gray-900">${average.toFixed(1)}</div>
+              <div class="flex justify-center mt-1">
+                ${generateStars(average)}
+              </div>
+              <div class="text-sm text-gray-600 mt-1">${total} review${total !== 1 ? 's' : ''}</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-semibold text-gray-900">${verified}</div>
+              <div class="text-sm text-gray-600">Verified Buyers</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-semibold text-gray-900">${rec}%</div>
+              <div class="text-sm text-gray-600">Recommend</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-semibold text-gray-900">${fiveStar}</div>
+              <div class="text-sm text-gray-600">5-Star Reviews</div>
+            </div>
+          </div>
+        </div>
+      `;
+      reviewsStats.innerHTML = statsHtml;
+    }
+
+    function displayReviews(reviews) {
+      if (!reviewsList) return;
+      if (!Array.isArray(reviews) || reviews.length === 0) {
+        reviewsList.innerHTML = '<p class="text-gray-500 text-center py-8">No reviews yet. Be the first to review this product!</p>';
+        return;
+      }
+
+      const reviewsHtml = reviews.map(review => `
+        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+          <div class="flex items-start justify-between mb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                <span class="text-gray-600 font-semibold">${review.authorName.charAt(0).toUpperCase()}</span>
+              </div>
+              <div>
+                <div class="font-semibold text-gray-900">${review.authorName}</div>
+                <div class="flex items-center gap-2">
+                  ${generateStars(review.rating)}
+                  <span class="text-sm text-gray-500">${formatDate(review.createdAt)}</span>
+                </div>
+              </div>
+            </div>
+            ${review.isVerifiedBuyer ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Verified Buyer</span>' : ''}
+          </div>
+          
+          <h4 class="font-semibold text-gray-900 mb-2">${review.title}</h4>
+          <p class="text-gray-700 mb-4">${review.body}</p>
+          
+          ${review.image ? `
+            <div class="mb-4">
+              <img src="${review.image}" alt="Review image" class="max-w-full h-48 object-cover rounded-lg" />
+            </div>
+          ` : ''}
+          
+          ${review.video ? `
+            <div class="mb-4">
+              <video controls class="max-w-full h-48 object-cover rounded-lg">
+                <source src="${review.video}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          ` : ''}
+          
+          ${review.ageRange || review.sizePurchased ? `
+            <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+              ${review.ageRange ? `<span>Age: ${review.ageRange}</span>` : ''}
+              ${review.sizePurchased ? `<span>Size: ${review.sizePurchased}</span>` : ''}
+            </div>
+          ` : ''}
+          
+          ${review.fitRating ? `
+            <div class="flex items-center gap-2 text-sm mb-2">
+              <span class="text-gray-600">Fit:</span>
+              <span class="font-medium text-blue-600">${getFitLabel(review.fitRating)}</span>
+            </div>
+          ` : ''}
+          
+          ${review.shippingRating ? `
+            <div class="flex items-center gap-1 text-sm">
+              <span class="text-gray-600">Shipping:</span>
+              ${generateStars(review.shippingRating, 'text-sm')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      reviewsList.innerHTML = reviewsHtml;
+    }
+
+    function getFitLabel(rating) {
+      const labels = ['', 'Muy pequeño', 'Pequeño', 'Perfecto', 'Grande', 'Muy grande'];
+      return labels[rating] || '';
+    }
+
+    function generateStars(rating, sizeClass = '') {
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 !== 0;
+      let stars = '';
+
+      for (let i = 0; i < fullStars; i++) {
+        stars += `<span class="text-yellow-400 ${sizeClass}">★</span>`;
+      }
+      
+      if (hasHalfStar) {
+        stars += `<span class="text-yellow-400 ${sizeClass}">★</span>`;
+      }
+      
+      const emptyStars = 5 - Math.ceil(rating);
+      for (let i = 0; i < emptyStars; i++) {
+        stars += `<span class="text-gray-300 ${sizeClass}">★</span>`;
+      }
+      
+      return stars;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+    }
+
+    function showAlert(message, type) {
+      const alertClass = type === 'success' 
+        ? 'bg-green-100 border-green-400 text-green-700' 
+        : 'bg-red-100 border-red-400 text-red-700';
+      
+      const alert = document.createElement('div');
+      alert.className = `fixed top-4 right-4 p-4 border rounded-lg shadow-lg z-50 max-w-sm ${alertClass}`;
+      alert.innerHTML = `
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium">${message}</span>
+          <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-lg">&times;</button>
+        </div>
+      `;
+      
+      document.body.appendChild(alert);
+      
+      setTimeout(() => {
+        if (document.body.contains(alert)) {
+          alert.remove();
+        }
+      }, 5000);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product Reviews",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Review Form Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_review_form",
+      "label": "Show Review Form",
+      "default": true,
+      "info": "Enable/disable the review form functionality"
+    },
+    {
+      "type": "text",
+      "id": "write_review_text",
+      "label": "Write Review Button Text",
+      "default": "Write a Review",
+      "info": "Text for the write review button"
+    },
+    {
+      "type": "text",
+      "id": "form_title",
+      "label": "Form Title",
+      "default": "Escribir una Reseña",
+      "info": "Title shown in the review form drawer"
+    },
+    {
+      "type": "text",
+      "id": "submit_button_text",
+      "label": "Submit Button Text",
+      "default": "Submit Review",
+      "info": "Text for the form submit button"
+    },
+    {
+      "type": "header",
+      "content": "Form Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_image_upload",
+      "label": "Allow Image Upload",
+      "default": true,
+      "info": "Enable image upload in review form"
+    },
+    {
+      "type": "checkbox",
+      "id": "allow_video_upload",
+      "label": "Allow Video Upload",
+      "default": true,
+      "info": "Enable video upload in review form"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_additional_fields",
+      "label": "Show Additional Fields",
+      "default": true,
+      "info": "Show age range, size, fit rating, and shipping rating fields"
+    },
+    {
+      "type": "header",
+      "content": "API Configuration"
+    },
+    {
+      "type": "text",
+      "id": "api_base_url",
+      "label": "API Base URL",
+      "default": "http://localhost:3001/api/reviews",
+      "info": "Base URL for the reviews API"
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}

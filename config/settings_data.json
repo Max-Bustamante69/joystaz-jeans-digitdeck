@@ -9,6 +9,31 @@
  */
 {
   "current": {
-    "primary_color": "#3b2e10"
+    "primary_color": "#3b2e10",
+    "search_featured_tags_title": "Categorías populares",
+    "search_history_title": "Busquedas Recientes",
+    "search_category_grid_title": "Compra por Categoría",
+    "search_product_carousel_title": "Productos Destacados",
+    "search_product_source": "manual",
+    "search_collection": "jean-hombre",
+    "search_products": [
+      "baby-tank-p70082",
+      "bermuda-cargo-con-cordon-764007",
+      "bermuda-dirty-764003",
+      "bermuda-con-destroyer-764017",
+      "bermuda-cargo-negra-764013",
+      "bermuda-cargo-con-sesgos-a-los-lados-764015",
+      "bermuda-camuflada-764004",
+      "camiseta-beverly-hills-p75003",
+      "bermuda-con-sesgos-764014"
+    ],
+    "search_featured_collections": [
+      "men"
+    ],
+    "search_category_collections": [
+      "men",
+      "jeans-mujer"
+    ],
+    "content_for_index": []
   }
 }

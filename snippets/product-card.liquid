@@ -408,7 +408,12 @@
         {% endfor %}
         <div class="flex items-center gap-2">
           {% if show_rating %}
-            {% render 'product-rating', product: product, size: 'md', color: 'text-[#f3a000]', show_review_count: false %}
+            {% render 'product-rating',
+              product: product,
+              size: 'md',
+              color: 'text-[#f3a000]',
+              show_review_count: false
+            %}
           {% else %}
             <!-- Empty div for spacing when no rating -->
           {% endif %}

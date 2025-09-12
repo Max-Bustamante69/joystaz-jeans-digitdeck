@@ -57,7 +57,6 @@
         "benefit_1": {
           "type": "benefit_item",
           "settings": {
-            "icon": "truck",
             "title": "El Doble De Suavidad Que El Algodón",
             "description": "<p>Your refuge for skin wellbeing—hydrating, enhancing, and protecting every day.</p>"
           }
@@ -65,7 +64,6 @@
         "benefit_2": {
           "type": "benefit_item",
           "settings": {
-            "icon": "heart",
             "title": "Comfortable All Day",
             "description": "<p>Experience unmatched comfort that lasts throughout your entire day.</p>"
           }
@@ -73,7 +71,6 @@
         "benefit_3": {
           "type": "benefit_item",
           "settings": {
-            "icon": "shield",
             "title": "Premium Quality",
             "description": "<p>Made with the finest materials and attention to detail.</p>"
           }

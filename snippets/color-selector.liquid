@@ -22,7 +22,7 @@
 
 {% for product_option in product.options_with_values %}
   {% if product_option.name == 'Color' %}
-    <div class="space-y-2">
+    <div class="flex flex-col gap-2">
       {% if show_main_label %}
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -30,13 +30,13 @@
               Elije un color
               {% if product_number %}
                 <p
-                  class="body font-semibold text-gray-400"
+                  class="body font-semibold text-black/50"
                   x-show="{{ selected_color_variable | remove: "'" }}.color"
                   x-text="{{ selected_color_variable | remove: "'" }}.color"
                 ></p>
               {% else %}
                 <p
-                  class="body font-semibold text-gray-400"
+                  class="body font-semibold text-black/50"
                   x-show="{{ selected_color_variable }}"
                   x-text="{{ selected_color_variable }}"
                 ></p>
@@ -73,7 +73,7 @@
           {% endif %}
         </label>
       {% endif %}
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1" :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''">
         {% for product_option_value in product_option.values %}
           {% comment %} Find a variant with this color to get its image {% endcomment %}
           {% assign color_variant = null %}
@@ -94,7 +94,7 @@
               @click="window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}') ? {{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }}) : null"
               :class="
                 [
-                  {{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400',
+                  {{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
                   (window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}')) ? '' : 'opacity-40 cursor-not-allowed'
                 ]
               "
@@ -103,17 +103,17 @@
               @click="isColorAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }}) : null"
               :class="
                 [
-                  {{ selected_color_variable }} === '{{ product_option_value }}' ? 'ring-2 ring-offset-2 border-transparent ring-gray-900' : 'border-gray-300 hover:border-gray-400',
+                  {{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
                   isColorAvailable('{{ product_option_value }}') ? '' : 'opacity-40 cursor-not-allowed'
                 ]
               "
               :disabled="!isColorAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="relative border-2 transition-all duration-200"
+            class="relative border-1 transition-all duration-200"
             {% if color_variant and color_variant.featured_image %}
-              style="width: 40px; height: 40px; background-image: url({{ color_variant.featured_image | image_url: width: 200 }}); background-size: cover; background-position: center;"
+              style="width: 58px; height: 74px; background-image: url({{ color_variant.featured_image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
             {% elsif product_option_value.swatch.image %}
-              style="width: 40px; height: 40px; background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center;"
+              style="width: 58px; height: 74px; background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
             {% elsif product_option_value.swatch.color %}
               style="width: 32px; height: 32px; background-color: {{ product_option_value.swatch.color }};"
             {% else %}

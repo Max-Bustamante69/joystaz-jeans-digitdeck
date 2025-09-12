@@ -22,7 +22,7 @@
 
 {% for product_option in product.options_with_values %}
   {% if product_option.name == 'Talla' %}
-    <div class="space-y-2">
+    <div class="flex flex-col gap-2">
       {% if show_main_label %}
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -30,13 +30,13 @@
               Elije una talla
               {% if product_number %}
                 <p
-                  class="body font-semibold text-gray-400"
+                  class="body font-semibold text-black/50"
                   x-show="{{ selected_size_variable | remove: "'" }}.size"
                   x-text="{{ selected_size_variable | remove: "'" }}.size"
                 ></p>
               {% else %}
                 <p
-                  class="body font-semibold text-gray-400"
+                  class="body font-semibold text-black/50"
                   x-show="{{ selected_size_variable }}"
                   x-text="{{ selected_size_variable }}"
                 ></p>
@@ -46,7 +46,7 @@
           {% if show_size_guide %}
             <div class="flex items-center gap-1">
               {% render 'size-chart', class: 'w-4 h-4' %}
-              <button class="text-sm text-gray-600 underline hover:text-gray-900 transition-colors ">
+              <button class="text-sm text-black/50 underline hover:text-gray-900 transition-colors ">
                 Guía de tallas
               </button>
             </div>
@@ -70,7 +70,7 @@
           {% endif %}
         </label>
       {% endif %}
-      <div class="flex gap-2">
+      <div class="flex gap-2" :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''">
         {% for product_option_value in product_option.values %}
           {% comment %} Find the first variant that contains this size {% endcomment %}
           {% assign size_variant_id = null %}

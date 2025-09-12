@@ -14,10 +14,10 @@
   - product_title: Display title for the product
 {% endcomment %}
 
-<div class=" p-4 space-y-3">
+<div class=" py-3 space-y-3 last:pb-0">
 
 
-  <div class="py-4">  
+  <div class="">  
   <!-- Color selection -->
   {% if product_number == 1 %}
     {% render 'color-selector',
@@ -37,7 +37,7 @@
   </div>
 
   <!-- Size selection -->
-  <div class="py-4">  
+  <div class="">  
   {% if product_number == 1 %}
     {% render 'size-selector',
       product: product,
@@ -50,7 +50,8 @@
       product: product,
       selected_size_variable: 'duoProduct2',
       click_function: 'selectDuoSize',
-      product_number: product_number
+      product_number: product_number,
+
     %}
   {% endif %}
   </div>

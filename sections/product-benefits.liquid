@@ -9,7 +9,7 @@
 {% endcomment %}
 
 <div class="product-benefits-section py-12 lg:py-16 bg-white">
-  <div class="container mx-auto px-4 lg:px-12">
+  <div class="container   lg:pl-12 ">
     {% comment %} Mobile Layout: Media on top, benefits below {% endcomment %}
     <div class="lg:hidden flex flex-col gap-8">
       <!-- Mobile Media Section -->
@@ -27,9 +27,9 @@
       </div>
     </div>
 
-    {% comment %} Desktop Layout: Benefits on left, media on right {% endcomment %}
-    <div class="hidden lg:flex lg:gap-12 lg:items-start">
-      <!-- Desktop Benefits Section (Left 50%) -->
+    {% comment %} Desktop Layout: Dynamic based on layout setting {% endcomment %}
+    <div class="hidden  lg:flex lg:gap-12 lg:items-start {% if section.settings.layout == 'media-left' %}lg:flex-row-reverse{% endif %}">
+      <!-- Desktop Benefits Section -->
       <div class="lg:w-1/2">
         {% render 'product-benefits-content',
           title: section.settings.title,
@@ -38,7 +38,7 @@
         %}
       </div>
 
-      <!-- Desktop Media Section (Right 50%) -->
+      <!-- Desktop Media Section -->
       <div class="lg:w-1/2">
         {% render 'product-benefits-media', product: product %}
       </div>
@@ -63,6 +63,23 @@
       "id": "subtitle",
       "label": "Section Subtitle",
       "default": "WDWDA"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout Orientation",
+      "options": [
+        {
+          "value": "benefits-left",
+          "label": "Benefits Left, Media Right"
+        },
+        {
+          "value": "media-left",
+          "label": "Media Left, Benefits Right"
+        }
+      ],
+      "default": "benefits-left",
+      "info": "Choose the layout orientation for desktop view"
     }
   ],
   "blocks": [

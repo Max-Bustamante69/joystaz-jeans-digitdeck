@@ -20,7 +20,9 @@
           }
         }
       },
-      "block_order": ["product_gallery_JmAGCm"],
+      "block_order": [
+        "product_gallery_JmAGCm"
+      ],
       "settings": {
         "delivery_days": 7,
         "availability_text": "Aún disponibles",
@@ -30,7 +32,9 @@
         "duo_option_subtitle": "Compra más y ahorra",
         "best_value_text": "Mejor oferta",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": ["bermuda-cargo-764018"],
+        "duo_eligible_products": [
+          "bermuda-cargo-764018"
+        ],
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío gratis En ordenes +500.000",
         "free_returns_text": "Devoluciones gratis y intercambiables",
@@ -41,18 +45,8 @@
         "show_mobile_navigation": true
       }
     },
-    "related_collections_carousel_1": {
-      "type": "related-collections-carousel",
-      "settings": {
-        "max_products": 12
-      }
-    },
     "product_benefits_xxxxxx": {
       "type": "product-benefits",
-      "settings": {
-        "title": "Adios A La Incomodidad",
-        "subtitle": "WDWDA"
-      },
       "blocks": {
         "benefit_1": {
           "type": "benefit_item",
@@ -76,7 +70,17 @@
           }
         }
       },
-      "block_order": ["benefit_1", "benefit_2", "benefit_3"]
+      "block_order": [
+        "benefit_1",
+        "benefit_2",
+        "benefit_3"
+      ],
+      "settings": {
+        "title": "Adios A La Incomodidad",
+        "subtitle": "WDWDA",
+        "layout": "benefits-left",
+        "image_count": "1"
+      }
     },
     "product_reviews_section": {
       "type": "product-reviews",
@@ -91,34 +95,18 @@
         "api_base_url": "http://localhost:3001/api/reviews"
       }
     },
-    "product_carousel_pRd38z": {
-      "type": "product-carousel",
-      "name": "Product Carousel",
+    "related_collections_carousel_1": {
+      "type": "related-collections-carousel",
       "settings": {
-        "title": "Best Sellers",
-        "rich_text": "",
-        "show_view_all": true,
-        "view_all_text": "Ver todos",
-        "view_all_link": "",
-        "show_arrows": true,
-        "product_source": "collection",
-        "collection": "men",
-        "product_tags": "",
-        "products": [],
-        "max_products": 12,
-        "show_badges": true,
-        "show_rating": true,
-        "show_color_swatches": true,
-        "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
+        "carousels_count": 2,
+        "max_products": 12
       }
     }
   },
   "order": [
     "main",
     "product_benefits_xxxxxx",
-    "related_collections_carousel_1",
     "product_reviews_section",
-    "product_carousel_pRd38z"
+    "related_collections_carousel_1"
   ]
 }

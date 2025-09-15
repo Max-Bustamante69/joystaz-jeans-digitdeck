@@ -1,0 +1,337 @@
+{% comment %}
+  Collections Carousel Section
+  Features:
+  - Collections carousel with customizable selection
+  - Reusable carousel component
+  - Collection cards with customizable images and text positioning
+  - Same styling and behavior as product and blog carousels
+{% endcomment %}
+
+{% comment %} Get collections based on selection type {% endcomment %}
+{% assign selected_collections = '' %}
+{% case section.settings.collection_source %}
+  {% when 'all' %}
+    {% assign selected_collections = collections %}
+  {% when 'manual' %}
+    {% assign selected_collections = section.settings.collections %}
+  {% when 'tags' %}
+    {% if section.settings.collection_tags != blank %}
+      {% assign selected_collections = collections %}
+      {% comment %} Filter collections by tags if needed - TODO: implement tag filtering {% endcomment %}
+    {% endif %}
+{% endcase %}
+
+{% comment %} Count available collections {% endcomment %}
+{% assign available_count = 0 %}
+{% for collection in selected_collections %}
+  {% if collection.products.size > 0 %}
+    {% assign available_count = available_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+{% if available_count > 0 %}
+  <section class="py-12 lg:py-10 overflow-x-hidden" id="collections-carousel-{{ section.id }}">
+    <div class="w-full flex flex-col gap-8">
+      {% if section.settings.title != blank %}
+        <div class="flex justify-between items-end mx-4 lg:mx-12">
+          <div class="flex flex-col gap-2">
+            <h2>{{ section.settings.title }}</h2>
+            {% if section.settings.rich_text != blank %}
+              <div class="rich-text">{{ section.settings.rich_text }}</div>
+            {% endif %}
+          </div>
+          <div class="flex items-center gap-8">
+            {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
+              <a
+                href="{{ section.settings.view_all_link }}"
+                class="text-gray-600 hover:text-gray-900 transition-colors underline"
+              >
+                {{ section.settings.view_all_text | default: 'Ver todas' }}
+              </a>
+            {% endif %}
+            {% comment %} Always show arrows for collections carousel {% endcomment %}
+            {% render 'carousel-arrows' %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% comment %} Build carousel content {% endcomment %}
+      {% capture carousel_content %}
+        {% assign collections_shown = 0 %}
+        {% for collection in selected_collections %}
+          {% if collection.products.size > 0 and collections_shown < section.settings.max_collections %}
+            <div class="swiper-slide h-auto flex items-stretch">
+              <div class="w-full flex flex-col max-w-full">
+                {% render 'collection-card',
+                  collection: collection,
+                  image_source: section.settings.image_source,
+                  text_position: section.settings.text_position,
+                  aspect_ratio: section.settings.aspect_ratio
+                %}
+              </div>
+            </div>
+            {% assign collections_shown = collections_shown | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% endcapture %}
+
+      {% comment %} Render carousel using generic carousel snippet {% endcomment %}
+      <div class="px-4 lg:px-12">
+        {% render 'generic-carousel',
+          carousel_id: section.id,
+          carousel_class: 'collections-carousel',
+          content: carousel_content,
+          show_arrows: section.settings.show_arrows,
+          slides_per_view_mobile: section.settings.slides_per_view_mobile,
+          slides_per_view_desktop: section.settings.slides_per_view_desktop,
+          space_between_mobile: section.settings.space_between_mobile,
+          space_between_desktop: section.settings.space_between_desktop,
+          centered_slides: section.settings.centered_slides,
+          free_mode: section.settings.free_mode,
+          total_items: available_count
+        %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Collections Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Carousel Title",
+      "default": "Nuestras Colecciones"
+    },
+    {
+      "type": "richtext",
+      "id": "rich_text",
+      "label": "Rich Text",
+      "info": "Optional rich text content below the title"
+    },
+    {
+      "type": "header",
+      "content": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show View All Link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All Text",
+      "default": "Ver todas"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Collection Selection"
+    },
+    {
+      "type": "select",
+      "id": "collection_source",
+      "label": "Collection Source",
+      "options": [
+        {
+          "value": "all",
+          "label": "All Collections"
+        },
+        {
+          "value": "manual",
+          "label": "Manual Selection"
+        },
+        {
+          "value": "tags",
+          "label": "Collection Tags"
+        }
+      ],
+      "default": "manual"
+    },
+    {
+      "type": "collection_list",
+      "id": "collections",
+      "label": "Manual Collection Selection",
+      "limit": 20,
+      "info": "Select specific collections to display"
+    },
+    {
+      "type": "text",
+      "id": "collection_tags",
+      "label": "Collection Tags",
+      "info": "Comma-separated tags to filter collections (e.g., 'featured,new')"
+    },
+    {
+      "type": "range",
+      "id": "max_collections",
+      "label": "Maximum Collections",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Collection Card Display"
+    },
+    {
+      "type": "select",
+      "id": "image_source",
+      "label": "Image Source",
+      "options": [
+        {
+          "value": "collection_image",
+          "label": "Collection Default Image"
+        },
+        {
+          "value": "collection_card_image",
+          "label": "Collection Card Image (Metafield)"
+        }
+      ],
+      "default": "collection_image"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text Position",
+      "options": [
+        {
+          "value": "bottom-left",
+          "label": "Bottom Left"
+        },
+        {
+          "value": "bottom-center",
+          "label": "Bottom Center"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom Right"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Card Aspect Ratio",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "ultra-wide",
+          "label": "Ultra Wide (21:9)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "Messages"
+    },
+    {
+      "type": "text",
+      "id": "no_collections_message",
+      "label": "No Collections Available Message",
+      "default": "No hay colecciones disponibles en este momento.",
+      "info": "Message shown when no collections are available to display"
+    },
+    {
+      "type": "header",
+      "content": "Carousel Settings"
+    },
+    {
+      "type": "range",
+      "id": "slides_per_view_mobile",
+      "label": "Mobile Slides Per View",
+      "min": 1,
+      "max": 3,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "range",
+      "id": "slides_per_view_desktop",
+      "label": "Desktop Slides Per View",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "space_between_mobile",
+      "label": "Mobile Space Between Slides",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "space_between_desktop",
+      "label": "Desktop Space Between Slides",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "centered_slides",
+      "label": "Center Slides (Mobile)",
+      "default": true,
+      "info": "Center slides on mobile devices"
+    },
+    {
+      "type": "checkbox",
+      "id": "free_mode",
+      "label": "Enable Free Mode",
+      "default": true,
+      "info": "Allow free scrolling between slides"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collections Carousel"
+    }
+  ]
+}
+{% endschema %}

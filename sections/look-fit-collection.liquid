@@ -14,14 +14,6 @@
 
 <!-- Main Container with Alpine.js data -->
 <div x-data="{ layoutOption: 1 }">
-  <!-- Hero Section -->
-  {% render 'generic-hero',
-    image: metaobject.featured_image,
-    title: metaobject.title,
-    description: metaobject.description
-  %}
-
-  
   <!-- Grid Content -->
   {% capture grid_content %}
     {% if metaobject.fits.value.count > 0 %}

@@ -167,8 +167,8 @@
       </div>
     {% endif %}
 
-    <!-- Size Selector Plus Button - positioned in bottom right corner -->
-    {% if product.options contains 'Talla' and wishlist_mode != true %}
+    <!-- Size Selector Plus Button - positioned in bottom right corner (NOT in bundle mode) -->
+    {% if product.options contains 'Talla' and wishlist_mode != true and bundle_mode != true %}
       <button
         class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-30"
         @click.stop.prevent="handlePlusClick"
@@ -181,8 +181,23 @@
       </button>
     {% endif %}
 
-    <!-- Size Selector Grid - Only show if "Talla" is in product options -->
-    {% if product.options contains 'Talla' %}
+    <!-- Bundle Mode Add Button (only show when bundle is not complete) -->
+    {% if bundle_mode == true %}
+      <button
+        class="absolute right-2 bottom-2 w-8 h-8 bg-primary hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white flex items-center justify-center rounded-full shadow-lg transition-all duration-200 z-30"
+        @click.stop.prevent="addToBundleClick"
+        :disabled="window.bundleBuilderInstance && window.bundleBuilderInstance.isBundleComplete"
+        type="button"
+        title="Añadir al bundle"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+      </button>
+    {% endif %}
+
+    <!-- Size Selector Grid - Only show if "Talla" is in product options AND not in bundle mode -->
+    {% if product.options contains 'Talla' and bundle_mode != true %}
       <div
         x-show="showSizeSelector && isDesktop"
         x-transition:enter="transition ease-out duration-300"
@@ -287,45 +302,133 @@
         </div>
       </div>
 
-      {%- comment -%} Mobile Bottom Drawer for Size Selection {%- endcomment -%}
-      <div
-        x-ref="mobileBackdrop"
-        x-show="showSizeSelector && !isDesktop"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="fixed inset-0 bg-black/50 z-40 lg:hidden"
-        @click="closeMobileDrawer()"
-        x-cloak
-      ></div>
+      {%- comment -%} Mobile Bottom Drawer for Size Selection (NOT in bundle mode) {%- endcomment -%}
+      {% if bundle_mode != true %}
+        <div
+          x-ref="mobileBackdrop"
+          x-show="showSizeSelector && !isDesktop"
+          x-transition:enter="transition ease-out duration-300"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-200"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          @click="closeMobileDrawer()"
+          x-cloak
+        ></div>
 
-      <div
-        x-ref="mobileDrawer"
-        x-show="showSizeSelector && !isDesktop"
-        x-transition:enter="transition transform ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-full"
-        x-transition:enter-end="opacity-100 translate-y-0"
-        x-transition:leave="transition transform ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0"
-        x-transition:leave-end="opacity-0 translate-y-full"
-        class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl lg:hidden w-[100dvw]"
-        x-cloak
-      >
-        <div class="p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="body font-semibold">Añadir a la cesta</h4>
-            <button class="p-2" @click="closeMobileDrawer()" aria-label="Close">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+        <div
+          x-ref="mobileDrawer"
+          x-show="showSizeSelector && !isDesktop"
+          x-transition:enter="transition transform ease-out duration-300"
+          x-transition:enter-start="opacity-0 translate-y-full"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition transform ease-in duration-200"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 translate-y-full"
+          class="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-2xl shadow-2xl lg:hidden w-[100dvw]"
+          x-cloak
+        >
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="body font-semibold">Añadir a la cesta</h4>
+              <button class="p-2" @click="closeMobileDrawer()" aria-label="Close">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="space-y-1">
+              {% comment %} Build sizes again for mobile list {% endcomment %}
+              {% assign unique_sizes = '' %}
+              {% for variant in product.variants %}
+                {% assign size_name = '' %}
+                {% for option in variant.options %}
+                  {% assign is_size = true %}
+                  {% for product_option in product.options_with_values %}
+                    {% if product_option.name == 'Color' %}
+                      {% for color_value in product_option.values %}
+                        {% if option == color_value %}
+                          {% assign is_size = false %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if is_size %}
+                    {% assign size_name = option %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+                {% unless unique_sizes contains size_name %}
+                  {% assign unique_sizes = unique_sizes | append: size_name | append: ',' %}
+                {% endunless %}
+              {% endfor %}
+
+              {% assign sizes_array = unique_sizes | split: ',' %}
+              {% for size_name in sizes_array %}
+                {% if size_name != blank %}
+                  <button
+                    class="w-full text-left py-4 px-4 border-b border-gray-100 body font-semibold"
+                    :class="isSizeAvailable('{{ size_name }}') ? 'text-gray-900' : 'text-gray-400 cursor-not-allowed'"
+                    @click="isSizeAvailable('{{ size_name }}') && handleSizeClick('{{ size_name }}')"
+                  >
+                    {{ size_name }}
+                  </button>
+                {% endif %}
+              {% endfor %}
+            </div>
           </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
 
-          <div class="space-y-1">
-            {% comment %} Build sizes again for mobile list {% endcomment %}
+  {% unless hide_info %}
+    <div class="product-information py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
+      <!-- Bundle Mode: Color and Size Selectors -->
+      {% if bundle_mode == true %}
+        <!-- Color Selector -->
+        {% for product_option in product.options_with_values %}
+          {% if product_option.name == 'Color' %}
+            <div class="flex flex-wrap items-center gap-1 mb-2">
+              {% for product_option_value in product_option.values %}
+                {% comment %} Find a variant with this color to get its image {% endcomment %}
+                {% assign color_variant = null %}
+                {% for variant in product.variants %}
+                  {% for option in variant.options %}
+                    {% if option == product_option_value %}
+                      {% assign color_variant = variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                  {% if color_variant %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+
+                <button
+                  @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                  class="w-5 h-5 rounded-sm border-1 transition-colors"
+                  :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
+                  {% if product_option_value.swatch.color %}
+                    style="background-color: {{ product_option_value.swatch.color }};"
+                  {% else %}
+                    style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                  {% endif %}
+                  title="{{ product_option_value }}"
+                ></button>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Size Selector -->
+        {% if product.options contains 'Talla' %}
+          <div class="flex flex-wrap items-center gap-1 mb-2">
+            {% comment %} Get all unique sizes {% endcomment %}
             {% assign unique_sizes = '' %}
             {% for variant in product.variants %}
               {% assign size_name = '' %}
@@ -355,70 +458,83 @@
             {% for size_name in sizes_array %}
               {% if size_name != blank %}
                 <button
-                  class="w-full text-left py-4 px-4 border-b border-gray-100 body font-semibold"
-                  :class="isSizeAvailable('{{ size_name }}') ? 'text-gray-900' : 'text-gray-400 cursor-not-allowed'"
                   @click="isSizeAvailable('{{ size_name }}') && handleSizeClick('{{ size_name }}')"
+                  class="px-2 py-1 text-xs border rounded transition-colors relative"
+                  :class="
+                    isSizeAvailable('{{ size_name }}') ?
+                    (selectedSize === '{{ size_name }}' ? 'bg-black text-white border-black' : 'border-gray-300 text-gray-700 hover:border-gray-400') :
+                    'border-gray-200 text-gray-400 cursor-not-allowed'
+                  "
+                  :disabled="!isSizeAvailable('{{ size_name }}')"
                 >
                   {{ size_name }}
+                  <!-- Diagonal line for sold out sizes -->
+                  <div
+                    x-show="!isSizeAvailable('{{ size_name }}')"
+                    class="absolute inset-0 pointer-events-none flex items-center justify-center"
+                  >
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <line x1="0" y1="0" x2="100" y2="100"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            class="text-gray-400"/>
+                    </svg>
+                  </div>
                 </button>
               {% endif %}
             {% endfor %}
           </div>
-        </div>
-      </div>
-    {% endif %}
-  </div>
-
-  {% unless hide_info %}
-    <div class="product-information py-4 px-2 gap-2 w-full   flex flex-col justify-start z-10">
-      <!-- Star Rating and Plus Icon -->
-      <div class="flex items-start justify-between">
-        {% for product_option in product.options_with_values %}
-          {% if product_option.name == 'Color' %}
-            <div class="flex items-center gap-2">
-              {% for product_option_value in product_option.values %}
-                {% comment %} Find a variant with this color to get its image {% endcomment %}
-                {% assign color_variant = null %}
-                {% for variant in product.variants %}
-                  {% for option in variant.options %}
-                    {% if option == product_option_value %}
-                      {% assign color_variant = variant %}
+        {% endif %}
+      {% else %}
+        <!-- Regular Mode: Color swatches only -->
+        <div class="flex items-start justify-between">
+          {% for product_option in product.options_with_values %}
+            {% if product_option.name == 'Color' %}
+              <div class="flex items-center gap-2">
+                {% for product_option_value in product_option.values %}
+                  {% comment %} Find a variant with this color to get its image {% endcomment %}
+                  {% assign color_variant = null %}
+                  {% for variant in product.variants %}
+                    {% for option in variant.options %}
+                      {% if option == product_option_value %}
+                        {% assign color_variant = variant %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                    {% if color_variant %}
                       {% break %}
                     {% endif %}
                   {% endfor %}
-                  {% if color_variant %}
-                    {% break %}
-                  {% endif %}
-                {% endfor %}
 
-                <button
-                  @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                  class="w-4 h-4 rounded-xs border-1 transition-colors"
-                  :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
-                  {% if product_option_value.swatch.color %}
-                    style="background-color: {{ product_option_value.swatch.color }};"
-                  {% else %}
-                    style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                  {% endif %}
-                  title="{{ product_option_value }}"
-                ></button>
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endfor %}
-        <div class="flex items-center gap-2">
-          {% if show_rating %}
-            {% render 'product-rating',
-              product: product,
-              size: 'md',
-              color: 'text-[#f3a000]',
-              show_review_count: false
-            %}
-          {% else %}
-            <!-- Empty div for spacing when no rating -->
-          {% endif %}
+                  <button
+                    @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                    class="w-4 h-4 rounded-xs border-1 transition-colors"
+                    :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
+                    {% if product_option_value.swatch.color %}
+                      style="background-color: {{ product_option_value.swatch.color }};"
+                    {% else %}
+                      style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                    {% endif %}
+                    title="{{ product_option_value }}"
+                  ></button>
+                {% endfor %}
+              </div>
+            {% endif %}
+          {% endfor %}
+          <div class="flex items-center gap-2">
+            {% if show_rating %}
+              {% render 'product-rating',
+                product: product,
+                size: 'md',
+                color: 'text-[#f3a000]',
+                show_review_count: false
+              %}
+            {% else %}
+              <!-- Empty div for spacing when no rating -->
+            {% endif %}
+          </div>
         </div>
-      </div>
+      {% endif %}
 
       <!-- Product Name and Price -->
       <div class="flex flex-col gap-1 lg:flex-row items-start  justify-between">
@@ -623,11 +739,35 @@
 
       selectColor(color, imageUrl, variantId) {
         this.selectedColor = color;
-        this.selectedVariantId = variantId;
-
-
-        // Update gallery for selected color (same as product page)
-        this.updateGalleryForColor(color);
+        
+        // In bundle mode, handle variant ID updates properly
+        const bundleMode = {{ bundle_mode | default: false | json }};
+        if (bundleMode) {
+          if (this.selectedSize) {
+            // Check if the selected size is still available for the new color
+            if (!this.isSizeAvailable(this.selectedSize)) {
+              // Reset size selection if it's not available for the new color
+              this.selectedSize = null;
+              this.selectedVariantId = variantId; // Use the color variant
+            } else {
+              // Update variant ID to match both color and size
+              const matchingVariant = this.findVariantBySizeAndColor(this.selectedSize, color);
+              if (matchingVariant) {
+                this.selectedVariantId = matchingVariant;
+              } else {
+                this.selectedVariantId = variantId;
+              }
+            }
+          } else {
+            // No size selected, just use the color variant
+            this.selectedVariantId = variantId;
+          }
+        } else {
+          // Regular mode
+          this.selectedVariantId = variantId;
+          // Update gallery for selected color (same as product page)
+          this.updateGalleryForColor(color);
+        }
       },
 
       // === CORE DATA METHODS ===
@@ -795,7 +935,29 @@
 
         const variant = this.findAvailableVariant(size);
         if (variant) {
-          this.selectSize(size, variant.id);
+          // In bundle mode, just update selection without adding to bundle
+          const bundleMode = {{ bundle_mode | default: false | json }};
+          if (bundleMode) {
+            this.selectedSize = size;
+            
+            // Update variant ID to match color and size combination
+            const productOptions = {{ product.options | json }};
+            const hasColor = productOptions.includes('Color');
+            
+            if (hasColor && this.selectedColor) {
+              const targetVariantId = this.findVariantBySizeAndColor(size, this.selectedColor);
+              if (targetVariantId) {
+                this.selectedVariantId = targetVariantId;
+              } else {
+                this.selectedVariantId = variant.id;
+              }
+            } else {
+              this.selectedVariantId = variant.id;
+            }
+          } else {
+            // Regular mode - proceed with normal flow
+            this.selectSize(size, variant.id);
+          }
         }
       },
 
@@ -817,6 +979,103 @@
         } else {
           // If no sizes, add to cart directly
           this.addToCart(this.selectedVariantId);
+        }
+      },
+
+      addToBundleClick() {
+        // Check if bundle is complete
+        if (window.bundleBuilderInstance && window.bundleBuilderInstance.isBundleComplete) {
+          return;
+        }
+
+        // Check if product has Talla option using the product data
+        const productOptions = {{ product.options | json }};
+        const hasTalla = productOptions.includes('Talla');
+        const hasColor = productOptions.includes('Color');
+
+        // In bundle mode, we don't use overlays - user must select from inline selectors
+        if (hasTalla && !this.selectedSize) {
+          // Show message that user needs to select size
+          this.showBundleSizeMessage();
+          return;
+        }
+
+        if (hasColor && !this.selectedColor) {
+          // Show message that user needs to select color
+          this.showBundleColorMessage();
+          return;
+        }
+
+        // All required selections made, add to bundle
+        this.addToBundle();
+      },
+
+      addToBundle(variantId = null, size = null) {
+        const bundleProduct = {
+          id: {{ product.id }},
+          handle: '{{ product.handle }}',
+          title: '{{ product.title | escape }}',
+          variantId: variantId || this.selectedVariantId,
+          price: this.getVariantPrice(variantId || this.selectedVariantId),
+          image: this.selectedVariantImage || '{{ product.featured_image | image_url: width: 400 }}',
+          selectedColor: this.selectedColor,
+          selectedSize: size || this.selectedSize,
+          url: '{{ product.url }}'
+        };
+
+        // Dispatch event to parent bundle builder
+        this.$dispatch('bundle:add-product', bundleProduct);
+        
+        // Show success feedback
+        this.showBundleAddedFeedback();
+      },
+
+      getVariantPrice(variantId) {
+        const variants = this.getVariants();
+        const variant = variants.find(v => v.id == variantId);
+        return variant ? variant.price || {{ product.price }} : {{ product.price }};
+      },
+
+      showBundleAddedFeedback() {
+        // Simple feedback - could be enhanced with toast notifications
+        const button = this.$el.querySelector('[title="Añadir al bundle"]');
+        if (button) {
+          const originalHTML = button.innerHTML;
+          button.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          `;
+          button.classList.add('bg-green-600');
+          button.classList.remove('bg-primary', 'hover:bg-blue-700');
+          
+          setTimeout(() => {
+            button.innerHTML = originalHTML;
+            button.classList.remove('bg-green-600');
+            button.classList.add('bg-primary', 'hover:bg-blue-700');
+          }, 1500);
+        }
+      },
+
+      showBundleSizeMessage() {
+        // Highlight size selector area
+        const sizeSelector = this.$el.querySelector('.flex.flex-wrap.items-center.gap-1');
+        if (sizeSelector) {
+          sizeSelector.classList.add('animate-pulse', 'bg-red-50', 'border', 'border-red-200', 'rounded', 'p-1');
+          setTimeout(() => {
+            sizeSelector.classList.remove('animate-pulse', 'bg-red-50', 'border', 'border-red-200', 'rounded', 'p-1');
+          }, 2000);
+        }
+      },
+
+      showBundleColorMessage() {
+        // Highlight color selector area
+        const colorSelector = this.$el.querySelector('.flex.flex-wrap.items-center.gap-1');
+        if (colorSelector) {
+          colorSelector.classList.add('animate-pulse', 'bg-red-50', 'border', 'border-red-200', 'rounded', 'p-1');
+          setTimeout(() => {
+            colorSelector.classList.remove('animate-pulse', 'bg-red-50', 'border', 'border-red-200', 'rounded', 'p-1');
+          }, 2000);
         }
       },
 
@@ -872,19 +1131,37 @@
         const productOptions = {{ product.options | json }};
         const hasColor = productOptions.includes('Color');
 
-        if (hasColor) {
-          // If product has colors, we need to find the variant with current color and selected size
-          const currentColor = this.selectedColor;
-          // Find the variant that matches both size and color
-          const targetVariantId = this.findVariantBySizeAndColor(size, currentColor);
-          if (targetVariantId) {
-            this.addToCart(targetVariantId);
+        // Check if we're in bundle mode
+        const bundleMode = {{ bundle_mode | default: false | json }};
+
+        if (bundleMode) {
+          // In bundle mode, just update the selection - don't add to bundle yet
+          if (hasColor) {
+            // Find the variant that matches both size and color
+            const currentColor = this.selectedColor;
+            const targetVariantId = this.findVariantBySizeAndColor(size, currentColor);
+            if (targetVariantId) {
+              this.selectedVariantId = targetVariantId;
+            }
+          }
+          // Don't add to bundle automatically - wait for plus button click
+        } else {
+          // Regular mode - add to cart immediately
+          if (hasColor) {
+            // If product has colors, we need to find the variant with current color and selected size
+            const currentColor = this.selectedColor;
+            // Find the variant that matches both size and color
+            const targetVariantId = this.findVariantBySizeAndColor(size, currentColor);
+            
+            if (targetVariantId) {
+              this.addToCart(targetVariantId);
+            } else {
+              this.addToCart(variantId);
+            }
           } else {
+            // If no colors, just add the selected variant
             this.addToCart(variantId);
           }
-        } else {
-          // If no colors, just add the selected variant
-          this.addToCart(variantId);
         }
 
         this.showSizeSelector = false;

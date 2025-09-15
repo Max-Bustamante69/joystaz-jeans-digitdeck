@@ -9,12 +9,60 @@
  */
 {
   "sections": {
-    "main": {
-      "type": "page",
-      "settings": {}
+    "bundle_builder": {
+      "type": "bundle-builder",
+      "blocks": {
+        "bundle_step_1": {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 1 - Save 5%",
+            "discount_percentage": 5,
+            "discount_code": "BUNDLE5"
+          }
+        },
+        "bundle_step_2": {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 2 - Save 10%",
+            "discount_percentage": 10,
+            "discount_code": "BUNDLE10"
+          }
+        },
+        "bundle_step_3": {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 3 - Save 15%",
+            "discount_percentage": 15,
+            "discount_code": "BUNDLE15"
+          }
+        },
+        "bundle_step_4": {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 4 or More - Save 20%",
+            "discount_percentage": 20,
+            "discount_code": "BUNDLE20"
+          }
+        }
+      },
+      "block_order": [
+        "bundle_step_1",
+        "bundle_step_2",
+        "bundle_step_3",
+        "bundle_step_4"
+      ],
+      "settings": {
+        "title": "Crea Tu Bundle Personalizado",
+        "description": "Selecciona productos y ahorra más mientras más compres. ¡Combina tus favoritos y obtén descuentos increíbles!",
+        "products_title": "Productos Disponibles",
+        "bundle_title": "Tu Bundle",
+        "bundle_collection": "bundle",
+        "products_limit": 20,
+        "enable_free_gift": true,
+        "free_gift_title": "🎁 REGALO GRATIS",
+        "free_gift_description": "¡Completa todos los pasos y recibe este regalo sin costo adicional!"
+      }
     }
   },
-  "order": [
-    "main"
-  ]
+  "order": ["bundle_builder"]
 }

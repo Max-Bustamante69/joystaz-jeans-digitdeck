@@ -1,0 +1,152 @@
+{% comment %}
+  Generic Reusable Carousel Snippet
+
+  Parameters:
+  - carousel_id: Unique ID for the carousel
+  - carousel_class: Additional CSS classes
+  - content: The content to be rendered inside swiper-wrapper
+  - show_arrows: Whether to show navigation arrows (default: true)
+  - slides_per_view_mobile: Mobile slides per view (default: 1.35)
+  - slides_per_view_desktop: Desktop slides per view (default: 4)
+  - space_between_mobile: Mobile space between slides (default: 2)
+  - space_between_desktop: Desktop space between slides (default: 4)
+  - centered_slides: Whether to center slides (default: true for mobile, false for desktop)
+  - free_mode: Whether to enable free mode (default: true)
+  - total_items: Total number of items (for arrow state management)
+{% endcomment %}
+
+{% assign carousel_id = carousel_id | default: 'carousel' %}
+{% assign carousel_class = carousel_class | default: '' %}
+{% assign show_arrows = show_arrows | default: true %}
+{% assign slides_per_view_mobile = slides_per_view_mobile | default: 1.35 %}
+{% assign slides_per_view_desktop = slides_per_view_desktop | default: 4 %}
+{% assign space_between_mobile = space_between_mobile | default: 2 %}
+{% assign space_between_desktop = space_between_desktop | default: 4 %}
+{% assign centered_slides = centered_slides | default: true %}
+{% assign free_mode = free_mode | default: true %}
+{% assign total_items = total_items | default: 0 %}
+
+<div class="relative">
+  <div
+    class="swiper swiper-{{ carousel_id }} {{ carousel_class }}"
+    data-carousel-id="{{ carousel_id }}"
+    data-carousel-type="generic-carousel"
+  >
+    <div class="swiper-wrapper items-stretch">
+      {{ content }}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const carouselElement = document.querySelector('.swiper-{{ carousel_id }}');
+
+    if (carouselElement && typeof Swiper !== 'undefined') {
+      // Check if this carousel is already initialized
+      if (carouselElement.swiper) {
+        return;
+      }
+
+      const totalItems = {{ total_items }};
+      const enableDesktopCarousel = totalItems > {{ slides_per_view_desktop }};
+
+      const swiper = new Swiper(carouselElement, {
+        slidesPerView: {{ slides_per_view_mobile }},
+        spaceBetween: {{ space_between_mobile }},
+        {% if centered_slides %}
+        centeredSlides: true,
+        centeredSlidesBounds: true,
+        {% endif %}
+        {% if free_mode %}
+        freeMode: {
+          enabled: true,
+          sticky: true,
+          momentum: true,
+          momentumRatio: 0.25,
+          momentumVelocityRatio: 0.5,
+          momentumBounce: true,
+          momentumBounceRatio: 0.3,
+        },
+        {% endif %}
+        grabCursor: false,
+        {% if show_arrows %}
+        navigation: {
+          nextEl: '.carousel-next',
+          prevEl: '.carousel-prev',
+        },
+        {% endif %}
+        breakpoints: {
+          1024: {
+            slidesPerView: {{ slides_per_view_desktop }},
+            spaceBetween: {{ space_between_desktop }},
+            centeredSlides: false,
+            {% if free_mode %}
+            freeMode: {
+              enabled: true,
+              sticky: true,
+              momentum: true,
+            },
+            {% endif %}
+          }
+        },
+        {% if show_arrows %}
+        on: {
+          init: function() {
+            updateGenericArrowStates(this, '{{ carousel_id }}');
+          },
+          slideChange: function() {
+            updateGenericArrowStates(this, '{{ carousel_id }}');
+          },
+          reachBeginning: function() {
+            updateGenericArrowStates(this, '{{ carousel_id }}');
+          },
+          reachEnd: function() {
+            updateGenericArrowStates(this, '{{ carousel_id }}');
+          },
+        },
+        {% endif %}
+      });
+
+      // Store the swiper instance on the element to avoid conflicts
+      carouselElement.swiper = swiper;
+    }
+
+    {% if show_arrows %}
+    // Function to update arrow states for generic carousel
+    function updateGenericArrowStates(swiper, carouselId) {
+      const sectionContainer = document.querySelector(`[data-carousel-id="${carouselId}"]`).closest('section, div');
+      if (!sectionContainer) return;
+
+      const prevArrow = sectionContainer.querySelector('.carousel-prev');
+      const nextArrow = sectionContainer.querySelector('.carousel-next');
+
+      if (prevArrow) {
+        if (swiper.isBeginning) {
+          prevArrow.style.backgroundColor = '#e7e7e7';
+          prevArrow.style.color = 'black';
+          prevArrow.style.cursor = 'not-allowed';
+        } else {
+          prevArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          prevArrow.style.color = 'white';
+          prevArrow.style.cursor = 'pointer';
+          prevArrow.disabled = false;
+        }
+      }
+
+      if (nextArrow) {
+        if (swiper.isEnd) {
+          nextArrow.style.backgroundColor = '#e7e7e7';
+          nextArrow.style.color = 'black';
+          nextArrow.style.cursor = 'not-allowed';
+        } else {
+          nextArrow.style.backgroundColor = 'var(--shopify-primary-color)';
+          nextArrow.style.color = 'white';
+          nextArrow.style.cursor = 'pointer';
+          nextArrow.disabled = false;
+        }
+      }
+    }
+    {% endif %}
+  });
+</script>

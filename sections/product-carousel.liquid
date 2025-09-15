@@ -62,32 +62,42 @@
     {% endfor %}
 
     {% if available_count > 0 %}
-      <div class="relative">
-        <div
-          class="product-carousel px-4 lg:px-12 swiper-main-carousel-{{ section.id }}    "
-          data-carousel-id="{{ section.id }}"
-          data-carousel-type="main-carousel"
-        >
-          <div class="swiper-wrapper ">
-            {% assign products_shown = 0 %}
-            {% for product in products %}
-              {% if product.available and products_shown < section.settings.max_products %}
-                <div class="swiper-slide">
-                  <div class="w-full">
-                    {% render 'product-card',
-                      product: product,
-                      show_badges: section.settings.show_badges,
-                      show_rating: section.settings.show_rating,
-                      show_color_swatches: section.settings.show_color_swatches,
-                      show_size_selector: section.settings.show_size_selector
-                    %}
-                  </div>
-                </div>
-                {% assign products_shown = products_shown | plus: 1 %}
-              {% endif %}
-            {% endfor %}
-          </div>
-        </div>
+      {% comment %} Build carousel content {% endcomment %}
+      {% capture carousel_content %}
+        {% assign products_shown = 0 %}
+        {% for product in products %}
+          {% if product.available and products_shown < section.settings.max_products %}
+            <div class="swiper-slide">
+              <div class="w-full">
+                {% render 'product-card',
+                  product: product,
+                  show_badges: section.settings.show_badges,
+                  show_rating: section.settings.show_rating,
+                  show_color_swatches: section.settings.show_color_swatches,
+                  show_size_selector: section.settings.show_size_selector
+                %}
+              </div>
+            </div>
+            {% assign products_shown = products_shown | plus: 1 %}
+          {% endif %}
+        {% endfor %}
+      {% endcapture %}
+
+      {% comment %} Render carousel using generic carousel snippet {% endcomment %}
+      <div class="px-4 lg:px-12">
+        {% render 'generic-carousel',
+          carousel_id: section.id,
+          carousel_class: 'product-carousel',
+          content: carousel_content,
+          show_arrows: section.settings.show_arrows,
+          slides_per_view_mobile: 1.35,
+          slides_per_view_desktop: 4,
+          space_between_mobile: 2,
+          space_between_desktop: 4,
+          centered_slides: true,
+          free_mode: true,
+          total_items: available_count
+        %}
       </div>
     {% else %}
       {% comment %} Show message when no products are available {% endcomment %}
@@ -99,110 +109,6 @@
     {% endif %}
   </div>
 </div>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const carouselId = '{{ section.id }}';
-    const carouselElement = document.querySelector('.swiper-main-carousel-{{ section.id }}');
-
-    if (carouselElement && typeof Swiper !== 'undefined') {
-      // Check if this carousel is already initialized
-      if (carouselElement.swiper) {
-        return;
-      }
-
-            const totalProducts = {{ available_count }};
-      const enableDesktopCarousel = totalProducts > 4;
-
-      const swiper = new Swiper(carouselElement, {
-        slidesPerView: 1.35,
-        spaceBetween: 2,
-        centeredSlides: true,
-        centeredSlidesBounds: true,
-        peek: 10,
-        freeMode: {
-          enabled: true,
-          sticky: true,
-          momentum: true,
-          momentumRatio: 0.25,
-          momentumVelocityRatio: 0.5,
-          momentumBounce: true,
-          momentumBounceRatio: 0.3,
-        },
-        grabCursor: false,
-        navigation: {
-          nextEl: '.carousel-next',
-          prevEl: '.carousel-prev',
-        },
-        breakpoints: {
-          1024: {
-            slidesPerView: 4,
-            spaceBetween: 4,
-            centeredSlides:false,
-            freeMode:  {
-              enabled: true,
-              sticky: true,
-              momentum: true,
-            },
-          }
-        },
-        on: {
-          init: function() {
-            updateProductArrowStates(this);
-          },
-          slideChange: function() {
-            updateProductArrowStates(this);
-          },
-          reachBeginning: function() {
-            updateProductArrowStates(this);
-          },
-          reachEnd: function() {
-            updateProductArrowStates(this);
-          },
-        },
-      });
-
-      // Store the swiper instance on the element to avoid conflicts
-      carouselElement.swiper = swiper;
-    }
-
-    // Function to update arrow states for product carousel
-    function updateProductArrowStates(swiper) {
-      const sectionContainer = document.getElementById('product-carousel-{{ section.id }}');
-      if (!sectionContainer) return;
-
-      const prevArrow = sectionContainer.querySelector('.carousel-prev');
-      const nextArrow = sectionContainer.querySelector('.carousel-next');
-
-
-      if (prevArrow) {
-        if (swiper.isBeginning) {
-          prevArrow.style.backgroundColor = '#e7e7e7';
-          prevArrow.style.color = 'black';
-          prevArrow.style.cursor = 'not-allowed';
-        } else {
-          prevArrow.style.backgroundColor = 'var(--shopify-primary-color)';
-          prevArrow.style.color = 'white';
-          prevArrow.style.cursor = 'pointer';
-          prevArrow.disabled = false;
-        }
-      }
-
-      if (nextArrow) {
-        if (swiper.isEnd) {
-          nextArrow.style.backgroundColor = '#e7e7e7';
-          nextArrow.style.color = 'black';
-          nextArrow.style.cursor = 'not-allowed';
-        } else {
-          nextArrow.style.backgroundColor = 'var(--shopify-primary-color)';
-          nextArrow.style.color = 'white';
-          nextArrow.style.cursor = 'pointer';
-          nextArrow.disabled = false;
-        }
-      }
-    }
-  });
-</script>
 
 {% schema %}
 {

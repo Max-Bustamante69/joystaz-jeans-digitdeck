@@ -1,0 +1,1257 @@
+{% comment %}
+  Bundle Builder Section
+  Features:
+  - Grid layout: 3/4 for products, 1/4 for bundle steps
+  - Dynamic steps with discount codes
+  - Bundle product management
+  - Free gift option
+  - Add to cart with bundle discounts
+{% endcomment %}
+
+<div
+  class="bundle-builder-section py-8 lg:py-12"
+  x-data="bundleBuilder()"
+  x-init="init()"
+  @bundle:add-product.window="addProductToBundle($event.detail)"
+>
+  <!-- Section Header -->
+  <div class="container mx-auto px-4 mb-8">
+    <div class="text-center max-w-3xl mx-auto">
+      {% if section.settings.title != blank %}
+        <h1 class="text-3xl lg:text-4xl font-bold mb-4">{{ section.settings.title }}</h1>
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <p class="text-lg text-gray-600 mb-6">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Main Grid Layout -->
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Bundle Steps Section (Mobile - Top, Desktop - Right) -->
+      <div class="lg:col-span-1 order-1 lg:order-2">
+        <div class="lg:sticky lg:top-8">
+          {% if section.settings.bundle_title != blank %}
+            <h3 class="text-xl font-bold mb-4 lg:block hidden">{{ section.settings.bundle_title }}</h3>
+          {% endif %}
+
+          <!-- Bundle Steps -->
+          <div class="space-y-4 mb-6">
+            {% for block in section.blocks %}
+              {% if block.type == 'bundle_step' %}
+                <div
+                  class="bundle-step border border-gray-200 rounded-lg p-4 transition-all duration-300"
+                  :class="bundleSteps[{{ forloop.index0 }}]?.isActive ? 'border-blue-500 bg-blue-50' : 'bg-gray-50'"
+                  data-step="{{ forloop.index0 }}"
+                >
+                  <!-- Step Header -->
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold"
+                        :class="bundleSteps[{{ forloop.index0 }}]?.isActive ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'"
+                      >
+                        {{ forloop.index }}
+                      </div>
+                      <span class="font-semibold text-sm">{{ block.settings.step_text }}</span>
+                    </div>
+                    <div class="text-sm font-bold text-green-600">-{{ block.settings.discount_percentage }}%</div>
+                  </div>
+
+                  <!-- Step Content -->
+                  <div x-show="bundleSteps[{{ forloop.index0 }}]?.products?.length > 0" x-cloak>
+                    <div class="space-y-2">
+                      <template x-for="product in bundleSteps[{{ forloop.index0 }}]?.products || []" :key="product.id">
+                        <div
+                          class="bundle-product-card bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3"
+                          x-data="{ removing: false }"
+                        >
+                          <!-- Product Image -->
+                          <div class="w-12 h-12 flex-shrink-0">
+                            <img
+                              :src="product.image"
+                              :alt="product.title"
+                              class="w-full h-full object-cover rounded"
+                              width="48"
+                              height="48"
+                              loading="lazy"
+                            >
+                          </div>
+
+                          <!-- Product Info -->
+                          <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-medium text-gray-900 truncate" x-text="product.title"></h4>
+
+                            <!-- Selected Options -->
+                            <div class="flex flex-wrap gap-1 mt-1">
+                              <template x-if="product.selectedColor">
+                                <span
+                                  class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded"
+                                  x-text="product.selectedColor"
+                                ></span>
+                              </template>
+                              <template x-if="product.selectedSize">
+                                <span
+                                  class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded"
+                                  x-text="product.selectedSize"
+                                ></span>
+                              </template>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mt-1">
+                              <span
+                                class="text-sm font-semibold text-gray-900"
+                                x-text="'$' + (product.price / 100).toFixed(2)"
+                              ></span>
+                            </div>
+                          </div>
+
+                          <!-- Remove Button -->
+                          <button
+                            @click="removing = true; setTimeout(() => removeProductFromBundle(product.variantId), 150)"
+                            :disabled="removing"
+                            class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200"
+                            :class="removing ? 'opacity-50 cursor-not-allowed' : ''"
+                            type="button"
+                            title="Remover del bundle"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div
+                    x-show="!bundleSteps[{{ forloop.index0 }}]?.products?.length"
+                    class="flex items-center justify-center py-8 text-gray-400"
+                  >
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Free Gift Section - Always Visible -->
+          {% if section.settings.enable_free_gift and section.settings.free_gift_product != blank %}
+            {% assign free_gift_product = all_products[section.settings.free_gift_product] %}
+            {% if free_gift_product %}
+              <div
+                class="free-gift-section border-2 border-dashed rounded-lg p-4 mb-6 transition-all duration-300"
+                :class="isEligibleForFreeGift ? 'border-yellow-400 bg-yellow-50' : 'border-gray-300 bg-gray-50'"
+              >
+                <!-- Gift Header -->
+                <div class="flex items-center gap-2 mb-3">
+                  <div
+                    class="relative"
+                    :class="isEligibleForFreeGift ? '' : 'opacity-50'"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      :class="isEligibleForFreeGift ? 'text-yellow-600' : 'text-gray-500'"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/>
+                      <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/>
+                    </svg>
+
+                    <!-- Lock Overlay when not eligible -->
+                    <div
+                      x-show="!isEligibleForFreeGift"
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1">
+                    <span
+                      class="font-bold text-sm"
+                      :class="isEligibleForFreeGift ? 'text-yellow-800' : 'text-gray-600'"
+                    >
+                      {{- section.settings.free_gift_title | default: 'REGALO GRATIS' -}}
+                    </span>
+
+                    <!-- Status Text -->
+                    <div class="text-xs mt-1">
+                      <span x-show="isEligibleForFreeGift" class="text-green-600 font-medium"> ¡Desbloqueado! 🎉 </span>
+                      <span x-show="!isEligibleForFreeGift" class="text-gray-500">
+                        Completa todos los steps para desbloquearlo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Product Info -->
+                <div
+                  class="flex items-center gap-3"
+                  :class="isEligibleForFreeGift ? '' : 'opacity-60'"
+                >
+                  <div class="relative">
+                    <img
+                      src="{{ free_gift_product.featured_image | image_url: width: 60 }}"
+                      alt="{{ free_gift_product.title }}"
+                      class="w-12 h-12 object-cover rounded"
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                    >
+
+                    <!-- Checkmark when eligible -->
+                    <div
+                      x-show="isEligibleForFreeGift"
+                      x-transition:enter="transition ease-out duration-300"
+                      x-transition:enter-start="opacity-0 scale-0"
+                      x-transition:enter-end="opacity-100 scale-100"
+                      class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ free_gift_product.title }}</p>
+                    <p class="text-xs text-gray-500">
+                      {{ section.settings.free_gift_description | default: 'Valor: $' -}}
+                      {{- free_gift_product.price | money_without_currency }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+
+          <!-- Bundle Summary -->
+          <div class="bundle-summary bg-white border border-gray-200 rounded-lg p-4 mb-4">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{{ section.settings.total_text | default: 'Total' }}:</span>
+                <span class="font-bold text-lg" x-text="formatPrice(totalPrice)"></span>
+              </div>
+
+              <div x-show="totalDiscount > 0" class="flex justify-between items-center text-green-600">
+                <span class="text-sm">{{ section.settings.discount_text | default: 'Descuento' }}:</span>
+                <span class="text-sm font-medium" x-text="'-' + formatPrice(totalDiscount)"></span>
+              </div>
+
+              <div class="border-t pt-3">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">{{ section.settings.final_total_text | default: 'Total Final' }}:</span>
+                  <span class="font-bold text-xl text-blue-600" x-text="formatPrice(finalPrice)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button
+            @click="addBundleToCart()"
+            :disabled="bundleProducts.length === 0 || isAddingToCart"
+            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+          >
+            <span x-show="!isAddingToCart">
+              {{ section.settings.add_to_cart_text | default: 'Añadir Bundle al Carrito' }}
+            </span>
+            <span x-show="isAddingToCart" class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ section.settings.adding_text | default: 'Añadiendo...' }}
+            </span>
+          </button>
+
+          <!-- Money Back Guarantee -->
+          {% if section.settings.show_guarantee %}
+            <div class="text-center mt-4">
+              <p class="text-xs text-gray-500">
+                {{ section.settings.guarantee_text | default: '100-Day Money Back Guarantee' }}
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Products Section (3/4) -->
+      <div class="lg:col-span-3 order-2 lg:order-1">
+        {% if section.settings.products_title != blank %}
+          <h2 class="text-2xl font-bold mb-6">{{ section.settings.products_title }}</h2>
+        {% endif %}
+
+        <!-- Collection Tabs Carousel -->
+        <div class="mb-4" x-show="availableCollections.length > 1">
+          <div class="relative">
+            <div
+              class="swiper collection-tabs-carousel overflow-hidden"
+              x-ref="tabsCarousel"
+            >
+              <div class="swiper-wrapper">
+                <!-- All Products Tab -->
+                <div class="swiper-slide">
+                  <button
+                    @click="selectCollection('all')"
+                    :class="selectedCollection === 'all' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                    class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap"
+                  >
+                    Todos los Productos
+                  </button>
+                </div>
+
+                <!-- Collection Tabs -->
+                <template x-for="collection in availableCollections" :key="collection">
+                  <div class="swiper-slide">
+                    <button
+                      @click="selectCollection(collection)"
+                      :class="selectedCollection === collection ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'"
+                      class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap"
+                      x-text="collection"
+                    ></button>
+                  </div>
+                </template>
+              </div>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button
+              class="collection-tabs-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-gray-900 z-10"
+              style="display: none;"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <button
+              class="collection-tabs-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-gray-900 z-10"
+              style="display: none;"
+            >
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+          {% assign bundle_collection = collections[section.settings.bundle_collection] %}
+          {% if bundle_collection.products.size > 0 %}
+            {% for product in bundle_collection.products limit: section.settings.products_limit %}
+              <div
+                class="bundle-product-wrapper"
+                x-show="isProductVisible({{ product.id }})"
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                data-product-id="{{ product.id }}"
+                data-collections="{% for collection in product.collections %}{{ collection.title | escape }}{% unless forloop.last %},{% endunless %}{% endfor %}"
+              >
+                {% render 'product-card',
+                  product: product,
+                  show_wishlist: false,
+                  show_badges: true,
+                  show_rating: false,
+                  bundle_mode: true,
+                  section: section
+                %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="col-span-full text-center py-12">
+              <p class="text-gray-500">
+                {{ section.settings.no_products_text | default: 'No hay productos disponibles para el bundle' }}
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Bundle Steps Section (1/4) -->
+      <div class="lg:col-span-1">
+        <div class="sticky top-8">
+          {% if section.settings.bundle_title != blank %}
+            <h3 class="text-xl font-bold mb-4">{{ section.settings.bundle_title }}</h3>
+          {% endif %}
+
+          <!-- Bundle Steps -->
+          <div class="space-y-4 mb-6">
+            {% for block in section.blocks %}
+              {% if block.type == 'bundle_step' %}
+                <div
+                  class="bundle-step border border-gray-200 rounded-lg p-4 transition-all duration-300"
+                  :class="bundleSteps[{{ forloop.index0 }}]?.isActive ? 'border-blue-500 bg-blue-50' : 'bg-gray-50'"
+                  data-step="{{ forloop.index0 }}"
+                >
+                  <!-- Step Header -->
+                  <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                      <div
+                        class="w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold"
+                        :class="bundleSteps[{{ forloop.index0 }}]?.isActive ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-600'"
+                      >
+                        {{ forloop.index }}
+                      </div>
+                      <span class="font-semibold text-sm">{{ block.settings.step_text }}</span>
+                    </div>
+                    <div class="text-sm font-bold text-green-600">-{{ block.settings.discount_percentage }}%</div>
+                  </div>
+
+                  <!-- Step Content -->
+                  <div x-show="bundleSteps[{{ forloop.index0 }}]?.products?.length > 0" x-cloak>
+                    <div class="space-y-2">
+                      <template x-for="product in bundleSteps[{{ forloop.index0 }}]?.products || []" :key="product.id">
+                        <div
+                          class="bundle-product-card bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3"
+                          x-data="{ removing: false }"
+                        >
+                          <!-- Product Image -->
+                          <div class="w-12 h-12 flex-shrink-0">
+                            <img
+                              :src="product.image"
+                              :alt="product.title"
+                              class="w-full h-full object-cover rounded"
+                              width="48"
+                              height="48"
+                              loading="lazy"
+                            >
+                          </div>
+
+                          <!-- Product Info -->
+                          <div class="flex-1 min-w-0">
+                            <h4 class="text-sm font-medium text-gray-900 truncate" x-text="product.title"></h4>
+
+                            <!-- Selected Options -->
+                            <div class="flex flex-wrap gap-1 mt-1">
+                              <template x-if="product.selectedColor">
+                                <span
+                                  class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded"
+                                  x-text="product.selectedColor"
+                                ></span>
+                              </template>
+                              <template x-if="product.selectedSize">
+                                <span
+                                  class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-0.5 rounded"
+                                  x-text="product.selectedSize"
+                                ></span>
+                              </template>
+                            </div>
+
+                            <!-- Price -->
+                            <div class="mt-1">
+                              <span
+                                class="text-sm font-semibold text-gray-900"
+                                x-text="'$' + (product.price / 100).toFixed(2)"
+                              ></span>
+                            </div>
+                          </div>
+
+                          <!-- Remove Button -->
+                          <button
+                            @click="removing = true; setTimeout(() => removeProductFromBundle(product.variantId), 150)"
+                            :disabled="removing"
+                            class="flex-shrink-0 w-6 h-6 flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors duration-200"
+                            :class="removing ? 'opacity-50 cursor-not-allowed' : ''"
+                            type="button"
+                            title="Remover del bundle"
+                          >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
+
+                  <!-- Empty State -->
+                  <div
+                    x-show="!bundleSteps[{{ forloop.index0 }}]?.products?.length"
+                    class="flex items-center justify-center py-8 text-gray-400"
+                  >
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- Free Gift Section - Always Visible -->
+          {% if section.settings.enable_free_gift and section.settings.free_gift_product != blank %}
+            {% assign free_gift_product = all_products[section.settings.free_gift_product] %}
+            {% if free_gift_product %}
+              <div
+                class="free-gift-section border-2 border-dashed rounded-lg p-4 mb-6 transition-all duration-300"
+                :class="isEligibleForFreeGift ? 'border-yellow-400 bg-yellow-50' : 'border-gray-300 bg-gray-50'"
+              >
+                <!-- Gift Header -->
+                <div class="flex items-center gap-2 mb-3">
+                  <div
+                    class="relative"
+                    :class="isEligibleForFreeGift ? '' : 'opacity-50'"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      :class="isEligibleForFreeGift ? 'text-yellow-600' : 'text-gray-500'"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path fill-rule="evenodd" d="M5 5a3 3 0 015-2.236A3 3 0 0114.83 6H16a2 2 0 110 4h-5V9a1 1 0 10-2 0v1H4a2 2 0 110-4h1.17C5.06 5.687 5 5.35 5 5zm4 1V5a1 1 0 10-1 1h1zm3 0a1 1 0 10-1-1v1h1z" clip-rule="evenodd"/>
+                      <path d="M9 11H3v5a2 2 0 002 2h4v-7zM11 18h4a2 2 0 002-2v-5h-6v7z"/>
+                    </svg>
+
+                    <!-- Lock Overlay when not eligible -->
+                    <div
+                      x-show="!isEligibleForFreeGift"
+                      class="absolute inset-0 flex items-center justify-center"
+                    >
+                      <svg class="w-3 h-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1">
+                    <span
+                      class="font-bold text-sm"
+                      :class="isEligibleForFreeGift ? 'text-yellow-800' : 'text-gray-600'"
+                    >
+                      {{- section.settings.free_gift_title | default: 'REGALO GRATIS' -}}
+                    </span>
+
+                    <!-- Status Text -->
+                    <div class="text-xs mt-1">
+                      <span x-show="isEligibleForFreeGift" class="text-green-600 font-medium"> ¡Desbloqueado! 🎉 </span>
+                      <span x-show="!isEligibleForFreeGift" class="text-gray-500">
+                        Completa todos los steps para desbloquearlo
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Product Info -->
+                <div
+                  class="flex items-center gap-3"
+                  :class="isEligibleForFreeGift ? '' : 'opacity-60'"
+                >
+                  <div class="relative">
+                    <img
+                      src="{{ free_gift_product.featured_image | image_url: width: 60 }}"
+                      alt="{{ free_gift_product.title }}"
+                      class="w-12 h-12 object-cover rounded"
+                      width="48"
+                      height="48"
+                      loading="lazy"
+                    >
+
+                    <!-- Checkmark when eligible -->
+                    <div
+                      x-show="isEligibleForFreeGift"
+                      x-transition:enter="transition ease-out duration-300"
+                      x-transition:enter-start="opacity-0 scale-0"
+                      x-transition:enter-end="opacity-100 scale-100"
+                      class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ free_gift_product.title }}</p>
+                    <p class="text-xs text-gray-500">
+                      {{ section.settings.free_gift_description | default: 'Valor: $' -}}
+                      {{- free_gift_product.price | money_without_currency }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+
+          <!-- Bundle Summary -->
+          <div class="bundle-summary bg-white border border-gray-200 rounded-lg p-4 mb-4">
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{{ section.settings.total_text | default: 'Total' }}:</span>
+                <span class="font-bold text-lg" x-text="formatPrice(totalPrice)"></span>
+              </div>
+
+              <div x-show="totalDiscount > 0" class="flex justify-between items-center text-green-600">
+                <span class="text-sm">{{ section.settings.discount_text | default: 'Descuento' }}:</span>
+                <span class="text-sm font-medium" x-text="'-' + formatPrice(totalDiscount)"></span>
+              </div>
+
+              <div class="border-t pt-3">
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">{{ section.settings.final_total_text | default: 'Total Final' }}:</span>
+                  <span class="font-bold text-xl text-blue-600" x-text="formatPrice(finalPrice)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button
+            @click="addBundleToCart()"
+            :disabled="bundleProducts.length === 0 || isAddingToCart"
+            class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+          >
+            <span x-show="!isAddingToCart">
+              {{ section.settings.add_to_cart_text | default: 'Añadir Bundle al Carrito' }}
+            </span>
+            <span x-show="isAddingToCart" class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ section.settings.adding_text | default: 'Añadiendo...' }}
+            </span>
+          </button>
+
+          <!-- Money Back Guarantee -->
+          {% if section.settings.show_guarantee %}
+            <div class="text-center mt-4">
+              <p class="text-xs text-gray-500">
+                {{ section.settings.guarantee_text | default: '100-Day Money Back Guarantee' }}
+              </p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function bundleBuilder() {
+    return {
+      bundleProducts: [],
+      bundleSteps: [
+        {% for block in section.blocks %}
+          {% if block.type == 'bundle_step' %}
+             {
+               stepIndex: {{ forloop.index0 }},
+               title: '{{ block.settings.step_text }}',
+               discountPercentage: {{ block.settings.discount_percentage | default: 0 }},
+               discountCode: '{{ block.settings.discount_code }}',
+               products: [],
+               isActive: false
+             }{% unless forloop.last %},{% endunless %}
+          {% endif %}
+        {% endfor %}
+      ],
+      totalPrice: 0,
+      totalDiscount: 0,
+      finalPrice: 0,
+      currentStep: -1,
+      isEligibleForFreeGift: false,
+      isBundleComplete: false,
+      isAddingToCart: false,
+      freeGiftProduct: {% if section.settings.free_gift_product != blank %}{{ all_products[section.settings.free_gift_product] | json }}{% else %}null{% endif %},
+
+      // Collection filtering
+      selectedCollection: 'all',
+      availableCollections: [],
+      allProducts: [],
+      tabsCarouselSwiper: null,
+
+      init() {
+        this.loadProducts();
+        this.extractCollections();
+        this.initializeTabsCarousel();
+        this.updateBundleState();
+
+        // Make this instance globally available for product cards
+        window.bundleBuilderInstance = this;
+      },
+
+      loadProducts() {
+        // Load all products from bundle collection
+        {% assign bundle_collection = collections[section.settings.bundle_collection] %}
+        this.allProducts = [
+          {% if bundle_collection.products.size > 0 %}
+            {% for product in bundle_collection.products limit: section.settings.products_limit %}
+              {
+                id: {{ product.id }},
+                title: "{{ product.title | escape }}",
+                collections: [
+                  {% for collection in product.collections %}
+                    "{{ collection.title | escape }}"{% unless forloop.last %},{% endunless %}
+                  {% endfor %}
+                ]
+              }{% unless forloop.last %},{% endunless %}
+            {% endfor %}
+          {% endif %}
+        ];
+      },
+
+      extractCollections() {
+        const collectionSet = new Set();
+
+        this.allProducts.forEach(product => {
+          product.collections.forEach(collection => {
+            // Exclude the main bundle collection from tabs
+            if (collection !== '{{ collections[section.settings.bundle_collection].title | escape }}') {
+              collectionSet.add(collection);
+            }
+          });
+        });
+
+        this.availableCollections = Array.from(collectionSet).sort();
+      },
+
+      selectCollection(collection) {
+        this.selectedCollection = collection;
+      },
+
+      isProductVisible(productId) {
+        if (this.selectedCollection === 'all') {
+          return true;
+        }
+
+        const product = this.allProducts.find(p => p.id === productId);
+        if (!product) return true;
+
+        return product.collections.some(collection =>
+          collection.toLowerCase() === this.selectedCollection.toLowerCase()
+        );
+      },
+
+      initializeTabsCarousel() {
+        this.$nextTick(() => {
+          const carouselElement = this.$refs.tabsCarousel;
+          if (carouselElement && typeof Swiper !== 'undefined') {
+            this.tabsCarouselSwiper = new Swiper(carouselElement, {
+              slidesPerView: 'auto',
+              spaceBetween: 8,
+              freeMode: {
+                enabled: true,
+                momentum: true,
+                momentumBounce: false,
+              },
+              mousewheel: {
+                enabled: true,
+                forceToAxis: true,
+                sensitivity: 1,
+              },
+              navigation: {
+                nextEl: '.collection-tabs-next',
+                prevEl: '.collection-tabs-prev',
+              },
+              breakpoints: {
+                640: {
+                  spaceBetween: 12,
+                },
+              },
+              on: {
+                init: function() {
+                  // Show navigation if needed
+                  const wrapper = this.wrapperEl;
+                  const container = this.el;
+                  if (wrapper.scrollWidth > container.clientWidth) {
+                    container.parentElement.querySelector('.collection-tabs-prev').style.display = 'flex';
+                    container.parentElement.querySelector('.collection-tabs-next').style.display = 'flex';
+                  }
+                }
+              }
+            });
+          }
+        });
+      },
+
+      addProductToBundle(product) {
+        // Check if product already exists in bundle
+        const existingIndex = this.bundleProducts.findIndex(p => p.variantId === product.variantId);
+
+        if (existingIndex >= 0) {
+          // Update existing product
+          this.bundleProducts[existingIndex] = product;
+        } else {
+          // Add new product
+          this.bundleProducts.push(product);
+        }
+
+        this.updateBundleState();
+        this.distributeProductsToSteps();
+      },
+
+      removeProductFromBundle(variantId) {
+        this.bundleProducts = this.bundleProducts.filter(p => p.variantId !== variantId);
+        this.updateBundleState();
+        this.distributeProductsToSteps();
+      },
+
+       distributeProductsToSteps() {
+         // Reset all steps
+         this.bundleSteps.forEach(step => {
+           step.products = [];
+           step.isActive = false;
+         });
+
+         // Distribute products sequentially - 1 product per step
+         for (let i = 0; i < this.bundleProducts.length && i < this.bundleSteps.length; i++) {
+           const step = this.bundleSteps[i];
+           step.products = [this.bundleProducts[i]];
+           step.isActive = true;
+           this.currentStep = i;
+         }
+       },
+
+      updateBundleState() {
+        // Calculate totals
+        this.totalPrice = this.bundleProducts.reduce((sum, product) => sum + product.price, 0);
+
+        // Calculate discount based on current step
+        const activeStep = this.bundleSteps[this.currentStep];
+        if (activeStep && this.bundleProducts.length > 0) {
+          this.totalDiscount = (this.totalPrice * activeStep.discountPercentage) / 100;
+        } else {
+          this.totalDiscount = 0;
+        }
+
+        this.finalPrice = this.totalPrice - this.totalDiscount;
+
+        // Check if eligible for free gift (all steps must have products)
+        const allStepsCompleted = this.bundleSteps.every(step => step.products.length > 0);
+        this.isEligibleForFreeGift = {{ section.settings.enable_free_gift | json }} &&
+                                     allStepsCompleted &&
+                                     this.bundleProducts.length > 0;
+
+        // Check if bundle is completely full (only based on steps, not free gift)
+        // The bundle is complete when all steps are filled, regardless of free gift status
+        this.isBundleComplete = allStepsCompleted;
+      },
+
+      async addBundleToCart() {
+        if (this.bundleProducts.length === 0) return;
+
+        this.isAddingToCart = true;
+
+        try {
+          const items = this.bundleProducts.map(product => ({
+            id: product.variantId,
+            quantity: 1,
+            properties: {
+              '_bundle_step': this.currentStep + 1,
+              '_bundle_discount': this.bundleSteps[this.currentStep]?.discountPercentage || 0
+            }
+          }));
+
+          // Add free gift if eligible
+          if (this.isEligibleForFreeGift && this.freeGiftProduct) {
+            items.push({
+              id: this.freeGiftProduct.selected_or_first_available_variant.id,
+              quantity: 1,
+              properties: {
+                '_bundle_free_gift': 'true'
+              }
+            });
+          }
+
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ items })
+          });
+
+          if (response.ok) {
+            // Apply discount code if available
+            const activeStep = this.bundleSteps[this.currentStep];
+            if (activeStep?.discountCode) {
+              await this.applyDiscountCode(activeStep.discountCode);
+            }
+
+            // Trigger cart events
+            this.$dispatch('cart:updated');
+            this.$dispatch('cart:open');
+
+            // Reset bundle
+            this.resetBundle();
+          }
+        } catch (error) {
+          console.error('Error adding bundle to cart:', error);
+        } finally {
+          this.isAddingToCart = false;
+        }
+      },
+
+      async applyDiscountCode(code) {
+        try {
+          const response = await fetch('/discount/' + encodeURIComponent(code));
+          if (response.ok) {
+            window.location.href = response.url;
+          }
+        } catch (error) {
+          console.error('Error applying discount code:', error);
+        }
+      },
+
+      resetBundle() {
+        this.bundleProducts = [];
+        this.bundleSteps.forEach(step => {
+          step.products = [];
+          step.isActive = false;
+        });
+        this.currentStep = -1;
+        this.updateBundleState();
+      },
+
+      formatPrice(price) {
+        return '$' + (price / 100).toFixed(2);
+      }
+    }
+  }
+</script>
+
+<style>
+  /* Bundle Builder Specific Styles */
+  .bundle-builder-section {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
+
+  .bundle-step {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .bundle-step:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  }
+
+  .bundle-product-card {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .bundle-product-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .free-gift-section.border-yellow-400 {
+    animation: pulse-glow 2s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-glow {
+    0% {
+      box-shadow: 0 0 5px rgba(251, 191, 36, 0.4);
+    }
+    100% {
+      box-shadow: 0 0 20px rgba(251, 191, 36, 0.6), 0 0 30px rgba(251, 191, 36, 0.3);
+    }
+  }
+
+  /* Collection Tabs Carousel Styles */
+  .collection-tabs-carousel {
+    padding: 0 24px; /* Space for navigation arrows */
+  }
+
+  .collection-tabs-carousel .swiper-slide {
+    width: auto !important;
+  }
+
+  .collection-tabs-prev,
+  .collection-tabs-next {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .collection-tabs-prev:hover,
+  .collection-tabs-next:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .collection-tabs-prev.swiper-button-disabled,
+  .collection-tabs-next.swiper-button-disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Tab button animations */
+  .collection-tabs-carousel button {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .collection-tabs-carousel button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Smooth scrolling */
+  .collection-tabs-carousel .swiper-wrapper {
+    transition-timing-function: ease-out;
+  }
+
+  /* Mobile responsive improvements */
+  @media (max-width: 1024px) {
+    .bundle-builder-section .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .bundle-step {
+      margin-bottom: 1rem;
+    }
+
+    .collection-tabs-carousel {
+      padding: 0 16px; /* Reduced padding for mobile */
+    }
+
+    .collection-tabs-prev,
+    .collection-tabs-next {
+      width: 5px;
+      height: 5px;
+    }
+  }
+
+  /* Product grid responsive */
+  @media (max-width: 640px) {
+    .bundle-builder-section .grid.grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+  }
+
+  /* Smooth transitions for step activation */
+  .bundle-step[data-step] {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bundle-step[data-step]::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+    transition: left 0.6s ease-in-out;
+  }
+
+  .bundle-step.border-blue-500::before {
+    left: 100%;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Bundle Builder",
+  "tag": "section",
+  "class": "bundle-builder-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Contenido Principal"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Título Principal",
+      "default": "Crea Tu Bundle Personalizado"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Descripción",
+      "default": "Selecciona productos y ahorra más mientras más compres"
+    },
+    {
+      "type": "text",
+      "id": "products_title",
+      "label": "Título de Productos",
+      "default": "Productos Disponibles"
+    },
+    {
+      "type": "text",
+      "id": "bundle_title",
+      "label": "Título del Bundle",
+      "default": "Tu Bundle"
+    },
+    {
+      "type": "header",
+      "content": "Configuración de Productos"
+    },
+    {
+      "type": "collection",
+      "id": "bundle_collection",
+      "label": "Colección de Bundle",
+      "info": "Selecciona la colección 'bundle' que contiene los productos disponibles"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Límite de Productos",
+      "min": 4,
+      "max": 50,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "no_products_text",
+      "label": "Texto Sin Productos",
+      "default": "No hay productos disponibles para el bundle"
+    },
+    {
+      "type": "header",
+      "content": "Regalo Gratis"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_free_gift",
+      "label": "Activar Regalo Gratis",
+      "default": false,
+      "info": "Se otorga cuando se completan todos los steps"
+    },
+    {
+      "type": "product",
+      "id": "free_gift_product",
+      "label": "Producto de Regalo"
+    },
+    {
+      "type": "text",
+      "id": "free_gift_title",
+      "label": "Título del Regalo",
+      "default": "REGALO GRATIS"
+    },
+    {
+      "type": "text",
+      "id": "free_gift_description",
+      "label": "Descripción del Regalo",
+      "default": "Valor: $"
+    },
+    {
+      "type": "header",
+      "content": "Textos del Carrito"
+    },
+    {
+      "type": "text",
+      "id": "total_text",
+      "label": "Texto Total",
+      "default": "Total"
+    },
+    {
+      "type": "text",
+      "id": "discount_text",
+      "label": "Texto Descuento",
+      "default": "Descuento"
+    },
+    {
+      "type": "text",
+      "id": "final_total_text",
+      "label": "Texto Total Final",
+      "default": "Total Final"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Texto Botón Carrito",
+      "default": "Añadir Bundle al Carrito"
+    },
+    {
+      "type": "text",
+      "id": "adding_text",
+      "label": "Texto Añadiendo",
+      "default": "Añadiendo..."
+    },
+    {
+      "type": "header",
+      "content": "Garantía"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_guarantee",
+      "label": "Mostrar Garantía",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "guarantee_text",
+      "label": "Texto de Garantía",
+      "default": "100-Day Money Back Guarantee"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bundle_step",
+      "name": "Bundle Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "step_text",
+          "label": "Texto del Step",
+          "default": "Buy 2 - Save 10%"
+        },
+        {
+          "type": "range",
+          "id": "discount_percentage",
+          "label": "Porcentaje de Descuento",
+          "min": 0,
+          "max": 50,
+          "step": 5,
+          "default": 10,
+          "unit": "%"
+        },
+        {
+          "type": "text",
+          "id": "discount_code",
+          "label": "Código de Descuento",
+          "info": "Código de descuento de Shopify que se aplicará automáticamente"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Builder",
+      "blocks": [
+        {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 1 - Save 5%",
+            "discount_percentage": 5
+          }
+        },
+        {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 2 - Save 10%",
+            "discount_percentage": 10
+          }
+        },
+        {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 3 - Save 15%",
+            "discount_percentage": 15
+          }
+        },
+        {
+          "type": "bundle_step",
+          "settings": {
+            "step_text": "Buy 4 or More - Save 20%",
+            "discount_percentage": 20
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

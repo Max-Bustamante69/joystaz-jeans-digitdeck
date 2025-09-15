@@ -18,15 +18,69 @@
         "description": "{{ collection.description }}"
       }
     },
+    "collections_carousel_wy4DPz": {
+      "type": "collections-carousel",
+      "name": "Collections Carousel",
+      "settings": {
+        "title": "Nuestras Colecciones",
+        "rich_text": "",
+        "show_view_all": true,
+        "view_all_text": "Ver todas",
+        "view_all_link": "",
+        "show_arrows": true,
+        "collection_source": "manual",
+        "collections": "{{ collection.metafields.custom.subcollections.value }}",
+        "collection_tags": "",
+        "max_collections": 12,
+        "image_source": "collection_image",
+        "text_position": "bottom-left",
+        "aspect_ratio": "portrait",
+        "no_collections_message": "No hay colecciones disponibles en este momento.",
+        "slides_per_view_mobile": 1.2,
+        "slides_per_view_desktop": 3,
+        "space_between_mobile": 8,
+        "space_between_desktop": 16,
+        "centered_slides": true,
+        "free_mode": true
+      }
+    },
     "main": {
       "type": "collection",
       "settings": {
         "browse_collections": []
       }
+    },
+    "collections_carousel_MU7FFj": {
+      "type": "collections-carousel",
+      "name": "Collections Carousel",
+      "settings": {
+        "title": "Nuestras Colecciones",
+        "rich_text": "",
+        "show_view_all": true,
+        "view_all_text": "Ver todas",
+        "view_all_link": "",
+        "show_arrows": true,
+        "collection_source": "manual",
+        "collections": "{{ collection.metafields.custom.related_collections.value }}",
+        "collection_tags": "",
+        "max_collections": 12,
+        "image_source": "collection_image",
+        "text_position": "bottom-left",
+        "aspect_ratio": "portrait",
+        "no_collections_message": "No hay colecciones disponibles en este momento.",
+        "slides_per_view_mobile": 1.2,
+        "slides_per_view_desktop": 3,
+        "space_between_mobile": 8,
+        "space_between_desktop": 16,
+        "centered_slides": true,
+        "free_mode": true
+      }
     }
   },
   "order": [
     "page_hero_FFLtz9",
-    "main"
+    "collections_carousel_wy4DPz",
+    "main",
+    "collections_carousel_MU7FFj"
   ]
 }

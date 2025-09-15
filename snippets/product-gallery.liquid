@@ -35,12 +35,12 @@
 {% comment %} Render the gallery if we have products {% endcomment %}
 {% if has_related_products %}
   <div class="product-gallery-section py-16  lg:px-12 flex w-full justify-center">
-    <div class="w-full max-w-[1600px] ">
+    <div class="w-full max-w-[1600px] flex flex-col gap-8">
       <!-- Gallery Title -->
       {% if gallery_title != blank %}
-        <h2 class="text-2xl font-bold text-gray-900 mb-8 text-center">
+        <h3 class="capitalize text-center"  >
           {{ gallery_title }}
-        </h2>
+        </h3>
       {% endif %}
 
       <!-- Product Grid -->

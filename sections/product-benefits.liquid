@@ -9,7 +9,7 @@
 {% endcomment %}
 
 <div class="product-benefits-section py-12 lg:py-16 bg-white">
-  <div class="container   lg:pl-12 ">
+  <div class="   lg:pl-12 ">
     {% comment %} Mobile Layout: Media on top, benefits below {% endcomment %}
     <div class="lg:hidden flex flex-col gap-8">
       <!-- Mobile Media Section -->
@@ -28,9 +28,9 @@
     </div>
 
     {% comment %} Desktop Layout: Dynamic based on layout setting {% endcomment %}
-    <div class="hidden  lg:flex lg:gap-12 lg:items-start {% if section.settings.layout == 'media-left' %}lg:flex-row-reverse{% endif %}">
+    <div class="hidden w-full lg:flex lg:gap-12 lg:items-start {% if section.settings.layout == 'media-left' %}lg:flex-row-reverse{% endif %}">
       <!-- Desktop Benefits Section -->
-      <div class="lg:w-1/2">
+      <div class="lg:w-1/3">
         {% render 'product-benefits-content',
           title: section.settings.title,
           subtitle: section.settings.subtitle,
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Desktop Media Section -->
-      <div class="lg:w-1/2">
+      <div class="lg:w-2/3">
         {% render 'product-benefits-media', product: product, image_count: section.settings.image_count %}
       </div>
     </div>

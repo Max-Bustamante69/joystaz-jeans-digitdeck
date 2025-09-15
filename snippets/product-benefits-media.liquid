@@ -64,11 +64,11 @@
     <!-- Two Images Side by Side -->
     <div class="flex gap-0">
       <!-- First Image -->
-      <div class="relative w-1/2 aspect-[3/4] bg-gray-100 overflow-hidden">
+      <div class="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden">
         <img
-          src="{{ media_to_show | image_url: width: 400 }}"
+          src="{{ media_to_show | image_url: width: 1080 }}"
           alt="{{ product.title }} - {{ media_to_show.alt | default: 'Product image 1' }}"
-          class="w-full h-full object-cover"
+          class="w-auto lg:h-[90dvh] object-cover"
           width="400"
           height="533"
           loading="lazy"
@@ -77,11 +77,11 @@
 
       <!-- Second Image -->
       {% if second_image %}
-        <div class="relative w-1/2 aspect-[3/4] bg-gray-100 overflow-hidden">
+        <div class="relative w-full aspect-[3/4] bg-gray-100 overflow-hidden">
           <img
-            src="{{ second_image | image_url: width: 400 }}"
+            src="{{ second_image | image_url: width: 1080 }}"
             alt="{{ product.title }} - {{ second_image.alt | default: 'Product image 2' }}"
-            class="w-full h-full object-cover"
+            class="w-auto lg:h-[90dvh] object-cover"
             width="400"
             height="533"
             loading="lazy"

@@ -17,6 +17,7 @@
         "social_media_fnGVxN": {
           "type": "social_media",
           "settings": {
+            "custom_icon": "shopify://shop_images/graphic.svg",
             "platform": "x",
             "url": "https://x.com/"
           }
@@ -24,6 +25,7 @@
         "social_media_TajqQU": {
           "type": "social_media",
           "settings": {
+            "custom_icon": "shopify://shop_images/Instagram.svg",
             "platform": "tiktok",
             "url": "https://www.tiktok.com/es/"
           }
@@ -31,6 +33,7 @@
         "social_media_rEfWLb": {
           "type": "social_media",
           "settings": {
+            "custom_icon": "shopify://shop_images/TikTok.svg",
             "platform": "instagram",
             "url": "https://www.instagram.com/"
           }

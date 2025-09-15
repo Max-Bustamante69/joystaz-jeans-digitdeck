@@ -17,8 +17,10 @@
 {% assign show_count = show_count | default: true %}
 {% assign review_count = review_count | default: 0 %}
 {% assign color = color | default: 'text-[#F3A000]' %}
-{% assign show_rating_value = show_rating_value | default: true %}
-{% assign show_review_count = show_review_count | default: true %}
+{% assign show_rating_value = show_rating_value %}
+{% assign show_review_count = show_review_count %}
+
+
 
 {% comment %} Calculate star dimensions based on size parameter {% endcomment %}
 {% case size %}

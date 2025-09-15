@@ -37,7 +37,7 @@
         "aspect_ratio": "portrait",
         "no_collections_message": "No hay colecciones disponibles en este momento.",
         "slides_per_view_mobile": 1.2,
-        "slides_per_view_desktop": 3,
+        "slides_per_view_desktop": 6,
         "space_between_mobile": 8,
         "space_between_desktop": 16,
         "centered_slides": true,

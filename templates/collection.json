@@ -68,10 +68,10 @@
         "text_position": "bottom-left",
         "aspect_ratio": "portrait",
         "no_collections_message": "No hay colecciones disponibles en este momento.",
-        "slides_per_view_mobile": 1.2,
-        "slides_per_view_desktop": 3,
-        "space_between_mobile": 8,
-        "space_between_desktop": 16,
+        "slides_per_view_mobile": 1,
+        "slides_per_view_desktop": 4,
+        "space_between_mobile": 2,
+        "space_between_desktop": 4,
         "centered_slides": true,
         "free_mode": true
       }

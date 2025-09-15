@@ -9,12 +9,24 @@
  */
 {
   "sections": {
+    "page_hero_FFLtz9": {
+      "type": "page-hero",
+      "name": "Page Hero",
+      "settings": {
+        "image": "{{ collection.image }}",
+        "title": "{{ collection.title }}",
+        "description": "Description of Collection"
+      }
+    },
     "main": {
       "type": "collection",
-      "settings": {}
+      "settings": {
+        "browse_collections": []
+      }
     }
   },
   "order": [
+    "page_hero_FFLtz9",
     "main"
   ]
 }

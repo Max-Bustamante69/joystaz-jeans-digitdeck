@@ -11,6 +11,30 @@
   "sections": {
     "look_fit_main": {
       "type": "look-fit",
+      "blocks": {
+        "look_fit_carousel_7Jb78n": {
+          "type": "look_fit_carousel",
+          "settings": {
+            "title": "Looks Relacionados",
+            "fit_source": "random",
+            "max_fits": 8,
+            "display_type": "carousel",
+            "carousel_slides_mobile": 1.2,
+            "carousel_slides_desktop": 3,
+            "carousel_gap_mobile": 16,
+            "carousel_gap_desktop": 24,
+            "grid_columns_mobile": 2,
+            "grid_columns_desktop": 4,
+            "grid_gap_mobile": 4,
+            "grid_gap_desktop": 6,
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
+          }
+        }
+      },
+      "block_order": [
+        "look_fit_carousel_7Jb78n"
+      ],
       "name": "Look Fit",
       "settings": {
         "autoplay": false,
@@ -20,5 +44,7 @@
       }
     }
   },
-  "order": ["look_fit_main"]
+  "order": [
+    "look_fit_main"
+  ]
 }

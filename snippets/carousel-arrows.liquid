@@ -3,19 +3,20 @@
   Reusable navigation arrows for Swiper.js carousels with state management
 {% endcomment %}
 
-<div class="hidden lg:flex space-x-2">
+<div class="flex space-x-2 opacity-100 visible">
   <button
-    class="carousel-arrow carousel-prev w-8 h-8 rounded-full bg-primary hover:bg-primary/80 transition-all duration-200 flex items-center justify-center text-white cursor-pointer"
+    class="carousel-arrow carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 hover:bg-primary hover:text-white transition-all duration-200 flex items-center justify-center cursor-pointer"
     aria-label="Previous"
-    disabled
+    style="display: flex !important; visibility: visible !important;"
   >
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M15 18l-6-6 6-6"/>
     </svg>
   </button>
   <button
-    class="carousel-arrow carousel-next w-8 h-8 rounded-full bg-primary hover:bg-primary/80 transition-all duration-200 flex items-center justify-center text-white cursor-pointer"
+    class="carousel-arrow carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 transition-all duration-200 flex items-center justify-center cursor-pointer"
     aria-label="Next"
+    style="display: flex !important; visibility: visible !important;"
   >
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M9 18l6-6-6-6"/>

@@ -28,8 +28,28 @@
               {{ section.settings.view_all_text | default: 'Ver todos' }}
             </a>
           {% endif %}
-          {% comment %} Always show arrows for product carousel {% endcomment %}
-          {% render 'carousel-arrows' %}
+          {% comment %} Custom arrows for product carousel {% endcomment %}
+          <div class="flex space-x-2" id="product-carousel-arrows-{{ section.id }}">
+            <button
+              class="product-carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-not-allowed"
+              aria-label="Previous"
+              disabled
+              data-carousel-id="{{ section.id }}"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+            </button>
+            <button
+              class="product-carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-pointer"
+              aria-label="Next"
+              data-carousel-id="{{ section.id }}"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     {% endif %}
@@ -84,21 +104,21 @@
       {% endcapture %}
 
       {% comment %} Render carousel using generic carousel snippet {% endcomment %}
-      <div class="px-4 lg:px-12">
-        {% render 'generic-carousel',
-          carousel_id: section.id,
-          carousel_class: 'product-carousel',
-          content: carousel_content,
-          show_arrows: section.settings.show_arrows,
-          slides_per_view_mobile: 1.35,
-          slides_per_view_desktop: 4,
-          space_between_mobile: 2,
-          space_between_desktop: 4,
-          centered_slides: true,
-          free_mode: true,
-          total_items: available_count
-        %}
-      </div>
+
+      {% render 'generic-carousel',
+        carousel_id: section.id,
+        carousel_class: 'product-carousel',
+        content: carousel_content,
+        show_arrows: section.settings.show_arrows,
+        slides_per_view_mobile: 1.35,
+        slides_per_view_desktop: 4,
+        space_between_mobile: 2,
+        space_between_desktop: 4,
+        centered_slides: true,
+        free_mode: true,
+        total_items: available_count
+      %}
+
     {% else %}
       {% comment %} Show message when no products are available {% endcomment %}
       <div class="text-center py-8">

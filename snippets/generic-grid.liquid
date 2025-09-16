@@ -1,88 +1,172 @@
 {% comment %}
-  Generic Grid Layout Snippet
-  Usage: {% render 'generic-grid', content: content_string, show_layout_toggle: true %}
+  Generic Reusable Grid Snippet
 
-  Displays a grid layout with optional layout toggle and custom content
   Parameters:
-  - content: String containing the grid content (required)
-  - show_layout_toggle: Boolean to show/hide layout toggle (optional, default: true)
-  - show_filters: Boolean to show/hide filters button (optional, default: true)
-  - products: Array of products for filtering (optional)
+  - grid_id: Unique ID for the grid (optional, default: 'grid')
+  - grid_class: Additional CSS classes (optional)
+  - content: The content to be rendered inside grid container
+  - columns_mobile: Mobile columns (default: 2)
+  - columns_desktop: Desktop columns (default: 4)
+  - gap_mobile: Mobile gap between items (default: 4)
+  - gap_desktop: Desktop gap between items (default: 6)
+  - show_title: Whether to show title (default: false)
+  - title: Grid title (optional)
+  - total_items: Total number of items (for analytics/tracking)
 {% endcomment %}
 
-<!-- Layout Toggle (only show when show_layout_toggle is true) -->
-{% if show_layout_toggle != false %}
-  <div class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-10  justify-between mt-15  ">
-    <div class="flex h-full items-center gap-4">
-      <!-- Layout Toggle -->
-      <div class="flex h-full items-center gap-2">
-        <div class="flex gap-3">
-          <button @click="layoutOption = 1" class="p-2">
+{% assign grid_id = grid_id | default: 'grid' %}
+{% assign grid_class = grid_class | default: '' %}
+{% assign columns_mobile = columns_mobile | default: 2 %}
+{% assign columns_desktop = columns_desktop | default: 4 %}
+{% assign gap_mobile = gap_mobile | default: 4 %}
+{% assign gap_desktop = gap_desktop | default: 6 %}
+{% assign show_title = show_title | default: false %}
+{% assign total_items = total_items | default: 0 %}
 
-            <svg
-              
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 1 ? ' opacity-100' : ' opacity-40'"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M19 5H5v14h14V5ZM3 3v18h18V3H3Z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button @click="layoutOption = 2" class="p-2">
-
-            <svg
-              
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 2 ? ' opacity-100' : ' opacity-40'"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M13 5h6v14h-6V5Zm-2-2h10v18H3V3h8Zm0 16H5V5h6v14Z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button @click="layoutOption = 3" class="p-2">
-
-            <svg
-              
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 3 ? ' opacity-100' : ' opacity-40'"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-            >
-              <path d="M 10.83 16.17 L 15.83 16.17 L 15.83 11.17 L 10.83 11.17 Z M 10.833 9.167 L 15.833 9.167 L 15.833 4.167 L 10.833 4.167 Z M 17.5 2.5 L 17.5 17.5 L 2.5 17.5 L 2.5 2.5 Z M 9.167 4.167 L 4.167 4.167 L 4.167 9.167 L 9.167 9.167 Z M 9.167 11.167 L 4.167 11.167 L 4.167 16.167 L 9.167 16.167 Z" fill="rgba(0,0,0,1)"/></svg>
-          </button>
-       
-        </div>
-      </div>
+<div class="generic-grid-container {{ grid_class }}" data-grid-id="{{ grid_id }}">
+  {% if show_title and title != blank %}
+    <div class="grid-header mb-6">
+      <h3 class="text-2xl font-bold text-gray-900">{{ title }}</h3>
     </div>
+  {% endif %}
 
-    <!-- Filters Button (only show when show_filters is true) -->
-    {% if show_filters != false %}
-      <button
-        @click="window.dispatchEvent(new CustomEvent('filter:open'))"
-        class="flex items-center gap-1 py-2 pr-3 pl-2 border boder-black rounded-full  justify-center cursor-pointer  transition-colors"
-      >
-        {% render 'filter-icon', class: 'size-5' %}
-        <p class="body-sm ">Filtros</p>
-      </button>
-    {% endif %}
-  </div>
-{% endif %}
-
-<!-- Content Grid -->
-<div class="">
   <div
-    id="generic-grid"
-    class="grid  w-full gap-0.5 transition-all duration-300"
-    :class="
-      {
-        'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
-        'grid-cols-2 lg:grid-cols-4 gap-y-6': layoutOption === 2,
-        'grid-cols-3 lg:grid-cols-6': layoutOption === 3
-      }
+    class="
+      generic-grid grid
+      grid-cols-{{ columns_mobile }}
+      lg:grid-cols-{{ columns_desktop }}
+      gap-[{{ gap_mobile }}px]
+      lg:gap-[{{ gap_desktop }}px]
     "
+    data-grid-id="{{ grid_id }}"
+    data-total-items="{{ total_items }}"
   >
     {{ content }}
   </div>
 </div>
+
+<style>
+  .generic-grid-container {
+    width: 100%;
+  }
+
+  .generic-grid {
+    display: grid;
+    width: 100%;
+  }
+
+  .generic-grid > * {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Responsive grid columns */
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .grid-cols-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .grid-cols-6 {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-1 {
+      grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+    .lg\:grid-cols-6 {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+
+  /* Gap utilities */
+  .gap-1 {
+    gap: 0.25rem;
+  }
+  .gap-2 {
+    gap: 0.5rem;
+  }
+  .gap-3 {
+    gap: 0.75rem;
+  }
+  .gap-4 {
+    gap: 1rem;
+  }
+  .gap-5 {
+    gap: 1.25rem;
+  }
+  .gap-6 {
+    gap: 1.5rem;
+  }
+  .gap-8 {
+    gap: 2rem;
+  }
+  .gap-10 {
+    gap: 2.5rem;
+  }
+  .gap-12 {
+    gap: 3rem;
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:gap-1 {
+      gap: 0.25rem;
+    }
+    .lg\:gap-2 {
+      gap: 0.5rem;
+    }
+    .lg\:gap-3 {
+      gap: 0.75rem;
+    }
+    .lg\:gap-4 {
+      gap: 1rem;
+    }
+    .lg\:gap-5 {
+      gap: 1.25rem;
+    }
+    .lg\:gap-6 {
+      gap: 1.5rem;
+    }
+    .lg\:gap-8 {
+      gap: 2rem;
+    }
+    .lg\:gap-10 {
+      gap: 2.5rem;
+    }
+    .lg\:gap-12 {
+      gap: 3rem;
+    }
+  }
+
+  /* Animation for grid items */
+  .generic-grid > * {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .generic-grid > *:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+</style>

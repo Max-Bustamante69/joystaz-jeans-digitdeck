@@ -13,20 +13,310 @@
   - related_products: Product references
 {% endcomment %}
 
-<div class="look-fit-section mt-24">
-  
+<div class="look-fit-section pt-24 relative">
   <!-- Single Flex Container for Both Desktop and Mobile -->
-  <div class="flex flex-col lg:flex-row lg:gap-8 lg:min-h-[80vh]">
+  <div class="flex flex-col lg:px-12 w-full lg:flex-row lg:gap-8 lg:items-start">
     <!-- Carousel Section -->
-    <div class=" lg:w-3/5 mb-8 lg:mb-0">
-      {% render 'look-fit-carousel', metaobject: metaobject %}
+    <div class="lg:w-1/2 mb-8 lg:mb-0">
+      <div class="lg:sticky lg:top-24 lg:h-[calc(100vh-6rem)] lg:overflow-hidden">
+        {% render 'look-fit-carousel', metaobject: metaobject %}
+      </div>
     </div>
 
     <!-- Products Grid Section -->
-    <div class=" lg:w-2/5">
+    <div class="lg:w-1/2 lg:min-h-screen lg:pb-24">
       {% render 'look-fit-products', metaobject: metaobject %}
     </div>
   </div>
+
+  <!-- Look Fit Carousels Blocks - Full Width Below Main Content -->
+  {% for block in section.blocks %}
+    {% case block.type %}
+      {% when 'look_fit_carousel' %}
+        <div class="w-full py-12" {{ block.shopify_attributes }}>
+          <div class="max-w-full">
+            {% comment %} Get fits based on the selected source {% endcomment %}
+            {% assign carousel_fits = '' %}
+            {% assign carousel_fits_array = '' %}
+
+            {% if block.settings.fit_source == 'related' %}
+              {{ metaobject.look_fit_collections.value.count }}
+              {% comment %} Get related fits from look_fit_collections {% endcomment %}
+              {% assign related_fits_array = '' %}
+              {% if metaobject.look_fit_collections.value.count > 0 %}
+                {% for collection in metaobject.look_fit_collections.value %}
+                  {{ collection.fits.value.count }}
+                  {% if collection.fits.value.count > 0 %}
+                    {% for fit in collection.fits.value %}
+                      {% comment %} Exclude the current fit {% endcomment %}
+                      {% unless fit.system.handle == metaobject.system.handle %}
+                        {% assign related_fits_array = related_fits_array | append: fit.system.handle | append: ',' %}
+                      {% endunless %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+              {% assign carousel_fits_array = related_fits_array | split: ',' %}
+
+            {% elsif block.settings.fit_source == 'random' %}
+              {% comment %} Get all look_fit metaobjects and shuffle them using a simple randomization {% endcomment %}
+              {% assign all_fits_temp = '' %}
+              {% assign shuffled_fits = '' %}
+
+              {% comment %} First, collect all fits except current one {% endcomment %}
+              {% if shop.metaobjects.look_fit.values.count > 0 %}
+                {% for fit in shop.metaobjects.look_fit.values %}
+                  {% unless fit.system.handle == metaobject.system.handle %}
+                    {% assign all_fits_temp = all_fits_temp | append: fit.system.handle | append: ',' %}
+                  {% endunless %}
+                {% endfor %}
+              {% endif %}
+
+              {% assign temp_array = all_fits_temp | split: ',' %}
+              {% comment %} Simple shuffle using reverse and modulo-based selection {% endcomment %}
+              {% assign shuffled_fits = '' %}
+              {% assign total_fits = temp_array.size %}
+
+              {% if total_fits > 0 %}
+                {% comment %} Create a pseudo-random order by using different starting points {% endcomment %}
+                {% assign seed = 'now' | date: '%s' | modulo: total_fits %}
+
+                {% comment %} Add fits starting from seed position {% endcomment %}
+                {% for i in (0..total_fits) %}
+                  {% assign index = seed | plus: i | modulo: total_fits %}
+                  {% if temp_array[index] and temp_array[index] != blank %}
+                    {% assign shuffled_fits = shuffled_fits | append: temp_array[index] | append: ',' %}
+                  {% endif %}
+                {% endfor %}
+
+                {% comment %} Also reverse some items for more randomness {% endcomment %}
+                {% assign reversed_temp = temp_array | reverse %}
+                {% for i in (0..3) %}
+                  {% if reversed_temp[i] and reversed_temp[i] != blank %}
+                    {% assign shuffled_fits = shuffled_fits | append: reversed_temp[i] | append: ',' %}
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+
+              {% assign carousel_fits_array = shuffled_fits | split: ',' %}
+            {% endif %}
+
+            {% comment %} Remove duplicates and limit the number of fits based on settings {% endcomment %}
+            {% assign unique_fits = '' %}
+            {% assign unique_fits_array = '' %}
+
+            {% comment %} Deduplicate the fits array {% endcomment %}
+            {% for fit_handle in carousel_fits_array %}
+              {% if fit_handle != blank %}
+                {% assign handle_check = ',' | append: fit_handle | append: ',' %}
+                {% assign unique_check = ',' | append: unique_fits | append: ',' %}
+                {% unless unique_check contains handle_check %}
+                  {% if unique_fits == blank %}
+                    {% assign unique_fits = fit_handle %}
+                  {% else %}
+                    {% assign unique_fits = unique_fits | append: ',' | append: fit_handle %}
+                  {% endif %}
+                {% endunless %}
+              {% endif %}
+            {% endfor %}
+
+            {% assign unique_fits_array = unique_fits | split: ',' %}
+            {% assign max_fits = block.settings.max_fits | default: 8 %}
+            {% assign fits_to_show = unique_fits_array | slice: 0, max_fits %}
+
+            {% if fits_to_show.size > 0 %}
+              <div class="look-fit-display-block">
+                {% comment %} Get parent collection for view all link {% endcomment %}
+                {% assign view_all_url = '' %}
+                {% if block.settings.fit_source == 'related' and metaobject.look_fit_collections.value.count > 0 %}
+                  {% comment %} Use the first collection as the primary one for view all {% endcomment %}
+                  {% assign primary_collection = metaobject.look_fit_collections.value.first %}
+                  {% if primary_collection %}
+                    {% assign view_all_url = '/collections/' | append: primary_collection.handle %}
+                  {% endif %}
+                {% endif %}
+
+                {% if block.settings.title != blank %}
+                  <div class="flex justify-between items-end mx-4 lg:mx-12 mb-6">
+                    <div class="flex flex-col gap-2">
+                      <h3 class="text-2xl font-bold text-gray-900">{{ block.settings.title }}</h3>
+                    </div>
+                    <div class="flex items-center gap-8">
+                      {% if view_all_url != blank %}
+                        <a
+                          href="{{ view_all_url }}"
+                          class="text-gray-600 hover:text-gray-900 transition-colors underline"
+                        >
+                          Ver todos
+                        </a>
+                      {% endif %}
+                      {% if block.settings.display_type == 'carousel' %}
+                        {% comment %} Carousel arrows - only show for carousel mode {% endcomment %}
+                        <div class="flex space-x-2" id="look-fit-carousel-arrows-{{ block.id }}">
+                          <button
+                            class="look-fit-carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-not-allowed"
+                            aria-label="Previous"
+                            disabled
+                            data-carousel-id="{{ block.id }}"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                          </button>
+                          <button
+                            class="look-fit-carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-pointer"
+                            aria-label="Next"
+                            data-carousel-id="{{ block.id }}"
+                          >
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="2"
+                            >
+                              <path d="M9 18l6-6-6-6"/>
+                            </svg>
+                          </button>
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% else %}
+                  {% comment %} No title, but still show arrows for carousel {% endcomment %}
+                  {% if block.settings.display_type == 'carousel' %}
+                    <div class="flex justify-end mx-4 lg:mx-12 mb-6">
+                      <div class="flex space-x-2" id="look-fit-carousel-arrows-{{ block.id }}">
+                        <button
+                          class="look-fit-carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-not-allowed"
+                          aria-label="Previous"
+                          disabled
+                          data-carousel-id="{{ block.id }}"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M15 18l-6-6 6-6"/>
+                          </svg>
+                        </button>
+                        <button
+                          class="look-fit-carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-pointer"
+                          aria-label="Next"
+                          data-carousel-id="{{ block.id }}"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                          >
+                            <path d="M9 18l6-6-6-6"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  {% endif %}
+                {% endif %}
+
+                {% if block.settings.display_type == 'carousel' %}
+                  {% comment %} Carousel Display Mode {% endcomment %}
+                  {% capture carousel_content %}
+                    {% for fit_handle in fits_to_show %}
+                      {% if fit_handle != blank %}
+                        {% assign fit_object = shop.metaobjects.look_fit[fit_handle] %}
+                        {% if fit_object %}
+                          <div class="swiper-slide">
+                            {% render 'look-fit-card', 
+                              fit: fit_object,
+                              text_position: block.settings.text_position,
+                              aspect_ratio: block.settings.aspect_ratio
+                            %}
+                          </div>
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endcapture %}
+
+                  {% comment %} Render carousel using generic carousel snippet {% endcomment %}
+                  {%
+                    render 'generic-carousel',
+                    carousel_id: block.id,
+                    carousel_class: 'look-fit-carousel',
+                    content: carousel_content,
+                    show_arrows: true,
+                    slides_per_view_mobile: block.settings.carousel_slides_mobile | default: 1.2,
+                    slides_per_view_desktop: block.settings.carousel_slides_desktop | default: 3,
+                    space_between_mobile: block.settings.carousel_gap_mobile | default: 16,
+                    space_between_desktop: block.settings.carousel_gap_desktop | default: 24,
+                    centered_slides: true,
+                    free_mode: true,
+                    total_items: fits_to_show.size
+                  %}
+
+                {% else %}
+                  {% comment %} Grid Display Mode {% endcomment %}
+                  {% capture grid_content %}
+                    {% for fit_handle in fits_to_show %}
+                      {% if fit_handle != blank %}
+                        {% assign fit_object = shop.metaobjects.look_fit[fit_handle] %}
+                        {% if fit_object %}
+                          {% render 'look-fit-card', 
+                            fit: fit_object,
+                            text_position: block.settings.text_position,
+                            aspect_ratio: block.settings.aspect_ratio
+                          %}
+                        {% endif %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endcapture %}
+
+                  {% comment %} Render grid using generic grid snippet {% endcomment %}
+                  <div class="px-4 lg:px-12">
+                    {%
+                      render 'generic-grid',
+                      grid_id: block.id,
+                      grid_class: 'look-fit-grid',
+                      content: grid_content,
+                      columns_mobile: block.settings.grid_columns_mobile | default: 2,
+                      columns_desktop: block.settings.grid_columns_desktop | default: 4,
+                      gap_mobile: block.settings.grid_gap_mobile | default: 4,
+                      gap_desktop: block.settings.grid_gap_desktop | default: 6,
+                      total_items: fits_to_show.size
+                    %}
+                  </div>
+                {% endif %}
+              </div>
+            {% else %}
+              {% comment %} Show message when no fits are available {% endcomment %}
+              <div class="text-center py-8 px-4 lg:px-12">
+                <p class="text-gray-600">
+                  {% if block.settings.fit_source == 'related' %}
+                    No hay looks relacionados disponibles.
+                  {% else %}
+                    No hay looks disponibles en este momento.
+                  {% endif %}
+                </p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+    {% endcase %}
+  {% endfor %}
 </div>
 
 {% schema %}
@@ -69,6 +359,207 @@
       "id": "show_product_count",
       "label": "Show Product Count",
       "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "look_fit_carousel",
+      "name": "Look Fit Carousel",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Block Title",
+          "default": "Looks Relacionados"
+        },
+        {
+          "type": "select",
+          "id": "fit_source",
+          "label": "Fit Source",
+          "options": [
+            {
+              "value": "related",
+              "label": "Related Fits (from collections)"
+            },
+            {
+              "value": "random",
+              "label": "Random Fits"
+            }
+          ],
+          "default": "related"
+        },
+        {
+          "type": "range",
+          "id": "max_fits",
+          "label": "Maximum Fits to Show",
+          "min": 3,
+          "max": 20,
+          "step": 1,
+          "default": 8
+        },
+        {
+          "type": "header",
+          "content": "Display Mode"
+        },
+        {
+          "type": "select",
+          "id": "display_type",
+          "label": "Display Type",
+          "options": [
+            {
+              "value": "carousel",
+              "label": "Carousel (Swiper)"
+            },
+            {
+              "value": "grid",
+              "label": "Grid Layout"
+            }
+          ],
+          "default": "carousel"
+        },
+        {
+          "type": "header",
+          "content": "Carousel Settings"
+        },
+        {
+          "type": "range",
+          "id": "carousel_slides_mobile",
+          "label": "Carousel - Slides per View (Mobile)",
+          "min": 1,
+          "max": 3,
+          "step": 0.1,
+          "default": 1.2
+        },
+        {
+          "type": "range",
+          "id": "carousel_slides_desktop",
+          "label": "Carousel - Slides per View (Desktop)",
+          "min": 2,
+          "max": 6,
+          "step": 1,
+          "default": 3
+        },
+        {
+          "type": "range",
+          "id": "carousel_gap_mobile",
+          "label": "Carousel - Gap between slides (Mobile)",
+          "min": 8,
+          "max": 32,
+          "step": 4,
+          "default": 16,
+          "unit": "px"
+        },
+        {
+          "type": "range",
+          "id": "carousel_gap_desktop",
+          "label": "Carousel - Gap between slides (Desktop)",
+          "min": 16,
+          "max": 48,
+          "step": 4,
+          "default": 24,
+          "unit": "px"
+        },
+        {
+          "type": "header",
+          "content": "Grid Settings"
+        },
+        {
+          "type": "range",
+          "id": "grid_columns_mobile",
+          "label": "Grid - Columns (Mobile)",
+          "min": 1,
+          "max": 3,
+          "step": 1,
+          "default": 2
+        },
+        {
+          "type": "range",
+          "id": "grid_columns_desktop",
+          "label": "Grid - Columns (Desktop)",
+          "min": 2,
+          "max": 6,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "grid_gap_mobile",
+          "label": "Grid - Gap (Mobile)",
+          "min": 2,
+          "max": 8,
+          "step": 1,
+          "default": 4
+        },
+        {
+          "type": "range",
+          "id": "grid_gap_desktop",
+          "label": "Grid - Gap (Desktop)",
+          "min": 4,
+          "max": 12,
+          "step": 1,
+          "default": 6
+        },
+        {
+          "type": "header",
+          "content": "Card Display Settings"
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Text Position",
+          "options": [
+            {
+              "value": "bottom-left",
+              "label": "Bottom Left"
+            },
+            {
+              "value": "bottom-center",
+              "label": "Bottom Center"
+            },
+            {
+              "value": "bottom-right",
+              "label": "Bottom Right"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            }
+          ],
+          "default": "bottom-left"
+        },
+        {
+          "type": "select",
+          "id": "aspect_ratio",
+          "label": "Card Aspect Ratio",
+          "options": [
+            {
+              "value": "square",
+              "label": "Square (1:1)"
+            },
+            {
+              "value": "portrait",
+              "label": "Portrait (3:4)"
+            },
+            {
+              "value": "landscape",
+              "label": "Landscape (4:3)"
+            },
+            {
+              "value": "wide",
+              "label": "Wide (16:9)"
+            },
+            {
+              "value": "ultra-wide",
+              "label": "Ultra Wide (21:9)"
+            },
+            {
+              "value": "tall",
+              "label": "Tall (9:16)"
+            }
+          ],
+          "default": "portrait"
+        }
+      ]
     }
   ]
 }

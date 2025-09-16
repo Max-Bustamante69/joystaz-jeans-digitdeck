@@ -8,22 +8,27 @@
 {% assign products = metaobject.related_products.value %}
 {% assign product_count = products.count %}
 {% if product_count > 0 %}
-  <div class="look-fit-products">
+  <div class="look-fit-products flex flex-col gap-3">
     <!-- Section Header -->
-    <div class="mb-6">
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">
-        {{ section.settings.products_title | default: 'Consigue El Look' }}
-      </h2>
-      {% if section.settings.show_product_count != false %}
-        <p class="text-lg text-gray-600">{{ product_count }} artículo{{ product_count | pluralize: '', 's' }}</p>
-      {% endif %}
+    <div class="lg:pt-5 lg:pb-4 flex flex-col w-full lg:sticky top-15 z-25 bg-white">
+      <p class="body-sm uppercase opacity-60">{{ section.settings.hashtag_title | default: '#Joystaz + Tu' }}</p>
+      <div class="flex w-full items-end justify-between">
+        <h3 class="capitalize">
+          {{ section.settings.products_title | default: 'Consigue El Look' }}
+        </h3>
+        {% if section.settings.show_product_count != false %}
+          <p class="font-semibold body-sm capitalize opacity-50">
+            {{ product_count }} artículo{{ product_count | pluralize: '', 's' }}
+          </p>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Products Grid -->
     <div class="grid grid-cols-2 gap-4">
       {% for product in products limit: 4 %}
         <div class="product-card-container">
-          {% render 'product-card', 
+          {% render 'product-card',
             product: product,
             show_badges: true,
             show_rating: true,

@@ -9,11 +9,23 @@
   - aspect_ratio: 'square', 'portrait', 'landscape', 'wide', 'ultra-wide', 'tall' (optional, default: 'portrait')
 {% endcomment %}
 
+{% comment %} Determine which image to use - featured image or first from images array {% endcomment %}
+{% assign card_image = fit.featured_image %}
+{% if card_image == blank and fit.images.value.count > 0 %}
+  {% for image in fit.images.value %}
+    {% assign card_image = image %}
+    {% break %}
+  {% endfor %}
+{% endif %}
+
+{% comment %} Create title with @ prefix {% endcomment %}
+{% assign author_title = '@' | append: fit.autor %}
+
 {% comment %} Use the generic card component with Look Fit data {% endcomment %}
 {% render 'generic-card',
-  image: fit.featured_image,
+  image: card_image,
   video: fit.featured_video,
-  title: fit.title,
+  title: author_title,
   link: fit.system.url,
   text_position: text_position,
   aspect_ratio: aspect_ratio

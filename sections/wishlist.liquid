@@ -13,7 +13,7 @@
 
   {% capture wishlist_grid_content %}
   {% endcapture %}
-  {% render 'generic-grid', content: wishlist_grid_content, show_layout_toggle: true, show_filters: false %}
+  {% render 'generic-gallery-grid', content: wishlist_grid_content, show_layout_toggle: true, show_filters: false %}
 </section>
 
 <script>
@@ -457,7 +457,7 @@
     }
 
     async function render() {
-      const grid = document.getElementById('generic-grid');
+      const grid = document.getElementById('generic-gallery-grid');
       const empty = document.getElementById('wishlist-empty');
       if (!grid || !empty) return;
       const handles = getWishlist();
@@ -473,7 +473,7 @@
     }
 
     async function renderGrid(products) {
-      const grid = document.getElementById('generic-grid');
+      const grid = document.getElementById('generic-gallery-grid');
       if (!grid) return;
       grid.innerHTML = '';
       const executeScripts = (root) => {
@@ -665,7 +665,7 @@
 
       updateInfoVisibility() {
         // Hide product-information when layoutOption === 3
-        const grid = document.getElementById('generic-grid');
+        const grid = document.getElementById('generic-gallery-grid');
         if (!grid) return;
         const infos = grid.querySelectorAll('.product-information');
         const shouldHide = this.layoutOption === 3;

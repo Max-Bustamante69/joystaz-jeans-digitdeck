@@ -1,5 +1,6 @@
 {% assign header_mode = '' %}
-{% if template.name == 'product' %}
+{% if template.name == 'product'
+  or template.name == 'look_fit' %}
   {% assign header_mode = 'solid-desktop' %}
 {% endif %}
 {% if template.name == 'search' %}
@@ -9,11 +10,14 @@
   and template.suffix == 'wishlist'
   or template.name == 'page'
   and template.suffix == 'wish-list'
+  or template.name == 'page'
+  and template.suffix == 'look-fit'
 %}
   {% assign header_mode = 'solid' %}
 {% endif %}
 
 <header
+  class="z-50"
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   x-data="

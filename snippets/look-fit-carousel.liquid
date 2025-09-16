@@ -13,7 +13,7 @@
 {% endif %}
 
 {% if total_items > 0 %}
-  <div class="look-fit-carousel-container relative group">
+  <div class="look-fit-carousel-container h-[93dvh] py-4  group sticky top-0">
     <div class="swiper look-fit-carousel-{{ section.id | default: 'default' }} aspect-[3/4] lg:aspect-[4/5]">
       <div class="swiper-wrapper">
         {% comment %} Regular images {% endcomment %}
@@ -81,18 +81,84 @@
     {% endif %}
   </div>
 
+  <style>
+    .swiper {
+      width: 100%;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  </style>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const carousel = document.querySelector('.look-fit-carousel-{{ section.id | default: 'default' }}');
       if (carousel && typeof Swiper !== 'undefined') {
-        new Swiper(carousel, {
+        const swiperInstance = new Swiper(carousel, {
           slidesPerView: 1,
+          spaceBetween: 0,
           navigation: {
             nextEl: '.carousel-next',
             prevEl: '.carousel-prev',
           },
-
         });
+
+        // Function to update arrow states
+        const updateArrowStates = () => {
+          const prevArrow = document.querySelector('.carousel-prev');
+          const nextArrow = document.querySelector('.carousel-next');
+
+          if (prevArrow) {
+            if (swiperInstance.isBeginning) {
+              prevArrow.style.opacity = '0';
+              prevArrow.style.pointerEvents = 'none';
+              prevArrow.style.visibility = 'hidden';
+            } else {
+              prevArrow.style.opacity = '';
+              prevArrow.style.pointerEvents = '';
+              prevArrow.style.visibility = '';
+            }
+          }
+
+          if (nextArrow) {
+            if (swiperInstance.isEnd) {
+              nextArrow.style.opacity = '0';
+              nextArrow.style.pointerEvents = 'none';
+              nextArrow.style.visibility = 'hidden';
+            } else {
+              nextArrow.style.opacity = '';
+              nextArrow.style.pointerEvents = '';
+              nextArrow.style.visibility = '';
+            }
+          }
+        };
+
+        // Set initial state and add event listeners
+        swiperInstance.on('slideChange', updateArrowStates);
+        swiperInstance.on('reachBeginning', updateArrowStates);
+        swiperInstance.on('reachEnd', updateArrowStates);
+
+        // Initial state update
+        setTimeout(updateArrowStates, 100);
+
+        // Add touch event listeners for mobile
+        const prevArrow = document.querySelector('.carousel-prev');
+        const nextArrow = document.querySelector('.carousel-next');
+
+        if (prevArrow) {
+          prevArrow.addEventListener('touchstart', () => {
+            if (!swiperInstance.isBeginning) {
+              swiperInstance.slidePrev();
+            }
+          });
+        }
+
+        if (nextArrow) {
+          nextArrow.addEventListener('touchstart', () => {
+            if (!swiperInstance.isEnd) {
+              swiperInstance.slideNext();
+            }
+          });
+        }
       }
     });
   </script>

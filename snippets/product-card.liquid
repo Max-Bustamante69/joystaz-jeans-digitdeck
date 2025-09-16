@@ -207,7 +207,7 @@
         x-transition:leave-start="opacity-100 transform"
         x-transition:leave-end="opacity-0 transform"
         @click.outside="isDesktop ? (showSizeSelector = false) : null"
-        class="size-selector-hover absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-md border border-gray-200 hidden lg:block"
+        class="size-selector-hover absolute bottom-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-md border border-gray-200 hidden lg:block"
       >
         <div class="grid grid-cols-5 gap-1 ">
           {% comment %} Get all unique sizes and check their availability for selected color {% endcomment %}
@@ -528,6 +528,7 @@
                 size: 'md',
                 color: 'text-[#f3a000]',
                 show_rating_value: true
+                show_review_count: true
               %}
             {% else %}
               <!-- Empty div for spacing when no rating -->

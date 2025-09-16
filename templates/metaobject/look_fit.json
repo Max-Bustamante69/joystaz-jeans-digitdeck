@@ -25,8 +25,8 @@
             "carousel_gap_desktop": 24,
             "grid_columns_mobile": 2,
             "grid_columns_desktop": 4,
-            "grid_gap_mobile": 4,
-            "grid_gap_desktop": 6,
+            "grid_gap_mobile": 2,
+            "grid_gap_desktop": 4,
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }

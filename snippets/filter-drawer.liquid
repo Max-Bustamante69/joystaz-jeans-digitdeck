@@ -574,6 +574,9 @@
             },
           })
         );
+        
+        // Also dispatch a general filter change event for the results counter
+        window.dispatchEvent(new CustomEvent('filter:changed'));
       },
 
       applyFilters() {

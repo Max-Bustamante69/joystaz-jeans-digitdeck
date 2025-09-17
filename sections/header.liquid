@@ -17,7 +17,7 @@
 {% endif %}
 
 <header
-  class="z-50"
+  class="z-50 overflow-hidden w-full"
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   x-data="
@@ -76,7 +76,7 @@
   "
 >
   <nav
-    class="grid grid-cols-3 h-15 px-4  lg:pl-9 lg:pr-12   bg-transparent w-full relative"
+    class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12 overflow-hidden   bg-transparent w-full relative"
     :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
@@ -109,7 +109,7 @@
               x-transition:enter-end="opacity-100 max-h-screen overflow-visible"
               :class="
                 [
-                  'absolute top-full left-0 w-screen bg-white pl-12 py-4  z-50 mega-menu',
+                  'absolute top-full left-0 w-full bg-white pl-12 py-4  z-50 mega-menu',
                   activeMegaMenu === '{{ collection_handle }}' ? 'is-active' : ''
                 ]
               "

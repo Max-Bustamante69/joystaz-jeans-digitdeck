@@ -82,7 +82,6 @@
     {% if show_review_count %}
       <span class="body-sm">
         {{- review_count | default: 0 }}
-        {% if rating == 1 %}Reseña{% else %}Reseñas{% endif -%}
       </span>
     {% endif %}
   </div>

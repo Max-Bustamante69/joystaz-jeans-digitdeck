@@ -40,7 +40,7 @@
               <div class="rich-text">{{ section.settings.rich_text }}</div>
             {% endif %}
           </div>
-          <div class="flex items-center gap-8">
+          <div class="items-center gap-8 hidden lg:flex">
             {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
               <a
                 href="{{ section.settings.view_all_link }}"
@@ -76,7 +76,7 @@
       {% endcapture %}
 
       {% comment %} Render carousel using generic carousel snippet {% endcomment %}
-      <div class="px-4 lg:px-12">
+
         {% render 'generic-carousel',
           carousel_id: section.id,
           carousel_class: 'collections-carousel',
@@ -90,7 +90,7 @@
           free_mode: section.settings.free_mode,
           total_items: available_count
         %}
-      </div>
+
     </div>
   </section>
 {% endif %}

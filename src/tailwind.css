@@ -84,6 +84,7 @@
   body {
     overflow-x: hidden;
     position: relative;
+    scrollbar-gutter: stable;
   }
 
   /* Responsive styles */

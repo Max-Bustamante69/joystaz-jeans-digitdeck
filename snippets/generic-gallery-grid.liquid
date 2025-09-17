@@ -12,7 +12,10 @@
 
 <!-- Layout Toggle (only show when show_layout_toggle is true) -->
 {% if show_layout_toggle != false %}
-  <div class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-50  justify-between mt-15  ">
+  <div
+    class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-50  justify-between mt-15  "
+    x-data="galleryGrid()"
+  >
     <div class="flex h-full items-center gap-4">
       <!-- Layout Toggle -->
       <div class="flex h-full items-center gap-2">
@@ -51,15 +54,28 @@
       </div>
     </div>
 
-    <!-- Filters Button (only show when show_filters is true) -->
+    <!-- Filters Button and Results Counter (only show when show_filters is true) -->
     {% if show_filters != false %}
-      <button
-        @click="window.dispatchEvent(new CustomEvent('filter:open'))"
-        class="flex items-center gap-1 py-2 pr-3 pl-2 border boder-black rounded-full  justify-center cursor-pointer  transition-colors"
-      >
-        {% render 'filter-icon', class: 'size-5' %}
-        <p class="body-sm ">Filtros</p>
-      </button>
+      <div class="flex items-center gap-3">
+        <!-- Results Counter -->
+        <div class="flex items-start gap-1">
+          <span class="body-sm font-medium" x-text="visibleResultsCount">0</span>
+          <span class="body-sm font-medium">Resultados</span>
+        </div>
+
+        <div class="h-[16px] w-[1px] bg-black/10">
+
+        </div>
+
+        <!-- Filter Button -->
+        <button
+          @click="window.dispatchEvent(new CustomEvent('filter:open'))"
+          class="flex items-center gap-1 p-1 lg:py-2 lg:pr-3 lg:pl-2 lg:border lg:boder-black lg:rounded-full  justify-center cursor-pointer  transition-colors"
+        >
+          {% render 'filter-icon', class: 'size-5' %}
+          <p class="body-sm hidden lg:block">Filtros</p>
+        </button>
+      </div>
     {% endif %}
   </div>
 {% endif %}
@@ -68,7 +84,7 @@
 <div class="">
   <div
     id="generic-gallery-grid"
-    class="grid  w-full gap-0.5 transition-all duration-300"
+    class="grid  w-full gap-0.5 lg:gap-1 transition-all duration-300"
     :class="
       {
         'grid-cols-1 lg:grid-cols-3 gap-y-6': layoutOption === 1,
@@ -80,3 +96,67 @@
     {{ content }}
   </div>
 </div>
+
+<script>
+  function galleryGrid() {
+    return {
+      visibleResultsCount: 0,
+
+      init() {
+        // Initial count with delay to ensure DOM is ready
+        setTimeout(() => {
+          this.updateResultsCount();
+        }, 100);
+
+        // Listen for filter changes
+        window.addEventListener('filters:applied', () => {
+          this.$nextTick(() => {
+            this.updateResultsCount();
+          });
+        });
+
+        // Also listen for general filter changes
+        window.addEventListener('filter:changed', () => {
+          this.$nextTick(() => {
+            this.updateResultsCount();
+          });
+        });
+
+        // Update count when layout changes
+        this.$watch('layoutOption', () => {
+          this.$nextTick(() => {
+            this.updateResultsCount();
+          });
+        });
+      },
+
+      updateResultsCount() {
+        // Count visible items in the grid
+        const grid = document.getElementById('generic-gallery-grid');
+        if (grid) {
+          let count = 0;
+
+          // Count all direct children of the grid
+          const allItems = grid.children;
+          for (let i = 0; i < allItems.length; i++) {
+            const item = allItems[i];
+            const style = window.getComputedStyle(item);
+
+            // Check if item is visible (not hidden by CSS or inline styles)
+            const isVisible = style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+
+            const hasInlineStyle = item.hasAttribute('style');
+            const isHiddenInline = hasInlineStyle && item.getAttribute('style').includes('display: none');
+
+            if (isVisible && !isHiddenInline) {
+              count++;
+            }
+          }
+
+          this.visibleResultsCount = count;
+          console.log('Results count updated:', count);
+        }
+      },
+    };
+  }
+</script>

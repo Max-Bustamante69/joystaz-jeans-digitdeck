@@ -5,7 +5,7 @@
   - carousel_id: Unique ID for the carousel
   - carousel_class: Additional CSS classes
   - content: The content to be rendered inside swiper-wrapper
-  - show_arrows: Whether to show navigation arrows (default: true)
+  - show_arrows: Whether to show navigation arrows (default: true, hidden on mobile)
   - slides_per_view_mobile: Mobile slides per view (default: 1.35)
   - slides_per_view_desktop: Desktop slides per view (default: 4)
   - space_between_mobile: Mobile space between slides (default: 2)
@@ -26,7 +26,7 @@
 {% assign free_mode = free_mode | default: true %}
 {% assign total_items = total_items | default: 0 %}
 
-<div class="relative">
+<div class="relative overflow-hidden">
   <div
     class="  px-4 lg:px-12 swiper-{{ carousel_id }} {{ carousel_class }}"
     data-carousel-id="{{ carousel_id }}"
@@ -70,17 +70,17 @@
         },
         {% endif %}
         grabCursor: false,
-        {% if show_arrows %}
-          navigation: {
-            nextEl: '.product-carousel-next, .look-fit-carousel-next, .carousel-next',
-            prevEl: '.product-carousel-prev, .look-fit-carousel-prev, .carousel-prev',
-          },
-        {% endif %}
         breakpoints: {
           1024: {
             slidesPerView: {{ slides_per_view_desktop }},
             spaceBetween: {{ space_between_desktop }},
             centeredSlides: false,
+            {% if show_arrows %}
+            navigation: {
+              nextEl: '.product-carousel-next, .look-fit-carousel-next, .carousel-next',
+              prevEl: '.product-carousel-prev, .look-fit-carousel-prev, .carousel-prev',
+            },
+            {% endif %}
             {% if free_mode %}
             freeMode: {
               enabled: true,
@@ -128,8 +128,13 @@
     }
 
     {% if show_arrows %}
-    // Function to update arrow states for carousel
+    // Function to update arrow states for carousel (desktop only)
     function updateGenericArrowStates(swiper, carouselId) {
+      // Only update arrows on desktop (1024px and above)
+      if (window.innerWidth < 1024) {
+        return;
+      }
+
       // Try to find carousel specific arrows in order of priority
       let prevArrow = document.querySelector(`.product-carousel-prev[data-carousel-id="${carouselId}"]`) ||
                       document.querySelector(`.look-fit-carousel-prev[data-carousel-id="${carouselId}"]`);

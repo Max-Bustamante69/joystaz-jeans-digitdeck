@@ -13,18 +13,28 @@
   - related_products: Product references
 {% endcomment %}
 
-<div class="look-fit-section pt-24 relative">
+<div class="look-fit-section lg:pt-24 relative ">
   <!-- Single Flex Container for Both Desktop and Mobile -->
-  <div class="flex flex-col lg:px-12 w-full lg:flex-row lg:gap-8 lg:items-start">
+  <div class="flex flex-col lg:px-12 w-full lg:flex-row   lg:gap-8 lg:items-stretch">
     <!-- Carousel Section -->
-    <div class="lg:w-1/2 mb-8 lg:mb-0">
-      <div class="lg:sticky lg:top-24 lg:h-[calc(100vh-6rem)] lg:overflow-hidden">
-        {% render 'look-fit-carousel', metaobject: metaobject %}
+    <div class="lg:w-1/2 mb-8 lg:mb-0 lg:overflow-hidden h-full lg:h-[93dvh]  lg:sticky lg:top-12">
+      <!-- Mobile: Product Images Carousel (Same as Product Page) -->
+      <div class="lg:hidden relative overflow-hidden mt-8">
+        <div class=" aspect-[3/4]">
+          {% render 'look-fit-carousel', metaobject: metaobject %}
+        </div>
       </div>
+
+      <div class="hidden lg:block ">
+
+        <!-- Desktop: Keep original carousel -->
+        {% render 'look-fit-carousel', metaobject: metaobject %}
+        </div>
+
     </div>
 
     <!-- Products Grid Section -->
-    <div class="lg:w-1/2 lg:min-h-screen lg:pb-24">
+    <div class="lg:w-1/2 ">
       {% render 'look-fit-products', metaobject: metaobject %}
     </div>
   </div>
@@ -40,12 +50,10 @@
             {% assign carousel_fits_array = '' %}
 
             {% if block.settings.fit_source == 'related' %}
-              {{ metaobject.look_fit_collections.value.count }}
               {% comment %} Get related fits from look_fit_collections {% endcomment %}
               {% assign related_fits_array = '' %}
               {% if metaobject.look_fit_collections.value.count > 0 %}
                 {% for collection in metaobject.look_fit_collections.value %}
-                  {{ collection.fits.value.count }}
                   {% if collection.fits.value.count > 0 %}
                     {% for fit in collection.fits.value %}
                       {% comment %} Exclude the current fit {% endcomment %}
@@ -139,9 +147,9 @@
                 {% if block.settings.title != blank %}
                   <div class="flex justify-between items-end mx-4 lg:mx-12 mb-6">
                     <div class="flex flex-col gap-2">
-                      <h3 class="text-2xl font-bold text-gray-900">{{ block.settings.title }}</h3>
+                      <h2 class="capitalize">{{ block.settings.title }}</h2>
                     </div>
-                    <div class="flex items-center gap-8">
+                    <div class="items-center gap-8 hidden lg:flex">
                       {% if view_all_url != blank %}
                         <a
                           href="{{ view_all_url }}"
@@ -304,13 +312,13 @@
             {% else %}
               {% comment %} Show message when no fits are available {% endcomment %}
               <div class="text-center py-8 px-4 lg:px-12">
-                <p class="text-gray-600">
+                <h2 class="capitalize">
                   {% if block.settings.fit_source == 'related' %}
                     No hay looks relacionados disponibles.
                   {% else %}
                     No hay looks disponibles en este momento.
                   {% endif %}
-                </p>
+                </h2>
               </div>
             {% endif %}
           </div>
@@ -443,9 +451,9 @@
           "type": "range",
           "id": "carousel_gap_mobile",
           "label": "Carousel - Gap between slides (Mobile)",
-          "min": 8,
+          "min": 2,
           "max": 32,
-          "step": 4,
+          "step": 2,
           "default": 16,
           "unit": "px"
         },
@@ -453,9 +461,9 @@
           "type": "range",
           "id": "carousel_gap_desktop",
           "label": "Carousel - Gap between slides (Desktop)",
-          "min": 16,
+          "min": 4,
           "max": 48,
-          "step": 4,
+          "step": 2,
           "default": 24,
           "unit": "px"
         },
@@ -488,7 +496,8 @@
           "min": 2,
           "max": 8,
           "step": 1,
-          "default": 4
+          "default": 4,
+          "unit": "px"
         },
         {
           "type": "range",
@@ -497,7 +506,8 @@
           "min": 4,
           "max": 12,
           "step": 1,
-          "default": 6
+          "default": 6,
+          "unit": "px"
         },
         {
           "type": "header",

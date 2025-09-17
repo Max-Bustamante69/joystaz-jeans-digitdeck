@@ -19,37 +19,49 @@
             <div class="rich-text">{{ section.settings.rich_text }}</div>
           {% endif %}
         </div>
-        <div class="flex items-center gap-8">
-          {% if section.settings.show_view_all and section.settings.view_all_link != blank %}
-            <a
-              href="{{ section.settings.view_all_link }}"
-              class="text-gray-600 hover:text-gray-900 transition-colors underline"
-            >
-              {{ section.settings.view_all_text | default: 'Ver todos' }}
-            </a>
+        <div class=" items-center gap-8 hidden lg:flex">
+          {% if section.settings.show_view_all %}
+            {% assign view_all_url = '' %}
+            {% case section.settings.product_source %}
+              {% when 'collections' %}
+                {% assign view_all_url = section.settings.view_all_link_collections %}
+              {% else %}
+                {% assign view_all_url = section.settings.view_all_link %}
+            {% endcase %}
+
+            {% if view_all_url != blank %}
+              <a
+                href="{{ view_all_url }}"
+                class="text-gray-600 hover:text-gray-900 transition-colors underline"
+              >
+                {{ section.settings.view_all_text | default: 'Ver todos' }}
+              </a>
+            {% endif %}
           {% endif %}
-          {% comment %} Custom arrows for product carousel {% endcomment %}
-          <div class="flex space-x-2" id="product-carousel-arrows-{{ section.id }}">
-            <button
-              class="product-carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-not-allowed"
-              aria-label="Previous"
-              disabled
-              data-carousel-id="{{ section.id }}"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 18l-6-6 6-6"/>
-              </svg>
-            </button>
-            <button
-              class="product-carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-pointer"
-              aria-label="Next"
-              data-carousel-id="{{ section.id }}"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18l6-6-6-6"/>
-              </svg>
-            </button>
-          </div>
+          {% comment %} Custom arrows for product carousel (hidden on mobile) {% endcomment %}
+          {% if section.settings.show_arrows %}
+            <div class="hidden lg:flex space-x-2" id="product-carousel-arrows-{{ section.id }}">
+              <button
+                class="product-carousel-prev w-8 h-8 rounded-full bg-gray-300 text-gray-500 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-not-allowed"
+                aria-label="Previous"
+                disabled
+                data-carousel-id="{{ section.id }}"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M15 18l-6-6 6-6"/>
+                </svg>
+              </button>
+              <button
+                class="product-carousel-next w-8 h-8 rounded-full bg-primary text-white hover:bg-primary/80 disabled:hover:bg-gray-300 disabled:hover:text-gray-500 transition-all duration-200 flex items-center justify-center cursor-pointer"
+                aria-label="Next"
+                data-carousel-id="{{ section.id }}"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 18l6-6-6-6"/>
+                </svg>
+              </button>
+            </div>
+          {% endif %}
         </div>
       </div>
     {% endif %}
@@ -59,6 +71,41 @@
       {% when 'collection' %}
         {% if section.settings.collection != blank %}
           {% assign products = section.settings.collection.products %}
+        {% endif %}
+      {% when 'collections' %}
+        {% if section.settings.collections.count > 0 %}
+          {% comment %} Collect first 3 products from each collection {% endcomment %}
+          {% assign products = blank %}
+          {% assign first_collection = true %}
+
+          {% for collection in section.settings.collections %}
+            {% assign products_added = 0 %}
+            {% assign collection_products = blank %}
+
+            {% comment %} Get up to 3 products from this collection {% endcomment %}
+            {% for product in collection.products %}
+              {% if product.available and products_added < 3 %}
+                {% if products_added == 0 %}
+                  {% comment %} Start with the product as a single-item array {% endcomment %}
+                  {% assign collection_products = collection.products | where: 'id', product.id %}
+                {% else %}
+                  {% assign single_product = collection.products | where: 'id', product.id %}
+                  {% assign collection_products = collection_products | concat: single_product %}
+                {% endif %}
+                {% assign products_added = products_added | plus: 1 %}
+              {% endif %}
+            {% endfor %}
+
+            {% comment %} Add this collection's products to the main products array {% endcomment %}
+            {% if collection_products != blank %}
+              {% if first_collection %}
+                {% assign products = collection_products %}
+                {% assign first_collection = false %}
+              {% else %}
+                {% assign products = products | concat: collection_products %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
         {% endif %}
       {% when 'tags' %}
         {% if section.settings.product_tags != blank %}
@@ -167,7 +214,14 @@
     {
       "type": "url",
       "id": "view_all_link",
-      "label": "View All Link"
+      "label": "View All Link",
+      "info": "Used for single collection, tags, and manual selection"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link_collections",
+      "label": "View All Link (Multiple Collections)",
+      "info": "Used when multiple collections are selected"
     },
     {
       "type": "checkbox",
@@ -186,7 +240,11 @@
       "options": [
         {
           "value": "collection",
-          "label": "Collection"
+          "label": "Single Collection"
+        },
+        {
+          "value": "collections",
+          "label": "Multiple Collections"
         },
         {
           "value": "tags",
@@ -204,6 +262,13 @@
       "id": "collection",
       "label": "Collection",
       "info": "Select products from this collection"
+    },
+    {
+      "type": "collection_list",
+      "id": "collections",
+      "label": "Collections",
+      "limit": 10,
+      "info": "Select multiple collections to mix products from"
     },
     {
       "type": "text",

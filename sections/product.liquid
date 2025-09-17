@@ -1385,34 +1385,10 @@
               }
             });
 
-            // Function to update arrow states
+            // Function to update arrow states (disabled for mobile)
             const updateArrowStates = () => {
-              const prevArrow = carouselElement.querySelector('.mobile-prev');
-              const nextArrow = carouselElement.querySelector('.mobile-next');
-
-              if (prevArrow) {
-                if (swiperInstance.isBeginning) {
-                  prevArrow.style.opacity = '0';
-                  prevArrow.style.pointerEvents = 'none';
-                  prevArrow.style.visibility = 'hidden';
-                } else {
-                  prevArrow.style.opacity = '';
-                  prevArrow.style.pointerEvents = '';
-                  prevArrow.style.visibility = '';
-                }
-              }
-
-              if (nextArrow) {
-                if (swiperInstance.isEnd) {
-                  nextArrow.style.opacity = '0';
-                  nextArrow.style.pointerEvents = 'none';
-                  nextArrow.style.visibility = 'hidden';
-                } else {
-                  nextArrow.style.opacity = '';
-                  nextArrow.style.pointerEvents = '';
-                  nextArrow.style.visibility = '';
-                }
-              }
+              // Mobile arrows are disabled, so no need to update states
+              return;
             };
 
             // Set initial state and add event listeners
@@ -1867,8 +1843,8 @@
       "type": "checkbox",
       "id": "show_mobile_navigation",
       "label": "Show Mobile Navigation Arrows",
-      "default": true,
-      "info": "Display navigation arrows on mobile carousel"
+      "default": false,
+      "info": "Display navigation arrows on mobile carousel (disabled by default)"
     }
   ],
   "blocks": [

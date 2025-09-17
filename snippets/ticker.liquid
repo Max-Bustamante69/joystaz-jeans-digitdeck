@@ -28,7 +28,7 @@
 {% comment %} Calculate how many duplicates we need to fill screen width {% endcomment %}
 {% comment %} We'll use CSS calc to determine this dynamically {% endcomment %}
 
-<div class="ticker-container flex items-center w-screen bg-primary h-8 overflow-hidden">
+<div class="ticker-container flex items-center w-full bg-primary h-8 overflow-hidden">
   <div class="ticker-wrap flex items-center" style="width: max-content;">
     {% comment %} Create enough duplicates to fill screen + buffer {% endcomment %}
     {% for i in (1..12) %}

@@ -278,22 +278,60 @@
         x-transition:enter-start="opacity-0 translate-y-4"
         x-transition:enter-end="opacity-100 translate-y-0"
         class="p-6 space-y-4"
+        x-data="{ layoutOption: 2 }"
       >
-        <h5>Productos encontrados (<span x-text="searchResults.length"></span>)</h5>
+        <div class="flex items-center justify-between">
+          <h5>Productos encontrados (<span x-text="searchResults.length"></span>)</h5>
 
-        <div class="grid grid-cols-2 gap-0.5 lg:gap-1">
+          <!-- Mini Layout Toggle for Search Results -->
+          <div class="flex gap-1">
+            <button @click="layoutOption = 2" class="p-1">
+              <svg
+                class="size-4 cursor-pointer transition-opacity"
+                :class="layoutOption == 2 ? 'opacity-100' : 'opacity-40'"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13 5h6v14h-6V5Zm-2-2h10v18H3V3h8Zm0 16H5V5h6v14Z" fill="currentColor"/>
+              </svg>
+            </button>
+            <button @click="layoutOption = 3" class="p-1">
+              <svg
+                class="size-4 cursor-pointer transition-opacity"
+                :class="layoutOption == 3 ? 'opacity-100' : 'opacity-40'"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+              >
+                <path d="M 10.83 16.17 L 15.83 16.17 L 15.83 11.17 L 10.83 11.17 Z M 10.833 9.167 L 15.833 9.167 L 15.833 4.167 L 10.833 4.167 Z M 17.5 2.5 L 17.5 17.5 L 2.5 17.5 L 2.5 2.5 Z M 9.167 4.167 L 4.167 4.167 L 4.167 9.167 L 9.167 9.167 Z M 9.167 11.167 L 4.167 11.167 L 4.167 16.167 L 9.167 16.167 Z" fill="rgba(0,0,0,1)"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="grid gap-0.5 transition-all duration-300"
+          :class="
+            {
+              'grid-cols-2': layoutOption === 2,
+              'grid-cols-3': layoutOption === 3
+            }
+          "
+        >
           <template x-for="result in searchResults" :key="result.id">
             <div class="product-result-card">
               <a
                 :href="result.url"
-                class=" group flex flex-col"
+                class="group flex flex-col"
                 @click="addToHistory(searchQuery); closeDrawer()"
               >
-                <div class="relative overflow-hidden aspect-[3/4] bg-gray-100 mb-3 ">
+                <div
+                  class="relative overflow-hidden aspect-[3/4] bg-gray-100"
+                  :class="layoutOption === 3 ? 'mb-0' : 'mb-3'"
+                >
                   <img
                     :src="result.featured_image.url"
                     :alt="result.title"
-                    class="w-full h-full object-cover  transition-transform duration-300"
+                    class="w-full h-full object-cover transition-transform duration-300"
                     width="400"
                     height="400"
                     loading="lazy"
@@ -302,7 +340,12 @@
                     <span class="bg-white/90 backdrop-blur-sm text-black py-1 px-2 text-xs font-medium"> Nuevo </span>
                   </div>
                 </div>
-                <div class="space-y-2">
+
+                <!-- Product Info - Hide when layout is 3 -->
+                <div
+                  x-show="layoutOption !== 3"
+                  class="space-y-2"
+                >
                   <p
                     class="body-sm lg:body font-semibold"
                     x-text="cleanProductTitle(result.title)"

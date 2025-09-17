@@ -73,7 +73,205 @@
           {% endif %}
         </label>
       {% endif %}
-      <div class="flex items-center gap-1" :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''">
+      <!-- Color Swatches Container with max 80% width -->
+      <div
+        class="relative w-full  max-w-[70%]"
+        :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''"
+        x-data="colorCarousel{{ product.id }}{{ product_number | default: '' }}()"
+      >
+        {% assign color_count = product_option.values.size %}
+
+        {% if color_count > 4 %}
+          <!-- Mobile: Carousel for many colors (5+) -->
+          <div class="relative overflow-hidden px-4 lg:hidden">
+            <div
+              class="color-swatches-carousel  swiper-color-{{ product.id }}{{ product_number | default: '' }} w-full"
+              data-carousel-id="color-carousel-{{ product.id }}{{ product_number | default: '' }}"
+              x-ref="colorCarousel"
+            >
+              <div class="swiper-wrapper ">
+                {% for product_option_value in product_option.values %}
+                  {% comment %} Find a variant with this color to get its image {% endcomment %}
+                  {% assign color_variant = null %}
+                  {% for variant in product.variants %}
+                    {% for option in variant.options %}
+                      {% if option == product_option_value %}
+                        {% assign color_variant = variant %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                    {% if color_variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+
+                  <div class="swiper-slide" style="width: auto;">
+                    <button
+                      {% if product_number %}
+                        @click="window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}') ? {{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }}) : null"
+                        :class="
+                          [
+                            {{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
+                            (window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}')) ? '' : 'opacity-40 cursor-not-allowed'
+                          ]
+                        "
+                        :disabled="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
+                      {% else %}
+                        @click="isColorAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }}) : null"
+                        :class="
+                          [
+                            {{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
+                            isColorAvailable('{{ product_option_value }}') ? '' : 'opacity-40 cursor-not-allowed'
+                          ]
+                        "
+                        :disabled="!isColorAvailable('{{ product_option_value }}')"
+                      {% endif %}
+                      class="relative border-1 transition-all duration-200"
+                      {% if color_variant and color_variant.featured_image %}
+                        style="width: 58px; height: 74px; background-image: url({{ color_variant.featured_image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
+                      {% elsif product_option_value.swatch.image %}
+                        style="width: 58px; height: 74px; background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
+                      {% elsif product_option_value.swatch.color %}
+                        style="width: 32px; height: 32px; background-color: {{ product_option_value.swatch.color }};"
+                      {% else %}
+                        style="width: 32px; height: 32px; background-color: #f3f4f6;"
+                      {% endif %}
+                      title="{{ product_option_value }}"
+                    >
+                      <!-- Diagonal line for unavailable colors -->
+                      {% unless product_number %}
+                        <div
+                          x-show="!isColorAvailable('{{ product_option_value }}')"
+                          class="absolute inset-0 pointer-events-none"
+                        >
+                          <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <line x1="0" y1="0" x2="100" y2="100"
+                                  stroke="#ef4444"
+                                  stroke-width="3"
+                                  class=""/>
+                          </svg>
+                        </div>
+                      {% else %}
+                        <div
+                          x-show="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
+                          class="absolute inset-0 pointer-events-none"
+                        >
+                          <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                            <line x1="0" y1="0" x2="100" y2="100"
+                                  stroke="#ef4444"
+                                  stroke-width="3"
+                                  class=""/>
+                          </svg>
+                        </div>
+                      {% endunless %}
+                    </button>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Navigation arrows -->
+            <button
+              class="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white/90 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center hover:bg-white transition-all duration-200"
+              x-ref="prevButton"
+              @click="slidePrev()"
+            >
+              <svg class="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
+
+            <button
+              class="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-white/90 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center hover:bg-white transition-all duration-200"
+              x-ref="nextButton"
+              @click="slideNext()"
+            >
+              <svg class="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
+          </div>
+          <!-- Desktop: Regular flex layout for many colors -->
+          <div class="hidden lg:flex items-center gap-1">
+            {% for product_option_value in product_option.values %}
+              {% comment %} Find a variant with this color to get its image {% endcomment %}
+              {% assign color_variant = null %}
+              {% for variant in product.variants %}
+                {% for option in variant.options %}
+                  {% if option == product_option_value %}
+                    {% assign color_variant = variant %}
+                    {% break %}
+                  {% endif %}
+                {% endfor %}
+                {% if color_variant %}
+                  {% break %}
+                {% endif %}
+              {% endfor %}
+
+              <button
+                {% if product_number %}
+                  @click="window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}') ? {{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }}) : null"
+                  :class="
+                    [
+                      {{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
+                      (window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}')) ? '' : 'opacity-40 cursor-not-allowed'
+                    ]
+                  "
+                  :disabled="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
+                {% else %}
+                  @click="isColorAvailable('{{ product_option_value }}') ? {{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }}) : null"
+                  :class="
+                    [
+                      {{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400',
+                      isColorAvailable('{{ product_option_value }}') ? '' : 'opacity-40 cursor-not-allowed'
+                    ]
+                  "
+                  :disabled="!isColorAvailable('{{ product_option_value }}')"
+                {% endif %}
+                class="relative border-1 transition-all duration-200"
+                {% if color_variant and color_variant.featured_image %}
+                  style="width: 58px; height: 74px; background-image: url({{ color_variant.featured_image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
+                {% elsif product_option_value.swatch.image %}
+                  style="width: 58px; height: 74px; background-image: url({{ product_option_value.swatch.image | image_url: width: 200 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
+                {% elsif product_option_value.swatch.color %}
+                  style="width: 32px; height: 32px; background-color: {{ product_option_value.swatch.color }};"
+                {% else %}
+                  style="width: 32px; height: 32px; background-color: #f3f4f6;"
+                {% endif %}
+                title="{{ product_option_value }}"
+              >
+                <!-- Diagonal line for unavailable colors -->
+                {% unless product_number %}
+                  <div
+                    x-show="!isColorAvailable('{{ product_option_value }}')"
+                    class="absolute inset-0 pointer-events-none"
+                  >
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <line x1="0" y1="0" x2="100" y2="100"
+                            stroke="#ef4444"
+                            stroke-width="3"
+                            class=""/>
+                    </svg>
+                  </div>
+                {% else %}
+                  <div
+                    x-show="!(window.isDuoColorAvailable && window.isDuoColorAvailable({{ product_number }}, '{{ product_option_value }}'))"
+                    class="absolute inset-0 pointer-events-none"
+                  >
+                    <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <line x1="0" y1="0" x2="100" y2="100"
+                            stroke="#ef4444"
+                            stroke-width="3"
+                            class=""/>
+                    </svg>
+                  </div>
+                {% endunless %}
+              </button>
+            {% endfor %}
+          </div>
+        {% else %}
+          <!-- Regular flex layout for few colors (4 or less) -->
+          <div class="flex items-center gap-1">
         {% for product_option_value in product_option.values %}
           {% comment %} Find a variant with this color to get its image {% endcomment %}
           {% assign color_variant = null %}
@@ -149,7 +347,124 @@
             {% endunless %}
           </button>
         {% endfor %}
+          </div>
+        {% endif %}
       </div>
     </div>
   {% endif %}
 {% endfor %}
+
+<script>
+  function colorCarousel{{ product.id }}{{ product_number | default: '' }}() {
+    return {
+      swiper: null,
+
+      init() {
+        this.$nextTick(() => {
+          this.initializeCarousel();
+        });
+      },
+
+      initializeCarousel() {
+        // Only initialize on mobile devices
+        if (window.innerWidth >= 1024) return;
+
+        const carouselElement = this.$refs.colorCarousel;
+        if (!carouselElement || typeof Swiper === 'undefined') return;
+
+        // Check if already initialized
+        if (carouselElement.swiper) return;
+
+        // Initialize Swiper
+        this.swiper = new Swiper(carouselElement, {
+          direction: 'horizontal',
+          slidesPerView: 'auto',
+          spaceBetween: 4,
+          loop: false,
+          centeredSlides: false,
+          grabCursor: true,
+          touchRatio: 1,
+          touchAngle: 45,
+          simulateTouch: true,
+          freeMode: {
+            enabled: true,
+            sticky: false,
+            momentumRatio: 0.25,
+            momentumVelocityRatio: 0.25
+          },
+          speed: 400,
+          navigation: {
+            nextEl: this.$refs.nextButton,
+            prevEl: this.$refs.prevButton,
+          },
+          on: {
+            init: () => {
+              this.updateArrowStates();
+            },
+            slideChange: () => {
+              this.updateArrowStates();
+            },
+            reachBeginning: () => {
+              this.updateArrowStates();
+            },
+            reachEnd: () => {
+              this.updateArrowStates();
+            },
+            progress: () => {
+              this.updateArrowStates();
+            }
+          }
+        });
+
+        // Store swiper instance
+        carouselElement.swiper = this.swiper;
+      },
+
+      updateArrowStates() {
+        if (!this.swiper) return;
+
+        const prevButton = this.$refs.prevButton;
+        const nextButton = this.$refs.nextButton;
+
+        if (prevButton) {
+          if (this.swiper.isBeginning) {
+            prevButton.style.opacity = '0.3';
+            prevButton.style.pointerEvents = 'none';
+          } else {
+            prevButton.style.opacity = '1';
+            prevButton.style.pointerEvents = 'auto';
+          }
+        }
+
+        if (nextButton) {
+          if (this.swiper.isEnd) {
+            nextButton.style.opacity = '0.3';
+            nextButton.style.pointerEvents = 'none';
+          } else {
+            nextButton.style.opacity = '1';
+            nextButton.style.pointerEvents = 'auto';
+          }
+        }
+      },
+
+      slidePrev() {
+        if (this.swiper && !this.swiper.isBeginning) {
+          this.swiper.slidePrev();
+        }
+      },
+
+      slideNext() {
+        if (this.swiper && !this.swiper.isEnd) {
+          this.swiper.slideNext();
+        }
+      },
+
+      destroy() {
+        if (this.swiper) {
+          this.swiper.destroy(true, true);
+          this.swiper = null;
+        }
+      }
+    }
+  }
+</script>

@@ -20,8 +20,6 @@
 {% assign show_rating_value = show_rating_value %}
 {% assign show_review_count = show_review_count %}
 
-
-
 {% comment %} Calculate star dimensions based on size parameter {% endcomment %}
 {% case size %}
   {% when 'sm' %}
@@ -36,7 +34,7 @@
     {% assign star_size = 'w-4 h-4' %}
 {% endcase %}
 
-{% comment %} Calculate star fill percentages {% endcomment %}
+{% comment %} Calculate star fill percentages (only for desktop) {% endcomment %}
 {% assign full_stars = rating | floor %}
 {% assign partial_star_percentage = rating | modulo: 1 | times: 100 %}
 {% assign empty_stars = 5 | minus: full_stars %}
@@ -46,32 +44,44 @@
 {% endif %}
 
 <div class="flex items-center {{ color }}">
-  {% comment %} Full stars {% endcomment %}
-  {% for i in (1..full_stars) %}
-    <svg class="{{ star_size }}" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-    </svg>
-  {% endfor %}
+  {% comment %} Mobile: Single colored star (only shows if rating > 0) {% endcomment %}
+  <div class="md:hidden">
+    {% if rating > 0 %}
+      <svg class="{{ star_size }}" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% endif %}
+  </div>
 
-  {% comment %} Partial star (if rating has decimal) {% endcomment %}
-  {% if partial_star_percentage > 0 %}
-    <svg class="{{ star_size }}" viewBox="0 0 24 24">
-      <defs>
-        <linearGradient id="partial-star-{{ rating | replace: '.', '-' }}-{{ forloop.index }}">
-          <stop offset="{{ partial_star_percentage }}%" stop-color="currentColor"/>
-          <stop offset="{{ partial_star_percentage }}%" stop-color="#e5e7eb"/>
-        </linearGradient>
-      </defs>
-      <path fill="url(#partial-star-{{ rating | replace: '.', '-' }}-{{ forloop.index }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-    </svg>
-  {% endif %}
+  {% comment %} Desktop: Full star rating calculation {% endcomment %}
+  <div class="hidden md:flex items-center">
+    {% comment %} Full stars {% endcomment %}
+    {% for i in (1..full_stars) %}
+      <svg class="{{ star_size }}" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% endfor %}
 
-  {% comment %} Empty stars {% endcomment %}
-  {% for i in (1..empty_stars) %}
-    <svg class="{{ star_size }}" fill="#e5e7eb" viewBox="0 0 24 24">
-      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-    </svg>
-  {% endfor %}
+    {% comment %} Partial star (if rating has decimal) {% endcomment %}
+    {% if partial_star_percentage > 0 %}
+      <svg class="{{ star_size }}" viewBox="0 0 24 24">
+        <defs>
+          <linearGradient id="partial-star-{{ rating | replace: '.', '-' }}-{{ forloop.index }}">
+            <stop offset="{{ partial_star_percentage }}%" stop-color="currentColor"/>
+            <stop offset="{{ partial_star_percentage }}%" stop-color="#e5e7eb"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#partial-star-{{ rating | replace: '.', '-' }}-{{ forloop.index }})" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% endif %}
+
+    {% comment %} Empty stars {% endcomment %}
+    {% for i in (1..empty_stars) %}
+      <svg class="{{ star_size }}" fill="#e5e7eb" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+    {% endfor %}
+  </div>
 </div>
 
 {% if show_count %}

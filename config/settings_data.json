@@ -10,6 +10,11 @@
 {
   "current": {
     "primary_color": "#3b2e10",
+    "header_scroll_threshold_default": 35,
+    "header_scroll_threshold_home": 35,
+    "header_scroll_threshold_product": 35,
+    "header_scroll_threshold_collection": 35,
+    "header_scroll_threshold_page": 35,
     "search_featured_tags_title": "Categorías populares",
     "search_history_title": "Busquedas Recientes",
     "search_category_grid_title": "Compra por Categoría",
@@ -34,10 +39,7 @@
       "nuevo-todo",
       "not-on-sale"
     ],
-    "search_category_collections": [
-      "men",
-      "jeans-mujer"
-    ],
+    "search_category_collections": ["men", "jeans-mujer"],
     "content_for_index": []
   }
 }

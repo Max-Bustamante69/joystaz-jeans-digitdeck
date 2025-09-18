@@ -1,6 +1,5 @@
 {% assign header_mode = '' %}
-{% if template.name == 'product'
-  or template.name == 'look_fit' %}
+{% if template.name == 'product' or template.name == 'look_fit' %}
   {% assign header_mode = 'solid-desktop' %}
 {% endif %}
 {% if template.name == 'search' %}
@@ -16,10 +15,23 @@
   {% assign header_mode = 'solid' %}
 {% endif %}
 
+{% comment %} Determine scroll threshold based on page type {% endcomment %}
+{% assign scroll_threshold = settings.header_scroll_threshold_default %}
+{% if template.name == 'index' %}
+  {% assign scroll_threshold = settings.header_scroll_threshold_home %}
+{% elsif template.name == 'product' %}
+  {% assign scroll_threshold = settings.header_scroll_threshold_product %}
+{% elsif template.name == 'collection' %}
+  {% assign scroll_threshold = settings.header_scroll_threshold_collection %}
+{% elsif template.name == 'page' %}
+  {% assign scroll_threshold = settings.header_scroll_threshold_page %}
+{% endif %}
+
 <header
   class="z-50 w-full"
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
+  data-scroll-threshold="{{ scroll_threshold }}"
   x-data="
     {
       mobileMenuOpen: false,
@@ -48,9 +60,10 @@
         }
       },
       handleScroll() {
-        // Calculate 100dvh - 35px
+        // Calculate 100dvh - configurable threshold
         const viewportHeight = window.innerHeight;
-        const scrollThreshold = viewportHeight - 35;
+        const thresholdOffset = parseInt(this.$el.dataset.scrollThreshold) || 35;
+        const scrollThreshold = viewportHeight - thresholdOffset;
         this.isScrolled = window.scrollY > scrollThreshold;
       },
       openCartDrawer() { this.cartDrawerOpen = true; },

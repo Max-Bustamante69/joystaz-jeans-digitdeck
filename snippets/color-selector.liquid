@@ -75,195 +75,144 @@
       {% endif %}
       <!-- Color Swatches Container with expanded width -->
       <div
-        class="relative w-full max-w-[85%]"
+        class="relative w-full "
         :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''"
         x-data="colorCarousel{{ product.id }}{{ product_number | default: '' }}()"
       >
-        {% assign color_count = product_option.values.size %}
+        <!-- Always use carousel for all colors -->
+        <div class="touch-pan-x relative">
+          <!-- Carousel Container -->
+          <div class="overflow-hidden color-carousel-container relative">
+            <!-- Dynamic fade overlays -->
+            <div
+              class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+              style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+              x-ref="leftFade"
+            ></div>
+            <div
+              class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+              style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+              x-ref="rightFade"
+            ></div>
 
-        {% if color_count > 4 %}
-          <!-- Mobile: Carousel for many colors (5+) -->
-          <div class="lg:hidden touch-pan-x">
-            <div class="flex items-center gap-1">
-              <!-- Previous Arrow -->
-              <button
-                class="flex-shrink-0 w-7 h-7 flex items-center justify-center transition-all duration-200 touch-manipulation"
-                x-ref="prevButton"
-                @click.stop="slidePrev()"
-                @touchstart.stop
+            <!-- Previous Arrow - Absolutely positioned -->
+            <button
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+              x-ref="prevButton"
+              @click.stop="slidePrev()"
+              @touchstart.stop
+              x-show="!isAtBeginning"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 scale-90"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-90"
+            >
+              <svg
+                class="w-5 h-5 text-black drop-shadow-md"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2.5"
               >
-                <svg
-                  class="w-4 h-4 text-black drop-shadow-md"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  stroke-width="2.5"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                </svg>
-              </button>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+              </svg>
+            </button>
 
-              <!-- Carousel Container -->
-              <div class="flex-1 overflow-hidden color-carousel-container relative">
-                <!-- Dynamic fade overlays -->
-                <div
-                  class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                  style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                  x-ref="leftFade"
-                ></div>
-                <div
-                  class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                  style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                  x-ref="rightFade"
-                ></div>
+            <!-- Next Arrow - Absolutely positioned -->
+            <button
+              class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+              x-ref="nextButton"
+              @click.stop="slideNext()"
+              @touchstart.stop
+              x-show="!isAtEnd"
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 scale-90"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-90"
+            >
+              <svg
+                class="w-5 h-5 text-black drop-shadow-md"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="2.5"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+              </svg>
+            </button>
 
-                <div
-                  class="color-swatches-carousel  swiper-color-{{ product.id }}{{ product_number | default: '' }} w-full"
-                  data-carousel-id="color-carousel-{{ product.id }}{{ product_number | default: '' }}"
-                  x-ref="colorCarousel"
-                >
-                  <div class="swiper-wrapper ">
-                    {% for product_option_value in product_option.values %}
-                      {% comment %} Find a variant with this color to get its image {% endcomment %}
-                      {% assign color_variant = null %}
-                      {% for variant in product.variants %}
-                        {% for option in variant.options %}
-                          {% if option == product_option_value %}
-                            {% assign color_variant = variant %}
-                            {% break %}
-                          {% endif %}
-                        {% endfor %}
-                        {% if color_variant %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-
-                      <div class="swiper-slide flex-shrink-0" style="width: auto;">
-                        <button
-                          {% if product_number %}
-                            @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
-                            :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                          {% else %}
-                            @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
-                            :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                          {% endif %}
-                          class="relative border-1 transition-all duration-200"
-                          {% if color_variant and color_variant.featured_image %}
-                            style="width: 68px; height: 86px; background-image: url({{ color_variant.featured_image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                          {% elsif product_option_value.swatch.image %}
-                            style="width: 68px; height: 86px; background-image: url({{ product_option_value.swatch.image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                          {% elsif product_option_value.swatch.color %}
-                            style="width: 40px; height: 40px; background-color: {{ product_option_value.swatch.color }};"
-                          {% else %}
-                            style="width: 40px; height: 40px; background-color: #f3f4f6;"
-                          {% endif %}
-                          title="{{ product_option_value }}"
-                        ></button>
-                      </div>
+            <div
+              class="color-swatches-carousel  swiper-color-{{ product.id }}{{ product_number | default: '' }} w-full"
+              data-carousel-id="color-carousel-{{ product.id }}{{ product_number | default: '' }}"
+              x-ref="colorCarousel"
+            >
+              <div class="swiper-wrapper ">
+                {% for product_option_value in product_option.values %}
+                  {% comment %} Find a variant with this color to get its image {% endcomment %}
+                  {% assign color_variant = null %}
+                  {% for variant in product.variants %}
+                    {% for option in variant.options %}
+                      {% if option == product_option_value %}
+                        {% assign color_variant = variant %}
+                        {% break %}
+                      {% endif %}
                     {% endfor %}
-                  </div>
-                </div>
-              </div>
+                    {% if color_variant %}
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
 
-              <!-- Next Arrow -->
-              <button
-                class="flex-shrink-0 w-7 h-7 flex items-center justify-center transition-all duration-200 touch-manipulation"
-                x-ref="nextButton"
-                @click.stop="slideNext()"
-                @touchstart.stop
-              >
-                <svg
-                  class="w-4 h-4 text-black drop-shadow-md"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  stroke-width="2.5"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                </svg>
-              </button>
+                  {% comment %} Only render if there's an image available {% endcomment %}
+                  {% if color_variant and color_variant.featured_image or product_option_value.swatch.image %}
+                    <div class="swiper-slide flex-shrink-0 p-0.5">
+                      <button
+                        {% if product_number %}
+                          @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
+                          :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'border-black border-1' : 'border-transparent'"
+                        {% else %}
+                          {% if color_variant and color_variant.featured_image %}
+                            @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
+                          {% elsif product_option_value.swatch.image %}
+                            @click="{{ click_function }}('{{ product_option_value }}', '{{ product_option_value.swatch.image | image_url: width: 800 }}', {{ color_variant.id }})"
+                          {% else %}
+                            @click="{{ click_function }}('{{ product_option_value }}', '', {{ color_variant.id }})"
+                          {% endif %}
+                          :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? 'border-black border-1' : 'border-transparent'"
+                        {% endif %}
+                        class="relative transition-all duration-200 overflow-visible w-full aspect-[1.5/2]"
+                        title="{{ product_option_value }}"
+                      >
+                        {% if color_variant and color_variant.featured_image %}
+                          <img
+                            src="{{ color_variant.featured_image | image_url: width: 300 }}"
+                            alt="{{ product_option_value }}"
+                            class="w-full h-full object-cover"
+                            width="300"
+                            height="400"
+                            loading="lazy"
+                          >
+                        {% elsif product_option_value.swatch.image %}
+                          <img
+                            src="{{ product_option_value.swatch.image | image_url: width: 300 }}"
+                            alt="{{ product_option_value }}"
+                            class="w-full h-full object-cover"
+                            width="300"
+                            height="400"
+                            loading="lazy"
+                          >
+                        {% endif %}
+                      </button>
+                    </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
             </div>
           </div>
-          <!-- Desktop: Regular flex layout for many colors -->
-          <div class="hidden lg:flex items-center gap-1">
-            {% for product_option_value in product_option.values %}
-              {% comment %} Find a variant with this color to get its image {% endcomment %}
-              {% assign color_variant = null %}
-              {% for variant in product.variants %}
-                {% for option in variant.options %}
-                  {% if option == product_option_value %}
-                    {% assign color_variant = variant %}
-                    {% break %}
-                  {% endif %}
-                {% endfor %}
-                {% if color_variant %}
-                  {% break %}
-                {% endif %}
-              {% endfor %}
-
-              <button
-                {% if product_number %}
-                  @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
-                  :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                {% else %}
-                  @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
-                  :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                {% endif %}
-                class="relative border-1 transition-all duration-200"
-                {% if color_variant and color_variant.featured_image %}
-                  style="width: 68px; height: 86px; background-image: url({{ color_variant.featured_image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                {% elsif product_option_value.swatch.image %}
-                  style="width: 68px; height: 86px; background-image: url({{ product_option_value.swatch.image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                {% elsif product_option_value.swatch.color %}
-                  style="width: 40px; height: 40px; background-color: {{ product_option_value.swatch.color }};"
-                {% else %}
-                  style="width: 40px; height: 40px; background-color: #f3f4f6;"
-                {% endif %}
-                title="{{ product_option_value }}"
-              ></button>
-            {% endfor %}
-          </div>
-        {% else %}
-          <!-- Regular flex layout for few colors (4 or less) -->
-          <div class="flex items-center gap-1">
-            {% for product_option_value in product_option.values %}
-              {% comment %} Find a variant with this color to get its image {% endcomment %}
-              {% assign color_variant = null %}
-              {% for variant in product.variants %}
-                {% for option in variant.options %}
-                  {% if option == product_option_value %}
-                    {% assign color_variant = variant %}
-                    {% break %}
-                  {% endif %}
-                {% endfor %}
-                {% if color_variant %}
-                  {% break %}
-                {% endif %}
-              {% endfor %}
-
-              <button
-                {% if product_number %}
-                  @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
-                  :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                {% else %}
-                  @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
-                  :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? ' border-black  ' : 'border-gray-300 hover:border-gray-400'"
-                {% endif %}
-                class="relative border-1 transition-all duration-200"
-                {% if color_variant and color_variant.featured_image %}
-                  style="width: 68px; height: 86px; background-image: url({{ color_variant.featured_image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                {% elsif product_option_value.swatch.image %}
-                  style="width: 68px; height: 86px; background-image: url({{ product_option_value.swatch.image | image_url: width: 250 }}); background-size: cover; background-position: center; background-repeat: no-repeat;"
-                {% elsif product_option_value.swatch.color %}
-                  style="width: 40px; height: 40px; background-color: {{ product_option_value.swatch.color }};"
-                {% else %}
-                  style="width: 40px; height: 40px; background-color: #f3f4f6;"
-                {% endif %}
-                title="{{ product_option_value }}"
-              ></button>
-            {% endfor %}
-          </div>
-        {% endif %}
+        </div>
       </div>
     </div>
   {% endif %}
@@ -273,6 +222,8 @@
   function colorCarousel{{ product.id }}{{ product_number | default: '' }}() {
     return {
       swiper: null,
+      isAtBeginning: true,
+      isAtEnd: false,
 
       init() {
         this.$nextTick(() => {
@@ -281,24 +232,21 @@
       },
 
       initializeCarousel() {
-        // Only initialize on mobile devices
-        if (window.innerWidth >= 1024) return;
-
         const carouselElement = this.$refs.colorCarousel;
         if (!carouselElement || typeof Swiper === 'undefined') return;
 
         // Check if already initialized
         if (carouselElement.swiper) return;
 
-        // Initialize Swiper
+        // Initialize Swiper for both mobile and desktop
         this.swiper = new Swiper(carouselElement, {
           direction: 'horizontal',
-          slidesPerView: 'auto',
-          spaceBetween: 10,
+          slidesPerView: 6.5,
+          spaceBetween: 2,
           loop: false,
           centeredSlides: false,
           slidesOffsetBefore: 0,
-          slidesOffsetAfter: 20,
+          slidesOffsetAfter: 0,
           grabCursor: true,
           touchRatio: 1,
           touchAngle: 45,
@@ -309,7 +257,7 @@
           preventInteractionOnTransition: false,
           speed: 300,
           freeMode: {
-            enabled: true,
+            enabled: false,
             sticky: false,
             momentum: true,
             momentumRatio: 0.6,
@@ -323,36 +271,41 @@
             nextEl: this.$refs.nextButton,
             prevEl: this.$refs.prevButton,
           },
+          breakpoints: {
+            // Mobile - show 3 slides
+
+            // Desktop - show 4 slides
+            1024: {
+              spaceBetween: 4,
+              slidesPerView: 6.5,
+            }
+          },
           on: {
             init: () => {
-              // Set initial fade states
+              // Set initial states
               setTimeout(() => {
-                this.updateArrowStates();
+                this.updateCarouselStates();
               }, 50);
             },
             slideChange: () => {
-              this.updateArrowStates();
+              this.updateCarouselStates();
             },
             reachBeginning: () => {
-              this.updateArrowStates();
+              this.updateCarouselStates();
             },
             reachEnd: () => {
-              this.updateArrowStates();
+              this.updateCarouselStates();
             },
             progress: () => {
-              this.updateArrowStates();
+              this.updateCarouselStates();
             },
             touchStart: () => {
-              // Disable arrows during touch interaction
-              const prevButton = this.$refs.prevButton;
-              const nextButton = this.$refs.nextButton;
-              if (prevButton) prevButton.style.pointerEvents = 'none';
-              if (nextButton) nextButton.style.pointerEvents = 'none';
+              // No need to disable arrows since they hide automatically
             },
             touchEnd: () => {
-              // Re-enable arrows after touch interaction
+              // Update states after touch interaction
               setTimeout(() => {
-                this.updateArrowStates();
+                this.updateCarouselStates();
               }, 100);
             }
           }
@@ -362,34 +315,15 @@
         carouselElement.swiper = this.swiper;
       },
 
-      updateArrowStates() {
+      updateCarouselStates() {
         if (!this.swiper) return;
 
-        const prevButton = this.$refs.prevButton;
-        const nextButton = this.$refs.nextButton;
+        // Update Alpine.js reactive states
+        this.isAtBeginning = this.swiper.isBeginning;
+        this.isAtEnd = this.swiper.isEnd;
+
         const leftFade = this.$refs.leftFade;
         const rightFade = this.$refs.rightFade;
-
-        // Update arrow states
-        if (prevButton) {
-          if (this.swiper.isBeginning) {
-            prevButton.style.opacity = '0.3';
-            prevButton.style.pointerEvents = 'none';
-          } else {
-            prevButton.style.opacity = '1';
-            prevButton.style.pointerEvents = 'auto';
-          }
-        }
-
-        if (nextButton) {
-          if (this.swiper.isEnd) {
-            nextButton.style.opacity = '0.3';
-            nextButton.style.pointerEvents = 'none';
-          } else {
-            nextButton.style.opacity = '1';
-            nextButton.style.pointerEvents = 'auto';
-          }
-        }
 
         // Update fade states
         if (leftFade) {
@@ -404,12 +338,14 @@
       slidePrev() {
         if (this.swiper && !this.swiper.isBeginning) {
           this.swiper.slidePrev();
+          // States will be updated by the slideChange event
         }
       },
 
       slideNext() {
         if (this.swiper && !this.swiper.isEnd) {
           this.swiper.slideNext();
+          // States will be updated by the slideChange event
         }
       },
 

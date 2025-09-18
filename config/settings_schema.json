@@ -88,6 +88,70 @@
     ]
   },
   {
+    "name": "Header Navigation",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Scroll Behavior"
+      },
+      {
+        "type": "range",
+        "id": "header_scroll_threshold_default",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "label": "Default Scroll Threshold",
+        "default": 35,
+        "info": "Default offset from viewport height for header background change (100vh - this value)"
+      },
+      {
+        "type": "range",
+        "id": "header_scroll_threshold_home",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "label": "Home Page Scroll Threshold",
+        "default": 35,
+        "info": "Scroll threshold specifically for the home page"
+      },
+      {
+        "type": "range",
+        "id": "header_scroll_threshold_product",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "label": "Product Page Scroll Threshold",
+        "default": 35,
+        "info": "Scroll threshold specifically for product pages"
+      },
+      {
+        "type": "range",
+        "id": "header_scroll_threshold_collection",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "label": "Collection Page Scroll Threshold",
+        "default": 35,
+        "info": "Scroll threshold specifically for collection pages"
+      },
+      {
+        "type": "range",
+        "id": "header_scroll_threshold_page",
+        "min": 0,
+        "max": 200,
+        "step": 5,
+        "unit": "px",
+        "label": "Static Page Scroll Threshold",
+        "default": 35,
+        "info": "Scroll threshold specifically for static pages (about, contact, etc.)"
+      }
+    ]
+  },
+  {
     "name": "Search Drawer",
     "settings": [
       {

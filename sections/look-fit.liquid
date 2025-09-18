@@ -25,12 +25,103 @@
         </div>
       </div>
 
-      <div class="hidden lg:block ">
+      <!-- Desktop: Simple Image Carousel -->
+      <div class="hidden lg:block h-full w-4/5" x-data="lookFitDesktopCarousel()">
+        <div class="relative w-full h-full">
+          <!-- Simple Image Carousel -->
+          <div
+            class="look-fit-desktop-carousel swiper w-full h-full group"
+            data-carousel-id="look-fit-desktop-{{ metaobject.system.id }}"
+            id="look-fit-desktop-carousel-{{ metaobject.system.id }}"
+            x-ref="desktopCarousel"
+          >
+            <div class="swiper-wrapper h-full">
+              <!-- Additional Images from images field -->
+              {% if metaobject.images.value.count > 0 %}
+                {% for image in metaobject.images.value %}
+                  <div class="swiper-slide w-full h-full flex-shrink-0">
+                    <img
+                      src="{{ image | image_url: width: 1200 }}"
+                      alt="{{ metaobject.title }} - Image {{ forloop.index }}"
+                      class="w-full h-full object-cover"
+                      width="1200"
+                      height="1200"
+                      loading="lazy"
+                    >
+                  </div>
+                {% endfor %}
+              {% endif %}
 
-        <!-- Desktop: Keep original carousel -->
-        {% render 'look-fit-carousel', metaobject: metaobject %}
+              <!-- Fallback: If no featured_image, use first image from images field -->
+              {% unless metaobject.featured_image %}
+                {% if metaobject.images.value.size > 0 %}
+                  <div class="swiper-slide w-full h-full flex-shrink-0">
+                    <img
+                      src="{{ metaobject.images.value.first | image_url: width: 1200 }}"
+                      alt="{{ metaobject.title }} - Main"
+                      class="w-full h-full object-cover"
+                      width="1200"
+                      height="1200"
+                      loading="eager"
+                    >
+                  </div>
+                {% endif %}
+              {% endunless %}
+            </div>
+
+            <!-- Navigation Arrows (Same style as product card) -->
+            <div class="absolute inset-0 pointer-events-none group">
+              <button
+                class="look-fit-desktop-prev absolute flex items-center justify-start left-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-100 duration-300 z-10 pointer-events-auto cursor-pointer touch-manipulation"
+                data-carousel-id="look-fit-desktop-{{ metaobject.system.id }}"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5 text-black drop-shadow-md"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+              </button>
+              <button
+                class="look-fit-desktop-next absolute flex items-center justify-end right-3 top-1/2 -translate-y-1/2 w-10 h-10 opacity-0 group-hover:opacity-100 duration-300 z-10 pointer-events-auto cursor-pointer touch-manipulation"
+                data-carousel-id="look-fit-desktop-{{ metaobject.system.id }}"
+                type="button"
+              >
+                <svg
+                  class="w-5 h-5 text-black drop-shadow-md"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Pagination Dots -->
+            {% assign total_images = 0 %}
+            {% if metaobject.featured_image %}
+              {% assign total_images = total_images | plus: 1 %}
+            {% endif %}
+            {% if metaobject.images.value.size > 0 %}
+              {% assign total_images = total_images | plus: metaobject.images.value.size %}
+            {% endif %}
+            {% unless metaobject.featured_image %}
+              {% if metaobject.images.value.size > 0 %}
+                {% assign total_images = 1 %}
+              {% endif %}
+            {% endunless %}
+            {% if total_images > 1 %}
+              <div class="swiper-pagination absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10"></div>
+            {% endif %}
+          </div>
         </div>
-
+      </div>
     </div>
 
     <!-- Products Grid Section -->
@@ -574,3 +665,148 @@
   ]
 }
 {% endschema %}
+
+<script>
+  function lookFitDesktopCarousel() {
+    return {
+      swiper: null,
+
+      init() {
+        this.$nextTick(() => {
+          this.initializeCarousel();
+        });
+      },
+
+      initializeCarousel() {
+        const carouselElement = this.$refs.desktopCarousel;
+        if (!carouselElement || typeof Swiper === 'undefined') {
+          console.log('Look Fit Desktop Carousel: Missing element or Swiper not loaded');
+          return;
+        }
+
+        // Check if already initialized
+        if (carouselElement.swiper) {
+          console.log('Look Fit Desktop Carousel: Already initialized');
+          return;
+        }
+
+        // Count slides for debugging
+        const slides = carouselElement.querySelectorAll('.swiper-slide');
+        console.log('Look Fit Desktop Carousel: Found', slides.length, 'slides');
+
+        // Initialize Swiper
+        this.swiper = new Swiper(carouselElement, {
+          slidesPerView: 1,
+          spaceBetween: 0,
+          loop: false,
+          centeredSlides: false,
+          grabCursor: false,
+          touchRatio: 1,
+          touchAngle: 45,
+          simulateTouch: true,
+          autoHeight: false,
+          navigation: {
+            nextEl: carouselElement.querySelector('.look-fit-desktop-next'),
+            prevEl: carouselElement.querySelector('.look-fit-desktop-prev'),
+          },
+          pagination: {
+            el: carouselElement.querySelector('.swiper-pagination'),
+            clickable: true,
+            renderBullet: function (index, className) {
+              return (
+                '<span class="' +
+                className +
+                ' w-2 h-2 rounded-full bg-white/60 cursor-pointer transition-all duration-200 hover:bg-white/80"></span>'
+              );
+            },
+          },
+          on: {
+            init: () => {
+              this.updateArrowStates();
+            },
+            slideChange: () => {
+              this.updateArrowStates();
+            },
+            reachBeginning: () => {
+              this.updateArrowStates();
+            },
+            reachEnd: () => {
+              this.updateArrowStates();
+            },
+          },
+        });
+
+        // Store swiper instance
+        carouselElement.swiper = this.swiper;
+        console.log('Look Fit Desktop Carousel: Successfully initialized with', slides.length, 'slides');
+      },
+
+      updateArrowStates() {
+        if (!this.swiper) return;
+
+        const prevArrow = this.$refs.desktopCarousel.querySelector('.look-fit-desktop-prev');
+        const nextArrow = this.$refs.desktopCarousel.querySelector('.look-fit-desktop-next');
+
+        if (prevArrow) {
+          if (this.swiper.isBeginning) {
+            prevArrow.style.opacity = '0';
+            prevArrow.style.pointerEvents = 'none';
+            prevArrow.style.visibility = 'hidden';
+          } else {
+            prevArrow.style.opacity = '';
+            prevArrow.style.pointerEvents = '';
+            prevArrow.style.visibility = '';
+          }
+        }
+
+        if (nextArrow) {
+          if (this.swiper.isEnd) {
+            nextArrow.style.opacity = '0';
+            nextArrow.style.pointerEvents = 'none';
+            nextArrow.style.visibility = 'hidden';
+          } else {
+            nextArrow.style.opacity = '';
+            nextArrow.style.pointerEvents = '';
+            nextArrow.style.visibility = '';
+          }
+        }
+      },
+
+      destroy() {
+        if (this.swiper) {
+          this.swiper.destroy(true, true);
+          this.swiper = null;
+        }
+      },
+    };
+  }
+</script>
+
+<style>
+  /* Look Fit Desktop Carousel Styles */
+
+
+  .look-fit-desktop-carousel .swiper-slide {
+    transition: transform 0.3s ease;
+  }
+
+  .look-fit-desktop-carousel:hover .look-fit-desktop-prev,
+  .look-fit-desktop-carousel:hover .look-fit-desktop-next {
+    opacity: 1 !important;
+  }
+
+  /* Match product card arrow behavior */
+  .look-fit-desktop-carousel .look-fit-desktop-prev,
+  .look-fit-desktop-carousel .look-fit-desktop-next {
+    transition: opacity 0.3s ease;
+  }
+
+  .look-fit-desktop-carousel .swiper-pagination-bullet-active {
+    background-color: rgba(255, 255, 255, 1) !important;
+    transform: scale(1.2);
+  }
+
+  .look-fit-desktop-carousel .swiper-pagination-bullet {
+    transition: all 0.3s ease;
+  }
+</style>

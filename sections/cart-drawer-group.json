@@ -13,7 +13,45 @@
   "sections": {
     "cart_drawer": {
       "type": "cart-drawer",
-      "settings": {}
+      "blocks": {
+        "cart_threshold_XCVDYa": {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "Free Shipping",
+            "threshold_value": 150000,
+            "discount_code": "FREE-SHIPPING"
+          }
+        },
+        "cart_threshold_FpCi7C": {
+          "type": "cart_threshold",
+          "settings": {
+            "threshold_title": "5% Disscount",
+            "threshold_value": 200000,
+            "discount_code": "FREE-5"
+          }
+        }
+      },
+      "block_order": [
+        "cart_threshold_XCVDYa",
+        "cart_threshold_FpCi7C"
+      ],
+      "settings": {
+        "cart_title": "Tu Carrito",
+        "drawer_width": 420,
+        "progress_text": "Estas a",
+        "goal_text": "de conseguir",
+        "achieved_text": "¡Felicidades! Has conseguido",
+        "empty_cart_title": "Tu carrito está vacío",
+        "empty_cart_text": "Agrega algunos productos para comenzar",
+        "show_product_carousel": true,
+        "carousel_title": "También te puede interesar",
+        "carousel_max_products": 8,
+        "fallback_collections": [],
+        "subtotal_text": "SUBTOTAL:",
+        "savings_text": "AHORRA",
+        "checkout_button_text": "Paga de forma segura",
+        "show_payment_icons": true
+      }
     }
   },
   "order": [

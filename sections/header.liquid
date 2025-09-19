@@ -28,7 +28,7 @@
 {% endif %}
 
 <header
-  class="z-50 w-full"
+  class="-z-50 w-full transition-all duration-[300ms] ease-linear"
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   data-scroll-threshold="{{ scroll_threshold }}"
@@ -60,10 +60,10 @@
         }
       },
       handleScroll() {
-        // Calculate 100dvh - configurable threshold
+        // Calculate scroll threshold as percentage of viewport height
         const viewportHeight = window.innerHeight;
-        const thresholdOffset = parseInt(this.$el.dataset.scrollThreshold) || 35;
-        const scrollThreshold = viewportHeight - thresholdOffset;
+        const thresholdPercentage = parseInt(this.$el.dataset.scrollThreshold) || 95;
+        const scrollThreshold = (viewportHeight * thresholdPercentage) / 100;
         this.isScrolled = window.scrollY > scrollThreshold;
       },
       openCartDrawer() { this.cartDrawerOpen = true; },
@@ -89,7 +89,7 @@
   "
 >
   <nav
-    class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12    bg-transparent  relative"
+    class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12    bg-transparent  relative transition-all duration-[300ms] ease-linear"
     :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
@@ -104,7 +104,7 @@
         >
           <a
             href="{{ link.url }}"
-            class="font-semibold  duration-200 h-full flex items-center px-3"
+            class="font-semibold transition-all duration-[300ms] ease-linear h-full flex items-center px-3"
             :class="(isScrolled || isMenuHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isMenuHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
@@ -241,7 +241,7 @@
     <div class="flex gap-6 items-center lg:hidden">
       <button
         @click="toggleMobileMenu()"
-        class=" duration-200"
+        class="transition-all duration-[300ms] ease-linear"
         :class="isScrolled ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
@@ -256,7 +256,7 @@
               alt="{{ shop.name }}"
               height="{{ section.settings.logo.height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
-              class=""
+              class="transition-all duration-300"
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               loading="eager"
             >
@@ -264,7 +264,7 @@
             <img
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
-              class=" h-12"
+              class=" h-12 transition-all duration-[300ms] ease-linear"
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               width="60"
               height="40"
@@ -283,7 +283,7 @@
             alt="{{ shop.name }}"
             height="{{ section.settings.logo.height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
-            class=""
+            class="transition-all duration-300"
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
@@ -291,7 +291,7 @@
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class=" h-12"
+            class=" h-12 transition-all duration-300"
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
@@ -327,7 +327,7 @@
     x-transition:leave="transition ease-in duration-300"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="fixed inset-0 bg-black/70 z-40 lg:hidden"
+    class="fixed inset-0 z-50 bg-black/70 lg:hidden"
     @click="toggleMobileMenu()"
   ></div>
 
@@ -345,7 +345,7 @@
     class="fixed top-0 left-0 h-full w-[88vw] lg:w-[420px] bg-white text-black z-100 lg:hidden overflow-y-auto"
     x-data="mobileMenu()"
   >
-    <div class="p-4" x-show="!showTertiaryView">
+    <div class="p-4 z-100" x-show="!showTertiaryView">
       <!-- Header with Heart Icon and Close Button -->
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">

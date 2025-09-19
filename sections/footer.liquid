@@ -91,37 +91,45 @@
     <div class="w-full flex flex-col justify-between">
       <!-- Navigation Links -->
       <div class="hidden w-full justify-between lg:flex flex-wrap gap-8">
-        {% for block in section.blocks %}
-          {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
-            <div class="w-fit flex flex-col gap-4" {{ block.shopify_attributes }}>
-              {% if block.settings.title != blank %}
-                <p class="body-sm font-semibold uppercase text-white/50 ">{{ block.settings.title }}</p>
-              {% endif %}
-              <ul class="space-y-2">
-                {% for link in block.settings.menu.links %}
+        {% if section.settings.footer_menu.links.size > 0 %}
+          {% for link in section.settings.footer_menu.links %}
+            <div class="w-fit flex flex-col gap-4">
+              <p class="body-sm font-semibold uppercase text-white/50">{{ link.title }}</p>
+              {% if link.links.size > 0 %}
+                <ul class="space-y-2">
+                  {% for sub_link in link.links %}
+                    <li>
+                      <a href="{{ sub_link.url }}" class="body font-semibold">
+                        <span class="hover-line">{{ sub_link.title }}</span>
+                      </a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <ul class="space-y-2">
                   <li>
                     <a href="{{ link.url }}" class="body font-semibold">
-                      <span class="hover-line">{{ link.title }}</span>
+                      <span class="hover-line">Ver {{ link.title }}</span>
                     </a>
                   </li>
-                {% endfor %}
-              </ul>
+                </ul>
+              {% endif %}
             </div>
-          {% endif %}
-        {% endfor %}
+          {% endfor %}
+        {% endif %}
       </div>
     </div>
 
     <div class="lg:hidden divide-y divide-gray-200 mt-8" x-data="{ openItem: null }">
-      {% for block in section.blocks %}
-        {% if block.type == 'menu' and block.settings.menu.links.size > 0 %}
-          <div class="py-2" {{ block.shopify_attributes }}>
+      {% if section.settings.footer_menu.links.size > 0 %}
+        {% for link in section.settings.footer_menu.links %}
+          <div class="py-2">
             <button
               class="w-full flex items-center justify-between py-3"
               @click="openItem = openItem === {{ forloop.index }} ? null : {{ forloop.index }}"
               :aria-expanded="openItem === {{ forloop.index }}"
             >
-              <span class="text-sm tracking-wide uppercase font-bold text-white/50">{{ block.settings.title }}</span>
+              <span class="text-sm tracking-wide uppercase font-bold text-white/50">{{ link.title }}</span>
               <span class="text-white/50">
                 <svg
                   x-show="openItem !== {{ forloop.index }}"
@@ -156,21 +164,32 @@
               x-transition:leave-end="opacity-0 max-h-0"
             >
               <ul class="py-3 space-y-2">
-                {% for link in block.settings.menu.links %}
+                {% if link.links.size > 0 %}
+                  {% for sub_link in link.links %}
+                    <li>
+                      <a
+                        href="{{ sub_link.url }}"
+                        class="hover:underline font-bold body transition-all duration-300 ease-in-out"
+                      >
+                        {{- sub_link.title -}}
+                      </a>
+                    </li>
+                  {% endfor %}
+                {% else %}
                   <li>
                     <a
                       href="{{ link.url }}"
                       class="hover:underline font-bold body transition-all duration-300 ease-in-out"
                     >
-                      {{- link.title -}}
+                      Ver {{ link.title }}
                     </a>
                   </li>
-                {% endfor %}
+                {% endif %}
               </ul>
             </div>
           </div>
-        {% endif %}
-      {% endfor %}
+        {% endfor %}
+      {% endif %}
     </div>
   </div>
 
@@ -202,8 +221,6 @@
     <div class=" w-full  flex flex-col lg:flex-row lg:items-end lg:justify-end gap-6">
       <!-- Copyright Text with Trust Badges -->
       <div class="text-sm lg:text-end text-white/50 flex flex-col lg:flex-row lg:items-center gap-2">
-       
-
         <!-- Trust Badges -->
         {% assign trust_badges = section.blocks | where: 'type', 'trust_badge' %}
         {% if trust_badges.size > 0 %}
@@ -235,7 +252,7 @@
           </div>
         {% endif %}
 
-         <div>
+        <div>
           &copy; {{ 'now' | date: '%Y' }}
           {{ shop.name }}
           {% if section.settings.credit_text != blank %}
@@ -293,26 +310,19 @@
       "id": "credit_text",
       "label": "Credit text",
       "default": "Desarrollado por DigitDeck"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "footer_menu",
+      "label": "Footer Menu",
+      "info": "Create a menu with primary links as column titles and secondary links as column content. Works like the header menu structure."
     }
   ],
   "blocks": [
-    {
-      "type": "menu",
-      "name": "Menu column",
-      "settings": [
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Heading",
-          "default": "TIENDA"
-        },
-        {
-          "type": "link_list",
-          "id": "menu",
-          "label": "Menu"
-        }
-      ]
-    },
     {
       "type": "social_media",
       "name": "Social Media Link",
@@ -405,11 +415,7 @@
         { "type": "social_media", "settings": { "platform": "instagram", "url": "" } },
         { "type": "social_media", "settings": { "platform": "linkedin", "url": "" } },
         { "type": "social_media", "settings": { "platform": "tiktok", "url": "" } },
-        { "type": "social_media", "settings": { "platform": "youtube", "url": "" } },
-        { "type": "menu", "settings": { "title": "TIENDA" } },
-        { "type": "menu", "settings": { "title": "COMPANY" } },
-        { "type": "menu", "settings": { "title": "OTHER" } },
-        { "type": "menu", "settings": { "title": "LEGAL" } }
+        { "type": "social_media", "settings": { "platform": "youtube", "url": "" } }
       ]
     }
   ]

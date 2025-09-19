@@ -141,7 +141,7 @@
     {% if wishlist_mode != true and show_wishlist != false %}
       <!-- Wishlist Heart Button -->
       <button
-        class="absolute top-3 right-3 z-20 wishlist-toggle text-black/70  "
+        class="absolute top-3 right-3 z-10 wishlist-toggle text-black/70  "
         :class="isInWishlist ? 'text-red-800 fill-red-800  ' : 'fill-transparent '"
         @click.stop.prevent="toggleWishlistHandle('{{ product.handle }}')"
         aria-pressed="isInWishlist"
@@ -170,7 +170,7 @@
     <!-- Size Selector Plus Button - positioned in bottom right corner (NOT in bundle mode) -->
     {% if product.options contains 'Talla' and wishlist_mode != true and bundle_mode != true %}
       <button
-        class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-30"
+        class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-10"
         @click.stop.prevent="handlePlusClick"
         @mouseenter="isDesktop && (showSizeSelector = true)"
         type="button"

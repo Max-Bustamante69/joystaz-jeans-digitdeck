@@ -62,6 +62,7 @@
 {%- assign show_count_flag = show_count_flag | default: false -%}
 {%- assign show_review_count_flag = show_review_count | default: false -%}
 {%- assign show_rating_value_flag = show_rating_value | default: false -%}
+{%- assign show_review_text_flag = show_review_text | default: false -%}
 
 
 
@@ -77,7 +78,8 @@
     show_count: show_count_flag,
     show_review_count: show_review_count_flag,
     show_rating_value: show_rating_value_flag,
-    review_count: review_count
+    review_count: review_count,
+    show_review_text: show_review_text_flag
   %}
 {% else %}
   {% render 'star-rating',
@@ -87,7 +89,8 @@
     show_count: show_count_flag,
     show_review_count: show_review_count_flag,
     show_rating_value: show_rating_value_flag,
-    review_count: 0
+    review_count: 0,
+    show_review_text: show_review_text_flag
   %}
 {% endif %}
 

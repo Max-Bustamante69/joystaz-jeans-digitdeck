@@ -36,6 +36,17 @@
     border-radius: 6px !important;
     transition: all 0.6s ease;
   }
+
+  /* Hide Alpine.js fallback text when Alpine.js has loaded */
+  [x-cloak] {
+    display: none !important;
+  }
+  .alpine-fallback {
+    display: block;
+  }
+  [x-data] .alpine-fallback {
+    display: none !important;
+  }
 </style>
 
 <div
@@ -53,8 +64,8 @@
               :src="imageUrl"
               :alt="'{{ product.title }} - Image ' + (index + 1)"
               class="w-full h-full object-cover"
-              width="600"
-              height="600"
+              width="1080"
+              height="1080"
               :loading="index < 2 ? 'eager' : 'lazy'"
             >
           </div>
@@ -77,8 +88,8 @@
                   :src="imageUrl"
                   :alt="'{{ product.title }} - Image ' + (index + 1)"
                   class="w-full h-full object-cover"
-                  width="600"
-                  height="600"
+                  width="1080"
+                  height="1080"
                   :loading="index === 0 ? 'eager' : 'lazy'"
                 >
               </div>
@@ -202,9 +213,17 @@
             %}
 
             <h6>{{ cleaned_title }}</h6>
-            <div class="flex items-center gap-1">
-              {% render 'product-rating', product: product, size: 'lg' %}
-            </div>
+            {% if section.settings.show_reviews_average or section.settings.show_reviews_count %}
+              <div class="flex items-center gap-1">
+                {% render 'product-rating',
+                  product: product,
+                  show_rating_value: section.settings.show_reviews_average,
+                  show_review_count: section.settings.show_reviews_count,
+                  show_review_text: true,
+                  size: 'md'
+                %}
+              </div>
+            {% endif %}
           </div>
           <div class="flex flex-col items-end gap-0.5">
             <h6 class=" {%if product.compare_at_price > product.price %} text-red-700  {% else %} text-black {% endif %} ">
@@ -386,7 +405,7 @@
           :class="selectedSize && !isAddingToCart ? 'w-full bg-primary text-white py-4 px-6 font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300' : 'w-full bg-gray-300 text-gray-500 py-4 px-6 font-semibold body border border-gray-300 cursor-not-allowed transition-colors duration-300'"
         >
           <!-- Loading State -->
-          <span x-show="isAddingToCart" class="flex items-center justify-center gap-2">
+          <span x-show="isAddingToCart" x-cloak class="flex items-center justify-center gap-2">
             <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -395,14 +414,17 @@
           </span>
 
           <!-- Normal State with Size Selected -->
-          <span x-show="selectedSize && !isAddingToCart">
+          <span x-show="selectedSize && !isAddingToCart" x-cloak>
             {{ section.settings.cta_button_text | default: 'Paga de forma segura' }} - $<span
               x-text="totalPrice"
             ></span>
           </span>
 
           <!-- No Size Selected -->
-          <span x-show="!selectedSize && !isAddingToCart"> Elije tu talla </span>
+          <span x-show="!selectedSize && !isAddingToCart" x-cloak> Elije tu talla </span>
+
+          <!-- Fallback text before Alpine.js loads -->
+          <span class="alpine-fallback"> Elije tu talla </span>
         </button>
       </div>
       <!-- Shipping and Returns -->
@@ -997,6 +1019,8 @@
             
             // Trigger cart update event
             this.$dispatch('cart:updated');
+            // Also dispatch to window to ensure header receives the event
+            window.dispatchEvent(new CustomEvent('cart:updated'));
 
             // Open cart drawer
             this.$dispatch('cart:open');

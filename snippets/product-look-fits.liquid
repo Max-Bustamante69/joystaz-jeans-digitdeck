@@ -54,39 +54,7 @@
         {% endfor %}
       </div>
 
-      {% if related_look_fits.size > 1 %}
-        <!-- Navigation -->
-        <div class="absolute top-1/2 left-4 transform -translate-y-1/2 z-10">
-          <button
-            class="look-fits-prev w-8 h-8 rounded-full bg-white/80 hover:bg-white transition-all duration-200 flex items-center justify-center text-gray-800"
-            aria-label="Previous"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M15 18l-6-6 6-6"/>
-            </svg>
-          </button>
-        </div>
-        <div class="absolute top-1/2 right-4 transform -translate-y-1/2 z-10">
-          <button
-            class="look-fits-next w-8 h-8 rounded-full bg-white/80 hover:bg-white transition-all duration-200 flex items-center justify-center text-gray-800"
-            aria-label="Next"
-          >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 18l6-6-6-6"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Pagination dots -->
-        <div class="flex justify-center mt-4 space-x-2">
-          {% for i in (1..related_look_fits.size) %}
-            <button
-              class="look-fits-pagination-dot w-2 h-2 rounded-full bg-gray-300 transition-all duration-200 {% if forloop.first %}bg-gray-600{% endif %}"
-              data-slide="{{ forloop.index0 }}"
-            ></button>
-          {% endfor %}
-        </div>
-      {% endif %}
+   
     </div>
   </div>
 
@@ -96,23 +64,13 @@
       if (carousel && typeof Swiper !== 'undefined') {
         new Swiper(carousel, {
           slidesPerView: 2.2,
-          spaceBetween: 12,
+          spaceBetween: 2,
           breakpoints: {
-            640: { slidesPerView: 1.5, spaceBetween: 16 },
-            768: { slidesPerView: 2, spaceBetween: 20 },
-            1024: { slidesPerView: 2.5, spaceBetween: 24 },
-            1280: { slidesPerView: 3, spaceBetween: 24 },
+            1024: { slidesPerView: 2.5, spaceBetween: 4 },
+            
           },
-          navigation: {
-            nextEl: '.look-fits-prev',
-            prevEl: '.look-fits-next',
-          },
-          pagination: {
-            el: '.look-fits-pagination-dot',
-            clickable: true,
-            bulletClass: 'look-fits-pagination-dot',
-            bulletActiveClass: 'bg-gray-600',
-          },
+
+
         });
       }
     });

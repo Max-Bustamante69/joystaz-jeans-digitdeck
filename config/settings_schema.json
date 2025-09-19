@@ -97,57 +97,57 @@
       {
         "type": "range",
         "id": "header_scroll_threshold_default",
-        "min": 0,
-        "max": 200,
+        "min": 10,
+        "max": 100,
         "step": 5,
-        "unit": "px",
+        "unit": "vh",
         "label": "Default Scroll Threshold",
-        "default": 35,
-        "info": "Default offset from viewport height for header background change (100vh - this value)"
+        "default": 95,
+        "info": "Viewport height percentage for header background change (trigger at this % of screen height)"
       },
       {
         "type": "range",
         "id": "header_scroll_threshold_home",
-        "min": 0,
-        "max": 200,
+        "min": 10,
+        "max": 100,
         "step": 5,
-        "unit": "px",
+        "unit": "vh",
         "label": "Home Page Scroll Threshold",
-        "default": 35,
-        "info": "Scroll threshold specifically for the home page"
+        "default": 95,
+        "info": "Scroll threshold specifically for the home page (as % of viewport height)"
       },
       {
         "type": "range",
         "id": "header_scroll_threshold_product",
-        "min": 0,
-        "max": 200,
+        "min": 10,
+        "max": 100,
         "step": 5,
-        "unit": "px",
+        "unit": "vh",
         "label": "Product Page Scroll Threshold",
-        "default": 35,
-        "info": "Scroll threshold specifically for product pages"
+        "default": 95,
+        "info": "Scroll threshold specifically for product pages (as % of viewport height)"
       },
       {
         "type": "range",
         "id": "header_scroll_threshold_collection",
-        "min": 0,
-        "max": 200,
+        "min": 10,
+        "max": 100,
         "step": 5,
-        "unit": "px",
+        "unit": "vh",
         "label": "Collection Page Scroll Threshold",
-        "default": 35,
-        "info": "Scroll threshold specifically for collection pages"
+        "default": 95,
+        "info": "Scroll threshold specifically for collection pages (as % of viewport height)"
       },
       {
         "type": "range",
         "id": "header_scroll_threshold_page",
-        "min": 0,
-        "max": 200,
+        "min": 10,
+        "max": 100,
         "step": 5,
-        "unit": "px",
+        "unit": "vh",
         "label": "Static Page Scroll Threshold",
-        "default": 35,
-        "info": "Scroll threshold specifically for static pages (about, contact, etc.)"
+        "default": 95,
+        "info": "Scroll threshold specifically for static pages (as % of viewport height)"
       }
     ]
   },

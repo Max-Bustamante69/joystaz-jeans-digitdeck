@@ -20,10 +20,6 @@
           </p>
         {% endif %}
       </div>
-      {% comment %} Show arrows when using slider layout or desktop carousel {% endcomment %}
-      {% if section.settings.mobile_layout == 'slider' or section.blocks.size > 4 %}
-        {% render 'carousel-arrows' %}
-      {% endif %}
     </div>
   {% endif %}
 
@@ -144,24 +140,6 @@
           sticky: true,
         },
         grabCursor: false,
-        navigation: {
-          nextEl: '.carousel-next',
-          prevEl: '.carousel-prev',
-        },
-        on: {
-          init: function() {
-            updateArrowStates(this, '.carousel-prev', '.carousel-next');
-          },
-          slideChange: function() {
-            updateArrowStates(this, '.carousel-prev', '.carousel-next');
-          },
-          reachBeginning: function() {
-            updateArrowStates(this, '.carousel-prev', '.carousel-next');
-          },
-          reachEnd: function() {
-            updateArrowStates(this, '.carousel-prev', '.carousel-next');
-          },
-        },
         breakpoints: {
           768: {
             slidesPerView: 2.2,
@@ -182,60 +160,10 @@
             momentum: true,
           },
           grabCursor: false,
-          navigation: {
-            nextEl: '.carousel-next',
-            prevEl: '.carousel-prev',
-          },
-          on: {
-            init: function() {
-              updateArrowStates(this, '.carousel-prev', '.carousel-next');
-            },
-            slideChange: function() {
-              updateArrowStates(this, '.carousel-prev', '.carousel-next');
-            },
-            reachBeginning: function() {
-              updateArrowStates(this, '.carousel-prev', '.carousel-next');
-            },
-            reachEnd: function() {
-              updateArrowStates(this, '.carousel-prev', '.carousel-next');
-            },
-          },
         });
       }
     {% endif %}
 
-    // Function to update arrow states
-    function updateArrowStates(swiper, prevSelector, nextSelector) {
-      const sectionContainer = document.getElementById('category-grid-{{ section.id }}');
-      if (!sectionContainer) return;
-
-      const prevArrow = sectionContainer.querySelector(prevSelector);
-      const nextArrow = sectionContainer.querySelector(nextSelector);
-
-      if (prevArrow) {
-        if (swiper.isBeginning) {
-          prevArrow.style.opacity = '0.3';
-          prevArrow.style.cursor = 'not-allowed';
-          prevArrow.disabled = true;
-        } else {
-          prevArrow.style.opacity = '1';
-          prevArrow.style.cursor = 'pointer';
-          prevArrow.disabled = false;
-        }
-      }
-
-      if (nextArrow) {
-        if (swiper.isEnd) {
-          nextArrow.style.opacity = '0.3';
-          nextArrow.style.cursor = 'not-allowed';
-          nextArrow.disabled = true;
-        } else {
-          nextArrow.style.opacity = '1';
-          nextArrow.style.cursor = 'pointer';
-          nextArrow.disabled = false;
-        }
-      }
-    }
   });
 </script>
 

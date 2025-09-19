@@ -38,20 +38,20 @@
     x-transition:leave="transform transition ease-in duration-300"
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
-    class="absolute right-0 top-0 h-full px-4 lg:px-5 w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
+    class="absolute right-0 top-0 h-full px-4  w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
     @click.outside="closeDrawer()"
   >
     <!-- Header - Sticky at top -->
-    <div class="sticky top-0 z-10 bg-white flex items-center justify-between p-6 border-b border-gray-100">
+    <div class="sticky top-0 z-10 bg-white flex items-center justify-between ">
       <h2 class="text-lg font-semibold text-gray-900">
         {{ section.settings.cart_title | default: 'Tu Carrito' }}
         <span class="opacity-50" x-text="cartItems.length"></span>
       </h2>
       <button
         @click="closeDrawer()"
-        class="text-gray-400 hover:text-gray-600 transition-colors"
+        class="text-black p-4 h-full transition-colors -mr-4"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
@@ -108,7 +108,7 @@
     {% endif %}
 
     <!-- Cart Items -->
-    <div class="flex-1 overflow-y-auto px-6 py-4" style="-webkit-overflow-scrolling: touch;">
+    <div class="flex-1 overflow-y-auto  py-4 scrollbar-hide" style="-webkit-overflow-scrolling: touch;">
       <div class="flex flex-col gap-4">
         <template x-if="cartItems.length === 0">
           <div class="text-center py-12 px-6">
@@ -663,6 +663,8 @@
           if (response.ok) {
             await this.loadCart();
             this.$dispatch('cart:updated');
+            // Also dispatch to window to ensure header receives the event
+            window.dispatchEvent(new CustomEvent('cart:updated'));
           }
         } catch (error) {
           console.error('Error updating quantity:', error);
@@ -688,6 +690,8 @@
           if (response.ok) {
             await this.loadCart();
             this.$dispatch('cart:updated');
+            // Also dispatch to window to ensure header receives the event
+            window.dispatchEvent(new CustomEvent('cart:updated'));
             this.showRemoveMessage();
           }
         } catch (error) {

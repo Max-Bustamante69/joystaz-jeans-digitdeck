@@ -21,19 +21,7 @@
                 {{ section.settings.title }}
               </h2>
             {% endif %}
-
-            {% if section.settings.text != blank %}
-              <p class="body text-gray-700 text-balance">
-                {{ section.settings.text }}
-              </p>
-            {% endif %}
           </div>
-
-          {% if section.settings.subtitle != blank %}
-            <h5 class="font-semibold text-gray-900">
-              {{ section.settings.subtitle }}
-            </h5>
-          {% endif %}
 
           {% if section.settings.rich_text != blank %}
             <div class="rich-text-content text-gray-700 leading-relaxed body">
@@ -122,7 +110,7 @@
             {{
               display_image
               | image_url: width: 1200
-              | image_tag: class: 'w-full h-[90dvh] object-cover', alt: image_alt_text, loading: 'lazy'
+              | image_tag: class: 'w-full h-[400px] lg:h-[90dvh] object-cover', alt: image_alt_text, loading: 'lazy'
             }}
           {% else %}
             <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
@@ -136,127 +124,116 @@
 {% else %}
   <!-- Windowed Layout -->
   <div class="image-with-text-section py-12 lg:px-12  ">
+    <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 {% if section.settings.layout_direction == 'text_first' %}lg:flex-row-reverse{% endif %}">
+      <!-- Text Content -->
+      <div class="w-full lg:w-1/2 px-4 lg:px-0 order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
+        <div class="text-content space-y-6">
+          {% if section.settings.title != blank %}
+            <h2>
+              {{ section.settings.title }}
+            </h2>
+          {% endif %}
 
-      <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12 {% if section.settings.layout_direction == 'text_first' %}lg:flex-row-reverse{% endif %}">
-        <!-- Text Content -->
-        <div class="w-full lg:w-1/2 px-4 lg:px-0 order-2 lg:order-{% if section.settings.layout_direction == 'text_first' %}1{% else %}2{% endif %}">
-          <div class="text-content space-y-6">
-            {% if section.settings.title != blank %}
-              <h2 class="font-bold text-gray-900 leading-tight">
-                {{ section.settings.title }}
-              </h2>
-            {% endif %}
+          {% if section.settings.rich_text != blank %}
+            <div class=" body-lg">
+              {{ section.settings.rich_text }}
+            </div>
+          {% endif %}
 
-            {% if section.settings.text != blank %}
-              <p class="body text-gray-700 leading-relaxed text-balance line-clamp-2">
-                {{ section.settings.text }}
-              </p>
-            {% endif %}
-
-            {% if section.settings.subtitle != blank %}
-              <h5 class="font-semibold text-gray-900">
-                {{ section.settings.subtitle }}
-              </h5>
-            {% endif %}
-
-            {% if section.settings.rich_text != blank %}
-              <div class="rich-text-content text-gray-700 leading-relaxed body">
-                {{ section.settings.rich_text }}
-              </div>
-            {% endif %}
-
-            <!-- Dynamic Blocks (Icon List) -->
-            {% if section.blocks.size > 0 %}
-              <div class="icon-list-container space-y-4">
-                {% for block in section.blocks %}
-                  {% case block.type %}
-                    {% when 'icon_list_item' %}
-                      <div class="icon-list-item flex items-start gap-4" {{ block.shopify_attributes }}>
-                        <!-- Icon -->
-                        {% if block.settings.icon_image %}
-                          <div class="icon-wrapper flex-shrink-0 w-8 h-8">
-                            {{
-                              block.settings.icon_image
-                              | image_url: width: 32
-                              | image_tag: class: 'w-full h-full object-contain', alt: block.settings.title
-                            }}
-                          </div>
-                        {% elsif block.settings.icon_svg %}
-                          <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
-                            {{ block.settings.icon_svg }}
-                          </div>
-                        {% else %}
-                          <!-- Default icon if none provided -->
-                          <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
-                            <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                          </div>
-                        {% endif %}
-
-                        <!-- Content -->
-                        <div class="content-wrapper flex-1">
-                          {% if block.settings.title %}
-                            <h6 class="font-semibold text-gray-900 mb-1">
-                              {{ block.settings.title }}
-                            </h6>
-                          {% endif %}
-                          {% if block.settings.subtitle %}
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                              {{ block.settings.subtitle }}
-                            </p>
-                          {% endif %}
+          <!-- Dynamic Blocks (Icon List) -->
+          {% if section.blocks.size > 0 %}
+            <div class="icon-list-container space-y-4">
+              {% for block in section.blocks %}
+                {% case block.type %}
+                  {% when 'icon_list_item' %}
+                    <div class="icon-list-item flex items-start gap-4" {{ block.shopify_attributes }}>
+                      <!-- Icon -->
+                      {% if block.settings.icon_image %}
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8">
+                          {{
+                            block.settings.icon_image
+                            | image_url: width: 32
+                            | image_tag: class: 'w-full h-full object-contain', alt: block.settings.title
+                          }}
                         </div>
+                      {% elsif block.settings.icon_svg %}
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                          {{ block.settings.icon_svg }}
+                        </div>
+                      {% else %}
+                        <!-- Default icon if none provided -->
+                        <div class="icon-wrapper flex-shrink-0 w-8 h-8 text-primary">
+                          <svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </div>
+                      {% endif %}
+
+                      <!-- Content -->
+                      <div class="content-wrapper flex-1">
+                        {% if block.settings.title %}
+                          <h6 class="font-semibold text-gray-900 mb-1">
+                            {{ block.settings.title }}
+                          </h6>
+                        {% endif %}
+                        {% if block.settings.subtitle %}
+                          <p class="text-sm text-gray-600 leading-relaxed">
+                            {{ block.settings.subtitle }}
+                          </p>
+                        {% endif %}
                       </div>
-                  {% endcase %}
-                {% endfor %}
-              </div>
-            {% endif %}
+                    </div>
+                {% endcase %}
+              {% endfor %}
+            </div>
+          {% endif %}
 
-            {% if section.settings.button_text != blank and section.settings.button_link != blank %}
-              <div class="button-container pt-4">
-                <a
-                  href="{{ section.settings.button_link }}"
-                  class="flex items-center justify-center w-fit px-8 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
-                >
-                  <h6>
-                    {{ section.settings.button_text }}
-                  </h6>
-                </a>
-              </div>
-            {% endif %}
-          </div>
-        </div>
-
-        <!-- Windowed Image -->
-        <div class="w-full lg:w-1/2 order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
-          <div class="image-container ">
-            {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
-            {% assign display_image = null %}
-            {% assign image_alt_text = section.settings.image_alt | default: section.settings.title %}
-
-            {% if template.name == 'product' and product and section.settings.use_product_image %}
-              {% assign display_image = product.featured_image %}
-              {% assign image_alt_text = product.title %}
-            {% elsif section.settings.image %}
-              {% assign display_image = section.settings.image %}
-            {% endif %}
-
-            {% if display_image %}
-              {{
-                display_image
-                | image_url: width: 800
-                | image_tag: class: 'w-full h-auto shadow-lg', alt: image_alt_text, loading: 'lazy'
-              }}
-            {% else %}
-              <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
-                <span class="text-gray-400 text-lg">Add an image</span>
-              </div>
-            {% endif %}
-          </div>
+          {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+            <div class="button-container pt-4">
+              <a
+                href="{{ section.settings.button_link }}"
+                class="flex items-center justify-center w-fit px-8 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
+              >
+                <h6>
+                  {{ section.settings.button_text }}
+                </h6>
+              </a>
+            </div>
+          {% endif %}
         </div>
       </div>
 
+      <!-- Windowed Image -->
+      <div class="w-full lg:w-1/2 order-1 lg:order-{% if section.settings.layout_direction == 'text_first' %}2{% else %}1{% endif %}">
+        <div class="image-container w-full">
+          {% comment %} Smart Image Selection: Product image > Custom image > Placeholder {% endcomment %}
+          {% assign display_image = null %}
+          {% assign image_alt_text = section.settings.image_alt | default: section.settings.title %}
+
+          {% if template.name == 'product' and product and section.settings.use_product_image %}
+            {% assign display_image = product.featured_image %}
+            {% assign image_alt_text = product.title %}
+          {% elsif section.settings.image %}
+            {% assign display_image = section.settings.image %}
+          {% endif %}
+
+          {% if display_image %}
+            {{
+              display_image
+              | image_url: width: 800
+              | image_tag:
+                class: 'w-full min-h-[330px] lg:min-h-[400px] object-cover object-center',
+                alt: image_alt_text,
+                loading: 'lazy'
+            }}
+          {% else %}
+            <div class="w-full aspect-[4/3] bg-gray-200 flex items-center justify-center">
+              <span class="text-gray-400 text-lg">Add an image</span>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
   </div>
 {% endif %}
 
@@ -381,18 +358,6 @@
       "default": "Self-Care Starts With Your Underwear"
     },
     {
-      "type": "textarea",
-      "id": "text",
-      "label": "Main Text",
-      "default": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice."
-    },
-    {
-      "type": "text",
-      "id": "subtitle",
-      "label": "Subtitle",
-      "default": "Nuestra promesa"
-    },
-    {
       "type": "richtext",
       "id": "rich_text",
       "label": "Rich Text Content",
@@ -496,8 +461,6 @@
       "category": "Content",
       "settings": {
         "title": "Self-Care Starts With Your Underwear",
-        "text": "Underdays brings self-care to your top drawer—for the first time. Underwear that puts you first—wellness-infused, science-backed, and made to feel as good as it looks. Because comfort, style, and health should never be a choice.",
-        "subtitle": "Nuestra promesa",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "layout_direction": "image_first",

@@ -12,15 +12,145 @@
 <div id="product-reviews" class="product-reviews-section py-12 lg:py-16 bg-white">
   <div class="container lg:px-12">
     <div class="reviews-container">
-      <!-- Reviews Statistics -->
-      <div id="reviews-stats-{{ product.id }}" class="reviews-stats mb-8">
-        <!-- Stats will be loaded dynamically -->
-      </div>
+      <!-- Reviews Statistics (Liquid-rendered from metafield) -->
+      {% assign reviews = product.metafields.custom.ratings.value %}
+      {% if reviews and reviews.count > 0 %}
+        {% assign total_reviews = reviews.count %}
+        {% assign sum_ratings = 0 %}
+        {% assign verified_buyers = 0 %}
+        {% assign recommends_count = 0 %}
+        {% assign five_star = 0 %}
+        {% for r in reviews %}
+          {% assign r_rating = r.rating | default: 0 | plus: 0 %}
+          {% assign sum_ratings = sum_ratings | plus: r_rating %}
+          {% if r.is_verified_buyer %}{% assign verified_buyers = verified_buyers | plus: 1 %}{% endif %}
+          {% if r.recommends_product %}{% assign recommends_count = recommends_count | plus: 1 %}{% endif %}
+          {% if r_rating == 5 %}{% assign five_star = five_star | plus: 1 %}{% endif %}
+        {% endfor %}
+        {% assign average_rating = sum_ratings | divided_by: total_reviews %}
+        {% assign recommendation_rate = recommends_count | times: 100 | divided_by: total_reviews %}
 
-      <!-- Reviews List -->
-      <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
-        <!-- Reviews will be loaded dynamically -->
-      </div>
+        <div id="reviews-stats-{{ product.id }}" class="reviews-stats mb-8">
+          <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div class="text-center">
+                <div class="text-3xl font-bold text-gray-900">{{ average_rating | round: 1 }}</div>
+                <div class="flex justify-center mt-1">
+                  {% for i in (1..5) %}
+                    {% if i <= average_rating %}
+                      <span class="text-yellow-400">★</span>
+                    {% else %}
+                      <span class="text-gray-300">★</span>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <div class="text-sm text-gray-600 mt-1">
+                  {{ total_reviews }} reseña{% if total_reviews != 1 %}s{% endif %}
+                </div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-semibold text-gray-900">{{ verified_buyers }}</div>
+                <div class="text-sm text-gray-600">Compradores verificados</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-semibold text-gray-900">{{ recommendation_rate }}%</div>
+                <div class="text-sm text-gray-600">Recomiendan</div>
+              </div>
+              <div class="text-center">
+                <div class="text-2xl font-semibold text-gray-900">{{ five_star }}</div>
+                <div class="text-sm text-gray-600">Reseñas 5★</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews List (Liquid-rendered) -->
+        <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
+          {% for review in reviews %}
+            <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                    <span class="text-gray-600 font-semibold">{{ review.author_name | slice: 0, 1 | upcase }}</span>
+                  </div>
+                  <div>
+                    <div class="font-semibold text-gray-900">{{ review.author_name }}</div>
+                    <div class="flex items-center gap-2">
+                      <span>
+                        {% for i in (1..5) %}
+                          {% if i <= review.rating %}
+                            <span class="text-yellow-400">★</span>
+                          {% else %}
+                            <span class="text-gray-300">★</span>
+                          {% endif %}
+                        {% endfor %}
+                      </span>
+                      {% if review.created_at %}
+                        <span class="text-sm text-gray-500">{{ review.created_at | date: '%B %e, %Y' }}</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+                {% if review.is_verified_buyer %}
+                  <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Comprador verificado</span>
+                {% endif %}
+              </div>
+
+              {% if review.title %}
+                <h4 class="font-semibold text-gray-900 mb-2">{{ review.title }}</h4>
+              {% endif %}
+              {% if review.body %}
+                <p class="text-gray-700 mb-4">{{ review.body }}</p>
+              {% endif %}
+
+              {% if review.image %}
+                <div class="mb-4">
+                  <img
+                    src="{{ review.image }}"
+                    alt="Review image"
+                    class="max-w-full h-48 object-cover rounded-lg"
+                    width="400"
+                    height="192"
+                  >
+                </div>
+              {% endif %}
+
+              {% if review.video %}
+                <div class="mb-4">
+                  {% if review.video contains '.mp4' %}
+                    <video controls class="max-w-full h-48 object-cover rounded-lg">
+                      <source src="{{ review.video }}" type="video/mp4">
+                      Your browser does not support the video tag.
+                    </video>
+                  {% else %}
+                    <a href="{{ review.video }}" target="_blank" rel="noopener" class="text-blue-600 underline"
+                      >Ver video</a
+                    >
+                  {% endif %}
+                </div>
+              {% endif %}
+
+              {% if review.age_range or review.size_purchased %}
+                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
+                  {% if review.age_range -%}
+                    <span>Edad: {{ review.age_range }}</span>
+                  {%- endif %}
+                  {% if review.size_purchased -%}
+                    <span>Talla: {{ review.size_purchased }}</span>
+                  {%- endif %}
+                </div>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div id="reviews-stats-{{ product.id }}" class="reviews-stats mb-8">
+          <p class="text-gray-500 text-center py-4">No reviews yet</p>
+        </div>
+        <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
+          <p class="text-gray-500 text-center py-4">No reviews found</p>
+        </div>
+      {% endif %}
 
       <!-- Review Form Toggle Button -->
       {% if section.settings.show_review_form %}
@@ -417,6 +547,32 @@
     const productId = {{ product.id }};
     const API_BASE_URL = '{{ section.settings.api_base_url | default: "http://localhost:3001/api/reviews" }}';
 
+    // Reviews from product metafield (metaobject list): custom.ratings
+    // We normalize the metaobject entries to the same shape used by the renderer
+    const metafieldRaw = {{ product.metafields.custom.ratings.value | json }} || [];
+    function normalizeMetafieldReviews(raw) {
+      if (!Array.isArray(raw)) return [];
+      return raw.map(r => ({
+        productId: Number(r.product_id || productId),
+        rating: r.rating != null ? Number(r.rating) : null,
+        title: r.title || '',
+        body: r.body || '',
+        authorName: r.author_name || '',
+        authorEmail: r.author_email || '',
+        isVerifiedBuyer: !!(r.is_verified_buyer === true || r.is_verified_buyer === 'true'),
+        isApproved: r.is_approved === undefined ? true : !!(r.is_approved === true || r.is_approved === 'true'),
+        createdAt: r.created_at || r.createdAt || null,
+        image: r.image || null,
+        video: r.video || null,
+        ageRange: r.age_range || null,
+        sizePurchased: r.size_purchased || null,
+        recommendsProduct: !!(r.recommends_product === true || r.recommends_product === 'true'),
+        fitRating: r.fit_rating != null ? Number(r.fit_rating) : null,
+        shippingRating: r.shipping_rating != null ? Number(r.shipping_rating) : null,
+      }));
+    }
+    const metafieldReviews = normalizeMetafieldReviews(metafieldRaw).filter(r => r.isApproved !== false);
+
     // DOM Elements
     const reviewsStats = document.getElementById('reviews-stats-' + productId);
     const reviewsList = document.getElementById('reviews-list-' + productId);
@@ -435,8 +591,9 @@
     }
 
     function initializeReviews() {
-      if (reviewsStats) { loadReviewStats(); }
-      if (reviewsList) { loadReviews(); }
+      // Render from metafield data (no fetching)
+      if (reviewsStats) { loadReviewStatsFromMetafield(); }
+      if (reviewsList) { loadReviewsFromMetafield(); }
       setupEventListeners();
       initializeStarRatings();
       initializeFitSlider();
@@ -739,41 +896,53 @@
       if (videoUploadPlaceholder) videoUploadPlaceholder.classList.remove('hidden');
     }
 
-    // API Calls
-    async function loadReviewStats() {
+    // Load from metafield (no fetch)
+    function loadReviewStatsFromMetafield() {
       if (!reviewsStats) return;
       try {
-        const response = await fetch(`${API_BASE_URL}/stats/${productId}`);
-        if (response.ok) {
-          const stats = await response.json();
-          if (stats) displayReviewStats(stats);
+        const stats = computeStatsFromReviews(metafieldReviews);
+        if (stats.totalReviews > 0) {
+          displayReviewStats(stats);
         } else {
           reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews yet</p>';
         }
       } catch (error) {
-        console.error('Error loading review stats:', error);
+        console.error('Error calculating review stats:', error);
         reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading statistics</p>';
       }
     }
 
-    async function loadReviews() {
+    function loadReviewsFromMetafield() {
       if (!reviewsList) return;
       try {
-        const response = await fetch(`${API_BASE_URL}/product/${productId}`);
-        if (response.ok) {
-          const reviews = await response.json();
-          if (Array.isArray(reviews)) {
-            displayReviews(reviews);
-          } else {
-            reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
-          }
+        if (Array.isArray(metafieldReviews) && metafieldReviews.length > 0) {
+          displayReviews(metafieldReviews);
         } else {
           reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
         }
       } catch (error) {
-        console.error('Error loading reviews:', error);
+        console.error('Error rendering reviews:', error);
         reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading reviews</p>';
       }
+    }
+
+    // Compute stats from local reviews
+    function computeStatsFromReviews(reviews) {
+      const arr = Array.isArray(reviews) ? reviews : [];
+      const totalReviews = arr.length;
+      const averageRating = totalReviews > 0 ? (arr.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / totalReviews) : 0;
+      const verifiedBuyers = arr.filter(r => r.isVerifiedBuyer).length;
+      const recommends = arr.filter(r => r.recommendsProduct).length;
+      const recommendationRate = totalReviews > 0 ? (recommends / totalReviews) * 100 : 0;
+      const ratingDistribution = { 1:0, 2:0, 3:0, 4:0, 5:0 };
+      arr.forEach(r => { const v = Math.round(Number(r.rating) || 0); if (ratingDistribution[v] != null) ratingDistribution[v]++; });
+      return {
+        averageRating: Number(averageRating.toFixed(2)),
+        totalReviews,
+        verifiedBuyers,
+        recommendationRate,
+        ratingDistribution,
+      };
     }
 
     // Display Functions

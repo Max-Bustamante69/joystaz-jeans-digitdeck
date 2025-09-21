@@ -401,8 +401,8 @@
         <!-- Add to Cart Button -->
         <button
           @click="addToCart"
-          :disabled="!selectedSize || isAddingToCart"
-          :class="selectedSize && !isAddingToCart ? 'w-full bg-primary text-white py-4 px-6 font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300' : 'w-full bg-gray-300 text-gray-500 py-4 px-6 font-semibold body border border-gray-300 cursor-not-allowed transition-colors duration-300'"
+          :disabled="!isReadyToAddToCart || isAddingToCart"
+          :class="isReadyToAddToCart && !isAddingToCart ? 'w-full bg-primary text-white py-4 px-6 font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300' : 'w-full bg-gray-300 text-gray-500 py-4 px-6 font-semibold body border border-gray-300 cursor-not-allowed transition-colors duration-300'"
         >
           <!-- Loading State -->
           <span x-show="isAddingToCart" x-cloak class="flex items-center justify-center gap-2">
@@ -413,15 +413,21 @@
             <span>Añadiendo...</span>
           </span>
 
-          <!-- Normal State with Size Selected -->
-          <span x-show="selectedSize && !isAddingToCart" x-cloak>
-            {{ section.settings.cta_button_text | default: 'Paga de forma segura' }} - $<span
-              x-text="totalPrice"
-            ></span>
+          <!-- Normal State with Ready to Add -->
+          <span x-show="isReadyToAddToCart && !isAddingToCart" x-cloak>
+            <span x-show="purchaseOption === 'single'">
+              {{ section.settings.cta_button_text | default: 'Paga de forma segura' }} - $<span
+                x-text="totalPrice"
+              ></span>
+            </span>
+            <span x-show="purchaseOption === 'duo'"> Comprar Duo - $<span x-text="totalPrice"></span> </span>
           </span>
 
-          <!-- No Size Selected -->
-          <span x-show="!selectedSize && !isAddingToCart" x-cloak> Elije tu talla </span>
+          <!-- Not Ready to Add -->
+          <span x-show="!isReadyToAddToCart && !isAddingToCart" x-cloak>
+            <span x-show="purchaseOption === 'single'"> Elije tu talla </span>
+            <span x-show="purchaseOption === 'duo'"> Completa ambas prendas </span>
+          </span>
 
           <!-- Fallback text before Alpine.js loads -->
           <span class="alpine-fallback"> Elije tu talla </span>
@@ -599,15 +605,25 @@
       // Computed total price
       get totalPrice() {
         if (this.purchaseOption === 'duo' && this.duoAvailable) {
-          // Calculate duo price with discount
+          // Calculate duo total price (2 items with discount)
           const basePrice = {{ product.price | money_without_currency }};
           const discountPercentage = {{ section.settings.duo_discount_percentage | default: 5 }};
           const discountedPrice = basePrice * (1 - discountPercentage / 100);
-          return Math.round(discountedPrice * 100) / 100; // Round to 2 decimal places
+          const totalDuoPrice = discountedPrice * 2; // Two items
+          return Math.round(totalDuoPrice * 100) / 100; // Round to 2 decimal places
         } else {
           // Return normal price
           return {{ product.price | money_without_currency }};
         }
+      },
+
+      get isReadyToAddToCart() {
+        if (this.purchaseOption === 'single') {
+          return !!this.selectedSize;
+        } else if (this.purchaseOption === 'duo' && this.duoAvailable) {
+          return !!(this.duoProduct1.variantId && this.duoProduct2.variantId);
+        }
+        return false;
       },
       
       // Variant data with metafields
@@ -665,6 +681,10 @@
       selectColor(color, imageUrl, variantId) {
         this.selectedColor = color;
         this.selectedVariantId = variantId;
+        
+        // Always sync with first duo product
+        this.duoProduct1.color = color;
+        this.duoProduct1.variantId = variantId;
         
         // Only update gallery if we're in single purchase mode (not duo)
         if (this.purchaseOption === 'single') {
@@ -849,26 +869,27 @@
       selectSize(size, variantId) {
         this.selectedSize = size;
         this.selectedVariantId = variantId;
+        
+        // Always sync with first duo product
+        this.duoProduct1.size = size;
+        this.duoProduct1.variantId = variantId;
       },
 
       selectDuoColor(productNumber, color, variantId) {
-        // Debug: selectDuoColor called
-        
-        // Check if this color is available for the duo product
-        if (!this.isDuoColorAvailable(productNumber, color)) {
-          this.showDuoVariantInfo(productNumber, 'color', color);
-          return; // Don't allow selection of unavailable colors
-        }
-        
         if (productNumber === 1) {
           this.duoProduct1.color = color;
           this.duoProduct1.variantId = variantId;
+          
+          // Sync with single mode selections
+          this.selectedColor = color;
+          this.selectedVariantId = variantId;
           
           // If size is already selected, update variant ID to match both
           if (this.duoProduct1.size) {
             const matchingVariant = this.findVariantBySizeAndColor(this.duoProduct1.size, color);
             if (matchingVariant) {
               this.duoProduct1.variantId = matchingVariant;
+              this.selectedVariantId = matchingVariant;
             }
           }
         } else {
@@ -884,8 +905,6 @@
           }
         }
         
-        // Debug: After color selection
-        
         // Force Alpine.js to re-evaluate the UI for better visual feedback
         this.$nextTick(() => {
           // Trigger a re-render by updating a reactive property
@@ -894,27 +913,21 @@
       },
 
       selectDuoSize(productNumber, size, variantId) {
-        // Debug: selectDuoSize called
-        
-        // Check if this size is available for the duo product
-        if (!this.isDuoSizeAvailable(productNumber, size)) {
-          this.showDuoVariantInfo(productNumber, 'size', size);
-          return; // Don't allow selection of unavailable sizes
-        }
-        
         if (productNumber === 1) {
           this.duoProduct1.size = size;
           // Find variant that matches both color and size for product 1
           const matchingVariant = this.findVariantBySizeAndColor(size, this.duoProduct1.color);
           this.duoProduct1.variantId = matchingVariant || variantId;
+          
+          // Sync with single mode selections
+          this.selectedSize = size;
+          this.selectedVariantId = matchingVariant || variantId;
         } else {
           this.duoProduct2.size = size;
           // Find variant that matches both color and size for product 2
           const matchingVariant = this.findVariantBySizeAndColor(size, this.duoProduct2.color);
           this.duoProduct2.variantId = matchingVariant || variantId;
         }
-        
-        // Debug: After size selection
         
         // Force Alpine.js to re-evaluate the UI for better visual feedback
         this.$nextTick(() => {
@@ -1217,6 +1230,9 @@
           if (newValue === 'duo' && oldValue === 'single') {
             // Transfer current selections to first duo product
             this.transferSelectionsToDuo();
+          } else if (newValue === 'single' && oldValue === 'duo') {
+            // Transfer first duo product selections back to single mode
+            this.transferSelectionsFromDuo();
           }
         });
         
@@ -1289,6 +1305,26 @@
         
         // Validate that the transferred selections are actually available
         this.validateDuoSelections();
+        
+        // Force UI update to show the new state
+        this.$nextTick(() => {
+          this.forceUpdate = Date.now();
+        });
+      },
+
+      // Transfer first duo product selections back to single mode
+      transferSelectionsFromDuo() {
+        // Transfer color selection from first duo product
+        if (this.duoProduct1.color) {
+          this.selectedColor = this.duoProduct1.color;
+          this.selectedVariantId = this.duoProduct1.variantId;
+        }
+        
+        // Transfer size selection from first duo product
+        if (this.duoProduct1.size) {
+          this.selectedSize = this.duoProduct1.size;
+          this.selectedVariantId = this.duoProduct1.variantId;
+        }
         
         // Force UI update to show the new state
         this.$nextTick(() => {

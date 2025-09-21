@@ -44,9 +44,10 @@
             </p>
           </div>
           {% if show_wishlist %}
-            <button`
-             class=" text-black/70"
-             :class="isInWishlist ? 'text-red-800 fill-red-800  ' : 'fill-transparent '"
+            <button
+              `
+              class=" text-black/70"
+              :class="isInWishlist ? 'text-red-800 fill-red-800  ' : 'fill-transparent '"
               @click="toggleWishlist"
             >
               {% render 'heart-icon', class: 'w-5 h-5', stroke: 'currentColor' %}
@@ -108,8 +109,7 @@
 
         <!-- Color Swatches Container with expanded width -->
         <div
-          class="relative w-full "
-          :class="purchaseOption === 'duo' ? 'opacity-40 pointer-events-none' : ''"
+          class="relative w-full"
           x-show="isInitialized"
           x-cloak
         >
@@ -292,7 +292,7 @@
           centeredSlides: false,
           slidesOffsetBefore: 0,
           slidesOffsetAfter: 0,
-          grabCursor: true,
+          grabCursor: false,
           touchRatio: 1,
           touchAngle: 45,
           simulateTouch: true,

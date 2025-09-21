@@ -63,10 +63,10 @@
     {% if sorted_thresholds.size > 0 %}
       <div class="py-4 border-gray-100">
         <!-- Progress Bar with Dynamic Segments -->
-        <div class="w-full h-1.5 mb-3 flex gap-0.5">
+        <div class="w-full h-[4.8px] mb-2 flex gap-1">
           {% for block in sorted_thresholds %}
             <div
-              class="flex-1 bg-gray-200 overflow-hidden {% if forloop.first %}rounded-l-full{% endif %} {% if forloop.last %}rounded-r-full{% endif %}"
+              class="flex-1 bg-gray-200 overflow-hidden "
               data-threshold
               data-threshold-id="{{ block.id }}"
               data-threshold-title="{{ block.settings.threshold_title }}"
@@ -447,7 +447,7 @@
     </div>
 
     <!-- Footer - Sticky at bottom -->
-    <div class="sticky bottom-0 z-10 bg-white border-t border-gray-100 p-6 space-y-6 shadow-lg">
+    <div class="sticky bottom-0 z-10 bg-white border-t border-gray-100 p-6 -mx-6 space-y-6 shadow-lg">
       <!-- Subtotal -->
       <div class="flex justify-between items-center">
         <span class="text-lg font-semibold text-gray-900">
@@ -474,7 +474,7 @@
       <button
         @click="proceedToCheckout()"
         :disabled="cartItems.length === 0"
-        class="w-full bg-primary text-white py-4 px-6 font-semibold hover:bg-primary/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        :class="cartItems.length > 0 ? 'w-full bg-primary text-white py-4 px-6 font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300 flex items-center justify-center gap-2' : 'w-full bg-gray-300 text-gray-500 py-4 px-6 font-semibold body border border-gray-300 cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2'"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
@@ -767,7 +767,7 @@
 
             // Create swiper instance for cart carousel
             const swiperInstance = new Swiper(carouselElement, {
-              slidesPerView: 2,
+              slidesPerView: 2.3,
               spaceBetween: 2,
               freeMode: {
                 enabled: true,

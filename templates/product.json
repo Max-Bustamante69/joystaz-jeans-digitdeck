@@ -32,9 +32,7 @@
         "duo_option_subtitle": "Compra más y ahorra",
         "best_value_text": "Mejor oferta",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": [
-          "bermuda-cargo-764018"
-        ],
+        "duo_eligible_products": [],
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío gratis En ordenes +500.000",
         "free_returns_text": "Devoluciones gratis y intercambiables",
@@ -86,13 +84,7 @@
       "type": "product-reviews",
       "settings": {
         "show_review_form": true,
-        "write_review_text": "Write a Review",
-        "form_title": "Escribir una Reseña",
-        "submit_button_text": "Submit Review",
-        "allow_image_upload": true,
-        "allow_video_upload": true,
-        "show_additional_fields": true,
-        "api_base_url": "http://localhost:3001/api/reviews"
+        "write_review_text": "Write a Review"
       }
     },
     "related_collections_carousel_1": {

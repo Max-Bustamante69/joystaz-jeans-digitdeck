@@ -1,5 +1,5 @@
 {% comment %}
-  Product Reviews Section
+  Product Reviews Section - Clean Version
 
   Modular reviews section that can be placed anywhere in product templates
   Features:
@@ -14,132 +14,348 @@
     <div class="reviews-container">
       <!-- Reviews Statistics (Liquid-rendered from metafield) -->
       {% assign reviews = product.metafields.custom.ratings.value %}
+
       {% if reviews and reviews.count > 0 %}
         {% assign total_reviews = reviews.count %}
         {% assign sum_ratings = 0 %}
-        {% assign verified_buyers = 0 %}
-        {% assign recommends_count = 0 %}
-        {% assign five_star = 0 %}
         {% for r in reviews %}
           {% assign r_rating = r.rating | default: 0 | plus: 0 %}
           {% assign sum_ratings = sum_ratings | plus: r_rating %}
-          {% if r.is_verified_buyer %}{% assign verified_buyers = verified_buyers | plus: 1 %}{% endif %}
-          {% if r.recommends_product %}{% assign recommends_count = recommends_count | plus: 1 %}{% endif %}
-          {% if r_rating == 5 %}{% assign five_star = five_star | plus: 1 %}{% endif %}
         {% endfor %}
         {% assign average_rating = sum_ratings | divided_by: total_reviews %}
-        {% assign recommendation_rate = recommends_count | times: 100 | divided_by: total_reviews %}
 
+        <!-- Reviews Stats -->
         <div id="reviews-stats-{{ product.id }}" class="reviews-stats mb-8">
-          <div class="bg-gray-50 rounded-lg p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div class="text-center">
-                <div class="text-3xl font-bold text-gray-900">{{ average_rating | round: 1 }}</div>
-                <div class="flex justify-center mt-1">
+          <div class="p-8 mb-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+              <!-- Left side: Rating and breakdown -->
+              <div class="space-y-6">
+                <!-- Main rating display -->
+                <div class="text-center lg:text-left">
+                  <div class="text-6xl font-bold text-gray-900 mb-2">{{ average_rating | round: 1 }}</div>
+                  <div class="flex justify-center lg:justify-start items-center gap-2 mb-2">
+                    <div class="flex">
+                      {% for i in (1..5) %}
+                        {% if i <= average_rating %}
+                          <span class="text-yellow-400 text-2xl">★</span>
+                        {% else %}
+                          <span class="text-gray-300 text-2xl">★</span>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+                    <span class="text-gray-600 text-lg">
+                      Basado en {{ total_reviews }} opinión{% unless total_reviews == 1 %}es{% endunless %}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Rating breakdown -->
+                <div class="space-y-3 rating-breakdown">
                   {% for i in (1..5) %}
-                    {% if i <= average_rating %}
-                      <span class="text-yellow-400">★</span>
-                    {% else %}
-                      <span class="text-gray-300">★</span>
-                    {% endif %}
+                    {% assign current_rating = 6 | minus: i %}
+                    {% assign star_count = 0 %}
+                    {% for r in reviews %}
+                      {% if r.rating == current_rating %}
+                        {% assign star_count = star_count | plus: 1 %}
+                      {% endif %}
+                    {% endfor %}
+                    {% assign percentage = star_count | times: 100 | divided_by: total_reviews %}
+                    <div class="flex items-center gap-3 rating-bar-item" data-delay="{{ i | minus: 1 | times: 200 }}">
+                      <div class="flex items-center gap-1 w-16">
+                        <span class="text-yellow-400 text-sm">★</span>
+                        <span class="text-sm font-medium text-gray-700">{{ current_rating }}</span>
+                      </div>
+                      <div class="flex-1 bg-gray-200 rounded-full h-2">
+                        <div
+                          class="rating-bar-fill bg-gray-800 h-2 rounded-full"
+                          style="width: 0%; --target-width: {{ percentage }}%;"
+                        ></div>
+                      </div>
+                      <span class="text-sm text-gray-600 w-8 text-right">{{ star_count }}</span>
+                    </div>
                   {% endfor %}
                 </div>
-                <div class="text-sm text-gray-600 mt-1">
-                  {{ total_reviews }} reseña{% if total_reviews != 1 %}s{% endif %}
+              </div>
+
+              <!-- Right side: User photos -->
+              <div class="lg:pl-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Fotos de clientes</h3>
+                <div class="grid grid-cols-2 gap-3">
+                  {% assign photo_count = 0 %}
+                  {% for review in reviews limit: 4 %}
+                    {% if review.image %}
+                      {% assign photo_count = photo_count | plus: 1 %}
+                      <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                        <img
+                          src="{{ review.image | image_url: width: 200 }}"
+                          alt="Review photo"
+                          class="w-full h-full object-cover"
+                          width="200"
+                          height="200"
+                          loading="lazy"
+                        >
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                  {% if photo_count == 0 %}
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                      <p>No hay fotos de clientes aún</p>
+                    </div>
+                  {% endif %}
                 </div>
-              </div>
-              <div class="text-center">
-                <div class="text-2xl font-semibold text-gray-900">{{ verified_buyers }}</div>
-                <div class="text-sm text-gray-600">Compradores verificados</div>
-              </div>
-              <div class="text-center">
-                <div class="text-2xl font-semibold text-gray-900">{{ recommendation_rate }}%</div>
-                <div class="text-sm text-gray-600">Recomiendan</div>
-              </div>
-              <div class="text-center">
-                <div class="text-2xl font-semibold text-gray-900">{{ five_star }}</div>
-                <div class="text-sm text-gray-600">Reseñas 5★</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Reviews List (Liquid-rendered) -->
+        <!-- Reviews List -->
         <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
           {% for review in reviews %}
-            <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-              <div class="flex items-start justify-between mb-3">
-                <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                    <span class="text-gray-600 font-semibold">{{ review.author_name | slice: 0, 1 | upcase }}</span>
-                  </div>
-                  <div>
-                    <div class="font-semibold text-gray-900">{{ review.author_name }}</div>
-                    <div class="flex items-center gap-2">
-                      <span>
-                        {% for i in (1..5) %}
-                          {% if i <= review.rating %}
-                            <span class="text-yellow-400">★</span>
-                          {% else %}
-                            <span class="text-gray-300">★</span>
-                          {% endif %}
-                        {% endfor %}
-                      </span>
-                      {% if review.created_at %}
-                        <span class="text-sm text-gray-500">{{ review.created_at | date: '%B %e, %Y' }}</span>
-                      {% endif %}
+            <div class="review-card bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+              <div class="review-layout grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Left Column: Reviewer Info (3 cols) -->
+                <div class="reviewer-info lg:col-span-3">
+                  <div class="space-y-3">
+                    <!-- Reviewer name -->
+                    <div class="font-semibold text-gray-900 text-lg">{{ review.author_name }}</div>
+
+                    <!-- Star rating -->
+                    <div class="flex gap-1">
+                      {% for i in (1..5) %}
+                        {% if i <= review.rating %}
+                          <span class="text-yellow-400 text-lg">★</span>
+                        {% else %}
+                          <span class="text-gray-300 text-lg">★</span>
+                        {% endif %}
+                      {% endfor %}
+                    </div>
+
+                    <!-- Verified buyer badge -->
+                    {% if review.is_verified_buyer %}
+                      <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-green-600 rounded-full flex items-center justify-center">
+                          <span class="text-white text-xs font-bold">✓</span>
+                        </div>
+                        <span class="text-green-600 text-sm font-medium">Verified Buyer</span>
+                      </div>
+                    {% endif %}
+
+                    <!-- Reviewer details -->
+                    <div class="space-y-2 text-sm">
+                      <div class="space-y-2 text-sm">
+                        {% if review.age_range %}
+                          <div class="flex items-center gap-2">
+                            <span class="text-gray-500 font-medium">Age Range:</span>
+                            <div class="text-gray-900">{{ review.age_range }}</div>
+                          </div>
+                        {% endif %}
+
+                        {% if review.size_purchased %}
+                          <div class="flex items-center gap-2">
+                            <span class="text-gray-500 font-medium">Size Purchased:</span>
+                            <div class="text-gray-900">{{ review.size_purchased }}</div>
+                          </div>
+                        {% endif %}
+
+                        {% if review.shipping_rating %}
+                          <div class="flex items-center gap-2">
+                            <span class="text-gray-500 font-medium">Shipping Rating:</span>
+                            <div class="flex items-center gap-1">
+                              {% for i in (1..5) %}
+                                {% if i <= review.shipping_rating %}
+                                  <span class="text-yellow-400 text-sm">★</span>
+                                {% else %}
+                                  <span class="text-gray-300 text-sm">★</span>
+                                {% endif %}
+                              {% endfor %}
+                              <span class="text-gray-600 text-xs ml-1">({{ review.shipping_rating }}/5)</span>
+                            </div>
+                          </div>
+                        {% endif %}
+
+                        {% if review.recommends_product != null %}
+                          <div class="flex items-center gap-2">
+                            <span class="text-gray-500 font-medium">Recommends Product:</span>
+                            <div class="flex items-center gap-1">
+                              {% if review.recommends_product %}
+                                <span class="text-green-600 text-sm">✓</span>
+                                <span class="text-green-600 text-sm font-medium">Yes</span>
+                              {% else %}
+                                <span class="text-red-500 text-sm">✗</span>
+                                <span class="text-red-500 text-sm font-medium">No</span>
+                              {% endif %}
+                            </div>
+                          </div>
+                        {% endif %}
+                      </div>
                     </div>
                   </div>
                 </div>
-                {% if review.is_verified_buyer %}
-                  <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Comprador verificado</span>
-                {% endif %}
+
+                <!-- Middle Column: Review Content (6 cols) -->
+                <div class="review-content lg:col-span-6">
+                  <div class="space-y-4">
+                    {% if review.title %}
+                      <h4 class="font-bold text-gray-900 text-xl">{{ review.title }}</h4>
+                    {% endif %}
+
+                    {% if review.body %}
+                      <p class="text-gray-700 text-base leading-relaxed">{{ review.body }}</p>
+                    {% endif %}
+
+                    <!-- Fit evaluation bar -->
+                    {% if review.fit_rating %}
+                      <div class="fit-evaluation">
+                        <div class="relative">
+                          <!-- Fit slider track -->
+                          <div class="relative w-full max-w-sm h-1 bg-gray-300 rounded-full">
+                            <!-- Position dots (5 positions for scale 1-5) -->
+                            <div class="absolute inset-0 flex items-center justify-between">
+                              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+                            </div>
+
+                            <!-- Active marker - Fixed positioning for 1-5 scale -->
+                            {% assign fit_position = review.fit_rating | minus: 1 | times: 25 %}
+                            <div
+                              class="absolute top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gray-800 rounded-full"
+                              style="left: calc({{ fit_position }}% - 8px);"
+                            ></div>
+                          </div>
+
+                          <!-- Labels -->
+                          <div class="flex justify-between mt-3 text-xs text-gray-600 max-w-sm">
+                            <span>Muy pequeño</span>
+                            <span class="text-center">Tamaño real</span>
+                            <span>Muy grande</span>
+                          </div>
+                        </div>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <!-- Right Column: Media & Timestamp (3 cols) -->
+                <div class="review-media lg:col-span-3">
+                  <div class="flex flex-col items-end gap-4">
+                    <!-- Timestamp -->
+                    {% if review.created_at %}
+                      <span class="text-sm text-gray-500 text-right">
+                        {{ review.created_at | date: '%B %d, %Y' }}
+                      </span>
+                    {% endif %}
+
+                    <!-- Media carousel -->
+                    {% if review.image or review.video %}
+                      <div class="review-media-carousel relative w-32 h-40">
+                        <div class="swiper review-swiper-{{ forloop.index }}">
+                          <div class="swiper-wrapper">
+                            {% if review.image %}
+                              <div class="swiper-slide">
+                                <div class="w-full h-full bg-gray-100 rounded-lg overflow-hidden">
+                                  <img
+                                    src="{{ review.image | image_url: width: 300 }}"
+                                    alt="Review image"
+                                    class="w-full h-full object-cover"
+                                    width="128"
+                                    height="160"
+                                    loading="lazy"
+                                  >
+                                </div>
+                              </div>
+                            {% endif %}
+
+                            {% if review.video %}
+                              <div class="swiper-slide">
+                                <div class="w-full h-full bg-gray-100 rounded-lg overflow-hidden">
+                                  {% if review.video.sources %}
+                                    <video
+                                      controls
+                                      class="w-full h-full object-cover"
+                                      muted
+                                      loop
+                                      playsinline
+                                      preload="metadata"
+                                    >
+                                      {% for source in review.video.sources %}
+                                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                                      {% endfor %}
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  {% elsif review.video.value and review.video.value.sources %}
+                                    <video
+                                      controls
+                                      class="w-full h-full object-cover"
+                                      muted
+                                      loop
+                                      playsinline
+                                      preload="metadata"
+                                    >
+                                      {% for source in review.video.value.sources %}
+                                        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                                      {% endfor %}
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  {% elsif review.video contains 'gid://shopify/Video/' %}
+                                    <video
+                                      controls
+                                      class="w-full h-full object-cover"
+                                      muted
+                                      loop
+                                      playsinline
+                                      preload="metadata"
+                                    >
+                                      <source src="{{ review.video | file_url }}" type="video/mp4">
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  {% elsif review.video contains '.mp4' %}
+                                    <video
+                                      controls
+                                      class="w-full h-full object-cover"
+                                      muted
+                                      loop
+                                      playsinline
+                                      preload="metadata"
+                                    >
+                                      <source src="{{ review.video }}" type="video/mp4">
+                                      Your browser does not support the video tag.
+                                    </video>
+                                  {% else %}
+                                    <div class="w-full h-full flex items-center justify-center bg-gray-800 rounded-lg">
+                                      <a
+                                        href="{{ review.video }}"
+                                        target="_blank"
+                                        rel="noopener"
+                                        class="text-white text-center p-2"
+                                      >
+                                        <div class="text-2xl mb-1">▶️</div>
+                                        <div class="text-xs">Ver video</div>
+                                      </a>
+                                    </div>
+                                  {% endif %}
+                                </div>
+                              </div>
+                            {% endif %}
+                          </div>
+
+                          <!-- Navigation arrows -->
+                          {% if review.image and review.video %}
+                            <div class="swiper-button-next review-next-{{ forloop.index }}"></div>
+                            <div class="swiper-button-prev review-prev-{{ forloop.index }}"></div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% else %}
+                      <div class="w-32 h-40 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-400 text-xs text-center">Sin medios</span>
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
-
-              {% if review.title %}
-                <h4 class="font-semibold text-gray-900 mb-2">{{ review.title }}</h4>
-              {% endif %}
-              {% if review.body %}
-                <p class="text-gray-700 mb-4">{{ review.body }}</p>
-              {% endif %}
-
-              {% if review.image %}
-                <div class="mb-4">
-                  <img
-                    src="{{ review.image }}"
-                    alt="Review image"
-                    class="max-w-full h-48 object-cover rounded-lg"
-                    width="400"
-                    height="192"
-                  >
-                </div>
-              {% endif %}
-
-              {% if review.video %}
-                <div class="mb-4">
-                  {% if review.video contains '.mp4' %}
-                    <video controls class="max-w-full h-48 object-cover rounded-lg">
-                      <source src="{{ review.video }}" type="video/mp4">
-                      Your browser does not support the video tag.
-                    </video>
-                  {% else %}
-                    <a href="{{ review.video }}" target="_blank" rel="noopener" class="text-blue-600 underline"
-                      >Ver video</a
-                    >
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              {% if review.age_range or review.size_purchased %}
-                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
-                  {% if review.age_range -%}
-                    <span>Edad: {{ review.age_range }}</span>
-                  {%- endif %}
-                  {% if review.size_purchased -%}
-                    <span>Talla: {{ review.size_purchased }}</span>
-                  {%- endif %}
-                </div>
-              {% endif %}
             </div>
           {% endfor %}
         </div>
@@ -164,424 +380,14 @@
           </button>
         </div>
       {% endif %}
-
-      <!-- Review Form Drawer (Hidden by default) -->
-      <div
-        class="review-form-container fixed inset-0 z-50 hidden"
-        id="review-form-container-{{ product.id }}"
-        style="display: none;"
-      >
-        <!-- Backdrop -->
-        <div
-          class="absolute inset-0 bg-black/70 opacity-0 transition ease-out duration-500"
-          id="review-overlay-{{ product.id }}"
-        ></div>
-
-        <!-- Drawer -->
-        <div
-          class="absolute right-0 top-0 h-full w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform transition ease-out duration-350 translate-x-full"
-          id="review-drawer-{{ product.id }}"
-        >
-          <!-- Header -->
-          <div class="review-form-header flex items-center justify-between p-6 border-b border-gray-200 bg-white">
-            <h3 class="text-lg font-semibold text-gray-900">
-              {{ section.settings.form_title | default: 'Escribir una Reseña' }}
-            </h3>
-            <button
-              class="close-form-btn text-gray-400 hover:text-gray-600 text-2xl font-bold"
-              id="close-form-btn-{{ product.id }}"
-            >
-              &times;
-            </button>
-          </div>
-
-          <!-- Scrollable Content -->
-          <div class="flex-1 overflow-y-auto p-0">
-            <div class="p-6">
-              <!-- Native Review Form -->
-              <form id="review-form-{{ product.id }}" class="review-form space-y-6">
-                <div class="form-group">
-                  <label for="rating-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                    >Overall Rating *</label
-                  >
-                  <div class="rating-group flex items-center gap-4">
-                    <div class="star-rating flex gap-1" id="overallRating-{{ product.id }}">
-                      <span
-                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                        data-rating="1"
-                        >★</span
-                      >
-                      <span
-                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                        data-rating="2"
-                        >★</span
-                      >
-                      <span
-                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                        data-rating="3"
-                        >★</span
-                      >
-                      <span
-                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                        data-rating="4"
-                        >★</span
-                      >
-                      <span
-                        class="star text-2xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                        data-rating="5"
-                        >★</span
-                      >
-                    </div>
-                    <span id="ratingText-{{ product.id }}" class="text-sm text-gray-800 font-medium"
-                      >Rating: <span class="font-semibold">Click to rate</span></span
-                    >
-                  </div>
-                  <input type="hidden" id="rating-{{ product.id }}" name="rating" required>
-                </div>
-
-                <div class="form-group">
-                  <label for="title-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                    >Review Title *</label
-                  >
-                  <input
-                    type="text"
-                    id="title-{{ product.id }}"
-                    name="title"
-                    maxlength="200"
-                    required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Summarize your experience"
-                  >
-                </div>
-
-                <div class="form-group">
-                  <label for="body-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                    >Review *</label
-                  >
-                  <textarea
-                    id="body-{{ product.id }}"
-                    name="body"
-                    maxlength="2000"
-                    placeholder="Tell us about your experience with this product..."
-                    required
-                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent h-32 resize-vertical"
-                  ></textarea>
-                </div>
-
-                <!-- Image Upload Section -->
-                {% if section.settings.allow_image_upload %}
-                  <div class="form-group">
-                    <label for="image-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                      >Product Photo *</label
-                    >
-                    <div class="image-upload-container">
-                      <input
-                        type="file"
-                        id="image-{{ product.id }}"
-                        name="image"
-                        accept="image/*"
-                        required
-                        class="hidden"
-                      >
-                      <div
-                        class="image-upload-area border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
-                        onclick="document.getElementById('image-{{ product.id }}').click()"
-                      >
-                        <div class="image-preview hidden mb-3" id="image-preview-{{ product.id }}">
-                          <img
-                            id="preview-img-{{ product.id }}"
-                            class="max-w-full h-32 object-cover rounded-lg mx-auto"
-                            width="200"
-                            height="128"
-                          >
-                        </div>
-                        <div class="upload-placeholder" id="upload-placeholder-{{ product.id }}">
-                          <svg
-                            class="mx-auto h-12 w-12 text-gray-400"
-                            stroke="currentColor"
-                            fill="none"
-                            viewBox="0 0 48 48"
-                          >
-                            <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
-                          <p class="mt-2 text-sm text-gray-600">Click to upload a photo</p>
-                          <p class="text-xs text-gray-500">PNG, JPG up to 10MB</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                {% endif %}
-
-                <!-- Video Upload Section -->
-                {% if section.settings.allow_video_upload %}
-                  <div class="form-group">
-                    <label for="video-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                      >Product Video (Optional)</label
-                    >
-                    <div class="video-upload-container">
-                      <input
-                        type="file"
-                        id="video-{{ product.id }}"
-                        name="video"
-                        accept="video/*"
-                        class="hidden"
-                      >
-                      <div
-                        class="video-upload-area border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-gray-400 transition-colors"
-                        onclick="document.getElementById('video-{{ product.id }}').click()"
-                      >
-                        <div class="video-preview hidden mb-3" id="video-preview-{{ product.id }}">
-                          <video
-                            id="preview-video-{{ product.id }}"
-                            class="max-w-full h-32 object-cover rounded-lg mx-auto"
-                            controls
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                        </div>
-                        <div class="upload-placeholder" id="video-upload-placeholder-{{ product.id }}">
-                          <svg
-                            class="mx-auto h-12 w-12 text-gray-400"
-                            stroke="currentColor"
-                            fill="none"
-                            viewBox="0 0 48 48"
-                          >
-                            <path d="M15 10l4 4-4 4m6-8h8a2 2 0 012 2v12a2 2 0 01-2 2h-8m-6-4l4 4-4 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                          </svg>
-                          <p class="mt-2 text-sm text-gray-600">Click to upload a video</p>
-                          <p class="text-xs text-gray-500">MP4, MOV up to 50MB</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                {% endif %}
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div class="form-group">
-                    <label for="authorName-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                      >Your Name *</label
-                    >
-                    <input
-                      type="text"
-                      id="authorName-{{ product.id }}"
-                      name="authorName"
-                      maxlength="100"
-                      required
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                  </div>
-                  <div class="form-group">
-                    <label for="authorEmail-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                      >Your Email *</label
-                    >
-                    <input
-                      type="email"
-                      id="authorEmail-{{ product.id }}"
-                      name="authorEmail"
-                      required
-                      class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                  </div>
-                </div>
-
-                {% if section.settings.show_additional_fields %}
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="form-group">
-                      <label for="ageRange-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                        >Age Range</label
-                      >
-                      <select
-                        id="ageRange-{{ product.id }}"
-                        name="ageRange"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select age range</option>
-                        <option value="18-24">18-24</option>
-                        <option value="25-34">25-34</option>
-                        <option value="35-44">35-44</option>
-                        <option value="45-54">45-54</option>
-                        <option value="55-64">55-64</option>
-                        <option value="65+">65+</option>
-                      </select>
-                    </div>
-                    <div class="form-group">
-                      <label for="sizePurchased-{{ product.id }}" class="block text-sm font-medium text-gray-700 mb-2"
-                        >Size Purchased</label
-                      >
-                      <select
-                        id="sizePurchased-{{ product.id }}"
-                        name="sizePurchased"
-                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select size purchased</option>
-                        {% comment %} Extract all sizes from product options (including out of stock) {% endcomment %}
-                        {% for product_option in product.options_with_values %}
-                          {% if product_option.name == 'Talla' %}
-                            {% for product_option_value in product_option.values %}
-                              <option value="{{ product_option_value }}">{{ product_option_value }}</option>
-                            {% endfor %}
-                          {% endif %}
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Fit Rating Slider -->
-                  <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2"
-                      >How well does the clothing item fit? *</label
-                    >
-                    <div class="fit-rating-container">
-                      <div class="fit-slider-wrapper relative">
-                        <input
-                          type="range"
-                          id="fitRating-{{ product.id }}"
-                          name="fitRating"
-                          min="1"
-                          max="5"
-                          value="3"
-                          step="1"
-                          class="fit-slider w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        >
-                        <div class="fit-labels flex justify-between mt-2 text-xs text-gray-600">
-                          <span>Muy pequeño</span>
-                          <span>Pequeño</span>
-                          <span>Perfecto</span>
-                          <span>Grande</span>
-                          <span>Muy grande</span>
-                        </div>
-                        <div class="fit-value text-center mt-2">
-                          <span id="fit-value-{{ product.id }}" class="text-sm font-medium text-gray-900"
-                            >Perfecto</span
-                          >
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Shipping Rating -->
-                  <div class="form-group">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Shipping Rating</label>
-                    <div class="rating-group">
-                      <div class="star-rating flex gap-1" id="shippingRating-{{ product.id }}">
-                        <span
-                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                          data-rating="1"
-                          >★</span
-                        >
-                        <span
-                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                          data-rating="2"
-                          >★</span
-                        >
-                        <span
-                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                          data-rating="3"
-                          >★</span
-                        >
-                        <span
-                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                          data-rating="4"
-                          >★</span
-                        >
-                        <span
-                          class="star text-xl text-gray-300 cursor-pointer hover:text-yellow-400 transition-colors"
-                          data-rating="5"
-                          >★</span
-                        >
-                      </div>
-                    </div>
-                    <input type="hidden" id="shippingRatingValue-{{ product.id }}" name="shippingRating">
-                  </div>
-                {% endif %}
-
-                <div class="space-y-4">
-                  <div class="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="isVerifiedBuyer-{{ product.id }}"
-                      name="isVerifiedBuyer"
-                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    >
-                    <label for="isVerifiedBuyer-{{ product.id }}" class="ml-2 block text-sm text-gray-700">
-                      I am a verified buyer of this product
-                    </label>
-                  </div>
-                  <div class="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="recommendsProduct-{{ product.id }}"
-                      name="recommendsProduct"
-                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    >
-                    <label for="recommendsProduct-{{ product.id }}" class="ml-2 block text-sm text-gray-700">
-                      I recommend this product
-                    </label>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  class="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  id="submitBtn-{{ product.id }}"
-                >
-                  {{ section.settings.submit_button_text | default: 'Submit Review' }}
-                </button>
-              </form>
-
-              <div class="loading hidden p-6 text-center" id="loading-{{ product.id }}">
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-3"></div>
-                <p class="text-gray-600">Submitting your review...</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>
 
 <script>
-  // Product Reviews JavaScript - Self-contained and modular
+  // Simple initialization
   (function() {
     const productId = {{ product.id }};
-    const API_BASE_URL = '{{ section.settings.api_base_url | default: "http://localhost:3001/api/reviews" }}';
-
-    // Reviews from product metafield (metaobject list): custom.ratings
-    // We normalize the metaobject entries to the same shape used by the renderer
-    const metafieldRaw = {{ product.metafields.custom.ratings.value | json }} || [];
-    function normalizeMetafieldReviews(raw) {
-      if (!Array.isArray(raw)) return [];
-      return raw.map(r => ({
-        productId: Number(r.product_id || productId),
-        rating: r.rating != null ? Number(r.rating) : null,
-        title: r.title || '',
-        body: r.body || '',
-        authorName: r.author_name || '',
-        authorEmail: r.author_email || '',
-        isVerifiedBuyer: !!(r.is_verified_buyer === true || r.is_verified_buyer === 'true'),
-        isApproved: r.is_approved === undefined ? true : !!(r.is_approved === true || r.is_approved === 'true'),
-        createdAt: r.created_at || r.createdAt || null,
-        image: r.image || null,
-        video: r.video || null,
-        ageRange: r.age_range || null,
-        sizePurchased: r.size_purchased || null,
-        recommendsProduct: !!(r.recommends_product === true || r.recommends_product === 'true'),
-        fitRating: r.fit_rating != null ? Number(r.fit_rating) : null,
-        shippingRating: r.shipping_rating != null ? Number(r.shipping_rating) : null,
-      }));
-    }
-    const metafieldReviews = normalizeMetafieldReviews(metafieldRaw).filter(r => r.isApproved !== false);
-
-    // DOM Elements
-    const reviewsStats = document.getElementById('reviews-stats-' + productId);
-    const reviewsList = document.getElementById('reviews-list-' + productId);
-    const writeReviewBtn = document.getElementById('write-review-btn-' + productId);
-    const reviewFormContainer = document.getElementById('review-form-container-' + productId);
-    const closeFormBtn = document.getElementById('close-form-btn-' + productId);
-    const reviewForm = document.getElementById('review-form-' + productId);
-    const submitBtn = document.getElementById('submitBtn-' + productId);
-    const loading = document.getElementById('loading-' + productId);
 
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
@@ -591,525 +397,267 @@
     }
 
     function initializeReviews() {
-      // Render from metafield data (no fetching)
-      if (reviewsStats) { loadReviewStatsFromMetafield(); }
-      if (reviewsList) { loadReviewsFromMetafield(); }
-      setupEventListeners();
-      initializeStarRatings();
-      initializeFitSlider();
-      initializeFileUploads();
-    }
+       // Initialize Swiper carousels for reviews with multiple media
+       if (typeof Swiper !== 'undefined') {
+         setTimeout(() => {
+           const reviewSwipers = document.querySelectorAll('[class*="review-swiper-"]');
+           reviewSwipers.forEach((swiperElement, index) => {
+             if (!swiperElement.swiper) {
+               const swiperIndex = swiperElement.className.match(/review-swiper-(\d+)/)[1];
+               new Swiper(swiperElement, {
+                 direction: 'horizontal',
+                 slidesPerView: 1,
+                 spaceBetween: 0,
+                 loop: false,
+                 navigation: {
+                   nextEl: `.review-next-${swiperIndex}`,
+                   prevEl: `.review-prev-${swiperIndex}`,
+                 },
+               });
+             }
+           });
+         }, 200);
+       }
 
-    // Event Listeners
-    function setupEventListeners() {
-      if (writeReviewBtn) {
-        writeReviewBtn.addEventListener('click', toggleReviewForm);
-      }
-      if (closeFormBtn) {
-        closeFormBtn.addEventListener('click', toggleReviewForm);
-      }
-      if (reviewForm) {
-        reviewForm.addEventListener('submit', handleFormSubmit);
-      }
-    }
+       // Initialize rating bar animations
+       initializeRatingBars();
+       
+       // Initialize video elements
+       initializeVideos();
+     }
 
-    // Star Rating Functionality
-    function initializeStarRatings() {
-      const ratingGroups = [
-        { id: 'overallRating-' + productId, hiddenId: 'rating-' + productId, textId: 'ratingText-' + productId },
-        { id: 'shippingRating-' + productId, hiddenId: 'shippingRatingValue-' + productId }
-      ];
+     function initializeRatingBars() {
+       const ratingBars = document.querySelectorAll('.rating-bar-fill');
+       
+       // Reset all bars to 0 width
+       ratingBars.forEach(bar => {
+         bar.style.width = '0%';
+       });
 
-      ratingGroups.forEach(group => {
-        const starContainer = document.getElementById(group.id);
-        const hiddenInput = document.getElementById(group.hiddenId);
-        const textElement = document.getElementById(group.textId);
+       // Animate bars sequentially
+       ratingBars.forEach((bar, index) => {
+         const delay = index * 200; // 200ms delay between each bar
+         
+         setTimeout(() => {
+           const targetWidth = bar.style.getPropertyValue('--target-width');
+           if (targetWidth && targetWidth !== '0%') {
+             bar.style.width = targetWidth;
+           }
+         }, delay);
+       });
+     }
 
-        if (starContainer) {
-          const stars = starContainer.querySelectorAll('.star');
-          let currentRating = 0;
+     function initializeVideos() {
+       const videos = document.querySelectorAll('.review-media-carousel video');
+       
+       videos.forEach(video => {
+         // Ensure video is muted for autoplay compliance
+         video.muted = true;
+         video.playsInline = true;
 
-          stars.forEach((star, index) => {
-            star.addEventListener('click', () => {
-              currentRating = index + 1;
-              updateStarDisplay(stars, currentRating);
-              hiddenInput.value = currentRating;
-              
-              if (textElement) {
-                const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
-                textElement.textContent = ratingTexts[currentRating] || 'Click to rate';
-              }
-            });
+         // Check if HLS.js is available and needed
+         const videoSrc = video.querySelector('source')?.src;
+         if (videoSrc && videoSrc.includes('.m3u8')) {
+           if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+             const hls = new Hls();
+             hls.loadSource(videoSrc);
+             hls.attachMedia(video);
+             hls.on(Hls.Events.MANIFEST_PARSED, () => {
+               console.log('HLS manifest parsed for review video');
+             });
+           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+             video.src = videoSrc;
+           }
+         }
 
-            star.addEventListener('mouseenter', () => {
-              updateStarDisplay(stars, index + 1);
-            });
-          });
+         video.addEventListener('error', (e) => {
+           console.error('Review video loading error:', e);
+         });
 
-          starContainer.addEventListener('mouseleave', () => {
-            updateStarDisplay(stars, currentRating);
-          });
-        }
-      });
-    }
-
-    // Fit Rating Slider
-    function initializeFitSlider() {
-      const fitSlider = document.getElementById('fitRating-' + productId);
-      const fitValue = document.getElementById('fit-value-' + productId);
-      
-      if (fitSlider && fitValue) {
-        const fitLabels = ['Muy pequeño', 'Pequeño', 'Perfecto', 'Grande', 'Muy grande'];
-        
-        fitSlider.addEventListener('input', function() {
-          const value = parseInt(this.value);
-          fitValue.textContent = fitLabels[value - 1];
-        });
-      }
-    }
-
-    // File Upload Functionality
-    function initializeFileUploads() {
-      // Image upload
-      const imageInput = document.getElementById('image-' + productId);
-      const imagePreview = document.getElementById('image-preview-' + productId);
-      const previewImg = document.getElementById('preview-img-' + productId);
-      const uploadPlaceholder = document.getElementById('upload-placeholder-' + productId);
-
-      if (imageInput) {
-        imageInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-              previewImg.src = e.target.result;
-              imagePreview.classList.remove('hidden');
-              uploadPlaceholder.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-
-      // Video upload
-      const videoInput = document.getElementById('video-' + productId);
-      const videoPreview = document.getElementById('video-preview-' + productId);
-      const previewVideo = document.getElementById('preview-video-' + productId);
-      const videoUploadPlaceholder = document.getElementById('video-upload-placeholder-' + productId);
-
-      if (videoInput) {
-        videoInput.addEventListener('change', function(e) {
-          const file = e.target.files[0];
-          if (file) {
-            const url = URL.createObjectURL(file);
-            previewVideo.src = url;
-            videoPreview.classList.remove('hidden');
-            videoUploadPlaceholder.classList.add('hidden');
-          }
-        });
-      }
-    }
-
-    function updateStarDisplay(stars, rating) {
-      stars.forEach((star, index) => {
-        if (index < rating) {
-          star.classList.remove('text-gray-300');
-          star.classList.add('text-yellow-400');
-        } else {
-          star.classList.remove('text-yellow-400');
-          star.classList.add('text-gray-300');
-        }
-      });
-    }
-
-    // Form Handling
-    function toggleReviewForm() {
-      const isHidden = reviewFormContainer.style.display === 'none';
-      const overlay = document.getElementById('review-overlay-' + productId);
-      const drawer = document.getElementById('review-drawer-' + productId);
-
-      if (isHidden) {
-        // Open drawer
-        reviewFormContainer.style.display = 'block';
-
-        // Animate in
-        requestAnimationFrame(() => {
-          if (overlay) overlay.style.opacity = '1';
-          if (drawer) drawer.classList.remove('translate-x-full');
-        });
-
-        // Lock body scroll and preserve position
-        const y = window.scrollY || window.pageYOffset;
-        document.body.dataset.scrollY = String(y);
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${y}px`;
-
-        // Close on overlay click
-        if (overlay) overlay.onclick = () => toggleReviewForm();
-        const closeBtn = document.getElementById('close-form-btn-' + productId);
-        if (closeBtn) closeBtn.onclick = () => toggleReviewForm();
-      } else {
-        // Animate out
-        if (overlay) overlay.style.opacity = '0';
-        if (drawer) drawer.classList.add('translate-x-full');
-
-        // After animation, hide and restore scroll
-        setTimeout(() => {
-          reviewFormContainer.style.display = 'none';
-          const topPx = document.body.style.top || '0';
-          const topVal = parseInt(topPx, 10) || 0;
-          const storedY = parseInt(document.body.dataset.scrollY || '0', 10) || 0;
-          const targetY = topVal ? Math.abs(topVal) : storedY;
-
-          // Clear fixed positioning first
-          document.body.style.overflow = '';
-          document.body.style.position = '';
-          document.body.style.width = '';
-          document.body.style.top = '';
-
-          // Restore scroll exactly on next frame to avoid jank
-          requestAnimationFrame(() => {
-            window.scrollTo(0, targetY);
-            delete document.body.dataset.scrollY;
-          });
-        }, 380);
-      }
-    }
-
-    async function handleFormSubmit(e) {
-      e.preventDefault();
-      
-      const formData = new FormData(reviewForm);
-      const reviewData = {
-        productId: productId,
-        rating: parseInt(formData.get('rating')),
-        title: formData.get('title'),
-        body: formData.get('body'),
-        authorName: formData.get('authorName'),
-        authorEmail: formData.get('authorEmail'),
-        ageRange: formData.get('ageRange') || null,
-        sizePurchased: formData.get('sizePurchased') || null,
-        fitRating: parseInt(formData.get('fitRating')),
-        shippingRating: parseInt(formData.get('shippingRating')) || null,
-        isVerifiedBuyer: formData.get('isVerifiedBuyer') === 'on',
-        recommendsProduct: formData.get('recommendsProduct') === 'on'
-      };
-
-      // Handle file uploads
-      const imageFile = formData.get('image');
-      const videoFile = formData.get('video');
-
-      if (imageFile && imageFile.size > 0) {
-        reviewData.image = await convertFileToBase64(imageFile);
-      }
-
-      if (videoFile && videoFile.size > 0) {
-        reviewData.video = await convertFileToBase64(videoFile);
-      }
-
-      // Show loading state
-      reviewForm.style.display = 'none';
-      loading.classList.remove('hidden');
-
-      try {
-        const response = await fetch(API_BASE_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(reviewData)
-        });
-
-        if (response.ok) {
-          // Show success message
-          showAlert('Thank you for your review! It will be published after moderation.', 'success');
-          
-          // Reset form
-          reviewForm.reset();
-          resetForm();
-          
-          // Hide forml
-          reviewFormContainer.style.display = 'none';
-          
-          // Reload reviews and stats
-          loadReviewStats();
-          loadReviews();
-        } else {
-          const errorData = await response.json();
-          showAlert(errorData.message || 'Failed to submit review. Please try again.', 'error');
-        }
-      } catch (error) {
-        console.error('Error submitting review:', error);
-        showAlert('Network error. Please check your connection and try again.', 'error');
-      } finally {
-        // Hide loading state
-        loading.classList.add('hidden');
-        reviewForm.style.display = 'block';
-      }
-    }
-
-    function convertFileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    function resetForm() {
-      // Reset star ratings
-      const ratingGroups = ['overallRating-' + productId, 'shippingRating-' + productId];
-      ratingGroups.forEach(groupId => {
-        const stars = document.querySelectorAll('#' + groupId + ' .star');
-        stars.forEach(star => {
-          star.classList.remove('text-yellow-400');
-          star.classList.add('text-gray-300');
-        });
-      });
-      
-      // Reset rating text
-      const ratingText = document.getElementById('ratingText-' + productId);
-      if (ratingText) {
-        ratingText.textContent = 'Click to rate';
-      }
-
-      // Reset fit slider
-      const fitSlider = document.getElementById('fitRating-' + productId);
-      const fitValue = document.getElementById('fit-value-' + productId);
-      if (fitSlider && fitValue) {
-        fitSlider.value = 3;
-        fitValue.textContent = 'Perfecto';
-      }
-
-      // Reset file previews
-      const imagePreview = document.getElementById('image-preview-' + productId);
-      const videoPreview = document.getElementById('video-preview-' + productId);
-      const uploadPlaceholder = document.getElementById('upload-placeholder-' + productId);
-      const videoUploadPlaceholder = document.getElementById('video-upload-placeholder-' + productId);
-
-      if (imagePreview) imagePreview.classList.add('hidden');
-      if (videoPreview) videoPreview.classList.add('hidden');
-      if (uploadPlaceholder) uploadPlaceholder.classList.remove('hidden');
-      if (videoUploadPlaceholder) videoUploadPlaceholder.classList.remove('hidden');
-    }
-
-    // Load from metafield (no fetch)
-    function loadReviewStatsFromMetafield() {
-      if (!reviewsStats) return;
-      try {
-        const stats = computeStatsFromReviews(metafieldReviews);
-        if (stats.totalReviews > 0) {
-          displayReviewStats(stats);
-        } else {
-          reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews yet</p>';
-        }
-      } catch (error) {
-        console.error('Error calculating review stats:', error);
-        reviewsStats.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading statistics</p>';
-      }
-    }
-
-    function loadReviewsFromMetafield() {
-      if (!reviewsList) return;
-      try {
-        if (Array.isArray(metafieldReviews) && metafieldReviews.length > 0) {
-          displayReviews(metafieldReviews);
-        } else {
-          reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">No reviews found</p>';
-        }
-      } catch (error) {
-        console.error('Error rendering reviews:', error);
-        reviewsList.innerHTML = '<p class="text-gray-500 text-center py-4">Error loading reviews</p>';
-      }
-    }
-
-    // Compute stats from local reviews
-    function computeStatsFromReviews(reviews) {
-      const arr = Array.isArray(reviews) ? reviews : [];
-      const totalReviews = arr.length;
-      const averageRating = totalReviews > 0 ? (arr.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / totalReviews) : 0;
-      const verifiedBuyers = arr.filter(r => r.isVerifiedBuyer).length;
-      const recommends = arr.filter(r => r.recommendsProduct).length;
-      const recommendationRate = totalReviews > 0 ? (recommends / totalReviews) * 100 : 0;
-      const ratingDistribution = { 1:0, 2:0, 3:0, 4:0, 5:0 };
-      arr.forEach(r => { const v = Math.round(Number(r.rating) || 0); if (ratingDistribution[v] != null) ratingDistribution[v]++; });
-      return {
-        averageRating: Number(averageRating.toFixed(2)),
-        totalReviews,
-        verifiedBuyers,
-        recommendationRate,
-        ratingDistribution,
-      };
-    }
-
-    // Display Functions
-    function displayReviewStats(stats) {
-      if (!reviewsStats || !stats) return;
-      const average = Number(stats.averageRating || 0);
-      const total = Number(stats.totalReviews || 0);
-      const verified = Number(stats.verifiedBuyers || 0);
-      const rec = Number(Math.round(stats.recommendationRate || 0));
-      const fiveStar = (stats.ratingDistribution && stats.ratingDistribution[5]) || 0;
-
-      const statsHtml = `
-        <div class="bg-gray-50 rounded-lg p-6 mb-6">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="text-center">
-              <div class="text-3xl font-bold text-gray-900">${average.toFixed(1)}</div>
-              <div class="flex justify-center mt-1">
-                ${generateStars(average)}
-              </div>
-              <div class="text-sm text-gray-600 mt-1">${total} review${total !== 1 ? 's' : ''}</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${verified}</div>
-              <div class="text-sm text-gray-600">Verified Buyers</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${rec}%</div>
-              <div class="text-sm text-gray-600">Recommend</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-semibold text-gray-900">${fiveStar}</div>
-              <div class="text-sm text-gray-600">5-Star Reviews</div>
-            </div>
-          </div>
-        </div>
-      `;
-      reviewsStats.innerHTML = statsHtml;
-    }
-
-    function displayReviews(reviews) {
-      if (!reviewsList) return;
-      if (!Array.isArray(reviews) || reviews.length === 0) {
-        reviewsList.innerHTML = '<p class="text-gray-500 text-center py-8">No reviews yet. Be the first to review this product!</p>';
-        return;
-      }
-
-      const reviewsHtml = reviews.map(review => `
-        <div class="bg-white border border-gray-200 rounded-lg p-6 mb-4">
-          <div class="flex items-start justify-between mb-3">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                <span class="text-gray-600 font-semibold">${review.authorName.charAt(0).toUpperCase()}</span>
-              </div>
-              <div>
-                <div class="font-semibold text-gray-900">${review.authorName}</div>
-                <div class="flex items-center gap-2">
-                  ${generateStars(review.rating)}
-                  <span class="text-sm text-gray-500">${formatDate(review.createdAt)}</span>
-                </div>
-              </div>
-            </div>
-            ${review.isVerifiedBuyer ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Verified Buyer</span>' : ''}
-          </div>
-          
-          <h4 class="font-semibold text-gray-900 mb-2">${review.title}</h4>
-          <p class="text-gray-700 mb-4">${review.body}</p>
-          
-          ${review.image ? `
-            <div class="mb-4">
-              <img src="${review.image}" alt="Review image" class="max-w-full h-48 object-cover rounded-lg" />
-            </div>
-          ` : ''}
-          
-          ${review.video ? `
-            <div class="mb-4">
-              <video controls class="max-w-full h-48 object-cover rounded-lg">
-                <source src="${review.video}" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          ` : ''}
-          
-          ${review.ageRange || review.sizePurchased ? `
-            <div class="flex flex-wrap gap-4 text-sm text-gray-600 mb-3">
-              ${review.ageRange ? `<span>Age: ${review.ageRange}</span>` : ''}
-              ${review.sizePurchased ? `<span>Size: ${review.sizePurchased}</span>` : ''}
-            </div>
-          ` : ''}
-          
-          ${review.fitRating ? `
-            <div class="flex items-center gap-2 text-sm mb-2">
-              <span class="text-gray-600">Fit:</span>
-              <span class="font-medium text-blue-600">${getFitLabel(review.fitRating)}</span>
-            </div>
-          ` : ''}
-          
-          ${review.shippingRating ? `
-            <div class="flex items-center gap-1 text-sm">
-              <span class="text-gray-600">Shipping:</span>
-              ${generateStars(review.shippingRating, 'text-sm')}
-            </div>
-          ` : ''}
-        </div>
-      `).join('');
-
-      reviewsList.innerHTML = reviewsHtml;
-    }
-
-    function getFitLabel(rating) {
-      const labels = ['', 'Muy pequeño', 'Pequeño', 'Perfecto', 'Grande', 'Muy grande'];
-      return labels[rating] || '';
-    }
-
-    function generateStars(rating, sizeClass = '') {
-      const fullStars = Math.floor(rating);
-      const hasHalfStar = rating % 1 !== 0;
-      let stars = '';
-
-      for (let i = 0; i < fullStars; i++) {
-        stars += `<span class="text-yellow-400 ${sizeClass}">★</span>`;
-      }
-      
-      if (hasHalfStar) {
-        stars += `<span class="text-yellow-400 ${sizeClass}">★</span>`;
-      }
-      
-      const emptyStars = 5 - Math.ceil(rating);
-      for (let i = 0; i < emptyStars; i++) {
-        stars += `<span class="text-gray-300 ${sizeClass}">★</span>`;
-      }
-      
-      return stars;
-    }
-
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-    }
-
-    function showAlert(message, type) {
-      const alertClass = type === 'success' 
-        ? 'bg-green-100 border-green-400 text-green-700' 
-        : 'bg-red-100 border-red-400 text-red-700';
-      
-      const alert = document.createElement('div');
-      alert.className = `fixed top-4 right-4 p-4 border rounded-lg shadow-lg z-50 max-w-sm ${alertClass}`;
-      alert.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium">${message}</span>
-          <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-lg">&times;</button>
-        </div>
-      `;
-      
-      document.body.appendChild(alert);
-      
-      setTimeout(() => {
-        if (document.body.contains(alert)) {
-          alert.remove();
-        }
-      }, 5000);
-    }
+         video.addEventListener('loadedmetadata', () => {
+           console.log('Review video metadata loaded');
+         });
+       });
+     }
   })();
 </script>
+
+<style>
+  /* Review Card Styles */
+  .review-card {
+    transition: all 0.2s ease;
+  }
+
+  .review-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Rating Bar Animation Styles */
+  .rating-bar-fill {
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: left;
+  }
+
+  .rating-bar-item {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards;
+  }
+
+  .rating-bar-item:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .rating-bar-item:nth-child(2) {
+    animation-delay: 200ms;
+  }
+  .rating-bar-item:nth-child(3) {
+    animation-delay: 400ms;
+  }
+  .rating-bar-item:nth-child(4) {
+    animation-delay: 600ms;
+  }
+  .rating-bar-item:nth-child(5) {
+    animation-delay: 800ms;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Review Layout Grid */
+  .review-layout {
+    align-items: flex-start;
+  }
+
+  /* Reviewer Info Column */
+  .reviewer-info {
+    position: sticky;
+    top: 20px;
+  }
+
+  /* Review Media Column */
+  .review-media {
+    position: sticky;
+    top: 20px;
+  }
+
+  /* Fit Evaluation Styles */
+  .fit-evaluation {
+    padding: 16px 0;
+  }
+
+  /* Enhanced Fit Slider for 5-position scale */
+  .fit-evaluation .relative {
+    max-width: 320px;
+  }
+
+  .fit-evaluation .w-3 {
+    width: 12px;
+    height: 12px;
+  }
+
+  .fit-evaluation .w-4 {
+    width: 16px;
+    height: 16px;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Review Media Carousel Styles */
+  .review-media-carousel {
+    position: relative;
+    width: 128px;
+    height: 160px;
+  }
+
+  .review-media-carousel .swiper {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .review-media-carousel .swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .review-media-carousel .swiper-button-next,
+  .review-media-carousel .swiper-button-prev {
+    color: #374151;
+    background: rgba(255, 255, 255, 0.9);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+  }
+
+  .review-media-carousel .swiper-button-next:hover,
+  .review-media-carousel .swiper-button-prev:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: scale(1.1);
+  }
+
+  .review-media-carousel .swiper-button-next:after,
+  .review-media-carousel .swiper-button-prev:after {
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+  .review-media-carousel .swiper-button-next {
+    right: 4px;
+  }
+
+  .review-media-carousel .swiper-button-prev {
+    left: 4px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 1024px) {
+    .review-layout {
+      grid-template-columns: 1fr !important;
+      gap: 1rem;
+    }
+
+    .reviewer-info,
+    .review-media {
+      position: static;
+    }
+
+    .review-media {
+      order: -1;
+      align-items: center;
+    }
+
+    .review-media-carousel {
+      width: 120px;
+      height: 150px;
+    }
+
+    .fit-evaluation .relative {
+      max-width: 280px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .review-card {
+      padding: 1rem;
+    }
+
+    .review-media-carousel {
+      width: 100px;
+      height: 130px;
+    }
+  }
+</style>
 
 {% schema %}
 {
@@ -1134,56 +682,6 @@
       "label": "Write Review Button Text",
       "default": "Write a Review",
       "info": "Text for the write review button"
-    },
-    {
-      "type": "text",
-      "id": "form_title",
-      "label": "Form Title",
-      "default": "Escribir una Reseña",
-      "info": "Title shown in the review form drawer"
-    },
-    {
-      "type": "text",
-      "id": "submit_button_text",
-      "label": "Submit Button Text",
-      "default": "Submit Review",
-      "info": "Text for the form submit button"
-    },
-    {
-      "type": "header",
-      "content": "Form Features"
-    },
-    {
-      "type": "checkbox",
-      "id": "allow_image_upload",
-      "label": "Allow Image Upload",
-      "default": true,
-      "info": "Enable image upload in review form"
-    },
-    {
-      "type": "checkbox",
-      "id": "allow_video_upload",
-      "label": "Allow Video Upload",
-      "default": true,
-      "info": "Enable video upload in review form"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_additional_fields",
-      "label": "Show Additional Fields",
-      "default": true,
-      "info": "Show age range, size, fit rating, and shipping rating fields"
-    },
-    {
-      "type": "header",
-      "content": "API Configuration"
-    },
-    {
-      "type": "text",
-      "id": "api_base_url",
-      "label": "API Base URL",
-      "default": "http://localhost:3001/api/reviews",
-      "info": "Base URL for the reviews API"
     }
   ],
   "disabled_on": {

@@ -37,44 +37,12 @@
             "platform": "instagram",
             "url": "https://www.instagram.com/"
           }
-        },
-        "menu_nteyx3": {
-          "type": "menu",
-          "settings": {
-            "title": "TIENDA",
-            "menu": "main-menu"
-          }
-        },
-        "menu_iiyBGV": {
-          "type": "menu",
-          "settings": {
-            "title": "Otro",
-            "menu": "men"
-          }
-        },
-        "menu_aqhbw7": {
-          "type": "menu",
-          "settings": {
-            "title": "TIENDA",
-            "menu": ""
-          }
-        },
-        "menu_DyrwPD": {
-          "type": "menu",
-          "settings": {
-            "title": "tercero",
-            "menu": "header-menu"
-          }
         }
       },
       "block_order": [
         "social_media_fnGVxN",
         "social_media_TajqQU",
-        "social_media_rEfWLb",
-        "menu_nteyx3",
-        "menu_iiyBGV",
-        "menu_aqhbw7",
-        "menu_DyrwPD"
+        "social_media_rEfWLb"
       ],
       "settings": {
         "logo": "shopify://shop_images/JoyStaz_-_Website_2.png",
@@ -84,7 +52,5 @@
       }
     }
   },
-  "order": [
-    "footer"
-  ]
+  "order": ["footer"]
 }

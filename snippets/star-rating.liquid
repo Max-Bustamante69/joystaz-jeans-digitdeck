@@ -20,6 +20,7 @@
 {% assign show_rating_value = show_rating_value %}
 {% assign show_review_count = show_review_count %}
 {% assign show_review_text = show_review_text %}
+{% assign single_star_mode = single_star_mode | default: false %}
 
 {% comment %} Calculate star dimensions based on size parameter {% endcomment %}
 {% case size %}
@@ -45,8 +46,8 @@
 {% endif %}
 
 <div class="flex items-center {{ color }}">
-  {% comment %} Mobile: Single colored star (only shows if rating > 0) {% endcomment %}
-  <div class="lg:hidden">
+  {% comment %} Single colored star (mobile by default, or forced with single_star_mode) {% endcomment %}
+  <div class="{% if single_star_mode %}{% else %}lg:hidden{% endif %}">
     {% if rating > 0 %}
       <svg class="{{ star_size }}" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -55,7 +56,7 @@
   </div>
 
   {% comment %} Desktop: Full star rating calculation {% endcomment %}
-  <div class="hidden lg:flex items-center">
+  <div class="{% if single_star_mode %}hidden{% else %}hidden lg:flex{% endif %} items-center">
     {% comment %} Full stars {% endcomment %}
     {% for i in (1..full_stars) %}
       <svg class="{{ star_size }}" fill="currentColor" viewBox="0 0 24 24">

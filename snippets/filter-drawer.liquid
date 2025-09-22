@@ -65,7 +65,7 @@
               <span
                 x-show="selectedStyles.length > 0"
                 x-text="selectedStyles.length"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
             <button
@@ -99,8 +99,8 @@
               <template x-for="style in availableStyles" :key="style">
                 <button
                   @click="toggleStyle(style)"
-                  :class="selectedStyles.includes(style) ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                  class="px-3 py-2 rounded-full body-sm capitalize font-medium transition-all duration-200"
+                  :class="selectedStyles.includes(style) ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                  class="h-9 px-3 rounded-full body-sm capitalize font-medium transition-all duration-200"
                   x-text="style"
                 ></button>
               </template>
@@ -116,7 +116,7 @@
               <span
                 x-show="selectedColors.length > 0"
                 x-text="selectedColors.length"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
 
@@ -146,19 +146,19 @@
             x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
             class="space-y-3"
           >
-            <!-- Color Grid -->
-            <div class="grid grid-cols-2 gap-3">
+            <!-- Color Grid like reference: square swatch with label below -->
+            <div class="grid grid-cols-4 sm:grid-cols-5 gap-4">
               <template x-for="color in availableColors" :key="color.name">
                 <button
                   @click="toggleColor(color.name)"
-                  class="flex items-center gap-3 p-3 rounded-lg border   transition-all duration-200 "
-                  :class="selectedColors.includes(color.name) ? 'border-black bg-gray-50' : 'border-gray-200'"
+                  class="flex flex-col items-center gap-2 group"
                 >
                   <div
-                    class="w-4 h-4 rounded-full border border-gray-300"
+                    class="w-11 h-11 rounded-sm border transition-colors duration-200"
+                    :class="selectedColors.includes(color.name) ? 'border-black' : 'border-gray-300 group-hover:border-gray-400'"
                     :style="`background-color: ${color.value}`"
                   ></div>
-                  <span class="text-sm font-medium text-gray-700" x-text="color.name"></span>
+                  <span class="text-[11px] leading-none text-gray-700" x-text="color.name"></span>
                 </button>
               </template>
             </div>
@@ -173,7 +173,7 @@
               <span
                 x-show="selectedSizes.length > 0"
                 x-text="selectedSizes.length"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
 
@@ -208,8 +208,8 @@
               <template x-for="size in availableSizes" :key="size">
                 <button
                   @click="toggleSize(size)"
-                  :class="selectedSizes.includes(size) ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                  class="w-12 h-12 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50 flex items-center justify-center"
+                  :class="selectedSizes.includes(size) ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                  class="h-9 px-3 rounded-full text-sm font-medium transition-all duration-200 flex items-center justify-center"
                   x-text="size"
                 ></button>
               </template>
@@ -225,7 +225,7 @@
               <span
                 x-show="selectedCollections.length > 0"
                 x-text="selectedCollections.length"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
 
@@ -260,8 +260,8 @@
               <template x-for="collection in availableCollections" :key="collection">
                 <button
                   @click="toggleCollection(collection)"
-                  :class="selectedCollections.includes(collection) ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                  class=" py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                  :class="selectedCollections.includes(collection) ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                  class="h-9 px-3 rounded-full text-sm font-medium transition-all duration-200"
                   x-text="collection"
                 ></button>
               </template>
@@ -276,7 +276,7 @@
               <p class="body-lg font-medium capitalize">Ofertas</p>
               <span
                 x-show="showOnlyOnSale"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
 
@@ -308,8 +308,8 @@
           >
             <button
               @click="toggleSale()"
-              :class="showOnlyOnSale ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-              class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+              :class="showOnlyOnSale ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+              class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
             >
               Solo productos en oferta
             </button>
@@ -323,7 +323,7 @@
               <p class="body-lg font-medium capitalize">Ordenar</p>
               <span
                 x-show="sortOption !== 'default'"
-                class="bg-gray-100 text-gray-600 text-xs font-medium px-2 py-1 rounded-full"
+                class="bg-black text-white text-xs font-medium px-2 py-1 rounded-full"
               ></span>
             </div>
 
@@ -357,43 +357,43 @@
             <div class="space-y-2">
               <button
                 @click="sortOption = 'default'"
-                :class="sortOption === 'default' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'default' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Orden por defecto
               </button>
               <button
                 @click="sortOption = 'price-asc'"
-                :class="sortOption === 'price-asc' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'price-asc' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Precio: Menor a Mayor
               </button>
               <button
                 @click="sortOption = 'price-desc'"
-                :class="sortOption === 'price-desc' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'price-desc' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Precio: Mayor a Menor
               </button>
               <button
                 @click="sortOption = 'name-asc'"
-                :class="sortOption === 'name-asc' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'name-asc' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Nombre: A-Z
               </button>
               <button
                 @click="sortOption = 'name-desc'"
-                :class="sortOption === 'name-desc' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'name-desc' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Nombre: Z-A
               </button>
               <button
                 @click="sortOption = 'newest'"
-                :class="sortOption === 'newest' ? 'bg-black text-white' : 'bg-white border border-gray-300 text-gray-700'"
-                class="w-full  py-2 rounded-full text-sm font-medium transition-all duration-200 hover:bg-gray-50"
+                :class="sortOption === 'newest' ? 'bg-black text-white border-black' : 'bg-white border border-gray-300 text-gray-700 hover:border-gray-400'"
+                class="w-full h-10 rounded-full text-sm font-medium transition-all duration-200"
               >
                 Más recientes
               </button>

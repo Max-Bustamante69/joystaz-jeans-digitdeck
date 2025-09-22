@@ -54,7 +54,7 @@
       "type": "collections-carousel",
       "name": "Collections Carousel",
       "settings": {
-        "title": "",
+        "title": "Colecciones Relacionadas",
         "rich_text": "",
         "show_view_all": true,
         "view_all_text": "Ver todas",

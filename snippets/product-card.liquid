@@ -61,7 +61,7 @@
             "
             :key="slide.type === 'overlay' ? 'overlay' : slide.src"
           >
-            <div class="swiper-slide w-full h-full flex-shrink-0" @click="window.location.href = '{{ product.url }}'">
+            <div class="swiper-slide w-full h-full " @click="window.location.href = '{{ product.url }}'">
               <template x-if="slide.type === 'overlay'">
                 <div class="relative w-full h-full">
                   <img
@@ -393,179 +393,114 @@
         <!-- Color Selector -->
         {% for product_option in product.options_with_values %}
           {% if product_option.name == 'Color' %}
-            {% assign color_count = product_option.values.size %}
             <div class="relative w-full mb-2" x-data="colorCarouselBundle{{ product.id }}()">
-              {% if color_count > 4 %}
-                <!-- Mobile: Carousel for many colors (5+) -->
-                <div class="relative overflow-hidden lg:hidden">
-                  <div class="touch-pan-x relative">
-                    <!-- Carousel Container -->
-                    <div class="overflow-hidden color-carousel-container relative">
-                      <!-- Dynamic fade overlays -->
-                      <div
-                        class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                        style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                        x-ref="leftFade"
-                      ></div>
-                      <div
-                        class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                        style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                        x-ref="rightFade"
-                      ></div>
+              <!-- Unified: Always show carousel for colors on all breakpoints -->
+              <div class="relative overflow-hidden">
+                <div class="touch-pan-x relative">
+                  <!-- Carousel Container -->
+                  <div class="overflow-hidden color-carousel-container relative">
+                    <!-- Dynamic fade overlays -->
+                    <div
+                      class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+                      style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+                      x-ref="leftFade"
+                    ></div>
+                    <div
+                      class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+                      style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+                      x-ref="rightFade"
+                    ></div>
 
-                      <!-- Previous Arrow - Absolutely positioned -->
-                      <button
-                        class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
-                        x-ref="prevButton"
-                        @click.stop="slidePrev()"
-                        @touchstart.stop
-                        x-show="!isAtBeginning"
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-90"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-90"
+                    <!-- Previous Arrow - Absolutely positioned -->
+                    <button
+                      class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+                      x-ref="prevButton"
+                      @click.stop="slidePrev()"
+                      @touchstart.stop
+                      x-show="!isAtBeginning"
+                      x-transition:enter="transition ease-out duration-200"
+                      x-transition:enter-start="opacity-0 scale-90"
+                      x-transition:enter-end="opacity-100 scale-100"
+                      x-transition:leave="transition ease-in duration-200"
+                      x-transition:leave-start="opacity-100 scale-100"
+                      x-transition:leave-end="opacity-0 scale-90"
+                    >
+                      <svg
+                        class="w-5 h-5 text-black drop-shadow-md"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2.5"
                       >
-                        <svg
-                          class="w-5 h-5 text-black drop-shadow-md"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          stroke-width="2.5"
-                        >
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                        </svg>
-                      </button>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                      </svg>
+                    </button>
 
-                      <!-- Next Arrow - Absolutely positioned -->
-                      <button
-                        class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
-                        x-ref="nextButton"
-                        @click.stop="slideNext()"
-                        @touchstart.stop
-                        x-show="!isAtEnd"
-                        x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0 scale-90"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-200"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-90"
+                    <!-- Next Arrow - Absolutely positioned -->
+                    <button
+                      class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+                      x-ref="nextButton"
+                      @click.stop="slideNext()"
+                      @touchstart.stop
+                      x-show="!isAtEnd"
+                      x-transition:enter="transition ease-out duration-200"
+                      x-transition:enter-start="opacity-0 scale-90"
+                      x-transition:enter-end="opacity-100 scale-100"
+                      x-transition:leave="transition ease-in duration-200"
+                      x-transition:leave-start="opacity-100 scale-100"
+                      x-transition:leave-end="opacity-0 scale-90"
+                    >
+                      <svg
+                        class="w-5 h-5 text-black drop-shadow-md"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        stroke-width="2.5"
                       >
-                        <svg
-                          class="w-5 h-5 text-black drop-shadow-md"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          stroke-width="2.5"
-                        >
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                        </svg>
-                      </button>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                      </svg>
+                    </button>
 
-                      <div
-                        class="color-swatches-carousel swiper-color-bundle-{{ product.id }} w-full p-1"
-                        data-carousel-id="color-carousel-bundle-{{ product.id }}"
-                        x-ref="colorCarousel"
-                      >
-                        <div class="swiper-wrapper">
-                          {% for product_option_value in product_option.values %}
-                            {% comment %} Find a variant with this color to get its image {% endcomment %}
-                            {% assign color_variant = null %}
-                            {% for variant in product.variants %}
-                              {% for option in variant.options %}
-                                {% if option == product_option_value %}
-                                  {% assign color_variant = variant %}
-                                  {% break %}
-                                {% endif %}
-                              {% endfor %}
-                              {% if color_variant %}
+                    <div
+                      class="color-swatches-carousel swiper-color-bundle-{{ product.id }} w-full p-1"
+                      data-carousel-id="color-carousel-bundle-{{ product.id }}"
+                      x-ref="colorCarousel"
+                    >
+                      <div class="swiper-wrapper">
+                        {% for product_option_value in product_option.values %}
+                          {% comment %} Find a variant with this color to get its image {% endcomment %}
+                          {% assign color_variant = null %}
+                          {% for variant in product.variants %}
+                            {% for option in variant.options %}
+                              {% if option == product_option_value %}
+                                {% assign color_variant = variant %}
                                 {% break %}
                               {% endif %}
                             {% endfor %}
-
-                            <div class="swiper-slide flex-shrink-0">
-                              <button
-                                @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                                class="w-4 h-4 rounded-sm border-1 transition-colors"
-                                :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black' : 'border-gray-300 hover:border-gray-400'"
-                                {% if product_option_value.swatch.color %}
-                                  style="background-color: {{ product_option_value.swatch.color }};"
-                                {% else %}
-                                  style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                                {% endif %}
-                                title="{{ product_option_value }}"
-                              ></button>
-                            </div>
+                            {% if color_variant %}
+                              {% break %}
+                            {% endif %}
                           {% endfor %}
-                        </div>
+
+                          <div class="swiper-slide ">
+                            <button
+                              @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                              class="w-4 h-4 rounded-sm border-1 transition-colors"
+                              :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black border-transparent' : 'border-gray-300 hover:border-gray-400'"
+                              {% if product_option_value.swatch.color %}
+                                style="background-color: {{ product_option_value.swatch.color }};"
+                              {% else %}
+                                style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                              {% endif %}
+                              title="{{ product_option_value }}"
+                            ></button>
+                          </div>
+                        {% endfor %}
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <!-- Desktop: Regular flex layout for many colors -->
-                <div class="hidden lg:flex flex-wrap items-center gap-1">
-                  {% for product_option_value in product_option.values %}
-                    {% comment %} Find a variant with this color to get its image {% endcomment %}
-                    {% assign color_variant = null %}
-                    {% for variant in product.variants %}
-                      {% for option in variant.options %}
-                        {% if option == product_option_value %}
-                          {% assign color_variant = variant %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-                      {% if color_variant %}
-                        {% break %}
-                      {% endif %}
-                    {% endfor %}
-
-                    <button
-                      @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                      class="w-4 h-4 rounded-sm border-1 transition-colors"
-                      :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black' : 'border-gray-300 hover:border-gray-400'"
-                      {% if product_option_value.swatch.color %}
-                        style="background-color: {{ product_option_value.swatch.color }};"
-                      {% else %}
-                        style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                      {% endif %}
-                      title="{{ product_option_value }}"
-                    ></button>
-                  {% endfor %}
-                </div>
-              {% else %}
-                <!-- Regular flex layout for few colors (4 or less) -->
-                <div class="flex flex-wrap items-center gap-1">
-                  {% for product_option_value in product_option.values %}
-                    {% comment %} Find a variant with this color to get its image {% endcomment %}
-                    {% assign color_variant = null %}
-                    {% for variant in product.variants %}
-                      {% for option in variant.options %}
-                        {% if option == product_option_value %}
-                          {% assign color_variant = variant %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-                      {% if color_variant %}
-                        {% break %}
-                      {% endif %}
-                    {% endfor %}
-
-                    <button
-                      @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                      class="w-4 h-4 rounded-sm border-1 transition-colors"
-                      :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black' : 'border-gray-300 hover:border-gray-400'"
-                      {% if product_option_value.swatch.color %}
-                        style="background-color: {{ product_option_value.swatch.color }};"
-                      {% else %}
-                        style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                      {% endif %}
-                      title="{{ product_option_value }}"
-                    ></button>
-                  {% endfor %}
-                </div>
-              {% endif %}
+              </div>
             </div>
           {% endif %}
         {% endfor %}
@@ -632,182 +567,117 @@
         {% endif %}
       {% else %}
         <!-- Regular Mode: Color swatches only -->
-        <div class="flex items-start justify-between">
+        <div class="flex items-center justify-between">
           {% for product_option in product.options_with_values %}
             {% if product_option.name == 'Color' %}
-              {% assign color_count = product_option.values.size %}
-              <div class="relative w-4/5" x-data="colorCarouselRegular{{ product.id }}()">
-                {% if color_count > 4 %}
-                  <!-- Mobile: Carousel for many colors (5+) -->
-                  <div class="relative  my-1 lg:hidden">
-                    <div class="touch-pan-x relative">
-                      <!-- Carousel Container -->
-                      <div class="color-carousel-container relative p-1">
-                        <!-- Dynamic fade overlays -->
-                        <div
-                          class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                          style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                          x-ref="leftFade"
-                        ></div>
-                        <div
-                          class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
-                          style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
-                          x-ref="rightFade"
-                        ></div>
+              <div class="relative w-3/5" x-data="colorCarouselRegular{{ product.id }}()">
+                <!-- Unified: Always show carousel for colors on all breakpoints -->
+                <div class="relative my-1">
+                  <div class="touch-pan-x relative">
+                    <!-- Carousel Container -->
+                    <div class="color-carousel-container relative">
+                      <!-- Dynamic fade overlays -->
+                      <div
+                        class="absolute left-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+                        style="background: linear-gradient(to right, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+                        x-ref="leftFade"
+                      ></div>
+                      <div
+                        class="absolute right-0 top-0 bottom-0 w-8 z-10 pointer-events-none transition-opacity duration-300"
+                        style="background: linear-gradient(to left, white 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.3) 80%, transparent 100%);"
+                        x-ref="rightFade"
+                      ></div>
 
-                        <!-- Previous Arrow - Absolutely positioned -->
-                        <button
-                          class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
-                          x-ref="prevButton"
-                          @click.stop="slidePrev()"
-                          @touchstart.stop
-                          x-show="!isAtBeginning"
-                          x-transition:enter="transition ease-out duration-200"
-                          x-transition:enter-start="opacity-0 scale-90"
-                          x-transition:enter-end="opacity-100 scale-100"
-                          x-transition:leave="transition ease-in duration-200"
-                          x-transition:leave-start="opacity-100 scale-100"
-                          x-transition:leave-end="opacity-0 scale-90"
+                      <!-- Previous Arrow - Absolutely positioned -->
+                      <button
+                        class="absolute left-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+                        x-ref="prevButton"
+                        @click.stop="slidePrev()"
+                        @touchstart.stop
+                        x-show="!isAtBeginning"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90"
+                      >
+                        <svg
+                          class="w-5 h-5 text-black drop-shadow-md"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          stroke-width="2.5"
                         >
-                          <svg
-                            class="w-5 h-5 text-black drop-shadow-md"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            stroke-width="2.5"
-                          >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
-                          </svg>
-                        </button>
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                      </button>
 
-                        <!-- Next Arrow - Absolutely positioned -->
-                        <button
-                          class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
-                          x-ref="nextButton"
-                          @click.stop="slideNext()"
-                          @touchstart.stop
-                          x-show="!isAtEnd"
-                          x-transition:enter="transition ease-out duration-200"
-                          x-transition:enter-start="opacity-0 scale-90"
-                          x-transition:enter-end="opacity-100 scale-100"
-                          x-transition:leave="transition ease-in duration-200"
-                          x-transition:leave-start="opacity-100 scale-100"
-                          x-transition:leave-end="opacity-0 scale-90"
+                      <!-- Next Arrow - Absolutely positioned -->
+                      <button
+                        class="absolute right-0 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-all duration-200 touch-manipulation rounded-full z-20"
+                        x-ref="nextButton"
+                        @click.stop="slideNext()"
+                        @touchstart.stop
+                        x-show="!isAtEnd"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-90"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-200"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-90"
+                      >
+                        <svg
+                          class="w-5 h-5 text-black drop-shadow-md"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          stroke-width="2.5"
                         >
-                          <svg
-                            class="w-5 h-5 text-black drop-shadow-md"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            stroke-width="2.5"
-                          >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                          </svg>
-                        </button>
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                        </svg>
+                      </button>
 
-                        <div
-                          class="color-swatches-carousel swiper-color-regular-{{ product.id }} w-full p-1"
-                          data-carousel-id="color-carousel-regular-{{ product.id }}"
-                          x-ref="colorCarousel"
-                        >
-                          <div class="swiper-wrapper">
-                            {% for product_option_value in product_option.values %}
-                              {% comment %} Find a variant with this color to get its image {% endcomment %}
-                              {% assign color_variant = null %}
-                              {% for variant in product.variants %}
-                                {% for option in variant.options %}
-                                  {% if option == product_option_value %}
-                                    {% assign color_variant = variant %}
-                                    {% break %}
-                                  {% endif %}
-                                {% endfor %}
-                                {% if color_variant %}
+                      <div
+                        class="color-swatches-carousel swiper-color-regular-{{ product.id }} w-full p-1"
+                        data-carousel-id="color-carousel-regular-{{ product.id }}"
+                        x-ref="colorCarousel"
+                      >
+                        <div class="swiper-wrapper">
+                          {% for product_option_value in product_option.values %}
+                            {% comment %} Find a variant with this color to get its image {% endcomment %}
+                            {% assign color_variant = null %}
+                            {% for variant in product.variants %}
+                              {% for option in variant.options %}
+                                {% if option == product_option_value %}
+                                  {% assign color_variant = variant %}
                                   {% break %}
                                 {% endif %}
                               {% endfor %}
-
-                              <div class="swiper-slide flex-shrink-0">
-                                <button
-                                  @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                                  class="w-4 h-4 rounded-xs border-1 transition-colors"
-                                  :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black' : 'border-gray-300 hover:border-gray-400'"
-                                  {% if product_option_value.swatch.color %}
-                                    style="background-color: {{ product_option_value.swatch.color }};"
-                                  {% else %}
-                                    style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                                  {% endif %}
-                                  title="{{ product_option_value }}"
-                                ></button>
-                              </div>
+                              {% if color_variant %}
+                                {% break %}
+                              {% endif %}
                             {% endfor %}
-                          </div>
+
+                            <div class="swiper-slide ">
+                              <button
+                                @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
+                                class="w-4 h-4 rounded-xs border-1 transition-colors"
+                                :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-1 ring-black border-transparent' : 'border-gray-300 hover:border-gray-400'"
+                                {% if product_option_value.swatch.color %}
+                                  style="background-color: {{ product_option_value.swatch.color }};"
+                                {% else %}
+                                  style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
+                                {% endif %}
+                                title="{{ product_option_value }}"
+                              ></button>
+                            </div>
+                          {% endfor %}
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <!-- Desktop: Regular flex layout for many colors -->
-                  <div class="hidden lg:flex items-center gap-2">
-                    {% for product_option_value in product_option.values %}
-                      {% comment %} Find a variant with this color to get its image {% endcomment %}
-                      {% assign color_variant = null %}
-                      {% for variant in product.variants %}
-                        {% for option in variant.options %}
-                          {% if option == product_option_value %}
-                            {% assign color_variant = variant %}
-                            {% break %}
-                          {% endif %}
-                        {% endfor %}
-                        {% if color_variant %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-
-                      <button
-                        @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                        class="w-4 h-4 rounded-xs border-1 transition-colors"
-                        :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
-                        {% if product_option_value.swatch.color %}
-                          style="background-color: {{ product_option_value.swatch.color }};"
-                        {% else %}
-                          style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                        {% endif %}
-                        title="{{ product_option_value }}"
-                      ></button>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  <!-- Regular flex layout for few colors (4 or less) -->
-                  <div class="flex items-center gap-2">
-                    {% for product_option_value in product_option.values %}
-                      {% comment %} Find a variant with this color to get its image {% endcomment %}
-                      {% assign color_variant = null %}
-                      {% for variant in product.variants %}
-                        {% for option in variant.options %}
-                          {% if option == product_option_value %}
-                            {% assign color_variant = variant %}
-                            {% break %}
-                          {% endif %}
-                        {% endfor %}
-                        {% if color_variant %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-
-                      <button
-                        @click="selectColor('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 600 }}', {{ color_variant.id }})"
-                        class="w-4 h-4 rounded-xs border-1 transition-colors"
-                        :class="selectedColor === '{{ product_option_value }}' ? 'ring-1 ring-offset-2 border-transparent ring-black' : 'border-gray-300 hover:border-gray-400'"
-                        {% if product_option_value.swatch.color %}
-                          style="background-color: {{ product_option_value.swatch.color }};"
-                        {% else %}
-                          style="background-image: url({{ product_option_value.swatch.image | image_url: width: 600 }}); background-size: cover; background-position: center;"
-                        {% endif %}
-                        title="{{ product_option_value }}"
-                      ></button>
-                    {% endfor %}
-                  </div>
-                {% endif %}
+                </div>
               </div>
             {% endif %}
           {% endfor %}
@@ -1715,12 +1585,7 @@
       },
 
       initializeCarousel() {
-        // Only initialize on mobile devices
-        if (window.innerWidth >= 1024) {
-          this.isInitialized = true;
-          return;
-        }
-        
+        // Initialize on all breakpoints
         const carouselElement = this.$refs.colorCarousel;
         if (!carouselElement || typeof Swiper === 'undefined') {
           // Fallback: show carousel even if Swiper is not available
@@ -1870,12 +1735,7 @@
       },
 
       initializeCarousel() {
-        // Only initialize on mobile devices
-        if (window.innerWidth >= 1024) {
-          this.isInitialized = true;
-          return;
-        }
-        
+        // Initialize on all breakpoints
         const carouselElement = this.$refs.colorCarousel;
         if (!carouselElement || typeof Swiper === 'undefined') {
           // Fallback: show carousel even if Swiper is not available
@@ -1894,7 +1754,7 @@
         // Initialize Swiper
         this.swiper = new Swiper(carouselElement, {
           direction: 'horizontal',
-          slidesPerView: 6.5,
+          slidesPerView: 'auto',
           spaceBetween: 2,
           loop: false,
           centeredSlides: false,
@@ -1929,7 +1789,6 @@
             // Desktop - show 4 slides
             1024: {
               spaceBetween: 4,
-              slidesPerView: 6.5,
             }
           },
           on: {
@@ -2040,12 +1899,6 @@
     padding-right: 20px; /* Ensure last slide is fully visible */
   }
 
-  .color-swatches-carousel .swiper-slide {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
 
   .color-swatches-carousel button {
     transition: transform 0.2s ease, border-color 0.2s ease;
@@ -2054,6 +1907,10 @@
 
   .color-swatches-carousel button:active {
     transform: scale(0.95);
+  }
+
+  .swiper-slide {
+    width: auto;
   }
 
   /* Prevent layout shifts during interaction */
@@ -2069,13 +1926,6 @@
     position: relative;
   }
 
-  /* Fix initial image sizing before Swiper loads */
-  .color-swatches-carousel:not(.swiper-initialized) .swiper-wrapper {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 2px;
-  }
 
   .color-swatches-carousel:not(.swiper-initialized) .swiper-slide {
     flex: 0 0 auto;

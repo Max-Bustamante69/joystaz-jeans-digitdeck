@@ -13,7 +13,7 @@
     "header_scroll_threshold_default": 95,
     "header_scroll_threshold_home": 95,
     "header_scroll_threshold_product": 95,
-    "header_scroll_threshold_collection": 95,
+    "header_scroll_threshold_collection": 60,
     "header_scroll_threshold_page": 95,
     "search_featured_tags_title": "Categorías populares",
     "search_history_title": "Busquedas Recientes",
@@ -39,7 +39,10 @@
       "nuevo-todo",
       "not-on-sale"
     ],
-    "search_category_collections": ["men", "jeans-mujer"],
+    "search_category_collections": [
+      "men",
+      "jeans-mujer"
+    ],
     "content_for_index": []
   }
 }

@@ -38,11 +38,11 @@
     x-transition:leave="transform transition ease-in duration-300"
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
-    class="absolute right-0 top-0 h-full px-4  w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
+    class="absolute right-0 top-0 h-full   w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
     @click.outside="closeDrawer()"
   >
     <!-- Header - Sticky at top -->
-    <div class="sticky top-0 z-10 bg-white flex items-center justify-between ">
+    <div class="sticky top-0 lg:px-5 px-4 z-10 bg-white flex items-center justify-between ">
       <h2 class="text-lg font-semibold text-gray-900">
         {{ section.settings.cart_title | default: 'Tu Carrito' }}
         <span class="opacity-50" x-text="cartItems.length"></span>
@@ -61,7 +61,7 @@
     {% assign sorted_thresholds = section.blocks | where: 'type', 'cart_threshold' | sort: 'settings.threshold_value' %}
 
     {% if sorted_thresholds.size > 0 %}
-      <div class="py-4 border-gray-100">
+      <div class="py-4 lg:px-5 px-4 border-gray-100">
         <!-- Progress Bar with Dynamic Segments -->
         <div class="w-full h-[4.8px] mb-2 flex gap-1">
           {% for block in sorted_thresholds %}
@@ -129,10 +129,10 @@
         </template>
 
         {% if section.settings.show_product_carousel %}
-          <div>
-            <h3 class="text-lg font-semibold">
+          <div class="flex flex-col gap-3">
+            <h5 class=" lg:px-5 px-4">
               {{ section.settings.carousel_title | default: 'También te puede interesar' }}
-            </h3>
+            </h5>
 
             {% comment %} Calculate tag-based product selection logic {% endcomment %}
             {% assign mujer_count = 0 %}
@@ -403,9 +403,9 @@
 
             {% comment %} Render the carousel if we have products {% endcomment %}
             {% if final_products != blank %}
-              <div class="relative">
+         
                 <div
-                  class="cart-product-carousel swiper-cart-carousel overflow-hidden touch-pan-y"
+                  class="cart-product-carousel swiper-cart-carousel overflow-hidden lg:px-5 px-4 touch-pan-y"
                   data-carousel-id="cart-carousel"
                   data-carousel-type="cart-carousel"
                   @touchstart.stop
@@ -439,7 +439,7 @@
                     {% endfor %}
                   </div>
                 </div>
-              </div>
+     
             {% endif %}
           </div>
         {% endif %}
@@ -447,25 +447,24 @@
     </div>
 
     <!-- Footer - Sticky at bottom -->
-    <div class="sticky bottom-0 z-10 bg-white border-t border-gray-100 p-6 -mx-6 space-y-6 shadow-lg">
+    <div class="sticky bottom-0 z-10 bg-white border-t border-gray-100 lg:px-5 px-4 py-6 space-y-2.5 shadow-lg">
       <!-- Subtotal -->
       <div class="flex justify-between items-center">
-        <span class="text-lg font-semibold text-gray-900">
+        <span class="lg:body body-sm uppercase font-semibold">
           {{- section.settings.subtotal_text | default: 'SUBTOTAL:' -}}
         </span>
         <div class="text-right">
-          <div class="flex items-center space-x-2 mb-1" x-show="cartSavings > 0">
+          <div class="flex items-center space-x-2">
             <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium">
               {{ section.settings.savings_text | default: 'AHORRA' }} $<span x-text="formatMoney(cartSavings)"></span>
             </span>
-          </div>
-          <div class="flex items-center space-x-2">
+
             <span
-              class="text-gray-400 line-through text-sm"
+              class="line-through opacity-50 lg:body body-sm"
               x-show="cartSavings > 0"
               x-text="'$' + formatMoney(originalTotal)"
             ></span>
-            <span class="text-xl font-bold text-gray-900" x-text="'$' + formatMoney(cartTotal)"></span>
+            <span class="lg:body body-sm font-semibold" x-text="'$' + formatMoney(cartTotal)"></span>
           </div>
         </div>
       </div>
@@ -473,30 +472,33 @@
       <!-- Payment Button -->
       <button
         @click="proceedToCheckout()"
+        class="group"
         :disabled="cartItems.length === 0"
         :class="cartItems.length > 0 ? 'w-full bg-primary text-white py-4 px-6 font-semibold body border border-primary hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300 flex items-center justify-center gap-2' : 'w-full bg-gray-300 text-gray-500 py-4 px-6 font-semibold body border border-gray-300 cursor-not-allowed transition-colors duration-300 flex items-center justify-center gap-2'"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-        </svg>
+        {% render 'lock-icon', class: 'w-5 h-5 fill-white group-hover:fill-black' %}
         {{ section.settings.checkout_button_text | default: 'Paga de forma segura' }}
       </button>
 
       <!-- Payment Methods -->
-      {% if section.settings.show_payment_icons %}
-        <div class="flex items-center justify-center space-x-4">
-          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
-          <svg class="w-6 h-6 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-          </svg>
+      {% assign payment_icons = section.blocks | where: 'type', 'payment_icon' %}
+      {% if payment_icons.size > 0 %}
+        <div class="flex items-center justify-center gap-1">
+          {% for block in payment_icons %}
+            {% if block.settings.payment_type != blank %}
+              {{ block.settings.payment_type | payment_type_svg_tag: class: 'w-6 h-6 text-gray-400' }}
+            {% elsif block.settings.custom_icon != blank %}
+              <img
+                src="{{ block.settings.custom_icon | image_url: width: 24 }}"
+                alt="{{ block.settings.icon_alt | default: 'Payment Method' }}"
+                class="w-6 h-6 text-gray-400 object-contain"
+                width="24"
+                height="24"
+                loading="lazy"
+                {{ block.shopify_attributes }}
+              >
+            {% endif %}
+          {% endfor %}
         </div>
       {% endif %}
     </div>
@@ -1166,12 +1168,6 @@
       "id": "checkout_button_text",
       "label": "Checkout Button Text",
       "default": "Paga de forma segura"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_payment_icons",
-      "label": "Show Payment Icons",
-      "default": true
     }
   ],
   "blocks": [
@@ -1198,6 +1194,81 @@
           "id": "discount_code",
           "label": "Discount Code",
           "info": "Discount code to apply when threshold is reached (optional)"
+        }
+      ]
+    },
+    {
+      "type": "payment_icon",
+      "name": "Payment Icon",
+      "settings": [
+        {
+          "type": "select",
+          "id": "payment_type",
+          "label": "Payment Type",
+          "options": [
+            {
+              "value": "visa",
+              "label": "Visa"
+            },
+            {
+              "value": "master",
+              "label": "Mastercard"
+            },
+            {
+              "value": "american_express",
+              "label": "American Express"
+            },
+            {
+              "value": "paypal",
+              "label": "PayPal"
+            },
+            {
+              "value": "apple_pay",
+              "label": "Apple Pay"
+            },
+            {
+              "value": "google_pay",
+              "label": "Google Pay"
+            },
+            {
+              "value": "shopify_pay",
+              "label": "Shopify Pay"
+            },
+            {
+              "value": "diners_club",
+              "label": "Diners Club"
+            },
+            {
+              "value": "discover",
+              "label": "Discover"
+            },
+            {
+              "value": "jcb",
+              "label": "JCB"
+            },
+            {
+              "value": "maestro",
+              "label": "Maestro"
+            },
+            {
+              "value": "unionpay",
+              "label": "UnionPay"
+            }
+          ],
+          "info": "Select a built-in payment type icon, or upload a custom icon below"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_icon",
+          "label": "Custom Icon",
+          "info": "Upload a custom payment icon. If uploaded, this will override the payment type selection above."
+        },
+        {
+          "type": "text",
+          "id": "icon_alt",
+          "label": "Icon Alt Text",
+          "default": "Payment Method",
+          "info": "Alternative text for accessibility (only used with custom icons)"
         }
       ]
     }
@@ -1236,6 +1307,30 @@
             "threshold_title": "20% Off",
             "threshold_value": 500000,
             "discount_code": "SAVE20"
+          }
+        },
+        {
+          "type": "payment_icon",
+          "settings": {
+            "payment_type": "visa"
+          }
+        },
+        {
+          "type": "payment_icon",
+          "settings": {
+            "payment_type": "master"
+          }
+        },
+        {
+          "type": "payment_icon",
+          "settings": {
+            "payment_type": "american_express"
+          }
+        },
+        {
+          "type": "payment_icon",
+          "settings": {
+            "payment_type": "paypal"
           }
         }
       ]

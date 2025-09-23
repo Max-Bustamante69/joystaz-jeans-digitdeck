@@ -797,6 +797,11 @@
 </div>
 
 <script>
+  // Guard: ensure a global isDesktop exists to avoid ReferenceError during Alpine init
+  if (typeof window !== 'undefined' && typeof window.isDesktop === 'undefined') {
+    window.isDesktop = window.innerWidth >= 1024;
+    window.addEventListener('resize', function() { window.isDesktop = window.innerWidth >= 1024; });
+  }
   function productCard{{ product.id }}() {
     return {
       productId: {{ product.id }},

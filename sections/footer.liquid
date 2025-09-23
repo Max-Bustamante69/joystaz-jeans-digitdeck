@@ -90,10 +90,10 @@
 
     <div class="w-full flex flex-col justify-between">
       <!-- Navigation Links -->
-      <div class="hidden w-full justify-between lg:flex flex-wrap gap-8">
+      <div class="hidden w-full lg:grid lg:grid-cols-4 lg:gap-8">
         {% if section.settings.footer_menu.links.size > 0 %}
           {% for link in section.settings.footer_menu.links %}
-            <div class="w-fit flex flex-col gap-4">
+            <div class="w-full min-w-0 flex flex-col gap-4">
               <p class="body-sm font-semibold uppercase text-white/50">{{ link.title }}</p>
               {% if link.links.size > 0 %}
                 <ul class="space-y-2">

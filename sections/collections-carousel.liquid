@@ -49,8 +49,10 @@
                 {{ section.settings.view_all_text | default: 'Ver todas' }}
               </a>
             {% endif %}
-            {% comment %} Always show arrows for collections carousel {% endcomment %}
-            {% render 'carousel-arrows' %}
+            {% comment %} Only show arrows if there are enough collections to warrant a carousel {% endcomment %}
+            {% if available_count > section.settings.slides_per_view_desktop %}
+              {% render 'carousel-arrows' %}
+            {% endif %}
           </div>
         </div>
       {% endif %}
@@ -77,20 +79,20 @@
 
       {% comment %} Render carousel using generic carousel snippet {% endcomment %}
 
-        {% render 'generic-carousel',
-          carousel_id: section.id,
-          carousel_class: 'collections-carousel',
-          content: carousel_content,
-          show_arrows: section.settings.show_arrows,
-          slides_per_view_mobile: section.settings.slides_per_view_mobile,
-          slides_per_view_desktop: section.settings.slides_per_view_desktop,
-          space_between_mobile: section.settings.space_between_mobile,
-          space_between_desktop: section.settings.space_between_desktop,
-          centered_slides: section.settings.centered_slides,
-          free_mode: section.settings.free_mode,
-          total_items: available_count
-        %}
-
+      {%
+        render 'generic-carousel',
+        carousel_id: section.id,
+        carousel_class: 'collections-carousel',
+        content: carousel_content,
+        show_arrows: section.settings.show_arrows and available_count > section.settings.slides_per_view_desktop,
+        slides_per_view_mobile: section.settings.slides_per_view_mobile,
+        slides_per_view_desktop: section.settings.slides_per_view_desktop,
+        space_between_mobile: section.settings.space_between_mobile,
+        space_between_desktop: section.settings.space_between_desktop,
+        centered_slides: section.settings.centered_slides,
+        free_mode: section.settings.free_mode,
+        total_items: available_count
+      %}
     </div>
   </section>
 {% endif %}

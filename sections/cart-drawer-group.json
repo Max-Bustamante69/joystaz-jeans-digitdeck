@@ -46,11 +46,17 @@
         "show_product_carousel": true,
         "carousel_title": "También te puede interesar",
         "carousel_max_products": 8,
-        "fallback_collections": [],
+        "fallback_collections": [
+          "men",
+          "women"
+        ],
+        "empty_buttons_collections": [
+          "men",
+          "women"
+        ],
         "subtotal_text": "SUBTOTAL:",
         "savings_text": "AHORRA",
-        "checkout_button_text": "Paga de forma segura",
-        "show_payment_icons": true
+        "checkout_button_text": "Paga de forma segura"
       }
     }
   },

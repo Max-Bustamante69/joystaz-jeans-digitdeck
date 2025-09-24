@@ -20,8 +20,10 @@
   - show_size_guide: Show size guide button (for single mode)
 {% endcomment %}
 
+{% assign size_option_found = false %}
 {% for product_option in product.options_with_values %}
-  {% if product_option.name == 'Talla' %}
+  {% if product_option.name == 'Talla' or product_option.name == 'Talla del calzado' or product_option.name == 'Size' %}
+    {% assign size_option_found = true %}
     <div class="flex flex-col gap-2">
       {% if show_main_label %}
         <div class="flex items-center justify-between">
@@ -86,7 +88,7 @@
               @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ size_variant_id }})"
               :class="{{ selected_size_variable | remove: "'" }}.size === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400'"
             {% else %}
-              @click="{{ click_function }}('{{ product_option_value }}', findVariantIdForSize('{{ product_option_value }}'))"
+              @click="{{ click_function }}('{{ product_option_value }}', findVariantBySizeAndColor('{{ product_option_value }}', selectedColor))"
               :class="{{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-black/10 text-black hover:border-primary'"
             {% endif %}
             class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border rounded-full  transition-all  duration-300 overflow-hidden"
@@ -98,3 +100,42 @@
     </div>
   {% endif %}
 {% endfor %}
+
+{% unless size_option_found %}
+  {% comment %}
+    Fallback: No explicit size option found. Use variant metafield shopify--shoe-size.label
+  {% endcomment %}
+  {% assign meta_sizes = '' %}
+  {% for variant in product.variants %}
+    {% assign label = variant.metafields['shopify--shoe-size'].label %}
+    {% if label %}
+      {% unless meta_sizes contains label %}
+        {% assign meta_sizes = meta_sizes | append: label | append: ',' %}
+      {% endunless %}
+    {% endif %}
+  {% endfor %}
+  {% assign sizes_array = meta_sizes | split: ',' %}
+  {% if sizes_array.size > 0 %}
+    <div class="flex flex-col gap-2">
+      <label class="text-sm font-medium text-gray-700">Talla:</label>
+      <div class="flex gap-2">
+        {% for size_name in sizes_array %}
+          {% if size_name != blank %}
+            <button
+              {% if product_number %}
+                @click="selectDuoSize({{ product_number }}, '{{ size_name }}', findVariantBySizeAndColor('{{ size_name }}', {{ product_number }} === 1 ? (duoProduct1.color || selectedColor) : duoProduct2.color))"
+                :class="({{ selected_size_variable | remove: "'" }}.size === '{{ size_name }}') ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400'"
+              {% else %}
+                @click="selectSize('{{ size_name }}', findVariantBySizeAndColor('{{ size_name }}', selectedColor))"
+                :class="{{ selected_size_variable }} === '{{ size_name }}' ? 'bg-primary text-white border-gray-900' : 'border-black/10 text-black hover:border-primary'"
+              {% endif %}
+              class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border rounded-full  transition-all  duration-300 overflow-hidden"
+            >
+              {{ size_name }}
+            </button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endunless %}

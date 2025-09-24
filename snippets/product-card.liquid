@@ -20,7 +20,14 @@
   {% if wishlist_mode %}
     data-wishlist-card data-handle="{{ product.handle }}"
   {% endif %}
-  {% if product.options contains 'Talla' %}
+  {% assign has_shoe_size_meta = false %}
+  {% for v in product.variants %}
+    {% if v.metafields['shopify--shoe-size'].label %}
+      {% assign has_shoe_size_meta = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+  {% if product.options contains 'Talla' or product.options contains 'Talla del calzado' or has_shoe_size_meta %}
     @mouseenter="isDesktop && (showSizeSelector = true)"
     @mouseleave="isDesktop && (showSizeSelector = false)"
   {% endif %}
@@ -196,8 +203,12 @@
       </button>
     {% endif %}
 
-    <!-- Size Selector Grid - Only show if "Talla" is in product options AND not in bundle mode -->
-    {% if product.options contains 'Talla' and bundle_mode != true %}
+    <!-- Size Selector Grid - Only show if size exists and not in bundle mode -->
+    {% assign show_sizes = false %}
+    {% if product.options contains 'Talla' or product.options contains 'Talla del calzado' or has_shoe_size_meta %}
+      {% assign show_sizes = true %}
+    {% endif %}
+    {% if show_sizes and bundle_mode != true %}
       <div
         x-show="showSizeSelector && isDesktop"
         x-transition:enter="transition ease-out duration-300"
@@ -213,26 +224,32 @@
           {% comment %} Get all unique sizes and check their availability for selected color {% endcomment %}
           {% assign unique_sizes = '' %}
 
-          {% comment %} First pass: collect all unique sizes {% endcomment %}
+          {% comment %} First pass: collect all unique sizes (supports shoe-size metafield) {% endcomment %}
           {% for variant in product.variants %}
             {% assign size_name = '' %}
-            {% for option in variant.options %}
-              {% assign is_size = true %}
-              {% for product_option in product.options_with_values %}
-                {% if product_option.name == 'Color' %}
-                  {% for color_value in product_option.values %}
-                    {% if option == color_value %}
-                      {% assign is_size = false %}
-                      {% break %}
-                    {% endif %}
-                  {% endfor %}
+            {% assign shoe_size = variant.metafields['shopify--shoe-size'].label %}
+            {% if shoe_size %}
+              {% assign size_name = shoe_size %}
+            {% endif %}
+            {% if size_name == '' %}
+              {% for option in variant.options %}
+                {% assign is_size = true %}
+                {% for product_option in product.options_with_values %}
+                  {% if product_option.name == 'Color' %}
+                    {% for color_value in product_option.values %}
+                      {% if option == color_value %}
+                        {% assign is_size = false %}
+                        {% break %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                {% endfor %}
+                {% if is_size %}
+                  {% assign size_name = option %}
+                  {% break %}
                 {% endif %}
               {% endfor %}
-              {% if is_size %}
-                {% assign size_name = option %}
-                {% break %}
-              {% endif %}
-            {% endfor %}
+            {% endif %}
 
             {% unless unique_sizes contains size_name %}
               {% assign unique_sizes = unique_sizes | append: size_name | append: ',' %}
@@ -245,26 +262,26 @@
             {% if size_name != blank %}
               {% comment %} Find variant that matches current selected color and this size {% endcomment %}
               {% for variant in product.variants %}
-                {% assign variant_size = '' %}
-
-                {% comment %} Extract color and size from variant options {% endcomment %}
-                {% for option in variant.options %}
-                  {% assign is_color = false %}
-                  {% for product_option in product.options_with_values %}
-                    {% if product_option.name == 'Color' %}
-                      {% for color_value in product_option.values %}
-                        {% if option == color_value %}
-                          {% assign is_color = true %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
-                    {% endif %}
+                {% assign variant_size = variant.metafields['shopify--shoe-size'].label %}
+                {% if variant_size == blank %}
+                  {% comment %} Extract color and size from variant options {% endcomment %}
+                  {% for option in variant.options %}
+                    {% assign is_color = false %}
+                    {% for product_option in product.options_with_values %}
+                      {% if product_option.name == 'Color' %}
+                        {% for color_value in product_option.values %}
+                          {% if option == color_value %}
+                            {% assign is_color = true %}
+                            {% break %}
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    {% endfor %}
+                    {% unless is_color %}
+                      {% assign variant_size = option %}
+                    {% endunless %}
                   {% endfor %}
-
-                  {% unless is_color %}
-                    {% assign variant_size = option %}
-                  {% endunless %}
-                {% endfor %}
+                {% endif %}
 
                 {% comment %} Check if this variant matches current size {% endcomment %}
                 {% if variant_size == size_name %}
@@ -344,24 +361,26 @@
               {% comment %} Build sizes again for mobile list {% endcomment %}
               {% assign unique_sizes = '' %}
               {% for variant in product.variants %}
-                {% assign size_name = '' %}
-                {% for option in variant.options %}
-                  {% assign is_size = true %}
-                  {% for product_option in product.options_with_values %}
-                    {% if product_option.name == 'Color' %}
-                      {% for color_value in product_option.values %}
-                        {% if option == color_value %}
-                          {% assign is_size = false %}
-                          {% break %}
-                        {% endif %}
-                      {% endfor %}
+                {% assign size_name = variant.metafields['shopify--shoe-size'].label %}
+                {% if size_name == blank %}
+                  {% for option in variant.options %}
+                    {% assign is_size = true %}
+                    {% for product_option in product.options_with_values %}
+                      {% if product_option.name == 'Color' %}
+                        {% for color_value in product_option.values %}
+                          {% if option == color_value %}
+                            {% assign is_size = false %}
+                            {% break %}
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                    {% endfor %}
+                    {% if is_size %}
+                      {% assign size_name = option %}
+                      {% break %}
                     {% endif %}
                   {% endfor %}
-                  {% if is_size %}
-                    {% assign size_name = option %}
-                    {% break %}
-                  {% endif %}
-                {% endfor %}
+                {% endif %}
                 {% unless unique_sizes contains size_name %}
                   {% assign unique_sizes = unique_sizes | append: size_name | append: ',' %}
                 {% endunless %}
@@ -945,6 +964,45 @@
             {
               id: {{ variant.id }},
               options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}],
+              sizeLabel: {{ variant.metafields['shopify--shoe-size'].label | default: '' | json }} || (function(){
+                {% assign inferred_size = '' %}
+                {% for option in variant.options %}
+                  {% assign is_color_opt = false %}
+                  {% for product_option in product.options_with_values %}
+                    {% if product_option.name == 'Color' %}
+                      {% for color_value in product_option.values %}
+                        {% if option == color_value %}
+                          {% assign is_color_opt = true %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                  {% endfor %}
+                  {% unless is_color_opt %}
+                    {% assign inferred_size = option %}
+                    {% break %}
+                  {% endunless %}
+                {% endfor %}
+                return '{{ inferred_size }}';
+              })(),
+              color: (function(){
+                {% assign cval = '' %}
+                {% for product_option in product.options_with_values %}
+                  {% for product_option_value in product_option.values %}
+                    {% if product_option_value.swatch %}
+                      {% for variant_option in variant.options %}
+                        {% if variant_option == product_option_value %}
+                          {% assign cval = variant_option %}
+                          {% break %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endif %}
+                    {% if cval != '' %}{% break %}{% endif %}
+                  {% endfor %}
+                  {% if cval != '' %}{% break %}{% endif %}
+                {% endfor %}
+                return '{{ cval | default: variant.option1 }}';
+              })(),
               available: {{ variant.available | json }},
               inventory_quantity: {{ variant.inventory_quantity | default: 0 }},
               inventory_policy: '{{ variant.inventory_policy | default: "deny" }}'
@@ -1048,10 +1106,9 @@
       findVariant(size, colorRequired = true) {
         const variants = this.getVariants();
         const hasColors = this.hasColorVariants();
-
         return variants.find(variant => {
-          const matchesSize = variant.options.includes(size);
-          const matchesColor = !hasColors || !colorRequired || variant.options.includes(this.selectedColor);
+          const matchesSize = String(variant.sizeLabel || '') === String(size);
+          const matchesColor = !hasColors || !colorRequired || (variant.color ? String(variant.color) === String(this.selectedColor) : variant.options.includes(this.selectedColor));
           return matchesSize && matchesColor;
         });
       },
@@ -1391,22 +1448,9 @@
       },
 
       findVariantBySizeAndColor(size, color) {
-        // Get all variants from the product with their options
-        const variants = [
-          {% for variant in product.variants %}
-            {
-              id: {{ variant.id }},
-              options: [{% for option in variant.options %}'{{ option }}'{% unless forloop.last %}, {% endunless %}{% endfor %}]
-            }{% unless forloop.last %},{% endunless %}
-          {% endfor %}
-        ];
-
-        // Find variant that matches both size and color
-        const targetVariant = variants.find(variant =>
-          variant.options.includes(size) && variant.options.includes(color)
-        );
-
-        return targetVariant ? targetVariant.id : null;
+        const variants = this.getVariants();
+        const target = variants.find(v => String(v.sizeLabel || '') === String(size) && (!color || (v.color ? String(v.color) === String(color) : v.options.includes(color))));
+        return target ? target.id : null;
       },
 
       // === WISHLIST (LocalStorage) ===

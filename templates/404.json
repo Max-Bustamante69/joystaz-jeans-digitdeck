@@ -12,34 +12,7 @@
     "main": {
       "type": "404",
       "settings": {}
-    },
-    "product_carousel_A86pk7": {
-      "type": "product-carousel",
-      "name": "Product Carousel",
-      "settings": {
-        "title": "Best Sellers",
-        "rich_text": "",
-        "show_view_all": true,
-        "view_all_text": "Ver todos",
-        "view_all_link": "",
-        "view_all_link_collections": "",
-        "show_arrows": true,
-        "product_source": "collection",
-        "collection": "mujer",
-        "collections": [],
-        "product_tags": "",
-        "products": [],
-        "max_products": 12,
-        "show_badges": true,
-        "show_rating": true,
-        "show_color_swatches": true,
-        "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
-      }
     }
   },
-  "order": [
-    "main",
-    "product_carousel_A86pk7"
-  ]
+  "order": ["main"]
 }

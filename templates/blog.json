@@ -1,23 +1,9 @@
 {
   "sections": {
-    "blog_main": {
+    "main": {
       "type": "blog",
-      "settings": {
-        "title": "Artículos Del Blog",
-        "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Fusce id purus. Ut varius tincidunt libero.",
-        "show_featured_article": true,
-        "featured_article_layout": "large",
-        "show_filter_tabs": true,
-        "articles_per_page": 12,
-        "grid_columns_desktop": 3,
-        "grid_columns_mobile": "1",
-        "image_aspect_ratio": "4/3",
-        "show_excerpt": true,
-        "show_date": true,
-        "show_author": false,
-        "excerpt_limit": 120
-      }
+      "settings": {}
     }
   },
-  "order": ["blog_main"]
+  "order": ["main"]
 }

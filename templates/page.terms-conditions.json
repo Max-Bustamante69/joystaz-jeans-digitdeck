@@ -9,14 +9,10 @@
  */
 {
   "sections": {
-    "terms": {
-      "type": "terms-conditions",
-      "settings": {
-        "main_title": "Terms Of Service",
-        "nav_title": "Table of Contents",
-        "show_shop_terms": true
-      }
+    "main": {
+      "type": "page",
+      "settings": {}
     }
   },
-  "order": ["terms"]
+  "order": ["main"]
 }

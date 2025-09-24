@@ -9,16 +9,10 @@
  */
 {
   "sections": {
-    "hero": { "type": "page-hero", "settings": { "title": "About" } },
-    "intro": {
-      "type": "about-intro",
-      "settings": {
-        "subtitle": "ABOUT",
-        "large_text": "Your Skin Is Alive And Needs Nutrition To Be Fit."
-      }
-    },
-    "ticker": { "type": "custom-ticker", "settings": {} },
-    "content": { "type": "about-content", "settings": {} }
+    "main": {
+      "type": "page",
+      "settings": {}
+    }
   },
-  "order": ["hero", "intro", "ticker", "content"]
+  "order": ["main"]
 }

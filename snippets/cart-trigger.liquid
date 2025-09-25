@@ -8,8 +8,7 @@
 
 <button
   @click="$dispatch('cart:open')"
-  class="relative flex items-center justify-center transition-all duration-300"
-  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled ) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-200'"
+  class="relative flex items-center justify-center"
   x-data="
     {
       cartCount: 0,

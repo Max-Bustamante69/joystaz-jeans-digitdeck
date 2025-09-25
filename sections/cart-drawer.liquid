@@ -57,61 +57,59 @@
       </button>
     </div>
 
-    <!-- Dynamic Cart Thresholds -->
-    {% assign sorted_thresholds = section.blocks | where: 'type', 'cart_threshold' | sort: 'settings.threshold_value' %}
-
-    {% if sorted_thresholds.size > 0 %}
-      <div class="py-4 lg:px-5 px-4 border-gray-100">
-        <!-- Progress Bar with Dynamic Segments -->
-        <div class="w-full h-[4.8px] mb-2 flex gap-1">
-          {% for block in sorted_thresholds %}
-            <div
-              class="flex-1 bg-gray-200 overflow-hidden "
-              data-threshold
-              data-threshold-id="{{ block.id }}"
-              data-threshold-title="{{ block.settings.threshold_title }}"
-              data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
-              data-threshold-discount="{{ block.settings.discount_code }}"
-            >
-              <div
-                class="bg-[#468847] h-full transition-all duration-300"
-                :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
-              ></div>
-            </div>
-          {% endfor %}
-        </div>
-
-        <!-- Current Threshold Status -->
-        <div class="text-center">
-          <template x-for="threshold in sortedThresholds" :key="threshold.id">
-            <div x-show="isCurrentThreshold(threshold)" class="text-sm">
-              <div class="flex items-center justify-center space-x-2 mb-1">
-                <svg class="w-4 h-4 text-[#468847]" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                </svg>
-                <span class="font-medium text-[#468847]" x-text="threshold.title"></span>
-              </div>
-              <p class="text-gray-600" x-show="!isThresholdAchieved(threshold)">
-                {{ section.settings.progress_text | default: 'Estas a' }}
-                <span class="font-semibold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
-                {{ section.settings.goal_text | default: 'de conseguir' }}
-                <span class="font-medium" x-text="threshold.title"></span>
-              </p>
-              <p class="text-green-600 font-medium" x-show="isThresholdAchieved(threshold)">
-                {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
-                <span class="font-medium" x-text="threshold.title"></span>
-              </p>
-            </div>
-          </template>
-        </div>
-      </div>
-    {% endif %}
-
     <!-- Cart Items -->
     <div
-      class="flex overflow-y-auto flex-col  py-4 scrollbar-hide justify-between h-full"
+      class="flex overflow-y-auto flex-col scrollbar-hide justify-between h-full"
       style="-webkit-overflow-scrolling: touch;"
     >
+      <!-- Dynamic Cart Thresholds -->
+      {% assign sorted_thresholds = section.blocks
+        | where: 'type', 'cart_threshold'
+        | sort: 'settings.threshold_value'
+      %}
+
+      {% if sorted_thresholds.size > 0 %}
+        <div class="py-4 lg:px-5 px-4 border-gray-100">
+          <!-- Progress Bar with Dynamic Segments -->
+          <div class="w-full h-[4.8px] mb-2 flex gap-1">
+            {% for block in sorted_thresholds %}
+              <div
+                class="flex-1 bg-gray-200 overflow-hidden "
+                data-threshold
+                data-threshold-id="{{ block.id }}"
+                data-threshold-title="{{ block.settings.threshold_title }}"
+                data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
+              >
+                <div
+                  class="bg-[#468847] h-full transition-all duration-300"
+                  :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
+                ></div>
+              </div>
+            {% endfor %}
+          </div>
+
+          <!-- Current Threshold Status -->
+          <div class="text-left">
+            <template x-for="threshold in sortedThresholds" :key="threshold.id">
+              <div x-show="isCurrentThreshold(threshold)" class="text-sm">
+                <p class="text-black font-semibold" x-show="!isThresholdAchieved(threshold)">
+                  {{ section.settings.progress_text | default: 'Estas a' }}
+                  <span class="font-bold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
+                  {{ section.settings.goal_text | default: 'de conseguir' }}
+                  <span class="font-semibold" x-text="threshold.title"></span>
+                </p>
+                <p class="text-green-600 font-semibold" x-show="isThresholdAchieved(threshold)">
+                  {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
+                  <span class="font-medium" x-text="threshold.title"></span>
+                </p>
+              </div>
+            </template>
+          </div>
+        </div>
+      {% endif %}
+
+    
+
       <template x-if="cartItems.length === 0">
         <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
           <h6>
@@ -119,7 +117,7 @@
           </h6>
 
           {% if section.settings.empty_buttons_collections.count > 0 %}
-            <div class="flex flex-col gap-1 w-full">
+            <div class="flex flex-col gap-2 w-full">
               {% for collection in section.settings.empty_buttons_collections %}
                 {% if collection %}
                   <a
@@ -135,10 +133,90 @@
         </div>
       </template>
 
-      <template x-for="item in cartItems" :key="item.key">
-        {% render 'cart-product-card' %}
-      </template>
+      <div class="flex flex-col gap-4 relative mb-7">
+        <template x-for="item in cartItems" :key="item.key">
+          {% render 'cart-product-card' %}
+        </template>
+        <!-- Subtle white fade at bottom -->
+        <div
+          class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
+        ></div>
+      </div>
 
+      <!-- Cart Add-on Item -->
+      {% assign addon_block = section.blocks | where: 'type', 'cart_addon' | first %}
+      {% if addon_block and addon_block.settings.addon_product %}
+        <div
+          class="border-t border-b border-gray-200 lg:mx-5 mx-4 mb-7"
+          x-show="!addonInCart"
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 transform scale-95"
+          x-transition:enter-end="opacity-100 transform scale-100"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 transform scale-100"
+          x-transition:leave-end="opacity-0 transform scale-95"
+        >
+          <div class="flex items-center gap-3">
+            <!-- Product Image -->
+            <div class="w-12 h-12 flex-shrink-0">
+              {% if addon_block.settings.addon_product.featured_image %}
+                <img
+                  src="{{ addon_block.settings.addon_product.featured_image | image_url: width: 48 }}"
+                  alt="{{ addon_block.settings.addon_product.title }}"
+                  class="w-full h-full object-cover"
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                >
+              {% else %}
+                <div class="w-full h-full bg-gray-200  flex items-center justify-center">
+                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                  </svg>
+                </div>
+              {% endif %}
+            </div>
+
+            <!-- Product Info -->
+            <div class="flex-1">
+              <p class="body font-semibold">
+                {{ addon_block.settings.addon_title | default: addon_block.settings.addon_product.title }}
+                <span class="text-gray-600"
+                  >por COP {{ addon_block.settings.addon_product.price | money_without_currency -}}
+                </span>
+              </p>
+            </div>
+
+            <!-- Checkbox -->
+
+            <input
+              type="checkbox"
+              id="addon-{{ addon_block.id }}"
+              class="w-6 h-6 rounded-none text-primary appearance-none border-black border "
+              x-model="addonSelected"
+              data-variant-id="{{ addon_block.settings.addon_product.variants.first.id }}"
+              @change="toggleAddon('{{ addon_block.settings.addon_product.variants.first.id }}', $event.target.checked)"
+            >
+          </div>
+        </div>
+      {% endif %}
+
+
+        <!-- Cart Accordion -->
+      {% assign accordion_blocks = section.blocks | where: 'type', 'cart_accordion' %}
+      {% if accordion_blocks.size > 0 %}
+        <div class="lg:px-5 px-4 py-4">
+          {% render 'accordion',
+            items: accordion_blocks,
+            accordion_id: 'cart-accordion',
+            title_color: '#1f2937',
+            answer_color: '#6b7280'
+          %}
+        </div>
+      {% endif %}
+
+
+      
       {% if section.settings.show_product_carousel %}
         <div class="flex flex-col gap-3">
           <h5 class=" lg:px-5 px-4">
@@ -150,14 +228,17 @@
           {% assign final_products = '' %}
           {% assign products_added = 0 %}
           {% assign total_cart_items = 0 %}
+          {% assign cart_product_handles = '' %}
           {% for item in cart.items %}
             {% assign total_cart_items = total_cart_items | plus: item.quantity %}
+            {% assign cart_product_handles = cart_product_handles | append: item.product.handle | append: ',' %}
           {% endfor %}
 
           {% assign col1 = blank %}
           {% assign col2 = blank %}
 
           {% if total_cart_items > 0 %}
+            {% comment %} Cart has items - use related products from cart item collections {% endcomment %}
             {% for item in cart.items %}
               {% for collection in item.product.collections %}
                 {% if col1 == blank %}
@@ -170,45 +251,80 @@
               {% if col1 and col2 %}{% break %}{% endif %}
             {% endfor %}
           {% else %}
-            {% for collection in section.settings.fallback_collections %}
-              {% if col1 == blank %}
-                {% assign col1 = collection %}
-              {% elsif col2 == blank and collection.handle != col1.handle %}
-                {% assign col2 = collection %}
+            {% comment %} Cart is empty - use fallback logic {% endcomment %}
+            {% if section.settings.fallback_type == 'products' and section.settings.fallback_products.count > 0 %}
+              {% comment %} Use manual fallback products {% endcomment %}
+              {% assign fallback_products_count = section.settings.fallback_products.count %}
+              {% if fallback_products_count > 0 %}
+                {% assign max_products = fallback_products_count %}
               {% endif %}
-              {% if col1 and col2 %}{% break %}{% endif %}
-            {% endfor %}
+              {% for product in section.settings.fallback_products %}
+                {% assign is_in_cart = false %}
+                {% if cart_product_handles contains product.handle %}
+                  {% assign is_in_cart = true %}
+                {% endif %}
+                {% if product.available and products_added < max_products and is_in_cart == false %}
+                  {% assign final_products = final_products | append: product.handle | append: ',' %}
+                  {% assign products_added = products_added | plus: 1 %}
+                {% endif %}
+                {% if products_added >= max_products %}{% break %}{% endif %}
+              {% endfor %}
+            {% else %}
+              {% comment %} Use fallback collections when cart is empty {% endcomment %}
+              {% for collection in section.settings.fallback_collections %}
+                {% if col1 == blank %}
+                  {% assign col1 = collection %}
+                {% elsif col2 == blank and collection.handle != col1.handle %}
+                  {% assign col2 = collection %}
+                {% endif %}
+                {% if col1 and col2 %}{% break %}{% endif %}
+              {% endfor %}
+            {% endif %}
           {% endif %}
 
-          {% assign quota1 = max_products %}
-          {% assign quota2 = 0 %}
-          {% if col2 %}
-            {% assign quota1 = max_products | divided_by: 2 %}
-            {% assign quota2 = max_products | minus: quota1 %}
-          {% endif %}
+          {% comment %} Use collection logic when cart has items OR when using fallback collections {% endcomment %}
+          {% if total_cart_items > 0
+            or section.settings.fallback_type != 'products'
+            or section.settings.fallback_products.count == 0
+          %}
+            {% assign quota1 = max_products %}
+            {% assign quota2 = 0 %}
+            {% if col2 %}
+              {% assign quota1 = max_products | divided_by: 2 %}
+              {% assign quota2 = max_products | minus: quota1 %}
+            {% endif %}
 
-          {% if col1 %}
-            {% assign added1 = 0 %}
-            {% for product in col1.products %}
-              {% if product.available and added1 < quota1 and products_added < max_products %}
-                {% assign final_products = final_products | append: product.handle | append: ',' %}
-                {% assign added1 = added1 | plus: 1 %}
-                {% assign products_added = products_added | plus: 1 %}
-              {% endif %}
-              {% if products_added >= max_products or added1 >= quota1 %}{% break %}{% endif %}
-            {% endfor %}
-          {% endif %}
+            {% if col1 %}
+              {% assign added1 = 0 %}
+              {% for product in col1.products %}
+                {% assign is_in_cart = false %}
+                {% if cart_product_handles contains product.handle %}
+                  {% assign is_in_cart = true %}
+                {% endif %}
+                {% if product.available and added1 < quota1 and products_added < max_products and is_in_cart == false %}
+                  {% assign final_products = final_products | append: product.handle | append: ',' %}
+                  {% assign added1 = added1 | plus: 1 %}
+                  {% assign products_added = products_added | plus: 1 %}
+                {% endif %}
+                {% if products_added >= max_products or added1 >= quota1 %}{% break %}{% endif %}
+              {% endfor %}
+            {% endif %}
 
-          {% if col2 and products_added < max_products %}
-            {% assign added2 = 0 %}
-            {% for product in col2.products %}
-              {% if product.available and added2 < quota2 and products_added < max_products %}
-                {% assign final_products = final_products | append: product.handle | append: ',' %}
-                {% assign added2 = added2 | plus: 1 %}
-                {% assign products_added = products_added | plus: 1 %}
-              {% endif %}
-              {% if products_added >= max_products or added2 >= quota2 %}{% break %}{% endif %}
-            {% endfor %}
+            {% if col2 and products_added < max_products %}
+              {% assign added2 = 0 %}
+              {% for product in col2.products %}
+                {% assign is_in_cart = false %}
+                {% if cart_product_handles contains product.handle %}
+                  {% assign is_in_cart = true %}
+                {% endif %}
+                {% if product.available and added2 < quota2 and products_added < max_products and is_in_cart == false %}
+                  {% assign final_products = final_products | append: product.handle | append: ',' %}
+                  {% assign added2 = added2 | plus: 1 %}
+                  {% assign products_added = products_added | plus: 1 %}
+                {% endif %}
+                {% if products_added >= max_products or added2 >= quota2 %}{% break %}{% endif %}
+              {% endfor %}
+            {% endif %}
           {% endif %}
 
           {% if final_products != blank %}
@@ -257,8 +373,19 @@
     <!-- Footer - Sticky at bottom -->
     <div
       x-show="cartItems.length > 0"
-      class="sticky bottom-0 z-10 bg-white border-t border-gray-100 lg:px-5 px-4 py-6 space-y-2.5 shadow-lg"
+      class="sticky bottom-0 z-10 bg-white border-t border-gray-100 lg:px-5 px-4 pt-4 pb-5 space-y-2.5 shadow-lg"
+      style="box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);"
     >
+      <!-- Discount Savings -->
+      <div class="flex justify-between items-center" x-show="cartSavings > 0">
+        <span class="body-sm   font-semibold text-green-600">
+          {{ section.settings.discount_savings_text | default: 'DESCUENTOS APLICADOS:' }}
+        </span>
+        <div class="text-right">
+          <span class=" body-sm font-semibold text-green-600" x-text="'-$' + formatMoney(cartSavings)"></span>
+        </div>
+      </div>
+
       <!-- Subtotal -->
       <div class="flex justify-between items-center">
         <span class="lg:body body-sm uppercase font-semibold">
@@ -330,6 +457,11 @@
       scrollY: 0, // Store scroll position for drawer
       freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
       
+      // Add-on state
+      addonSelected: false,
+      addonVariantId: null,
+      addonInCart: false,
+      
       // Cart thresholds
       sortedThresholds: [],
       appliedDiscounts: new Set(),
@@ -338,6 +470,7 @@
         this.loadCart();
         this.tryGetShopifyFreeShippingThreshold();
         this.initThresholds();
+        this.initAddon();
         
         // Use $nextTick to ensure DOM is ready
         this.$nextTick(() => {
@@ -353,6 +486,16 @@
         // Listen for cart updates to refresh product carousel
         this.$watch('cartItems', () => {
           this.refreshProductCarousel();
+          this.checkAddonInCart();
+        });
+        
+        // Listen for cart updates from other components (like product cards)
+        window.addEventListener('cart:updated', () => {
+          this.loadCart();
+          // Refresh recommendations when cart is updated from external sources
+          this.$nextTick(() => {
+            this.refreshProductCarousel();
+          });
         });
       },
 
@@ -420,7 +563,10 @@
             product_title: this.cleanProductTitle(item.product_title)
           }));
           
-          this.calculateTotals();
+          // Store cart totals for discount calculation
+          this.cartTotal = cart.total_price;
+          this.originalTotal = cart.original_total_price || cart.total_price;
+          this.cartSavings = this.originalTotal - this.cartTotal;
 
         } catch (error) {
           console.error('Error loading cart:', error);
@@ -445,14 +591,6 @@
         return cleaned;
       },
 
-      calculateTotals() {
-        this.cartTotal = this.cartItems.reduce((total, item) => total + item.final_line_price, 0);
-        this.originalTotal = this.cartItems.reduce(
-          (total, item) => total + (item.original_line_price || item.final_line_price),
-          0
-        );
-        this.cartSavings = this.originalTotal - this.cartTotal;
-      },
 
       async updateQuantity(itemKey, newQuantity) {
         if (newQuantity < 1) {
@@ -654,32 +792,59 @@
        },
 
        // Refresh product carousel when cart items change
-       refreshProductCarousel() {
-         // Hide products that are now in cart by adding a CSS class
-         const carouselElement = this.$el.querySelector('.cart-product-carousel');
-         if (carouselElement) {
-           const slides = carouselElement.querySelectorAll('.swiper-slide');
-           slides.forEach(slide => {
-             const productCard = slide.querySelector('[data-wishlist-card]');
-             if (productCard) {
-               const productHandle = productCard.getAttribute('data-handle');
-               const isInCart = this.cartItems.some(item => item.handle === productHandle);
-               
-               if (isInCart) {
-                 slide.style.display = 'none';
-                 slide.classList.add('product-in-cart');
-               } else {
-                 slide.style.display = '';
-                 slide.classList.remove('product-in-cart');
-               }
-             }
-           });
+       async refreshProductCarousel() {
+         try {
+           // Get fresh cart data to update recommendations
+           const response = await fetch('/cart.js');
+           const cart = await response.json();
            
-           // Update swiper if it exists
-           if (carouselElement.swiper) {
-             carouselElement.swiper.update();
-           }
+           // Update cart items with fresh data
+           this.cartItems = cart.items.map(item => ({
+             ...item,
+             product_title: this.cleanProductTitle(item.product_title)
+           }));
+           
+           // Update cart totals with fresh data
+           this.cartTotal = cart.total_price;
+           this.originalTotal = cart.original_total_price || cart.total_price;
+           this.cartSavings = this.originalTotal - this.cartTotal;
+           
+           // Update carousel display based on new cart state
+           this.updateCarouselDisplay();
+           
+         } catch (error) {
+           console.error('Error refreshing product carousel:', error);
          }
+       },
+       
+       // Update carousel display based on current cart state
+       updateCarouselDisplay() {
+         this.$nextTick(() => {
+           const carouselElement = this.$el.querySelector('.cart-product-carousel');
+           if (carouselElement) {
+             const slides = carouselElement.querySelectorAll('.swiper-slide');
+             slides.forEach(slide => {
+               const productCard = slide.querySelector('[data-wishlist-card]');
+               if (productCard) {
+                 const productHandle = productCard.getAttribute('data-handle');
+                 const isInCart = this.cartItems.some(item => item.handle === productHandle);
+                 
+                 if (isInCart) {
+                   slide.style.display = 'none';
+                   slide.classList.add('product-in-cart');
+                 } else {
+                   slide.style.display = '';
+                   slide.classList.remove('product-in-cart');
+                 }
+               }
+             });
+             
+             // Update swiper if it exists
+             if (carouselElement.swiper) {
+               carouselElement.swiper.update();
+             }
+           }
+         });
        },
 
        // Cart Thresholds methods
@@ -690,14 +855,10 @@
            this.sortedThresholds = Array.from(thresholdElements).map(el => ({
              id: el.dataset.thresholdId,
              title: el.dataset.thresholdTitle,
-             value: parseInt(el.dataset.thresholdValue),
-             discountCode: el.dataset.thresholdDiscount
+             value: parseInt(el.dataset.thresholdValue)
            })).sort((a, b) => a.value - b.value);
            
            // Set up watchers after thresholds are initialized
-           this.$watch('cartItems', () => {
-             this.calculateTotals();
-           });
            this.$watch('cartTotal', () => {
              this.checkThresholds();
            });
@@ -781,84 +942,95 @@
          return this.cartTotal >= threshold.value;
        },
 
-       async checkThresholds() {
-         try {
-           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return;
-           
-           for (const threshold of this.sortedThresholds) {
-             if (this.cartTotal >= threshold.value && !this.appliedDiscounts.has(threshold.id)) {
-               await this.applyDiscount(threshold);
-               this.appliedDiscounts.add(threshold.id);
-             } else if (this.cartTotal < threshold.value && this.appliedDiscounts.has(threshold.id)) {
-               await this.removeDiscount(threshold);
-               this.appliedDiscounts.delete(threshold.id);
-             }
-           }
-         } catch (error) {
-           console.error('Error checking thresholds:', error);
-         }
-       },
+      async checkThresholds() {
+        try {
+          if (!this.sortedThresholds || this.sortedThresholds.length === 0) return;
+          
+          for (const threshold of this.sortedThresholds) {
+            if (this.cartTotal >= threshold.value && !this.appliedDiscounts.has(threshold.id)) {
+              this.appliedDiscounts.add(threshold.id);
+              console.log('✅ Threshold achieved:', threshold.title);
+            } else if (this.cartTotal < threshold.value && this.appliedDiscounts.has(threshold.id)) {
+              this.appliedDiscounts.delete(threshold.id);
+              console.log('❌ Threshold no longer met:', threshold.title);
+            }
+          }
+        } catch (error) {
+          console.error('Error checking thresholds:', error);
+        }
+      },
 
-       async applyDiscount(threshold) {
-         if (!threshold.discountCode) return;
-         
-         try {
-           // Apply discount using Shopify's cart update API
-           const response = await fetch('/cart/update.js', {
-             method: 'POST',
-             headers: { 
-               'Content-Type': 'application/json',
-               'X-Requested-With': 'XMLHttpRequest'
-             },
-             body: JSON.stringify({ 
-               discount_code: threshold.discountCode 
-             })
-           });
-           
-           if (response.ok) {
-             const cartData = await response.json();
-             console.log('✅ Applied discount:', threshold.discountCode, 'for threshold:', threshold.title);
-             
-             // Reload cart to show applied discount
-             this.loadCart();
-             
-           } else {
-             const errorData = await response.json();
-             console.error('❌ Failed to apply discount:', errorData);
-           }
-         } catch (error) {
-           console.error('❌ Error applying discount:', error);
-         }
-       },
+      // ===== Add-on functionality =====
+      initAddon() {
+        // Get add-on variant ID from the template
+        this.$nextTick(() => {
+          const addonCheckbox = this.$el.querySelector('input[id^="addon-"]');
+          if (addonCheckbox) {
+            this.addonVariantId = addonCheckbox.getAttribute('data-variant-id');
+          }
+          
+          // Check if add-on is already in cart
+          this.checkAddonInCart();
+        });
+      },
 
-       async removeDiscount(threshold) {
-         if (!threshold.discountCode) return;
-         
-         try {
-           // Remove discount by setting empty discount code
-           const response = await fetch('/cart/update.js', {
-             method: 'POST',
-             headers: { 
-               'Content-Type': 'application/json',
-               'X-Requested-With': 'XMLHttpRequest'
-             },
-             body: JSON.stringify({ 
-               discount_code: '' 
-             })
-           });
-           
-           if (response.ok) {
-             console.log('✅ Removed discount:', threshold.discountCode, 'for threshold:', threshold.title);
-             this.loadCart();
-           } else {
-             console.error('❌ Failed to remove discount');
-           }
-         } catch (error) {
-           console.error('❌ Error removing discount:', error);
-         }
-       },
+      checkAddonInCart() {
+        if (!this.addonVariantId) return;
+        
+        // Check if the add-on variant is already in the cart
+        const addonInCart = this.cartItems.find(item => item.variant_id == this.addonVariantId);
+        this.addonInCart = !!addonInCart;
+        this.addonSelected = !!addonInCart;
+      },
 
-     };
+      async toggleAddon(variantId, isSelected) {
+        this.loading = true;
+        try {
+          if (isSelected) {
+            // Add add-on to cart
+            const response = await fetch('/cart/add.js', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                id: variantId,
+                quantity: 1,
+              }),
+            });
+
+            if (response.ok) {
+              await this.loadCart();
+              this.addonInCart = true;
+              this.$dispatch('cart:updated');
+              window.dispatchEvent(new CustomEvent('cart:updated'));
+            } else {
+              // If add failed, uncheck the checkbox
+              this.addonSelected = false;
+              this.addonInCart = false;
+              const error = await response.json();
+              console.error('Error adding add-on:', error);
+            }
+          } else {
+            // Remove add-on from cart
+            const addonItem = this.cartItems.find(item => item.variant_id == variantId);
+            if (addonItem) {
+              await this.removeItem(addonItem.key);
+              this.addonInCart = false;
+            }
+          }
+        } catch (error) {
+          console.error('Error toggling add-on:', error);
+          // If error occurred, uncheck the checkbox
+          this.addonSelected = false;
+          this.addonInCart = false;
+        } finally {
+          this.loading = false;
+        }
+      },
+
+
+    };
    }
 </script>
 
@@ -952,11 +1124,35 @@
       "default": 8
     },
     {
+      "type": "select",
+      "id": "fallback_type",
+      "label": "Fallback Type for Empty Cart",
+      "options": [
+        {
+          "value": "collections",
+          "label": "Fallback Collections"
+        },
+        {
+          "value": "products",
+          "label": "Fallback Products"
+        }
+      ],
+      "default": "collections",
+      "info": "Choose whether to show products from collections or manually selected products when cart is empty"
+    },
+    {
       "type": "collection_list",
       "id": "fallback_collections",
       "label": "Fallback Collections for Empty Cart",
-      "info": "Collections to show in cart carousel when cart is empty",
+      "info": "Collections to show in cart carousel when cart is empty (only used when Fallback Type is set to Collections)",
       "limit": 5
+    },
+    {
+      "type": "product_list",
+      "id": "fallback_products",
+      "label": "Fallback Products for Empty Cart",
+      "info": "Manually selected products to show in cart carousel when cart is empty (only used when Fallback Type is set to Products). Maximum products setting will be ignored and all selected products will be shown.",
+      "limit": 20
     },
     {
       "type": "collection_list",
@@ -968,6 +1164,12 @@
     {
       "type": "header",
       "content": "Checkout"
+    },
+    {
+      "type": "text",
+      "id": "discount_savings_text",
+      "label": "Discount Savings Label",
+      "default": "DESCUENTOS APLICADOS:"
     },
     {
       "type": "text",
@@ -1006,29 +1208,46 @@
           "label": "Threshold Value (COP)",
           "default": 150000,
           "info": "Cart value needed to reach this threshold in Colombian Pesos"
-        },
-        {
-          "type": "text",
-          "id": "discount_code",
-          "label": "Discount Code",
-          "info": "Discount code to apply when threshold is reached (optional)"
         }
       ]
     },
     {
-      "type": "empty_button",
-      "name": "Empty Cart Button",
+      "type": "cart_addon",
+      "name": "Cart Add-on Item",
+      "limit": 1,
       "settings": [
         {
           "type": "text",
-          "id": "label",
-          "label": "Button label",
-          "default": "Hombre"
+          "id": "addon_title",
+          "label": "Add-on Title",
+          "default": "Add gift bag",
+          "info": "Title displayed for the add-on item"
         },
         {
-          "type": "url",
-          "id": "link",
-          "label": "Button link"
+          "type": "product",
+          "id": "addon_product",
+          "label": "Add-on Product",
+          "info": "Select the product to be added as an add-on (e.g., gift bag, protected shipping)"
+        }
+      ]
+    },
+    {
+      "type": "cart_accordion",
+      "name": "Cart Accordion Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "¿Cuánto tiempo tarda el envío?",
+          "info": "The question that will be displayed in the accordion"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles.</p>",
+          "info": "The answer that will be displayed when the accordion is expanded"
         }
       ]
     },
@@ -1116,46 +1335,28 @@
           "type": "cart_threshold",
           "settings": {
             "threshold_title": "Free Shipping",
-            "threshold_value": 100000,
-            "discount_code": "FREESHIP100"
-          }
-        },
-        {
-          "type": "empty_button",
-          "settings": {
-            "label": "Hombre",
-            "link": "/collections/hombre"
-          }
-        },
-        {
-          "type": "empty_button",
-          "settings": {
-            "label": "Mujer",
-            "link": "/collections/mujer"
+            "threshold_value": 100000
           }
         },
         {
           "type": "cart_threshold",
           "settings": {
             "threshold_title": "10% Off",
-            "threshold_value": 200000,
-            "discount_code": "SAVE10"
+            "threshold_value": 200000
           }
         },
         {
           "type": "cart_threshold",
           "settings": {
             "threshold_title": "15% Off",
-            "threshold_value": 300000,
-            "discount_code": "SAVE15"
+            "threshold_value": 300000
           }
         },
         {
           "type": "cart_threshold",
           "settings": {
             "threshold_title": "20% Off",
-            "threshold_value": 500000,
-            "discount_code": "SAVE20"
+            "threshold_value": 500000
           }
         },
         {
@@ -1180,6 +1381,27 @@
           "type": "payment_icon",
           "settings": {
             "payment_type": "paypal"
+          }
+        },
+        {
+          "type": "cart_accordion",
+          "settings": {
+            "question": "¿Cuánto tiempo tarda el envío?",
+            "answer": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
+          }
+        },
+        {
+          "type": "cart_accordion",
+          "settings": {
+            "question": "¿Cómo funciona la garantía?",
+            "answer": "<p>Ofrecemos una garantía de 30 días en todos nuestros productos. Si no estás satisfecho con tu compra, puedes devolver el producto en su estado original para un reembolso completo o cambio.</p>"
+          }
+        },
+        {
+          "type": "cart_accordion",
+          "settings": {
+            "question": "¿Es seguro comprar en la tienda online?",
+            "answer": "<p>Sí, es completamente seguro. Utilizamos tecnología SSL de encriptación para proteger toda la información personal y de pago. Además, nunca almacenamos los datos de tu tarjeta de crédito en nuestros servidores.</p>"
           }
         }
       ]

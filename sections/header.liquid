@@ -11,8 +11,56 @@
   and template.suffix == 'wish-list'
   or template.name == 'page'
   and template.suffix == 'look-fit'
+  or template.name == 'page'
+  and template.suffix == 'look-fit-collection'
 %}
   {% assign header_mode = 'solid' %}
+{% endif %}
+
+{% if template.name == 'page' and page and page.handle == 'look-fit-collection' %}
+  {% assign header_mode = 'solid' %}
+{% endif %}
+
+{% if request and request.path contains '/pages/look-fit-collection' %}
+  {% assign header_mode = 'solid' %}
+{% endif %}
+
+{% if template.name == 'metaobject' and template.suffix == 'look_fit_collection' %}
+  {% assign header_mode = 'solid' %}
+{% elsif template.name == 'metaobject' and template.suffix == 'look-fit-collection' %}
+  {% assign header_mode = 'solid' %}
+{% endif %}
+
+{%- comment -%}
+  Per-resource header variant override via metafield `custom.header_variant`.
+  Supported values: "solid" or "transparent" (any other value is ignored).
+  Also supports a section-level default override setting per template instance.
+{%- endcomment -%}
+{% assign header_override = '' %}
+
+{% if template.name == 'product' and product and product.metafields.custom.header_variant != blank %}
+  {% assign header_override = product.metafields.custom.header_variant.value | downcase %}
+{% elsif template.name == 'collection' and collection and collection.metafields.custom.header_variant != blank %}
+  {% assign header_override = collection.metafields.custom.header_variant.value | downcase %}
+{% elsif template.name == 'article' and article and article.metafields.custom.header_variant != blank %}
+  {% assign header_override = article.metafields.custom.header_variant.value | downcase %}
+{% elsif template.name == 'blog' and blog and blog.metafields.custom.header_variant != blank %}
+  {% assign header_override = blog.metafields.custom.header_variant.value | downcase %}
+{% elsif template.name == 'page' and page and page.metafields.custom.header_variant != blank %}
+  {% assign header_override = page.metafields.custom.header_variant.value | downcase %}
+{% endif %}
+
+{% if header_override == ''
+  and section.settings.header_variant_default
+  and section.settings.header_variant_default != 'auto'
+%}
+  {% assign header_override = section.settings.header_variant_default %}
+{% endif %}
+
+{% if header_override == 'solid' %}
+  {% assign header_mode = 'solid' %}
+{% elsif header_override == 'transparent' %}
+  {% assign header_mode = '' %}
 {% endif %}
 
 {% comment %} Determine scroll threshold based on page type {% endcomment %}
@@ -28,7 +76,7 @@
 {% endif %}
 
 <header
-  class="-z-50 w-full transition-all duration-[300ms] ease-linear"
+  class="-z-50 w-full transition-none ease-linear"
   :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   data-scroll-threshold="{{ scroll_threshold }}"
@@ -89,7 +137,7 @@
   "
 >
   <nav
-    class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12    bg-transparent  relative transition-all duration-[300ms] ease-linear"
+    class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12 bg-transparent relative transition-none ease-linear"
     :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
@@ -99,13 +147,18 @@
         {% assign collection = collections[collection_handle] %}
         <div
           class="h-full flex items-center"
-          @mouseenter="isMenuHovered = true; showMegaMenu('{{ collection_handle }}')"
-          @mouseleave="isMenuHovered = false; hideMegaMenu()"
+          {% if link.links.size > 0 %}
+            @mouseenter="isMenuHovered = true; showMegaMenu('{{ collection_handle }}')"
+            @mouseleave="isMenuHovered = false; hideMegaMenu()"
+          {% else %}
+            @mouseenter="isMenuHovered = false; hideMegaMenu()"
+
+            @mouseleave="isMenuHovered = false; hideMegaMenu()"
+          {% endif %}
         >
           <a
             href="{{ link.url }}"
-            class="font-semibold transition-all duration-[300ms] ease-linear h-full flex items-center px-3"
-            :class="(isScrolled || isMenuHovered) ? 'hover:text-gray-600' : 'hover:text-gray-300'"
+            class="font-semibold h-full flex items-center px-3"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isMenuHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
             <span class="hover-line">
@@ -176,7 +229,7 @@
                               {% assign order_counter = order_counter | plus: 1 %}
                               <a
                                 href="{{ sub_link.url }}"
-                                class="body font-medium capitalize text-black mega-menu-link"
+                                class="body font-medium capitalize text-black mega-menu-link hover-line"
                                 data-anim
                                 style="--anim-order: {{ order_counter }};"
                               >
@@ -241,7 +294,7 @@
     <div class="flex gap-6 items-center lg:hidden">
       <button
         @click="toggleMobileMenu()"
-        class="transition-all duration-[300ms] ease-linear"
+        class=""
         :class="isScrolled ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
@@ -256,7 +309,7 @@
               alt="{{ shop.name }}"
               height="{{ section.settings.logo.height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
-              class="transition-all duration-300"
+              class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               loading="eager"
             >
@@ -264,7 +317,7 @@
             <img
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
-              class=" h-12 transition-all duration-[300ms] ease-linear"
+              class=" h-12"
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               width="60"
               height="40"
@@ -283,7 +336,7 @@
             alt="{{ shop.name }}"
             height="{{ section.settings.logo.height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
-            class="transition-all duration-300"
+            class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             loading="eager"
           >
@@ -291,7 +344,7 @@
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class=" h-12 transition-all duration-300"
+            class=" h-12"
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             width="60"
             height="40"
@@ -690,6 +743,18 @@
   "name": "t:general.header",
   "max_blocks": 10,
   "settings": [
+    {
+      "type": "select",
+      "id": "header_variant_default",
+      "label": "Header variant (default)",
+      "options": [
+        { "value": "auto", "label": "Auto (by template/scroll)" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "transparent", "label": "Transparent" }
+      ],
+      "default": "auto",
+      "info": "Default variant for this header instance; can be overridden by resource metafield custom.header_variant"
+    },
     {
       "type": "image_picker",
       "id": "logo",

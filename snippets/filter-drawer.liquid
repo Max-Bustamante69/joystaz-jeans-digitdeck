@@ -169,7 +169,7 @@
         <div class="space-y-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <p class="body-lg font-medium capitalize">Talla</p>
+              <p class="body-lg font-medium capitalize">{{ settings.size_option_label | default: 'Talla' }}</p>
               <span
                 x-show="selectedSizes.length > 0"
                 x-text="selectedSizes.length"
@@ -672,7 +672,7 @@
         // Extract sizes from product options
         products.forEach(product => {
           product.options_with_values.forEach(option => {
-            if (option.name === 'Talla' || option.name === 'Size') {
+            if (option.name === '{{ settings.size_option_handle | default: "talla" }}' || option.name === 'Size') {
               option.values.forEach(size => {
                 sizeSet.add(size);
               });

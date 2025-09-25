@@ -15,44 +15,41 @@
 {% endcomment %}
 
 <div class=" py-3 space-y-3 last:pb-0">
-
-
-  <div class="">  
-  <!-- Color selection -->
-  {% if product_number == 1 %}
-    {% render 'color-selector',
-      product: product,
-      selected_color_variable: 'duoProduct1',
-      click_function: 'selectDuoColor',
-      product_number: product_number
-    %}
-  {% else %}
-    {% render 'color-selector',
-      product: product,
-      selected_color_variable: 'duoProduct2',
-      click_function: 'selectDuoColor',
-      product_number: product_number
-    %}
-  {% endif %}
+  <div class="">
+    <!-- Color selection -->
+    {% if product_number == 1 %}
+      {% render 'color-selector',
+        product: product,
+        selected_color_variable: 'duoProduct1',
+        click_function: 'selectDuoColor',
+        product_number: product_number
+      %}
+    {% else %}
+      {% render 'color-selector',
+        product: product,
+        selected_color_variable: 'duoProduct2',
+        click_function: 'selectDuoColor',
+        product_number: product_number
+      %}
+    {% endif %}
   </div>
 
   <!-- Size selection -->
-  <div class="">  
-  {% if product_number == 1 %}
-    {% render 'size-selector',
-      product: product,
-      selected_size_variable: 'duoProduct1',
-      click_function: 'selectDuoSize',
-      product_number: product_number
-    %}
-  {% else %}
-    {% render 'size-selector',
-      product: product,
-      selected_size_variable: 'duoProduct2',
-      click_function: 'selectDuoSize',
-      product_number: product_number,
-
-    %}
-  {% endif %}
+  <div class="">
+    {% if product_number == 1 %}
+      {% render 'size-selector',
+        product: product,
+        selected_size_variable: 'duoProduct1',
+        click_function: 'selectDuoSize',
+        product_number: product_number
+      %}
+    {% else %}
+      {% render 'size-selector',
+        product: product,
+        selected_size_variable: 'duoProduct2',
+        click_function: 'selectDuoSize',
+        product_number: product_number
+      %}
+    {% endif %}
   </div>
 </div>

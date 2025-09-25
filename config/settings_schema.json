@@ -288,5 +288,28 @@
         "limit": 8
       }
     ]
+  },
+  {
+    "name": "Product Configuration",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Size Option Configuration"
+      },
+      {
+        "type": "text",
+        "id": "size_option_handle",
+        "label": "Size Option Handle",
+        "default": "shopify--shoe-size",
+        "info": "The handle/name of the size option in your product variants (e.g., 'talla', 'size', 'shopify--shoe-size'). This should match exactly how the size option is named in your product variants."
+      },
+      {
+        "type": "text",
+        "id": "size_option_label",
+        "label": "Size Option Display Label",
+        "default": "Talla",
+        "info": "The display label for the size option shown to customers"
+      }
+    ]
   }
 ]

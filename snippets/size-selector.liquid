@@ -16,18 +16,24 @@
   - selected_size_variable: Alpine.js variable name for selected size
   - click_function: Function name to call on size selection
   - product_number: For duo selections (1 or 2), nil for single
-  - show_main_label: Show main "Elije una talla" label (for single mode)
+  - show_main_label: Show main size selection label (for single mode)
   - show_size_guide: Show size guide button (for single mode)
 {% endcomment %}
 
+{% assign size_option_name = settings.size_option_label | default: 'Talla' %}
+{% assign size_option_handle = settings.size_option_handle | default: 'talla' %}
+
+
+
 {% for product_option in product.options_with_values %}
-  {% if product_option.name == 'Talla' %}
+
+  {% if product_option.name == size_option_handle %}
     <div class="flex flex-col gap-2">
       {% if show_main_label %}
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <p class="body font-semibold">
-              Elije una talla
+              Elije una {{ settings.size_option_label | default: 'talla' }}
               {% if product_number %}
                 <p
                   class="body font-semibold text-black/50"
@@ -47,14 +53,14 @@
             <div class="flex items-center gap-1">
               {% render 'size-chart', class: 'w-4 h-4' %}
               <button class="text-sm text-black/50 underline hover:text-gray-900 transition-colors ">
-                Guía de tallas
+                Guía de {{ settings.size_option_label | default: 'tallas' }}
               </button>
             </div>
           {% endif %}
         </div>
       {% else %}
         <label class="text-sm font-medium text-gray-700">
-          Talla:
+          {{ settings.size_option_label | default: 'Talla' }}:
           {% if product_number %}
             <span
               class="ml-2 font-normal text-gray-500"

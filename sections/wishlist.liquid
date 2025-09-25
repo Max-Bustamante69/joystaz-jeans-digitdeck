@@ -57,7 +57,8 @@
       // Pull option objects (Shopify product.js exposes array of {name, position, values})
       const optionObjects = Array.isArray(p.options) && typeof p.options[0] === 'object' ? p.options : [];
       const colorOption = optionObjects.find((o) => (o.name || '').toLowerCase() === 'color');
-      const sizeOption = optionObjects.find((o) => (o.name || '').toLowerCase() === 'talla');
+      const sizeOptionHandle = '{{ settings.size_option_handle | default: "talla" }}'.toLowerCase();
+      const sizeOption = optionObjects.find((o) => (o.name || '').toLowerCase() === sizeOptionHandle);
 
       const colors = colorOption ? colorOption.values || [] : [];
       const sizes = sizeOption ? sizeOption.values || [] : [];
@@ -210,7 +211,7 @@
     function initWishlistCard(root, p) {
       const variants = buildVariantIndex(p);
       const hasColors = hasOption(p, 'Color');
-      const hasSizes = hasOption(p, 'Talla');
+      const hasSizes = hasOption(p, '{{ settings.size_option_handle | default: "talla" }}');
       const colorValues = getValues(p, 'Color');
 
       const state = {
@@ -561,7 +562,7 @@
                 <div class="flex flex-wrap gap-2" data-role="colors"></div>
               </div>
               <div>
-                <div class="flex items-center justify-between mb-3"><p class="body-lg font-medium">Talla</p></div>
+                <div class="flex items-center justify-between mb-3"><p class="body-lg font-medium">{{ settings.size_option_label | default: "Talla" }}</p></div>
                 <div class="flex flex-wrap gap-2" data-role="sizes"></div>
               </div>
               <div>
@@ -587,7 +588,8 @@
           options.forEach((o) => {
             const name = (o.name || '').toLowerCase();
             if (name === 'color') (o.values || []).forEach((v) => colorSet.add(v));
-            if (name === 'talla' || name === 'size') (o.values || []).forEach((v) => sizeSet.add(v));
+            const sizeHandle = '{{ settings.size_option_handle | default: "talla" }}'.toLowerCase();
+            if (name === sizeHandle || name === 'size') (o.values || []).forEach((v) => sizeSet.add(v));
           });
         });
 
@@ -651,7 +653,8 @@
         if (this.currentFilters.sizes.length) {
           products = products.filter((p) => {
             const opts = Array.isArray(p.options) ? p.options : [];
-            const sizeOpt = opts.find((o) => ['talla', 'size'].includes((o.name || '').toLowerCase()));
+            const sizeHandle = '{{ settings.size_option_handle | default: "talla" }}'.toLowerCase();
+            const sizeOpt = opts.find((o) => [sizeHandle, 'size'].includes((o.name || '').toLowerCase()));
             const values = (sizeOpt && sizeOpt.values) || [];
             return this.currentFilters.sizes.some((s) => values.includes(s));
           });

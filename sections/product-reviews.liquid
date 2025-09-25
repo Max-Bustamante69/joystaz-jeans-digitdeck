@@ -808,7 +808,7 @@
         e.preventDefault();
         const fd = new FormData(form);
         if (!fd.get('sizePurchased')) {
-          showAlert('error', 'Por favor selecciona una talla comprada.');
+          showAlert('error', 'Por favor selecciona una {{ settings.size_option_label | default: "talla" }} comprada.');
           return;
         }
         if (submitBtn) submitBtn.disabled = true;
@@ -1267,11 +1267,14 @@
           </div>
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">Talla comprada</label>
+          <label class="block text-sm font-medium mb-1">
+            {{- settings.size_option_label | default: 'Talla' }} comprada</label
+          >
           {% assign size_option = '' %}
           {% for opt in product.options_with_values %}
             {% assign opt_down = opt.name | downcase %}
-            {% if opt_down contains 'size' or opt_down contains 'talla' %}
+            {% assign size_handle_down = settings.size_option_handle | default: 'talla' | downcase %}
+            {% if opt_down contains 'size' or opt_down contains size_handle_down %}
               {% assign size_option = opt %}
               {% break %}
             {% endif %}

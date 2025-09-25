@@ -194,7 +194,7 @@
                 ],
                 sizes: [
                   {% for option in product.options_with_values %}
-                    {% if option.name == 'Talla' or option.name == 'Size' %}
+                    {% if option.name == settings.size_option_handle or option.name == 'Size' %}
                       {% for value in option.values %}
                         "{{ value }}"{% unless forloop.last %},{% endunless %}
                       {% endfor %}
@@ -235,7 +235,7 @@
                 ],
                 sizes: [
                   {% for option in product.options_with_values %}
-                    {% if option.name == 'Talla' or option.name == 'Size' %}
+                    {% if option.name == settings.size_option_handle or option.name == 'Size' %}
                       {% for value in option.values %}
                         "{{ value }}"{% unless forloop.last %},{% endunless %}
                       {% endfor %}

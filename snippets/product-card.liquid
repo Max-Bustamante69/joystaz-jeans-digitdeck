@@ -14,13 +14,16 @@
   - show_wishlist: boolean (default: true) - Show/hide wishlist heart icon
 {% endcomment %}
 
+{% assign size_option_name = settings.size_option_label | default: 'Talla' %}
+{% assign size_option_handle = settings.size_option_handle | default: 'talla' %}
+
 <div
   class="product-card relative  w-full flex flex-col  h-full max-w-full"
   x-data="productCard{{ product.id }}()"
   {% if wishlist_mode %}
     data-wishlist-card data-handle="{{ product.handle }}"
   {% endif %}
-  {% if product.options contains 'Talla' %}
+  {% if product.options contains size_option_handle %}
     @mouseenter="isDesktop && (showSizeSelector = true)"
     @mouseleave="isDesktop && (showSizeSelector = false)"
   {% endif %}
@@ -168,7 +171,7 @@
     {% endif %}
 
     <!-- Size Selector Plus Button - positioned in bottom right corner (NOT in bundle mode) -->
-    {% if product.options contains 'Talla' and wishlist_mode != true and bundle_mode != true %}
+    {% if product.options contains size_option_handle and wishlist_mode != true and bundle_mode != true %}
       <button
         class="absolute right-2 bottom-2 w-8 h-8 lg:hidden  flex items-center justify-center text-gray-600 hover:text-gray-800  duration-200  z-10"
         @click.stop.prevent="handlePlusClick"
@@ -196,8 +199,8 @@
       </button>
     {% endif %}
 
-    <!-- Size Selector Grid - Only show if "Talla" is in product options AND not in bundle mode -->
-    {% if product.options contains 'Talla' and bundle_mode != true %}
+    <!-- Size Selector Grid - Only show if size option is in product options AND not in bundle mode -->
+    {% if product.options contains size_option_handle and bundle_mode != true %}
       <div
         x-show="showSizeSelector && isDesktop"
         x-transition:enter="transition ease-out duration-300"
@@ -503,7 +506,7 @@
         {% endfor %}
 
         <!-- Size Selector -->
-        {% if product.options contains 'Talla' %}
+        {% if product.options contains size_option_handle %}
           <div class="flex flex-wrap items-center gap-1 mb-2">
             {% comment %} Get all unique sizes {% endcomment %}
             {% assign unique_sizes = '' %}
@@ -1158,9 +1161,10 @@
 
       handlePlusClick() {
 
-        // Check if product has Talla option using the product data
+        // Check if product has size option using the product data
         const productOptions = {{ product.options | json }};
-        const hasTalla = productOptions.includes('Talla');
+        const sizeOptionHandle = '{{ settings.size_option_handle | default: "talla" }}';
+        const hasTalla = productOptions.includes(sizeOptionHandle);
         const hasColor = productOptions.includes('Color');
 
         if (hasTalla) {
@@ -1183,9 +1187,10 @@
           return;
         }
 
-        // Check if product has Talla option using the product data
+        // Check if product has size option using the product data
         const productOptions = {{ product.options | json }};
-        const hasTalla = productOptions.includes('Talla');
+        const sizeOptionHandle = '{{ settings.size_option_handle | default: "talla" }}';
+        const hasTalla = productOptions.includes(sizeOptionHandle);
         const hasColor = productOptions.includes('Color');
 
         // In bundle mode, we don't use overlays - user must select from inline selectors

@@ -39,10 +39,7 @@
       "nuevo-todo",
       "not-on-sale"
     ],
-    "search_category_collections": [
-      "men",
-      "jeans-mujer"
-    ],
+    "search_category_collections": ["men", "jeans-mujer"],
     "content_for_index": []
   }
 }

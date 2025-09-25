@@ -404,6 +404,16 @@
       <div id="reviews-list-{{ product.id }}" class="reviews-list mb-8">
         <p class="text-gray-500 text-center py-4">No reviews found</p>
       </div>
+      {% if section.settings.show_review_form %}
+        <div class="review-form-toggle max-w-sm mx-auto">
+          <button
+            class="body-lg font-semibold py-3 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300  w-full"
+            id="write-review-btn-{{ product.id }}-empty"
+          >
+            {{ section.settings.write_review_text | default: 'Write a Review' }}
+          </button>
+        </div>
+      {% endif %}
     {% endif %}
   </div>
 </div>
@@ -448,6 +458,12 @@
        
        // Initialize video elements
        initializeVideos();
+
+       // Wire review form drawer open/close
+       initializeReviewFormDrawer();
+
+       // Initialize review form fields and handlers
+       initializeReviewForm();
      }
 
      function initializeRatingBars() {
@@ -507,6 +523,405 @@
          });
        });
      }
+
+    function initializeReviewFormDrawer() {
+      const openButtons = [
+        document.getElementById('write-review-btn-{{ product.id }}'),
+        document.getElementById('write-review-btn-{{ product.id }}-empty')
+      ].filter(Boolean);
+
+      const inlineForm = document.getElementById('review-form-inline-{{ product.id }}');
+      const firstInput = inlineForm ? inlineForm.querySelector('input[name="authorName"]') : null;
+
+      function openInline() {
+        if (!inlineForm) return;
+        inlineForm.style.display = 'block';
+        inlineForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => { if (firstInput) firstInput.focus(); }, 250);
+      }
+
+      function closeInline() {
+        if (!inlineForm) return;
+        inlineForm.style.display = 'none';
+      }
+
+      function showSuccessMessage() {
+        const successMessage = document.getElementById('review-success-{{ product.id }}');
+        if (successMessage) {
+          successMessage.classList.remove('hidden');
+          successMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
+      function hideSuccessMessage() {
+        const successMessage = document.getElementById('review-success-{{ product.id }}');
+        if (successMessage) {
+          successMessage.classList.add('hidden');
+        }
+      }
+
+      openButtons.forEach(btn => btn.addEventListener('click', openInline));
+      
+      // Close button functionality
+      const closeBtn = document.getElementById('close-review-form-{{ product.id }}');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', closeInline);
+      }
+
+      // Success message close button
+      const closeSuccessBtn = document.getElementById('close-success-message-{{ product.id }}');
+      if (closeSuccessBtn) {
+        closeSuccessBtn.addEventListener('click', hideSuccessMessage);
+      }
+
+      // expose for programmatic use
+      window.openReviewDrawer = openInline;
+      window.closeReviewDrawer = closeInline;
+      window.showReviewSuccess = showSuccessMessage;
+    }
+
+    function initializeReviewForm() {
+      const form = document.getElementById('review-form-{{ product.id }}');
+      if (!form) return;
+
+      const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
+
+      // Set product id
+      const productIdInput = form.querySelector('#reviewProductId');
+      if (productIdInput) productIdInput.value = {{ product.id }};
+
+      // Star rating helpers
+      function initStars(containerId, hiddenInputId, textId) {
+        const container = document.getElementById(containerId);
+        const input = document.getElementById(hiddenInputId);
+        const textEl = textId ? document.getElementById(textId) : null;
+        if (!container || !input) return;
+        const stars = Array.from(container.querySelectorAll('[data-rating]'));
+        function paint(r) {
+          stars.forEach((s, i) => s.classList.toggle('active', i < r));
+          if (textEl) {
+            const labels = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+            textEl.textContent = labels[r] || '';
+          }
+        }
+        stars.forEach((star, idx) => {
+          star.addEventListener('click', () => { input.value = idx + 1; paint(idx + 1); });
+          star.addEventListener('mouseenter', () => paint(idx + 1));
+        });
+        container.addEventListener('mouseleave', () => paint(parseInt(input.value) || 0));
+      }
+
+      initStars('overallRating-{{ product.id }}', 'rating-{{ product.id }}', 'ratingText-{{ product.id }}');
+      // Removed star init for fit; using slider instead
+      initStars('shippingRating-{{ product.id }}', 'shippingRatingValue-{{ product.id }}');
+
+      // Fit slider functionality
+      (function initFitSlider(){
+        const container = document.querySelector('.fit-slider-container');
+        if (!container) return;
+        const marker = document.getElementById('fit-marker-{{ product.id }}');
+        const hiddenInput = document.getElementById('fitRatingValue-{{ product.id }}');
+        const labels = container.querySelectorAll('[data-fit]');
+        const positions = 5;
+        function setPosition(pos){
+          const clamped = Math.max(1, Math.min(5, pos));
+          const percent = ((clamped - 1) / (positions - 1)) * 100;
+          marker.style.left = `calc(${percent}% - 8px)`;
+          hiddenInput.value = String(clamped);
+        }
+        // default center (3 = Tamaño real)
+        setPosition(3);
+        labels.forEach(label=>{
+          label.addEventListener('click',()=>{
+            const val = parseInt(label.getAttribute('data-fit'));
+            setPosition(val);
+          });
+        });
+        let dragging = false;
+        const trackWrapper = container.querySelector('.relative');
+        function handleMove(clientX){
+          const rect = trackWrapper.getBoundingClientRect();
+          const rel = Math.max(0, Math.min(rect.width, clientX - rect.left));
+          const pct = (rel / rect.width) * 100;
+          const pos = Math.round((pct / 100) * (positions - 1)) + 1;
+          setPosition(pos);
+        }
+        marker.addEventListener('mousedown', (e)=>{ dragging = true; e.preventDefault(); });
+        document.addEventListener('mousemove', (e)=>{ if (dragging) handleMove(e.clientX); });
+        document.addEventListener('mouseup', ()=>{ dragging = false; });
+        marker.addEventListener('touchstart', (e)=>{ dragging = true; e.preventDefault(); });
+        document.addEventListener('touchmove', (e)=>{ if (dragging) handleMove(e.touches[0].clientX); });
+        document.addEventListener('touchend', ()=>{ dragging = false; });
+        // expose reset helper
+        window.resetFitSlider = ()=> setPosition(3);
+      })();
+
+      // Size slider functionality
+      function initSizeSlider() {
+        const container = document.querySelector('.size-slider-container');
+        if (!container) return;
+        
+        const marker = document.getElementById('size-marker-{{ product.id }}');
+        const hiddenInput = document.getElementById('sizePurchased-{{ product.id }}');
+        const sizeLabels = container.querySelectorAll('[data-size]');
+        
+        if (!marker || !hiddenInput || sizeLabels.length === 0) return;
+        
+        const sizes = Array.from(sizeLabels).map(label => label.dataset.size);
+        const totalPositions = sizes.length;
+        
+        function updateMarker(position) {
+          if (position < 0 || position >= totalPositions) return;
+          const percentage = (position / (totalPositions - 1)) * 100;
+          marker.style.left = `calc(${percentage}% - 8px)`;
+          hiddenInput.value = sizes[position];
+        }
+        
+        // Click on size labels
+        sizeLabels.forEach((label, index) => {
+          label.addEventListener('click', () => updateMarker(index));
+        });
+        
+        // Drag functionality for marker
+        let isDragging = false;
+        
+        marker.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          
+          const containerRect = container.querySelector('.relative').getBoundingClientRect();
+          const relativeX = e.clientX - containerRect.left;
+          const percentage = Math.max(0, Math.min(100, (relativeX / containerRect.width) * 100));
+          const position = Math.round((percentage / 100) * (totalPositions - 1));
+          
+          updateMarker(position);
+        });
+        
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+        
+        // Touch support
+        marker.addEventListener('touchstart', (e) => {
+          isDragging = true;
+          e.preventDefault();
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          
+          const containerRect = container.querySelector('.relative').getBoundingClientRect();
+          const relativeX = e.touches[0].clientX - containerRect.left;
+          const percentage = Math.max(0, Math.min(100, (relativeX / containerRect.width) * 100));
+          const position = Math.round((percentage / 100) * (totalPositions - 1));
+          
+          updateMarker(position);
+        });
+        
+        document.addEventListener('touchend', () => {
+          isDragging = false;
+        });
+        
+        // Initialize with first size
+        updateMarker(0);
+      }
+      
+      function resetSizeSlider() {
+        const marker = document.getElementById('size-marker-{{ product.id }}');
+        const hiddenInput = document.getElementById('sizePurchased-{{ product.id }}');
+        if (marker && hiddenInput) {
+          marker.style.left = '0%';
+          hiddenInput.value = '';
+        }
+      }
+      
+      initSizeSlider();
+
+      // File selection feedback (validation + counts)
+      function setupFileUploadFeedback() {
+        const imageInput = document.getElementById('imageFiles-{{ product.id }}');
+        const videoInput = document.getElementById('videoFiles-{{ product.id }}');
+        const imageFeedback = document.getElementById('image-files-feedback-{{ product.id }}');
+        const videoFeedback = document.getElementById('video-files-feedback-{{ product.id }}');
+
+        if (imageInput && imageFeedback) {
+          imageInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files || []);
+            if (files.length === 0) {
+              imageFeedback.className = 'mt-2 text-sm hidden';
+              imageFeedback.textContent = '';
+              return;
+            }
+
+            const maxSize = 5 * 1024 * 1024; // 5MB per image
+            const invalid = files.filter(f => !f.type.startsWith('image/') || f.size > maxSize);
+
+            if (invalid.length > 0) {
+              imageFeedback.className = 'mt-2 text-sm text-red-600';
+              imageFeedback.textContent = '⚠️ Algunos archivos no son válidos (solo imágenes, máx 5MB).';
+            } else {
+              imageFeedback.className = 'mt-2 text-sm text-green-600';
+              imageFeedback.textContent = `✅ ${files.length} imagen${files.length > 1 ? 'es' : ''} seleccionada${files.length > 1 ? 's' : ''}`;
+            }
+          });
+        }
+
+        if (videoInput && videoFeedback) {
+          videoInput.addEventListener('change', (e) => {
+            const file = (e.target.files || [])[0];
+            if (!file) {
+              videoFeedback.className = 'mt-2 text-sm hidden';
+              videoFeedback.textContent = '';
+              return;
+            }
+
+            const maxSize = 20 * 1024 * 1024; // 20MB
+            const isValid = file.type.startsWith('video/') && file.size <= maxSize;
+
+            if (!isValid) {
+              videoFeedback.className = 'mt-2 text-sm text-red-600';
+              videoFeedback.textContent = '⚠️ Archivo no válido (solo videos, máx 20MB).';
+            } else {
+              videoFeedback.className = 'mt-2 text-sm text-green-600';
+              videoFeedback.textContent = '✅ Video seleccionado';
+            }
+          });
+        }
+      }
+
+      setupFileUploadFeedback();
+
+      const submitBtn = form.querySelector('[type="submit"]');
+      const loading = document.getElementById('review-loading-{{ product.id }}');
+      const alertContainer = document.getElementById('review-alert-{{ product.id }}');
+
+      function showAlert(type, message) {
+        if (!alertContainer) return;
+        alertContainer.innerHTML = `<div class="alert ${type === 'success' ? 'alert-success' : 'alert-error'}">${message}</div>`;
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        if (!fd.get('sizePurchased')) {
+          showAlert('error', 'Por favor selecciona una talla comprada.');
+          return;
+        }
+        if (submitBtn) submitBtn.disabled = true;
+        if (loading) loading.style.display = 'block';
+        alertContainer.innerHTML = '';
+
+        try {
+          const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
+          if (API_BASE_URL) {
+            // Create JSON payload with all form data
+            const payload = {
+              productId: parseInt('{{ product.id }}'),
+              rating: parseInt(fd.get('rating')),
+              title: fd.get('title'),
+              body: fd.get('body'),
+              authorName: fd.get('authorName'),
+              authorEmail: fd.get('authorEmail'),
+              isVerifiedBuyer: false,
+              ageRange: fd.get('ageRange') || undefined,
+              sizePurchased: fd.get('sizePurchased') || undefined,
+              fitRating: fd.get('fitRating') ? parseInt(fd.get('fitRating')) : undefined,
+              shippingRating: fd.get('shippingRating') ? parseInt(fd.get('shippingRating')) : undefined,
+              recommendsProduct: false
+            };
+
+            // Optional media: convert first selected image/video to base64 Data URL
+            const imageInput = document.getElementById('imageFiles-{{ product.id }}');
+            const videoInput = document.getElementById('videoFiles-{{ product.id }}');
+            const MAX = 5 * 1024 * 1024; // 5MB per file
+            const IMG_TYPES = ['image/jpeg','image/png','image/gif'];
+            const VID_TYPES = ['video/mp4','video/webm'];
+            const fileToBase64 = (file) => new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+
+            // Handle image (take first image if multiple selected)
+            if (imageInput && imageInput.files && imageInput.files.length > 0) {
+              const img = imageInput.files[0];
+              if (!IMG_TYPES.includes(img.type)) {
+                throw new Error('Tipo de imagen no soportado (usa JPG, PNG o GIF)');
+              }
+              if (img.size > MAX) {
+                throw new Error('La imagen excede 5MB');
+              }
+              payload.image = await fileToBase64(img);
+            }
+
+            // Handle video (single)
+            if (videoInput && videoInput.files && videoInput.files.length > 0) {
+              const vid = videoInput.files[0];
+              if (!VID_TYPES.includes(vid.type)) {
+                throw new Error('Tipo de video no soportado (usa MP4 o WebM)');
+              }
+              if (vid.size > MAX) {
+                throw new Error('El video excede 5MB');
+              }
+              payload.video = await fileToBase64(vid);
+            }
+
+            // Debug: Log payload (without huge media)
+            console.log('Review payload:', {
+              ...payload,
+              image: payload.image ? '[base64 image]' : undefined,
+              video: payload.video ? '[base64 video]' : undefined,
+            });
+
+            // Send JSON payload
+            const res = await fetch(API_BASE_URL, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(payload)
+            });
+            const result = await res.json().catch(() => ({}));
+            if (!res.ok || result.success === false) {
+              throw new Error(result.message || 'Failed to submit review');
+            }
+          }
+
+          // Close form and show success message
+          if (window.closeReviewDrawer) window.closeReviewDrawer();
+          if (window.showReviewSuccess) window.showReviewSuccess();
+
+          // Reset form for next use
+          form.reset();
+          // reset stars
+          ['overallRating-{{ product.id }}','fitRating-{{ product.id }}','shippingRating-{{ product.id }}']
+            .forEach(id => {
+              const c = document.getElementById(id);
+              if (!c) return;
+              c.querySelectorAll('[data-rating]')
+                .forEach(el => el.classList.remove('active'));
+            });
+          // reset fit slider
+          if (window.resetFitSlider) window.resetFitSlider();
+          // reset file feedback
+          const imgFb = document.getElementById('image-files-feedback-{{ product.id }}');
+          const vidFb = document.getElementById('video-files-feedback-{{ product.id }}');
+          if (imgFb) { imgFb.className = 'mt-2 text-sm hidden'; imgFb.textContent = ''; }
+          if (vidFb) { vidFb.className = 'mt-2 text-sm hidden'; vidFb.textContent = ''; }
+        } catch (err) {
+          console.error(err);
+          showAlert('error', err.message || 'Error enviando la reseña. Intenta nuevamente.');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (loading) loading.style.display = 'none';
+        }
+      });
+    }
   })();
 </script>
 
@@ -607,7 +1022,6 @@
   .review-media-carousel .swiper {
     width: 100%;
     height: 100%;
-    border-radius: 0.5rem;
     overflow: hidden;
   }
 
@@ -648,6 +1062,14 @@
     left: 4px;
   }
 
+  /* Review Drawer Transitions */
+  #review-form-overlay-{{ product.id }}.is-open {
+    opacity: 1;
+  }
+  #review-form-drawer-{{ product.id }}.is-open {
+    transform: translateY(0);
+  }
+
   /* Responsive Design */
   @media (max-width: 1024px) {
     .review-layout {
@@ -685,7 +1107,271 @@
       height: 130px;
     }
   }
+
+  /* Star visual state */
+  #overallRating-{{ product.id }} [data-rating],
+  #fitRating-{{ product.id }} [data-rating],
+  #shippingRating-{{ product.id }} [data-rating] { color: #d1d5db; transition: color .15s ease; }
+  #overallRating-{{ product.id }} [data-rating].active,
+  #fitRating-{{ product.id }} [data-rating].active,
+  #shippingRating-{{ product.id }} [data-rating].active { color: #f59e0b; }
+
+  /* Size Slider Styles */
+  .size-slider-container {
+    padding: 16px 0;
+  }
+
+  .size-slider-container .relative {
+    max-width: 320px;
+  }
+
+  .size-slider-container .w-1 {
+    width: 4px;
+    height: 4px;
+  }
+
+  .size-slider-container .w-2\.5 {
+    width: 10px;
+    height: 10px;
+    z-index: 10;
+  }
+
+  .size-slider-container [data-size] {
+    transition: color 0.2s ease;
+  }
+
+  .size-slider-container [data-size]:hover {
+    color: #374151;
+  }
+
+  /* Fit Slider Styles (match the review card style) */
+  .fit-slider-container { padding: 16px 0; }
+  .fit-slider-container .relative { max-width: 320px; }
+  .fit-slider-container .w-1 { width: 4px; height: 4px; }
+  .fit-slider-container .w-2\.5 { width: 10px; height: 10px; z-index: 10; }
+  .fit-slider-container [data-fit] { transition: color 0.2s ease; }
+  .fit-slider-container [data-fit]:hover { color: #374151; }
 </style>
+
+<!-- Review Form Inline (always visible) -->
+<div id="review-form-inline-{{ product.id }}" class="max-w-2xl mx-auto my-8 px-4" style="display:none;">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h4 class="font-semibold text-lg">Escribe una reseña</h4>
+      <div class="flex items-center gap-3">
+        <span class="text-gray-400 body-sm">Producto #{{ product.id }}</span>
+        <button
+          id="close-review-form-{{ product.id }}"
+          class="text-gray-400 hover:text-gray-600 transition-colors"
+          type="button"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="review-alert-{{ product.id }}" class="mb-3"></div>
+    <form id="review-form-{{ product.id }}" class="space-y-5">
+      <input id="reviewProductId" type="hidden" name="productId" value="{{ product.id }}">
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Calificación general *</label>
+        <div class="flex items-center gap-3">
+          <div id="overallRating-{{ product.id }}" class="flex gap-1 text-2xl text-yellow-400">
+            <span data-rating="1" class="cursor-pointer">★</span>
+            <span data-rating="2" class="cursor-pointer">★</span>
+            <span data-rating="3" class="cursor-pointer">★</span>
+            <span data-rating="4" class="cursor-pointer">★</span>
+            <span data-rating="5" class="cursor-pointer">★</span>
+          </div>
+          <span id="ratingText-{{ product.id }}" class="text-sm text-gray-500">Click para calificar</span>
+        </div>
+        <input id="rating-{{ product.id }}" name="rating" type="hidden" required>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Título *</label>
+          <input name="title" type="text" maxlength="200" class="w-full border border-gray-300 rounded-md p-2" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Tu nombre *</label>
+          <input
+            name="authorName"
+            type="text"
+            maxlength="100"
+            class="w-full border border-gray-300 rounded-md p-2"
+            required
+          >
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Tu email *</label>
+          <input name="authorEmail" type="email" class="w-full border border-gray-300 rounded-md p-2" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Rango de edad</label>
+          <select name="ageRange" class="w-full border border-gray-300 rounded-md p-2">
+            <option value="">Seleccionar</option>
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45-54">45-54</option>
+            <option value="55-64">55-64</option>
+            <option value="65+">65+</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Reseña *</label>
+        <textarea
+          name="body"
+          maxlength="2000"
+          class="w-full border border-gray-300 rounded-md p-2"
+          rows="5"
+          required
+        ></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Ajuste (Fit)</label>
+          <!-- Fit slider -->
+          <div class="fit-slider-container">
+            <div class="relative">
+              <div class="relative w-full max-w-sm h-1 bg-gray-300 rounded-full">
+                <div class="absolute inset-0 flex items-center justify-between">
+                  <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+                  <div class="w-1 h-1 bg-gray-400 rounded-full"></div>
+                </div>
+                <div
+                  id="fit-marker-{{ product.id }}"
+                  class="absolute top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-gray-800 rounded-full cursor-pointer transition-all duration-200 hover:scale-110"
+                  style="left: calc(50% - 8px);"
+                ></div>
+              </div>
+              <div class="flex justify-between mt-3 text-xs text-gray-600 max-w-sm">
+                <span class="cursor-pointer hover:text-gray-800 transition-colors" data-fit="1">Muy pequeña</span>
+                <span class="cursor-pointer hover:text-gray-800 transition-colors" data-fit="3">Tamaño real</span>
+                <span class="cursor-pointer hover:text-gray-800 transition-colors" data-fit="5">Muy grande</span>
+              </div>
+            </div>
+            <input id="fitRatingValue-{{ product.id }}" name="fitRating" type="hidden">
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Talla comprada</label>
+          {% assign size_option = '' %}
+          {% for opt in product.options_with_values %}
+            {% assign opt_down = opt.name | downcase %}
+            {% if opt_down contains 'size' or opt_down contains 'talla' %}
+              {% assign size_option = opt %}
+              {% break %}
+            {% endif %}
+          {% endfor %}
+          <select name="sizePurchased" class="w-full border border-gray-300 rounded-md p-2">
+            <option value="">Seleccionar</option>
+            {% if size_option != '' %}
+              {% for v in size_option.values %}
+                <option value="{{ v }}">{{ v }}</option>
+              {% endfor %}
+            {% endif %}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Envío</label>
+          <div id="shippingRating-{{ product.id }}" class="flex gap-1 text-2xl text-yellow-400">
+            <span data-rating="1" class="cursor-pointer">★</span>
+            <span data-rating="2" class="cursor-pointer">★</span>
+            <span data-rating="3" class="cursor-pointer">★</span>
+            <span data-rating="4" class="cursor-pointer">★</span>
+            <span data-rating="5" class="cursor-pointer">★</span>
+          </div>
+          <input id="shippingRatingValue-{{ product.id }}" name="shippingRating" type="hidden">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Imágenes (opcional)</label>
+          <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md cursor-pointer w-full justify-center">
+            <input
+              name="imageFiles"
+              id="imageFiles-{{ product.id }}"
+              type="file"
+              accept="image/*"
+              multiple
+              class="hidden"
+            >
+            <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7a2 2 0 012-2h14a2 2 0 012 2M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7m-5 4l-3 3-2-2-4 4"/>
+            </svg>
+            <span>Seleccionar imágenes</span>
+          </label>
+          <small class="text-gray-500">JPG, PNG, GIF. Máx 5MB c/u.</small>
+          <div id="image-files-feedback-{{ product.id }}" class="mt-2 text-sm hidden"></div>
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Video (opcional)</label>
+        <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-md cursor-pointer w-full justify-center">
+          <input name="videoFiles" id="videoFiles-{{ product.id }}" type="file" accept="video/*" class="hidden">
+          <svg class="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+          <span>Seleccionar video</span>
+        </label>
+        <small class="text-gray-500">MP4, WebM. Máx 20MB.</small>
+        <div id="video-files-feedback-{{ product.id }}" class="mt-2 text-sm hidden"></div>
+      </div>
+
+      <button
+        type="submit"
+        class="py-3 px-4 bg-primary text-white border border-primary hover:bg-transparent hover:text-black w-full rounded-md"
+      >
+        Enviar reseña
+      </button>
+    </form>
+
+    <div id="review-loading-{{ product.id }}" class="text-center py-4 hidden">
+      <div
+        class="spinner mx-auto mb-2"
+        style="border: 3px solid #eee; border-top-color: #111; border-radius: 50%; width: 28px; height: 28px; animation: spin 1s linear infinite;"
+      ></div>
+      <div class="text-sm text-gray-600">Enviando reseña...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Message (hidden by default) -->
+<div id="review-success-{{ product.id }}" class="max-w-2xl mx-auto my-8 px-4 hidden">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 text-center">
+    <div class="mb-4">
+      <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <h4 class="text-xl font-semibold text-gray-900 mb-2">¡Gracias por tu reseña!</h4>
+      <p class="text-gray-600">
+        Tu reseña ha sido enviada y está pendiente de aprobación. Te notificaremos cuando sea publicada.
+      </p>
+    </div>
+    <button
+      id="close-success-message-{{ product.id }}"
+      class="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors"
+      type="button"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>
 
 {% schema %}
 {
@@ -693,6 +1379,13 @@
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "text",
+      "id": "reviews_api_url",
+      "label": "Reviews API URL",
+      "info": "Endpoint to POST new reviews as JSON",
+      "default": "http://localhost:3001/api/reviews"
+    },
     {
       "type": "header",
       "content": "Review Form Settings"

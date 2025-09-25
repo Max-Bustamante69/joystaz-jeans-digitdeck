@@ -34,7 +34,7 @@
         data-section-id="{{ section.id }}"
         data-carousel-type="product-images"
         id="product-images-carousel-{{ product.id }}-{{ section.id }}"
-        style="touch-action: pan-y;"
+        style="touch-action: pan-y; overscroll-behavior: contain;"
       >
         <div class="swiper-wrapper h-full" @mouseenter="imageHovered = true" @mouseleave="imageHovered = false">
           <!-- Build slides: overlay for first two, then remaining singles -->
@@ -279,7 +279,7 @@
                 <button
                   class="relative body-sm font-semibold transition-all duration-200 bg-transparent border border-transparent hover:border-black rounded-full flex items-center justify-center gap-1"
                   x-bind:class="
-                  [
+                                      [
                       isSizeAvailable('{{ size_name }}') ? 'text-gray-900' : 'opacity-40 cursor-not-allowed',
                       isSizeAvailable('{{ size_name }}') ? 'aspect-square w-full' : 'w-full h-8 pl-2 pr-3'
                     ]
@@ -1502,6 +1502,8 @@
               slidesPerView: 1,
               spaceBetween: 0,
               allowTouchMove: true,
+              resistanceRatio: 0,
+              nested: true,
               grabCursor: false,
               touchRatio: 1,
               touchAngle: 45,
@@ -1646,7 +1648,7 @@
           touchRatio: 1,
           touchAngle: 45,
           simulateTouch: true,
-          allowTouchMove: true,
+          allowTouchMove: false,
           touchStartPreventDefault: false,
           touchMoveStopPropagation: false,
           preventInteractionOnTransition: false,
@@ -1796,7 +1798,7 @@
           touchRatio: 1,
           touchAngle: 45,
           simulateTouch: true,
-          allowTouchMove: true,
+          allowTouchMove: false,
           touchStartPreventDefault: false,
           touchMoveStopPropagation: false,
           preventInteractionOnTransition: false,

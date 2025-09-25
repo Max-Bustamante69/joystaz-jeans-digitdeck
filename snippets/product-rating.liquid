@@ -97,7 +97,6 @@
 {% if debug %}
   <div class="body-xs" style="opacity:.6">
     <div>ratings_found: {{ ratings_metafield.value.count | default: 0 }}</div>
-    <div>parsed: [{{ debug_list | strip | strip_newlines | trim: ',' }}]</div>
     <div>
       total: {{ total_rating | default: 0 }} | count: {{ review_count | default: 0 }} | avg:
       {{ average_rating | default: 0 }}

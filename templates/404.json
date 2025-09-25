@@ -20,12 +20,12 @@
         "title": "Best Sellers",
         "rich_text": "",
         "show_view_all": true,
-        "view_all_text": "Ver todos",
+        "view_all_text": "View All",
         "view_all_link": "",
         "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
-        "collection": "mujer",
+        "collection": "featured-collection",
         "collections": [],
         "product_tags": "",
         "products": [],
@@ -34,12 +34,9 @@
         "show_rating": true,
         "show_color_swatches": true,
         "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
+        "no_products_message": "No products available at this time."
       }
     }
   },
-  "order": [
-    "main",
-    "product_carousel_A86pk7"
-  ]
+  "order": ["main", "product_carousel_A86pk7"]
 }

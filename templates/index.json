@@ -16,12 +16,12 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Promo_Septiembre_Web_a6281a7c-41ea-412e-b70e-c610c13d0318.svg",
+            "image": "shopify://shop_images/hero-slide-1.svg",
             "image_url": "",
-            "title": "Amor y amistad con JoyStaz",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descúbrelos",
-            "button_link": "shopify://collections/jeans-mujer",
+            "title": "Featured Collection",
+            "description": "Discover our latest collection of premium products designed for your lifestyle",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/featured-collection",
             "button_style": "underline  border-none text-sm"
           }
         },
@@ -29,11 +29,11 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/adelante2_b6edc962-0ada-47ae-9a84-1bc0f085eaac.png",
+            "image": "shopify://shop_images/hero-slide-2.png",
             "image_url": "",
-            "title": "Marcos",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
+            "title": "New Arrivals",
+            "description": "Explore our newest collection of carefully curated products",
+            "button_text": "Discover",
             "button_link": "",
             "button_style": ""
           }
@@ -56,11 +56,11 @@
         "title": "Best Sellers",
         "rich_text": "",
         "show_view_all": true,
-        "view_all_text": "Ver todos",
+        "view_all_text": "View All",
         "view_all_link": "",
         "show_arrows": true,
         "product_source": "collection",
-        "collection": "mas-buscados-vendidos",
+        "collection": "best-sellers",
         "product_tags": "",
         "products": [],
         "max_products": 12,
@@ -68,7 +68,7 @@
         "show_rating": true,
         "show_color_swatches": true,
         "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
+        "no_products_message": "No products available at this time."
       }
     },
     "category-grid": {
@@ -77,7 +77,7 @@
         "category_pwLXdi": {
           "type": "category",
           "settings": {
-            "collection": "women",
+            "collection": "category-1",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "landscape"
@@ -86,7 +86,7 @@
         "category_eVzi4H": {
           "type": "category",
           "settings": {
-            "collection": "men",
+            "collection": "category-2",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "landscape"
@@ -106,14 +106,14 @@
       "settings": {
         "layout_direction": "image_first",
         "image_style": "full_width",
-        "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
+        "image": "shopify://shop_images/featured-image.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "El jean que empieza contigo",
-        "text": "Creemos que tus jeans no son solo una prenda: son la base de tu seguridad, estilo y autenticidad. Creamos piezas que realzan tu figura, se mueven contigo y te hacen sentir poderosa en cada momento del día. Porque comodidad, diseño y confianza no deberían ser una elección, sino un estándar.",
-        "subtitle": "Nuestra promesa",
-        "rich_text": "<ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
-        "button_text": "Descubrelos",
+        "title": "Quality That Starts With You",
+        "text": "We believe that quality products are not just items: they are the foundation of your confidence, style and authenticity. We create pieces that enhance your figure, move with you and make you feel powerful at every moment of the day. Because comfort, design and confidence shouldn't be a choice, but a standard.",
+        "subtitle": "Our Promise",
+        "rich_text": "<ul><li><strong>Fits for every body</strong> – designed to adapt to you and your lifestyle.<br/></li></ul><p></p><ul><li><strong>All-day comfort</strong> – flexible materials that move with you without losing shape.<br/></li></ul><p></p><ul><li><strong>Versatile design</strong> – products that work for both casual plans and special occasions.</li></ul><p></p><ul><li><strong>Quality construction</strong> – reinforced seams and durable materials that withstand daily use.</li></ul><p></p><ul><li><strong>Authentic style</strong> – products with local identity and global trends.<br/></li><li><strong>Details that make the difference</strong> – strategic cuts, flattering shapes and modern finishes.<br/></li></ul><p></p>",
+        "button_text": "Discover",
         "button_link": "/collections/all",
         "button_style": "background",
         "background_color": "#ffffff",
@@ -128,7 +128,7 @@
         "category_QC8xmk": {
           "type": "category",
           "settings": {
-            "collection": "shorts-mujer",
+            "collection": "category-3",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -137,7 +137,7 @@
         "category_V68LeD": {
           "type": "category",
           "settings": {
-            "collection": "jeans-mujer",
+            "collection": "category-4",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -146,7 +146,7 @@
         "category_pPrFBF": {
           "type": "category",
           "settings": {
-            "collection": "faldas-mujer",
+            "collection": "category-5",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -155,7 +155,7 @@
         "category_gatxCg": {
           "type": "category",
           "settings": {
-            "collection": "camisetas-mujer",
+            "collection": "category-6",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -170,7 +170,7 @@
       ],
       "name": "Category Grid",
       "settings": {
-        "title": "Best Sellers",
+        "title": "Featured Categories",
         "subtitle": "",
         "mobile_layout": "slider"
       }
@@ -181,7 +181,7 @@
         "video_slide_fCwDVC": {
           "type": "video_slide",
           "settings": {
-            "video_file": "shopify://files/videos/review-video-1757401012251.mp4",
+            "video_file": "shopify://files/videos/featured-video.mp4",
             "video_title": "dawda",
             "video_description": "",
             "video_link": "",
@@ -232,7 +232,7 @@
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p>\"Cada jean JoyStaz nace para que vivas tu estilo con confianza, comodidad y actitud. <em><strong>Porque cuando te sientes auténtico, todo lo demás fluye</strong></em>\"<br/><br/></p>",
+        "quote_text": "<p>\"Every product is designed for you to live your style with confidence, comfort and attitude. <em><strong>Because when you feel authentic, everything else flows</strong></em>\"<br/><br/></p>",
         "background_color": "#ffffff",
         "text_color": "#000000",
         "emphasis_color": "#000000",
@@ -248,11 +248,11 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image_url": "https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1326&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-            "title": "Encuentra tu fit perfecto",
-            "description": "Descubre nuestros jeans skinny, cargo, rectos y palazzo. Diseñados para que te sientas segura, cómoda y siempre a la moda.",
-            "button_text": "Ver Jeans",
-            "button_link": "shopify://collections/jeans-mujer",
+            "image_url": "https://via.placeholder.com/1326x800/cccccc/666666?text=Hero+Image",
+            "title": "Find Your Perfect Fit",
+            "description": "Discover our collection of premium products. Designed to make you feel confident, comfortable and always stylish.",
+            "button_text": "Shop Now",
+            "button_link": "shopify://collections/featured-collection",
             "button_style": "text-xl px-6 py-3 border border-white"
           }
         }
@@ -274,14 +274,14 @@
       "settings": {
         "layout_direction": "text_first",
         "image_style": "full_width",
-        "image": "shopify://shop_images/1_1.jpg",
+        "image": "shopify://shop_images/store-image.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Nuestra Tienda en Medellín",
-        "text": "la moda se vive mejor cuando puedes sentirla de cerca. Por eso abrimos nuestro punto físico en la Zona Industrial de Belén: Calle 29D #55-178, Medellín. Aquí podrás probarte tus jeans favoritos, descubrir nuevos fits y recibir asesoría personalizada para encontrar el estilo que mejor se adapta a ti.",
+        "title": "Visit Our Store",
+        "text": "Experience our products in person at our physical location. Here you can try on your favorite items, discover new styles and receive personalized advice to find the look that best suits you.",
         "subtitle": "",
         "rich_text": "",
-        "button_text": "Descubrelos",
+        "button_text": "Discover",
         "button_link": "/collections/all",
         "button_style": "border",
         "background_color": "#ffffff",
@@ -297,11 +297,11 @@
         "title": "Best Sellers",
         "rich_text": "",
         "show_view_all": true,
-        "view_all_text": "Ver todos",
+        "view_all_text": "View All",
         "view_all_link": "",
         "show_arrows": true,
         "product_source": "collection",
-        "collection": "bermudas-mujer",
+        "collection": "featured-collection",
         "product_tags": "",
         "products": [],
         "max_products": 12,
@@ -309,7 +309,7 @@
         "show_rating": true,
         "show_color_swatches": true,
         "show_size_selector": true,
-        "no_products_message": "No hay productos disponibles en este momento."
+        "no_products_message": "No products available at this time."
       }
     }
   },

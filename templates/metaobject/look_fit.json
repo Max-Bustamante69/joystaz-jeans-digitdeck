@@ -15,7 +15,7 @@
         "look_fit_carousel_7Jb78n": {
           "type": "look_fit_carousel",
           "settings": {
-            "title": "Looks Relacionados",
+            "title": "Related Looks",
             "fit_source": "random",
             "max_fits": 8,
             "display_type": "carousel",
@@ -32,19 +32,15 @@
           }
         }
       },
-      "block_order": [
-        "look_fit_carousel_7Jb78n"
-      ],
+      "block_order": ["look_fit_carousel_7Jb78n"],
       "name": "Look Fit",
       "settings": {
         "autoplay": false,
         "autoplay_delay": 5000,
-        "products_title": "Consigue El Look",
+        "products_title": "Get The Look",
         "show_product_count": true
       }
     }
   },
-  "order": [
-    "look_fit_main"
-  ]
+  "order": ["look_fit_main"]
 }

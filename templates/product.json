@@ -20,25 +20,21 @@
           }
         }
       },
-      "block_order": [
-        "product_gallery_JmAGCm"
-      ],
+      "block_order": ["product_gallery_JmAGCm"],
       "settings": {
         "delivery_days": 7,
-        "availability_text": "Aún disponibles",
-        "single_option_title": "Unico",
-        "single_option_subtitle": "Precio normal",
+        "availability_text": "Still available",
+        "single_option_title": "Single",
+        "single_option_subtitle": "Regular price",
         "duo_option_title": "Duo",
-        "duo_option_subtitle": "Compra más y ahorra",
-        "best_value_text": "Mejor oferta",
+        "duo_option_subtitle": "Buy more and save",
+        "best_value_text": "Best value",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": [
-          "camiseta-oversize-375007-copia-2"
-        ],
+        "duo_eligible_products": ["sample-product-handle"],
         "duo_eligible_collections": [],
-        "free_shipping_text": "Envío gratis En ordenes +500.000",
-        "free_returns_text": "Devoluciones gratis y intercambiables",
-        "cta_button_text": "Añadir Al Carrito",
+        "free_shipping_text": "Free shipping on orders over $100",
+        "free_returns_text": "Free returns and exchanges",
+        "cta_button_text": "Add to Cart",
         "show_reviews_average": true,
         "show_reviews_count": true,
         "show_slide_counter": true,
@@ -51,7 +47,7 @@
         "benefit_1": {
           "type": "benefit_item",
           "settings": {
-            "title": "El Doble De Suavidad Que El Algodón",
+            "title": "Double The Softness Of Cotton",
             "description": "<p>Your refuge for skin wellbeing—hydrating, enhancing, and protecting every day.</p>"
           }
         },
@@ -70,14 +66,10 @@
           }
         }
       },
-      "block_order": [
-        "benefit_1",
-        "benefit_2",
-        "benefit_3"
-      ],
+      "block_order": ["benefit_1", "benefit_2", "benefit_3"],
       "settings": {
-        "title": "Adios A La Incomodidad",
-        "subtitle": "WDWDA",
+        "title": "Goodbye To Discomfort",
+        "subtitle": "Premium Quality",
         "layout": "benefits-left",
         "image_count": "1"
       }

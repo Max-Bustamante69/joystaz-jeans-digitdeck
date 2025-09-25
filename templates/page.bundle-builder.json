@@ -52,15 +52,15 @@
         "bundle_step_4"
       ],
       "settings": {
-        "title": "Crea Tu Bundle Personalizado",
-        "description": "Selecciona productos y ahorra más mientras más compres. ¡Combina tus favoritos y obtén descuentos increíbles!",
-        "products_title": "Productos Disponibles",
-        "bundle_title": "Tu Bundle",
-        "bundle_collection": "bundle",
+        "title": "Create Your Custom Bundle",
+        "description": "Select products and save more as you buy more. Combine your favorites and get incredible discounts!",
+        "products_title": "Available Products",
+        "bundle_title": "Your Bundle",
+        "bundle_collection": "bundle-collection",
         "products_limit": 20,
         "enable_free_gift": true,
-        "free_gift_title": "🎁 REGALO GRATIS",
-        "free_gift_description": "¡Completa todos los pasos y recibe este regalo sin costo adicional!"
+        "free_gift_title": "🎁 FREE GIFT",
+        "free_gift_description": "Complete all steps and receive this gift at no additional cost!"
       }
     }
   },

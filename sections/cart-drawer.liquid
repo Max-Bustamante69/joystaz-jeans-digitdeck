@@ -108,8 +108,6 @@
         </div>
       {% endif %}
 
-    
-
       <template x-if="cartItems.length === 0">
         <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
           <h6>
@@ -201,8 +199,7 @@
         </div>
       {% endif %}
 
-
-        <!-- Cart Accordion -->
+      <!-- Cart Accordion -->
       {% assign accordion_blocks = section.blocks | where: 'type', 'cart_accordion' %}
       {% if accordion_blocks.size > 0 %}
         <div class="lg:px-5 px-4 py-4">
@@ -215,8 +212,6 @@
         </div>
       {% endif %}
 
-
-      
       {% if section.settings.show_product_carousel %}
         <div class="flex flex-col gap-3">
           <h5 class=" lg:px-5 px-4">
@@ -483,18 +478,21 @@
           this.wishlistHandles = raw ? JSON.parse(raw) : [];
         } catch(e) { this.wishlistHandles = []; }
         
-        // Listen for cart updates to refresh product carousel
-        this.$watch('cartItems', () => {
-          this.refreshProductCarousel();
-          this.checkAddonInCart();
+        // Listen for cart updates to refresh product carousel (only when cart items actually change)
+        this.$watch('cartItems', (newItems, oldItems) => {
+          // Only refresh if items actually changed (prevent infinite loops)
+          if (JSON.stringify(newItems) !== JSON.stringify(oldItems)) {
+            this.checkAddonInCart();
+            // Don't call refreshProductCarousel here to prevent infinite loops
+          }
         });
         
         // Listen for cart updates from other components (like product cards)
         window.addEventListener('cart:updated', () => {
           this.loadCart();
-          // Refresh recommendations when cart is updated from external sources
+          // Only refresh recommendations when cart is updated from external sources
           this.$nextTick(() => {
-            this.refreshProductCarousel();
+            this.checkAddonInCart();
           });
         });
       },
@@ -791,25 +789,15 @@
         });
        },
 
-       // Refresh product carousel when cart items change
+       // Refresh product carousel when cart items change (optimized to prevent infinite loops)
        async refreshProductCarousel() {
          try {
-           // Get fresh cart data to update recommendations
-           const response = await fetch('/cart.js');
-           const cart = await response.json();
+           // Only refresh if we have cart items and carousel is visible
+           if (!this.cartItems || this.cartItems.length === 0 || !this.isOpen) {
+             return;
+           }
            
-           // Update cart items with fresh data
-           this.cartItems = cart.items.map(item => ({
-             ...item,
-             product_title: this.cleanProductTitle(item.product_title)
-           }));
-           
-           // Update cart totals with fresh data
-           this.cartTotal = cart.total_price;
-           this.originalTotal = cart.original_total_price || cart.total_price;
-           this.cartSavings = this.originalTotal - this.cartTotal;
-           
-           // Update carousel display based on new cart state
+           // Update carousel display based on current cart state (no need to fetch again)
            this.updateCarouselDisplay();
            
          } catch (error) {

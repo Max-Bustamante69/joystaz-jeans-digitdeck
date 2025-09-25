@@ -16,7 +16,7 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/hero-slide-1.svg",
+            "image": "",
             "image_url": "",
             "title": "Featured Collection",
             "description": "Discover our latest collection of premium products designed for your lifestyle",
@@ -29,7 +29,7 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/hero-slide-2.png",
+            "image": "",
             "image_url": "",
             "title": "New Arrivals",
             "description": "Explore our newest collection of carefully curated products",
@@ -106,7 +106,7 @@
       "settings": {
         "layout_direction": "image_first",
         "image_style": "full_width",
-        "image": "shopify://shop_images/featured-image.jpg",
+        "image": "",
         "image_alt": "",
         "use_product_image": false,
         "title": "Quality That Starts With You",
@@ -181,8 +181,8 @@
         "video_slide_fCwDVC": {
           "type": "video_slide",
           "settings": {
-            "video_file": "shopify://files/videos/featured-video.mp4",
-            "video_title": "dawda",
+            "video_file": "",
+            "video_title": "Featured Video",
             "video_description": "",
             "video_link": "",
             "link_text": "Watch Full Video"
@@ -274,7 +274,7 @@
       "settings": {
         "layout_direction": "text_first",
         "image_style": "full_width",
-        "image": "shopify://shop_images/store-image.jpg",
+        "image": "",
         "image_alt": "",
         "use_product_image": false,
         "title": "Visit Our Store",

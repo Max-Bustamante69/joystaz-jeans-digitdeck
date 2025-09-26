@@ -130,7 +130,7 @@
         "category_QC8xmk": {
           "type": "category",
           "settings": {
-            "collection": "category-3",
+            "collection": "monastery",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -139,7 +139,7 @@
         "category_V68LeD": {
           "type": "category",
           "settings": {
-            "collection": "category-4",
+            "collection": "unixes",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -148,7 +148,7 @@
         "category_pPrFBF": {
           "type": "category",
           "settings": {
-            "collection": "category-5",
+            "collection": "kids",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
@@ -157,7 +157,7 @@
         "category_gatxCg": {
           "type": "category",
           "settings": {
-            "collection": "category-6",
+            "collection": "edicion-limitada",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"

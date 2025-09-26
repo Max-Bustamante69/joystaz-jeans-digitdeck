@@ -114,11 +114,11 @@
       "settings": {
         "layout_direction": "image_first",
         "image_style": "full_width",
-        "image": "shopify://shop_images/model-in-neutral-colors-by-window.jpg",
+        "image": "shopify://shop_images/JoyStaz_-_Website_7_1.png",
         "image_alt": "",
         "use_product_image": false,
         "title": "El jean que empieza contigo",
-        "rich_text": "<ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
+        "rich_text": "<p><br/>Un buen jean no solo completa tu outfit: te da confianza, comodidad y actitud todos los días. En JoyStaz diseñamos jeans que realzan tu figura, acompañan tu ritmo y elevan tu estilo sin sacrificar confort.<br/><br/><br/></p><p></p><ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
         "button_style": "background",
@@ -181,59 +181,6 @@
         "mobile_layout": "slider"
       }
     },
-    "video_carousel_ed3exy": {
-      "type": "video-carousel",
-      "blocks": {
-        "video_slide_fCwDVC": {
-          "type": "video_slide",
-          "settings": {
-            "video_file": "shopify://files/videos/review-video-1757401012251.mp4",
-            "video_title": "dawda",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        },
-        "video_slide_NcUxpz": {
-          "type": "video_slide",
-          "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        },
-        "video_slide_XCKP8n": {
-          "type": "video_slide",
-          "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        }
-      },
-      "block_order": [
-        "video_slide_fCwDVC",
-        "video_slide_NcUxpz",
-        "video_slide_XCKP8n"
-      ],
-      "name": "Video Carousel",
-      "settings": {
-        "title": "Video Gallery",
-        "subtitle": "Discover our latest content",
-        "slides_mobile": 1,
-        "slides_tablet": 2,
-        "slides_desktop": 3,
-        "slides_large_desktop": 4,
-        "slide_spacing": 20,
-        "loop": true,
-        "show_pagination": true,
-        "autoplay": false,
-        "autoplay_delay": 5000,
-        "transition_speed": 800
-      }
-    },
     "quote_E6r7tE": {
       "type": "quote",
       "name": "Quote",
@@ -285,9 +232,9 @@
         "image": "shopify://shop_images/1_1.jpg",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Nuestra Tienda en Medellín",
-        "rich_text": "",
-        "button_text": "Descubrelos",
+        "title": "Visítanos en Medellín",
+        "rich_text": "<p>Conoce nuestra tienda en <strong>Calle 29D #55-178, Zona Industrial de Belén</strong>, pruébate tus jeans favoritos y recibe asesoría personalizada para encontrar el fit perfecto.</p>",
+        "button_text": "Cómo Llegar",
         "button_link": "/collections/all",
         "button_style": "border",
         "background_color": "#ffffff",
@@ -327,7 +274,6 @@
     "category-grid",
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",
-    "video_carousel_ed3exy",
     "quote_E6r7tE",
     "hero_x9Qnqz",
     "image_with_text_G6betb",

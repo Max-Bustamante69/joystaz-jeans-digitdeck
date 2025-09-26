@@ -61,6 +61,8 @@
         "mobile_card_7GXENa"
       ],
       "settings": {
+        "header_variant_default": "auto",
+        "logo": "shopify://shop_images/JoyStaz_-_Website_6.png",
         "menu": "header-menu",
         "mobile_subcollections_count": 4
       }

@@ -42,7 +42,7 @@
       "type": "product-carousel",
       "name": "Product Carousel",
       "settings": {
-        "title": "Best Sellers",
+        "title": "Los más queridos por los clientes",
         "rich_text": "",
         "show_view_all": true,
         "view_all_text": "View All",
@@ -52,7 +52,7 @@
         "product_source": "collection",
         "collection": "best-sellers",
         "collections": [],
-        "product_tags": "",
+        "product_tags": "Más vendidos",
         "products": [],
         "max_products": 12,
         "show_badges": true,

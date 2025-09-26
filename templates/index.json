@@ -12,6 +12,19 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "slide_wfyam9": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/Detras_1.png",
+            "image_url": "",
+            "title": "Lleva tus jeans al siguiente nivel",
+            "description": "Creamos jeans que realzan tu figura, se mueven contigo y duran de verdad. Diseñados en Medellín para mujeres que buscan estilo, actitud y calidad en cada costura.",
+            "button_text": "ver Jeans",
+            "button_link": "shopify://collections/jeans-mujer",
+            "button_style": ""
+          }
+        },
         "slide_kF6V7J": {
           "type": "slide",
           "settings": {
@@ -24,24 +37,11 @@
             "button_link": "shopify://collections/jeans-mujer",
             "button_style": "underline  border-none text-sm"
           }
-        },
-        "slide_wfyam9": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/adelante2_b6edc962-0ada-47ae-9a84-1bc0f085eaac.png",
-            "image_url": "",
-            "title": "Marcos",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": ""
-          }
         }
       },
       "block_order": [
-        "slide_kF6V7J",
-        "slide_wfyam9"
+        "slide_wfyam9",
+        "slide_kF6V7J"
       ],
       "settings": {
         "min_height": 100,

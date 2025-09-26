@@ -244,7 +244,7 @@
       "type": "product-carousel",
       "name": "Product Carousel",
       "settings": {
-        "title": "Best Sellers",
+        "title": "Mira nuestros zapatos de hombre",
         "rich_text": "",
         "show_view_all": true,
         "view_all_text": "View All",
@@ -253,7 +253,9 @@
         "show_arrows": true,
         "product_source": "collection",
         "collection": "featured-collection",
-        "collections": [],
+        "collections": [
+          "hombre"
+        ],
         "product_tags": "",
         "products": [],
         "max_products": 12,

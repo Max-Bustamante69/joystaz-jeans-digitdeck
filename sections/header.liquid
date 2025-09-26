@@ -307,7 +307,7 @@
             <img
               src="{{ section.settings.logo | image_url: width: 120 }}"
               alt="{{ shop.name }}"
-              height="{{ section.settings.logo.height | default: 40 }}"
+              height="{{ section.settings.logo_height | default: 40 }}"
               width="{{ section.settings.logo.width | default: 'auto' }}"
               class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
@@ -317,10 +317,10 @@
             <img
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
-              class=" h-12"
+              class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               width="60"
-              height="40"
+              height="{{ section.settings.logo_height | default: 40 }}"
             >
           {% endif %}
         </a>
@@ -334,7 +334,7 @@
           <img
             src="{{ section.settings.logo | image_url: width: 120 }}"
             alt="{{ shop.name }}"
-            height="{{ section.settings.logo.height | default: 40 }}"
+            height="{{ section.settings.logo_height | default: 40 }}"
             width="{{ section.settings.logo.width | default: 'auto' }}"
             class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
@@ -344,10 +344,10 @@
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class=" h-12"
+            class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             width="60"
-            height="40"
+            height="{{ section.settings.logo_height | default: 40 }}"
           >
         {% endif %}
       </a>
@@ -760,6 +760,31 @@
       "id": "logo",
       "label": "Logo",
       "info": "Upload your logo image. If no logo is uploaded, the default logo from assets will be used."
+    },
+    {
+      "type": "select",
+      "id": "logo_height",
+      "label": "Logo Height",
+      "options": [
+        { "value": "20", "label": "20px" },
+        { "value": "24", "label": "24px" },
+        { "value": "28", "label": "28px" },
+        { "value": "32", "label": "32px" },
+        { "value": "36", "label": "36px" },
+        { "value": "40", "label": "40px" },
+        { "value": "44", "label": "44px" },
+        { "value": "48", "label": "48px" },
+        { "value": "52", "label": "52px" },
+        { "value": "56", "label": "56px" },
+        { "value": "60", "label": "60px" },
+        { "value": "64", "label": "64px" },
+        { "value": "68", "label": "68px" },
+        { "value": "72", "label": "72px" },
+        { "value": "76", "label": "76px" },
+        { "value": "80", "label": "80px" }
+      ],
+      "default": "40",
+      "info": "Select the height for your logo in pixels"
     },
     {
       "type": "link_list",

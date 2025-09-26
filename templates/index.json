@@ -39,7 +39,10 @@
           }
         }
       },
-      "block_order": ["slide_kF6V7J", "slide_wfyam9"],
+      "block_order": [
+        "slide_kF6V7J",
+        "slide_wfyam9"
+      ],
       "settings": {
         "min_height": 100,
         "autoplay_duration": 3000,
@@ -58,9 +61,11 @@
         "show_view_all": true,
         "view_all_text": "Ver todos",
         "view_all_link": "",
+        "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
         "collection": "mas-buscados-vendidos",
+        "collections": [],
         "product_tags": "",
         "products": [],
         "max_products": 12,
@@ -93,7 +98,10 @@
           }
         }
       },
-      "block_order": ["category_pwLXdi", "category_eVzi4H"],
+      "block_order": [
+        "category_pwLXdi",
+        "category_eVzi4H"
+      ],
       "settings": {
         "title": "",
         "subtitle": "",
@@ -110,8 +118,6 @@
         "image_alt": "",
         "use_product_image": false,
         "title": "El jean que empieza contigo",
-        "text": "Creemos que tus jeans no son solo una prenda: son la base de tu seguridad, estilo y autenticidad. Creamos piezas que realzan tu figura, se mueven contigo y te hacen sentir poderosa en cada momento del día. Porque comodidad, diseño y confianza no deberían ser una elección, sino un estándar.",
-        "subtitle": "Nuestra promesa",
         "rich_text": "<ul><li><strong>Fits para cada cuerpo</strong> – skinny, cargo, recto, flare y más, pensados para adaptarse a ti.<br/></li></ul><p></p><ul><li><strong>Comodidad que dura todo el día</strong> – denim flexible que se mueve contigo sin perder forma.<br/></li></ul><p></p><ul><li><strong>Diseño versátil</strong> – un jean que funciona tanto para tus planes casuales como para ocasiones especiales.</li></ul><p></p><ul><li><strong>Confección de calidad</strong> – costuras reforzadas y materiales duraderos que resisten el uso diario.</li></ul><p></p><ul><li><strong>Estilo auténtico colombiano</strong> – jeans con identidad local y tendencia global.<br/></li><li><strong>Detalles que marcan la diferencia</strong> – cortes estratégicos, hormas que estilizan y acabados modernos.<br/></li></ul><p></p>",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
@@ -257,7 +263,9 @@
           }
         }
       },
-      "block_order": ["slide_4rHAFr"],
+      "block_order": [
+        "slide_4rHAFr"
+      ],
       "name": "Hero Section",
       "settings": {
         "min_height": 100,
@@ -278,8 +286,6 @@
         "image_alt": "",
         "use_product_image": false,
         "title": "Nuestra Tienda en Medellín",
-        "text": "la moda se vive mejor cuando puedes sentirla de cerca. Por eso abrimos nuestro punto físico en la Zona Industrial de Belén: Calle 29D #55-178, Medellín. Aquí podrás probarte tus jeans favoritos, descubrir nuevos fits y recibir asesoría personalizada para encontrar el estilo que mejor se adapta a ti.",
-        "subtitle": "",
         "rich_text": "",
         "button_text": "Descubrelos",
         "button_link": "/collections/all",
@@ -299,9 +305,11 @@
         "show_view_all": true,
         "view_all_text": "Ver todos",
         "view_all_link": "",
+        "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
-        "collection": "bermudas-mujer",
+        "collection": "mas-buscados-vendidos",
+        "collections": [],
         "product_tags": "",
         "products": [],
         "max_products": 12,

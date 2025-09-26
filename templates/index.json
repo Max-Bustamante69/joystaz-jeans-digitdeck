@@ -111,6 +111,7 @@
       "settings": {
         "layout_direction": "image_first",
         "image_style": "full_width",
+        "image": "shopify://shop_images/ChatGPT_Image_Sep_26_2025_05_51_42_PM.png",
         "image_alt": "",
         "use_product_image": false,
         "title": "Por Qué Comprar Aquí Es Diferente",
@@ -197,11 +198,12 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
+            "image": "shopify://shop_images/ChatGPT_Image_Sep_26_2025_06_00_17_PM.png",
             "image_url": "https://via.placeholder.com/1326x800/cccccc/666666?text=Hero+Image",
-            "title": "Find Your Perfect Fit",
-            "description": "Discover our collection of premium products. Designed to make you feel confident, comfortable and always stylish.",
-            "button_text": "Shop Now",
-            "button_link": "shopify://collections/featured-collection",
+            "title": "Explora la Colección de Mujer",
+            "description": "Los pares más buscados, marcas top y diseños para cada ocasión. Compra fácil, recibe rápido y luce siempre al día.",
+            "button_text": "Ver Ahora",
+            "button_link": "shopify://collections/mujer",
             "button_style": "text-xl px-6 py-3 border border-white"
           }
         }

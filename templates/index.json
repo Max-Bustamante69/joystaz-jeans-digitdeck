@@ -79,7 +79,7 @@
         "category_pwLXdi": {
           "type": "category",
           "settings": {
-            "collection": "category-1",
+            "collection": "mujer",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "landscape"
@@ -88,7 +88,7 @@
         "category_eVzi4H": {
           "type": "category",
           "settings": {
-            "collection": "category-2",
+            "collection": "hombre",
             "image_source": "collection_image",
             "text_position": "bottom-left",
             "aspect_ratio": "landscape"

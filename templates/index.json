@@ -113,8 +113,8 @@
         "image_style": "full_width",
         "image_alt": "",
         "use_product_image": false,
-        "title": "Quality That Starts With You",
-        "rich_text": "<ul><li><strong>Fits for every body</strong> – designed to adapt to you and your lifestyle.<br/></li></ul><p></p><ul><li><strong>All-day comfort</strong> – flexible materials that move with you without losing shape.<br/></li></ul><p></p><ul><li><strong>Versatile design</strong> – products that work for both casual plans and special occasions.</li></ul><p></p><ul><li><strong>Quality construction</strong> – reinforced seams and durable materials that withstand daily use.</li></ul><p></p><ul><li><strong>Authentic style</strong> – products with local identity and global trends.<br/></li><li><strong>Details that make the difference</strong> – strategic cuts, flattering shapes and modern finishes.<br/></li></ul><p></p>",
+        "title": "Por Qué Comprar Aquí Es Diferente",
+        "rich_text": "<h2></h2><p><strong>Todas las marcas en un solo lugar</strong> – Ahorra tiempo y descubre variedad sin tener que ir de tienda en tienda.<br/><br/><strong>Stock siempre actualizado</strong> – Lo que ves en la página está disponible para ti, sin sorpresas.<br/><br/><strong>Despachos rápidos</strong> – Recibe tus zapatos en tiempo récord.<br/><br/><strong>Precios justos y competitivos</strong> – Sin sobrecostos ni intermediarios innecesarios.<br/><br/><strong>Atención que te resuelve</strong> – Soporte real y rápido para que siempre compres con confianza.</p>",
         "button_text": "Discover",
         "button_link": "/collections/all",
         "button_style": "background",
@@ -175,58 +175,6 @@
         "title": "Te recomendamos",
         "subtitle": "",
         "mobile_layout": "slider"
-      }
-    },
-    "video_carousel_ed3exy": {
-      "type": "video-carousel",
-      "blocks": {
-        "video_slide_fCwDVC": {
-          "type": "video_slide",
-          "settings": {
-            "video_title": "Featured Video",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        },
-        "video_slide_NcUxpz": {
-          "type": "video_slide",
-          "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        },
-        "video_slide_XCKP8n": {
-          "type": "video_slide",
-          "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
-          }
-        }
-      },
-      "block_order": [
-        "video_slide_fCwDVC",
-        "video_slide_NcUxpz",
-        "video_slide_XCKP8n"
-      ],
-      "name": "Video Carousel",
-      "settings": {
-        "title": "Video Gallery",
-        "subtitle": "Discover our latest content",
-        "slides_mobile": 1,
-        "slides_tablet": 2,
-        "slides_desktop": 3,
-        "slides_large_desktop": 4,
-        "slide_spacing": 20,
-        "loop": true,
-        "show_pagination": true,
-        "autoplay": false,
-        "autoplay_delay": 5000,
-        "transition_speed": 800
       }
     },
     "quote_E6r7tE": {
@@ -321,7 +269,6 @@
     "category-grid",
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",
-    "video_carousel_ed3exy",
     "quote_E6r7tE",
     "hero_x9Qnqz",
     "image_with_text_G6betb",

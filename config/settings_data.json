@@ -22,15 +22,17 @@
     "search_product_source": "manual",
     "search_collection": "jean-hombre",
     "search_products": [
-      "baby-tank-p70082",
-      "bermuda-cargo-con-cordon-764007",
-      "bermuda-dirty-764003",
-      "bermuda-con-destroyer-764017",
-      "bermuda-cargo-negra-764013",
-      "bermuda-cargo-con-sesgos-a-los-lados-764015",
-      "bermuda-camuflada-764004",
-      "camiseta-beverly-hills-p75003",
-      "bermuda-con-sesgos-764014"
+      "adidas-runblaze-m",
+      "adidas-ultrabounce",
+      "adidas-hombre-run-70s-2-1",
+      "x-2",
+      "adidas-courtblock",
+      "x-1",
+      "adidas-hombre-run-70s-2-0",
+      "adidas-court",
+      "adidas-advantage-base-2-1",
+      "adidas-urban-court",
+      "adidas-breaknet-sleek"
     ],
     "search_featured_collections": [
       "men",
@@ -39,7 +41,10 @@
       "nuevo-todo",
       "not-on-sale"
     ],
-    "search_category_collections": ["men", "jeans-mujer"],
+    "search_category_collections": [
+      "men",
+      "jeans-mujer"
+    ],
     "content_for_index": []
   }
 }

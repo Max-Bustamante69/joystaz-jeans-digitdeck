@@ -56,10 +56,10 @@
       "type": "product-carousel",
       "name": "Product Carousel",
       "settings": {
-        "title": "Best Sellers",
+        "title": "Los más vendidos",
         "rich_text": "",
         "show_view_all": true,
-        "view_all_text": "Ver todos",
+        "view_all_text": "Los más vendidos",
         "view_all_link": "",
         "view_all_link_collections": "",
         "show_arrows": true,

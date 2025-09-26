@@ -16,11 +16,11 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "",
+            "image": "shopify://shop_images/Detras_1.png",
             "image_url": "",
-            "title": "Featured Collection",
-            "description": "Discover our latest collection of premium products designed for your lifestyle",
-            "button_text": "Shop Now",
+            "title": "Lleva tus jeans al siguiente nivel",
+            "description": "Creamos jeans que realzan tu figura, se mueven contigo y duran de verdad. Diseñados en Medellín para mujeres que buscan estilo, actitud y calidad en cada costura.",
+            "button_text": "Ver jeans",
             "button_link": "shopify://collections/featured-collection",
             "button_style": "underline  border-none text-sm"
           }
@@ -29,7 +29,6 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "",
             "image_url": "",
             "title": "New Arrivals",
             "description": "Explore our newest collection of carefully curated products",
@@ -39,7 +38,10 @@
           }
         }
       },
-      "block_order": ["slide_kF6V7J", "slide_wfyam9"],
+      "block_order": [
+        "slide_kF6V7J",
+        "slide_wfyam9"
+      ],
       "settings": {
         "min_height": 100,
         "autoplay_duration": 3000,
@@ -58,9 +60,11 @@
         "show_view_all": true,
         "view_all_text": "View All",
         "view_all_link": "",
+        "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
         "collection": "best-sellers",
+        "collections": [],
         "product_tags": "",
         "products": [],
         "max_products": 12,
@@ -93,7 +97,10 @@
           }
         }
       },
-      "block_order": ["category_pwLXdi", "category_eVzi4H"],
+      "block_order": [
+        "category_pwLXdi",
+        "category_eVzi4H"
+      ],
       "settings": {
         "title": "",
         "subtitle": "",
@@ -106,12 +113,9 @@
       "settings": {
         "layout_direction": "image_first",
         "image_style": "full_width",
-        "image": "",
         "image_alt": "",
         "use_product_image": false,
         "title": "Quality That Starts With You",
-        "text": "We believe that quality products are not just items: they are the foundation of your confidence, style and authenticity. We create pieces that enhance your figure, move with you and make you feel powerful at every moment of the day. Because comfort, design and confidence shouldn't be a choice, but a standard.",
-        "subtitle": "Our Promise",
         "rich_text": "<ul><li><strong>Fits for every body</strong> – designed to adapt to you and your lifestyle.<br/></li></ul><p></p><ul><li><strong>All-day comfort</strong> – flexible materials that move with you without losing shape.<br/></li></ul><p></p><ul><li><strong>Versatile design</strong> – products that work for both casual plans and special occasions.</li></ul><p></p><ul><li><strong>Quality construction</strong> – reinforced seams and durable materials that withstand daily use.</li></ul><p></p><ul><li><strong>Authentic style</strong> – products with local identity and global trends.<br/></li><li><strong>Details that make the difference</strong> – strategic cuts, flattering shapes and modern finishes.<br/></li></ul><p></p>",
         "button_text": "Discover",
         "button_link": "/collections/all",
@@ -181,7 +185,6 @@
         "video_slide_fCwDVC": {
           "type": "video_slide",
           "settings": {
-            "video_file": "",
             "video_title": "Featured Video",
             "video_description": "",
             "video_link": "",
@@ -257,7 +260,9 @@
           }
         }
       },
-      "block_order": ["slide_4rHAFr"],
+      "block_order": [
+        "slide_4rHAFr"
+      ],
       "name": "Hero Section",
       "settings": {
         "min_height": 100,
@@ -274,12 +279,9 @@
       "settings": {
         "layout_direction": "text_first",
         "image_style": "full_width",
-        "image": "",
         "image_alt": "",
         "use_product_image": false,
         "title": "Visit Our Store",
-        "text": "Experience our products in person at our physical location. Here you can try on your favorite items, discover new styles and receive personalized advice to find the look that best suits you.",
-        "subtitle": "",
         "rich_text": "",
         "button_text": "Discover",
         "button_link": "/collections/all",
@@ -299,9 +301,11 @@
         "show_view_all": true,
         "view_all_text": "View All",
         "view_all_link": "",
+        "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
         "collection": "featured-collection",
+        "collections": [],
         "product_tags": "",
         "products": [],
         "max_products": 12,

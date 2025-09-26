@@ -18,9 +18,9 @@
             "media_type": "image",
             "image": "shopify://shop_images/Detras_1.png",
             "image_url": "",
-            "title": "Lleva tus jeans al siguiente nivel",
-            "description": "Creamos jeans que realzan tu figura, se mueven contigo y duran de verdad. Diseñados en Medellín para mujeres que buscan estilo, actitud y calidad en cada costura.",
-            "button_text": "Ver jeans",
+            "title": "Encuentra el Par Perfecto sin Perder Tiempo",
+            "description": "Olvídate de buscar en mil tiendas: aquí tienes las mejores marcas en un solo lugar, entregas rápidas y precios justos. Siempre stock actualizado, variedad para todos los estilos y atención que te resuelve en minutos.",
+            "button_text": "Ver Zapatos",
             "button_link": "shopify://collections/featured-collection",
             "button_style": "underline  border-none text-sm"
           }

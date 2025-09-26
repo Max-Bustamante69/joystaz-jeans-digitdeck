@@ -24,23 +24,10 @@
             "button_link": "shopify://collections/featured-collection",
             "button_style": "underline  border-none text-sm"
           }
-        },
-        "slide_wfyam9": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "New Arrivals",
-            "description": "Explore our newest collection of carefully curated products",
-            "button_text": "Discover",
-            "button_link": "",
-            "button_style": ""
-          }
         }
       },
       "block_order": [
-        "slide_kF6V7J",
-        "slide_wfyam9"
+        "slide_kF6V7J"
       ],
       "settings": {
         "min_height": 100,

@@ -35,15 +35,17 @@
       "adidas-breaknet-sleek"
     ],
     "search_featured_collections": [
-      "men",
-      "jeans-hombres",
-      "women",
-      "nuevo-todo",
-      "not-on-sale"
+      "coleccion",
+      "edicion-limitada",
+      "monastery",
+      "mujer",
+      "hombre"
     ],
     "search_category_collections": [
-      "men",
-      "jeans-mujer"
+      "coleccion-especial",
+      "coleccion",
+      "monastery",
+      "kids"
     ],
     "content_for_index": []
   }

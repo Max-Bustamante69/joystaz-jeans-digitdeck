@@ -49,7 +49,6 @@
         "mobile_card_7GXENa": {
           "type": "mobile_card",
           "settings": {
-            "image": "shopify://shop_images/review-image-1757386798078.jpg",
             "title": "Card Title",
             "link": "shopify://pages/camisetas-mujer",
             "aspect_ratio": "portrait",
@@ -61,7 +60,9 @@
         "mobile_card_7GXENa"
       ],
       "settings": {
-        "menu": "header-menu",
+        "header_variant_default": "auto",
+        "logo": "shopify://shop_images/Untitled_design_7.png",
+        "menu": "",
         "mobile_subcollections_count": 4
       }
     }

@@ -172,7 +172,7 @@
       ],
       "name": "Category Grid",
       "settings": {
-        "title": "Featured Categories",
+        "title": "Te recomendamos",
         "subtitle": "",
         "mobile_layout": "slider"
       }

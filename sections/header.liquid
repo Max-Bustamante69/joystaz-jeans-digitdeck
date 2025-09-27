@@ -482,7 +482,7 @@
           {% if link.links.size > 0 %}
             <div x-show="activeTab === {{ tab_index }}" class="space-y-3">
               {% comment %} Display secondary links as cards {% endcomment %}
-              <div class="space-y-1">
+              <div class="flex flex-col gap-3">
                 {% for sub_link in link.links %}
                   {% assign has_sub_links = false %}
                   {% if sub_link.links.size > 0 %}
@@ -655,22 +655,13 @@
         if (carousel && typeof Swiper !== 'undefined') {
           const swiper = new Swiper(carousel, {
             slidesPerView: 2,
-            spaceBetween: 16,
+            spaceBetween: 2,
             loop: true,
             navigation: {
               nextEl: carousel.querySelector('.carousel-next'),
               prevEl: carousel.querySelector('.carousel-prev'),
             },
-            breakpoints: {
-              480: {
-                slidesPerView: 2,
-                spaceBetween: 20,
-              },
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 24,
-              },
-            },
+
           });
           carousel.swiper = swiper;
         }

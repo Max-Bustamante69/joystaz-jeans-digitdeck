@@ -27,6 +27,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="absolute inset-0 bg-black/70"
+    @click="closeDrawer()"
   ></div>
 
   <!-- Drawer -->
@@ -39,7 +40,6 @@
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     class="absolute right-0 top-0 h-full   w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
-    @click.outside="closeDrawer()"
   >
     <!-- Header - Sticky at top -->
     <div class="sticky top-0 lg:px-5 px-4 z-10 bg-white flex items-center justify-between ">
@@ -715,14 +715,22 @@
               spaceBetween: 2,
               freeMode: {
                 enabled: true,
-                sticky: true,
+                sticky: false,
                 momentum: true,
                 momentumRatio: 0.25,
                 momentumVelocityRatio: 0.5,
                 momentumBounce: true,
                 momentumBounceRatio: 0.3,
               },
-              grabCursor: false,
+              grabCursor: true,
+              resistance: true,
+              resistanceRatio: 0.85,
+              watchSlidesProgress: true,
+              watchSlidesVisibility: true,
+              snapOnRelease: true,
+              snapOnDrag: true,
+              snapSwipeThreshold: 0.1,
+              snapSwipeDuration: 300,
               navigation: {
                 nextEl: carouselElement.querySelector('.cart-carousel-next'),
                 prevEl: carouselElement.querySelector('.cart-carousel-prev'),

@@ -13,6 +13,10 @@
   - centered_slides: Whether to center slides (default: true for mobile, false for desktop)
   - free_mode: Whether to enable free mode (default: true)
   - total_items: Total number of items (for arrow state management)
+  - padding_left_mobile: Left padding for mobile (default: 16px)
+  - padding_right_mobile: Right padding for mobile (default: 16px)
+  - padding_left_desktop: Left padding for desktop (default: 48px)
+  - padding_right_desktop: Right padding for desktop (default: 48px)
 {% endcomment %}
 
 {% assign carousel_id = carousel_id | default: 'carousel' %}
@@ -25,18 +29,32 @@
 {% assign centered_slides = centered_slides | default: true %}
 {% assign free_mode = free_mode | default: true %}
 {% assign total_items = total_items | default: 0 %}
+{% assign padding_left_mobile = padding_left_mobile | default: 16 %}
+{% assign padding_right_mobile = padding_right_mobile | default: 16 %}
+{% assign padding_left_desktop = padding_left_desktop | default: 48 %}
+{% assign padding_right_desktop = padding_right_desktop | default: 48 %}
 
 <div class="relative overflow-hidden">
   <div
-    class="  px-4 lg:px-12 swiper-{{ carousel_id }} {{ carousel_class }}"
+    class="swiper-{{ carousel_id }} {{ carousel_class }}"
     data-carousel-id="{{ carousel_id }}"
     data-carousel-type="generic-carousel"
+    style="padding-left: {{ padding_left_mobile }}px; padding-right: {{ padding_right_mobile }}px;"
   >
-    <div class="  swiper-wrapper">
+    <div class="swiper-wrapper">
       {{ content }}
     </div>
   </div>
 </div>
+
+<style>
+  @media (min-width: 1024px) {
+    .swiper-{{ carousel_id }} {
+      padding-left: {{ padding_left_desktop }}px !important;
+      padding-right: {{ padding_right_desktop }}px !important;
+    }
+  }
+</style>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -52,7 +70,7 @@
       const enableDesktopCarousel = totalItems > {{ slides_per_view_desktop }};
 
       const swiper = new Swiper(carouselElement, {
-        slidesPerView: {{ slides_per_view_mobile }},
+        slidesPerView: {{ slides_per_view_mobile | json }},
         spaceBetween: {{ space_between_mobile }},
         {% if centered_slides %}
         centeredSlides: true,
@@ -61,7 +79,7 @@
         {% if free_mode %}
         freeMode: {
           enabled: true,
-          sticky: true,
+          sticky: false,
           momentum: true,
           momentumRatio: 0.25,
           momentumVelocityRatio: 0.5,
@@ -69,10 +87,18 @@
           momentumBounceRatio: 0.3,
         },
         {% endif %}
-        grabCursor: false,
+        grabCursor: true,
+        resistance: true,
+        resistanceRatio: 0.85,
+        watchSlidesProgress: true,
+        watchSlidesVisibility: true,
+        snapOnRelease: true,
+        snapOnDrag: true,
+        snapSwipeThreshold: 0.1,
+        snapSwipeDuration: 300,
         breakpoints: {
           1024: {
-            slidesPerView: {{ slides_per_view_desktop }},
+            slidesPerView: {{ slides_per_view_desktop | json }},
             spaceBetween: {{ space_between_desktop }},
             centeredSlides: false,
             {% if show_arrows %}
@@ -84,8 +110,12 @@
             {% if free_mode %}
             freeMode: {
               enabled: true,
-              sticky: true,
+              sticky: false,
               momentum: true,
+              momentumRatio: 0.25,
+              momentumVelocityRatio: 0.5,
+              momentumBounce: true,
+              momentumBounceRatio: 0.3,
             },
             {% endif %}
           }

@@ -13,12 +13,11 @@
   x-show="isOpen"
   x-transition.opacity.duration.500ms
   class="fixed inset-0 z-40 overflow-hidden"
-  @click.self="closeDrawer()"
   @keydown.escape.window="closeDrawer()"
   @filter:open.window="openDrawer()"
 >
   <!-- Backdrop -->
-  <div class="absolute inset-0 bg-black/70"></div>
+  <div class="absolute inset-0 bg-black/70" @click="closeDrawer()"></div>
 
   <!-- Drawer -->
   <div
@@ -31,7 +30,6 @@
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     class="absolute right-0 top-0 h-full w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden"
-    @click.outside="closeDrawer()"
   >
     <!-- Header -->
     <div class="p-6 flex-shrink-0 border-b border-gray-200">

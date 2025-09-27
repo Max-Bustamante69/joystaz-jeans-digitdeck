@@ -24,9 +24,9 @@
       ];
       showTertiaryView = true;
     "
-    class="link-card  relative  items-center bg-gray-50 hover:bg-gray-100 border pl-4 border-gray-200 hover:border-gray-300 h-23 transition-all duration-200 group w-full text-left"
+    class="link-card  relative  items-center  group w-full text-left"
   >
-    <div class="flex gap-2 items-center justify-between">
+    <div class="flex w-full  items-center justify-between">
   
         <h5 class="text-black">{{ card_title }}</h5>
  
@@ -45,9 +45,9 @@
 {% else %}
   <a
     href="{{ card_url }}"
-    class="link-card  relative  items-center bg-gray-50 hover:bg-gray-100 border pl-4 border-gray-200 hover:border-gray-300 h-23 transition-all duration-200 group w-full text-left"
+    class="link-card  relative  items-center  group w-full text-left"
   >
-    <div class="flex gap-2 items-center justify-between">
+    <div class="flex w-full items-center justify-between">
       <div class="flex-1">
         <h5 class="text-black">
           {{ card_title }}
@@ -67,13 +67,4 @@
   </a>
 {% endif %}
 
-<style>
-  .link-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
 
-  .link-card:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-</style>

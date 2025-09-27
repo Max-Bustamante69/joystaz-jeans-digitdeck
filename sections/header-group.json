@@ -62,6 +62,7 @@
       ],
       "settings": {
         "header_variant_default": "auto",
+        "logo": "shopify://shop_images/JoyStaz_-_Website_6_3b5842af-fc89-4929-8d10-f6634d653d47.png",
         "menu": "header-menu",
         "mobile_subcollections_count": 4
       }

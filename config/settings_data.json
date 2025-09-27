@@ -17,6 +17,7 @@
     "header_scroll_threshold_page": 95,
     "search_featured_tags_title": "Categorías populares",
     "search_history_title": "Busquedas Recientes",
+    "search_clear_all_text": "Borrar todos",
     "search_category_grid_title": "Compra por Categoría",
     "search_product_carousel_title": "Productos Destacados",
     "search_product_source": "manual",
@@ -34,14 +35,15 @@
     ],
     "search_featured_collections": [
       "men",
-      "jeans-hombres",
       "women",
       "nuevo-todo",
       "not-on-sale"
     ],
     "search_category_collections": [
       "men",
-      "jeans-mujer"
+      "jeans-mujer",
+      "camisetas-hombre",
+      "faldas-mujer"
     ],
     "content_for_index": []
   }

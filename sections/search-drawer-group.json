@@ -1,0 +1,23 @@
+{
+  "type": "aside",
+  "name": "Search Drawer Group",
+  "sections": {
+    "search_drawer": {
+      "type": "search-drawer",
+      "settings": {
+        "search_title": "Search",
+        "search_placeholder": "Search products, categories...",
+        "drawer_width": 420,
+        "show_featured_tags": true,
+        "featured_tags_title": "Popular Categories",
+        "show_category_grid": true,
+        "category_grid_title": "Shop by Category",
+        "show_product_carousel": true,
+        "product_carousel_title": "Featured Products",
+        "product_source": "collection",
+        "max_products": 8
+      }
+    }
+  },
+  "order": ["search_drawer"]
+}

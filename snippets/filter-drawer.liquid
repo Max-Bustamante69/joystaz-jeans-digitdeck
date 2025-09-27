@@ -12,7 +12,7 @@
   x-data="filterDrawer()"
   x-show="isOpen"
   x-transition.opacity.duration.500ms
-  class="fixed inset-0 z-50 overflow-hidden"
+  class="fixed inset-0 z-40 overflow-hidden"
   @click.self="closeDrawer()"
   @keydown.escape.window="closeDrawer()"
   @filter:open.window="openDrawer()"
@@ -463,24 +463,14 @@
 
       openDrawer() {
         this.isOpen = true;
-        // Store current scroll position
-        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('filter-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
         document.body.classList.remove('filter-drawer-open');
-        // Restore scroll position
-        window.scrollTo(0, this.scrollY || 0);
       },
 
       toggleStyleSection() {
@@ -574,7 +564,7 @@
             },
           })
         );
-        
+
         // Also dispatch a general filter change event for the results counter
         window.dispatchEvent(new CustomEvent('filter:changed'));
       },

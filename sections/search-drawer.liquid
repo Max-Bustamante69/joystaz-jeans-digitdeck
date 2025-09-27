@@ -14,7 +14,7 @@
   x-cloak
   x-data="searchDrawer()"
   x-show="isOpen"
-  class="fixed inset-0 z-50 overflow-hidden"
+  class="fixed inset-0 z-40 overflow-hidden"
   @click.self="closeDrawer()"
   @keydown.escape.window="closeDrawer()"
   @search:open.window="openDrawer()"
@@ -67,9 +67,9 @@
           @input="handleSearch"
           @keydown.enter="viewAllResults"
           placeholder="{{ section.settings.search_placeholder | default: 'Search products, categories...' }}"
-          class="w-full pl-12 py-3 border-b border-gray-300  focus:ring-0 focus:outline-none   transition-all duration-200"
+          class="w-full pl-8 py-3 border-b border-black/20 focus:border-black/50   focus:ring-0 focus:outline-none   transition-all duration-200"
         >
-        {% render 'search-icon', class: 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black' %}
+        {% render 'search-icon', class: 'absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-black' %}
 
         <button
           x-show="searchQuery.length > 0"
@@ -241,7 +241,12 @@
                   {% for product in products %}
                     {% if product.available and products_shown < section.settings.max_products %}
                       <div class="swiper-slide">
-                        {% render 'product-card', product: product, show_badges: true, show_rating: true %}
+                        {% render 'product-card',
+                          product: product,
+                          show_badges: true,
+                          show_rating: true,
+                          mobile_layout: true
+                        %}
                       </div>
                       {% assign products_shown = products_shown | plus: 1 %}
                     {% endif %}
@@ -430,9 +435,6 @@
         // Store current scroll position
         this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('search-drawer-open');
         // Focus after the transition to prevent abrupt scroll/focus jump
         this.$nextTick(() => {
@@ -444,12 +446,7 @@
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
         document.body.classList.remove('search-drawer-open');
-        // Restore scroll position
-        window.scrollTo(0, this.scrollY || 0);
         setTimeout(() => {
           this.searchQuery = '';
           this.searchResults = [];

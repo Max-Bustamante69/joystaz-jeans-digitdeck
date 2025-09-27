@@ -13,7 +13,7 @@
   x-cloak
   x-data="cartDrawer()"
   x-show="isOpen"
-  class="fixed inset-0 z-50 overflow-hidden"
+  class="fixed inset-0 z-40 overflow-hidden"
   @cart:open.window="openDrawer()"
   @cart:updated.window="loadCart()"
 >
@@ -131,7 +131,6 @@
             {% endif %}
           </div>
         </template>
-
 
         <div class="flex flex-col gap-4 relative mb-7">
           <template x-for="item in cartItems" :key="item.key">
@@ -458,12 +457,12 @@
       loading: false,
       scrollY: 0, // Store scroll position for drawer
       freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
-      
+
       // Add-on state
       addonSelected: false,
       addonVariantId: null,
       addonInCart: false,
-      
+
       // Cart thresholds
       sortedThresholds: [],
       appliedDiscounts: new Set(),
@@ -473,18 +472,18 @@
         this.tryGetShopifyFreeShippingThreshold();
         this.initThresholds();
         this.initAddon();
-        
+
         // Use $nextTick to ensure DOM is ready
         this.$nextTick(() => {
           this.initializeCartCarousel();
         });
-        
+
         // Load wishlist state
         try {
           const raw = localStorage.getItem('wishlist_v1');
           this.wishlistHandles = raw ? JSON.parse(raw) : [];
         } catch(e) { this.wishlistHandles = []; }
-        
+
         // Listen for cart updates to refresh product carousel (only when cart items actually change)
         this.$watch('cartItems', (newItems, oldItems) => {
           // Only refresh if items actually changed (prevent infinite loops)
@@ -493,7 +492,7 @@
             // Don't call refreshProductCarousel here to prevent infinite loops
           }
         });
-        
+
         // Listen for cart updates from other components (like product cards)
         window.addEventListener('cart:updated', () => {
           this.loadCart();
@@ -537,37 +536,27 @@
 
       openDrawer() {
         this.isOpen = true;
-        // Store current scroll position
-        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('cart-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
         document.body.classList.remove('cart-drawer-open');
-        // Restore scroll position
-        window.scrollTo(0, this.scrollY || 0);
       },
 
       async loadCart() {
         try {
           const response = await fetch('/cart.js');
           const cart = await response.json();
-          
+
           // Clean product titles by removing numbers and special characters
           this.cartItems = cart.items.map(item => ({
             ...item,
             product_title: this.cleanProductTitle(item.product_title)
           }));
-          
+
           // Store cart totals for discount calculation
           this.cartTotal = cart.total_price;
           this.originalTotal = cart.original_total_price || cart.total_price;
@@ -581,18 +570,18 @@
       // Clean product title by removing numbers and special characters
       cleanProductTitle(title) {
         if (!title) return '';
-        
+
         let cleaned = title;
-        
+
         // Remove numbers
         cleaned = cleaned.replace(/[0-9]/g, '');
-        
+
         // Remove special characters
         cleaned = cleaned.replace(/[!@#$%^&*()_+\-=\[\]{};:,.<>?~'"\\\/]/g, '');
-        
+
         // Clean up extra spaces
         cleaned = cleaned.replace(/\s+/g, ' ').trim();
-        
+
         return cleaned;
       },
 
@@ -803,15 +792,15 @@
            if (!this.cartItems || this.cartItems.length === 0 || !this.isOpen) {
              return;
            }
-           
+
            // Update carousel display based on current cart state (no need to fetch again)
            this.updateCarouselDisplay();
-           
+
          } catch (error) {
            console.error('Error refreshing product carousel:', error);
          }
        },
-       
+
        // Update carousel display based on current cart state
        updateCarouselDisplay() {
          this.$nextTick(() => {
@@ -823,7 +812,7 @@
                if (productCard) {
                  const productHandle = productCard.getAttribute('data-handle');
                  const isInCart = this.cartItems.some(item => item.handle === productHandle);
-                 
+
                  if (isInCart) {
                    slide.style.display = 'none';
                    slide.classList.add('product-in-cart');
@@ -833,7 +822,7 @@
                  }
                }
              });
-             
+
              // Update swiper if it exists
              if (carouselElement.swiper) {
                carouselElement.swiper.update();
@@ -852,7 +841,7 @@
              title: el.dataset.thresholdTitle,
              value: parseInt(el.dataset.thresholdValue)
            })).sort((a, b) => a.value - b.value);
-           
+
            // Set up watchers after thresholds are initialized
            this.$watch('cartTotal', () => {
              this.checkThresholds();
@@ -871,20 +860,20 @@
        getThresholdSegmentProgress(thresholdValue, segmentIndex) {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
-           
+
            const currentThresholdIndex = this.getCurrentThresholdIndex();
-           
+
            // If this segment is before the current threshold, fill it completely
            if (segmentIndex < currentThresholdIndex) {
              return 100;
            }
-           
+
            // If this is the current threshold segment, show partial progress
            if (segmentIndex === currentThresholdIndex) {
              if (this.cartTotal >= thresholdValue) return 100;
              return Math.min((this.cartTotal / thresholdValue) * 100, 100);
            }
-           
+
            // If this segment is after the current threshold, don't fill it
            return 0;
          } catch (error) {
@@ -896,7 +885,7 @@
        getCurrentThresholdIndex() {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
-           
+
            for (let i = 0; i < this.sortedThresholds.length; i++) {
              if (this.cartTotal < this.sortedThresholds[i].value) {
                return i;
@@ -913,18 +902,18 @@
        isCurrentThreshold(threshold) {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return false;
-           
+
            const currentIndex = this.sortedThresholds.findIndex(t => t.id === threshold.id);
-           
+
            if (currentIndex === -1) return false;
-           
+
            // Only show the next unachieved threshold
            for (let i = 0; i < this.sortedThresholds.length; i++) {
              if (this.cartTotal < this.sortedThresholds[i].value) {
                return i === currentIndex;
              }
            }
-           
+
            // If all thresholds are achieved, show the last one
            return currentIndex === this.sortedThresholds.length - 1;
          } catch (error) {
@@ -940,7 +929,7 @@
       async checkThresholds() {
         try {
           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return;
-          
+
           for (const threshold of this.sortedThresholds) {
             if (this.cartTotal >= threshold.value && !this.appliedDiscounts.has(threshold.id)) {
               this.appliedDiscounts.add(threshold.id);
@@ -963,7 +952,7 @@
           if (addonCheckbox) {
             this.addonVariantId = addonCheckbox.getAttribute('data-variant-id');
           }
-          
+
           // Check if add-on is already in cart
           this.checkAddonInCart();
         });
@@ -971,7 +960,7 @@
 
       checkAddonInCart() {
         if (!this.addonVariantId) return;
-        
+
         // Check if the add-on variant is already in the cart
         const addonInCart = this.cartItems.find(item => item.variant_id == this.addonVariantId);
         this.addonInCart = !!addonInCart;

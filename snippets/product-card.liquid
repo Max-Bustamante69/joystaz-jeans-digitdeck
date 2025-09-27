@@ -26,7 +26,7 @@
   {% endif %}
 >
   <!-- Product Image Container -->
-  <div class="relative  aspect-[3/4.5] w-full overflow-hidden  max-w-full">
+  <div class="relative {% if mobile_layout %}aspect-[3/4]{% else %}aspect-[3/4.5]{% endif %} w-full overflow-hidden  max-w-full">
     <!-- Unified Product Image Carousel (handles 1, 2, or many images) -->
     <div class="h-full" x-show="currentImages && currentImages.length >= 1" x-cloak>
       <div
@@ -391,7 +391,7 @@
   </div>
 
   {% unless hide_info %}
-    <div class="product-information py-4 px-2 w-full   flex flex-col justify-start z-10">
+    <div class="product-information {% if mobile_layout %}py-2 px-1{% else %}py-4 px-2{% endif %} w-full   flex flex-col justify-start z-10">
       <!-- Bundle Mode: Color and Size Selectors -->
       {% if bundle_mode == true %}
         <!-- Color Selector -->
@@ -711,23 +711,34 @@
 
           {% if show_rating and has_ratings %}
             <div class="flex items-center gap-1 w-full justify-end">
-              {% render 'product-rating',
-                product: product,
-                size: 'md',
-                color: 'text-[#f3a000]',
-                show_rating_value: true,
-                show_review_count: true,
-                single_star_mode: true
-              %}
+              {% if mobile_layout %}
+                {% render 'product-rating',
+                  product: product,
+                  size: 'sm',
+                  color: 'text-[#f3a000]',
+                  show_rating_value: true,
+                  show_review_count: true,
+                  single_star_mode: true
+                %}
+              {% else %}
+                {% render 'product-rating',
+                  product: product,
+                  size: 'md',
+                  color: 'text-[#f3a000]',
+                  show_rating_value: true,
+                  show_review_count: true,
+                  single_star_mode: true
+                %}
+              {% endif %}
             </div>
           {% endif %}
         </div>
       {% endif %}
 
       <!-- Product Name and Price -->
-      <div class="flex flex-col gap-1 lg:flex-row items-start  justify-between">
+      <div class="flex flex-col {% if mobile_layout %}gap-1{% else %}gap-1 lg:flex-row{% endif %} items-start  justify-between">
         <!-- Product Title Section -->
-        <div class="flex flex-col gap-2 items-start justify-start">
+        <div class="flex flex-col {% if mobile_layout %}gap-1{% else %}gap-2{% endif %} items-start justify-start">
           {% assign cleaned_title = product.title %}
 
           {% assign cleaned_title = cleaned_title
@@ -776,17 +787,21 @@
             | remove: '/'
           %}
 
-          <p class="body-sm lg:body font-semibold ">{{ cleaned_title }}</p>
+          <p class="{% if mobile_layout %}body-xs lg:body-sm{% else %}body-sm lg:body{% endif %} font-semibold ">
+            {{ cleaned_title }}
+          </p>
 
           <!-- Color Circles - Using product.options_with_values for proper swatch access -->
           <!-- Pattern: product_option.name == "Color" then product_option_value.swatch.color -->
         </div>
 
         <!-- Price Section -->
-        <div class="flex lg:flex-row-reverse gap-2 items-end">
-          <span class="body-sm lg:body font-semibold">${{ product.price | money_without_currency }}</span>
+        <div class="flex {% if mobile_layout %}flex-col{% else %}lg:flex-row-reverse{% endif %} gap-2 items-end">
+          <span class="{% if mobile_layout %}body-xs lg:body-sm{% else %}body-sm lg:body{% endif %} font-semibold"
+            >${{ product.price | money_without_currency -}}
+          </span>
           {% if product.compare_at_price > product.price %}
-            <span class="body-sm lg:body text-black/40 line-through">
+            <span class="{% if mobile_layout %}body-xs lg:body-sm{% else %}body-sm lg:body{% endif %} text-black/40 line-through">
               ${{ product.compare_at_price | money_without_currency }}
             </span>
           {% endif %}

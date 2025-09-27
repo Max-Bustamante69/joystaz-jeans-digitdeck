@@ -31,7 +31,13 @@
         ],
         "show_category_grid": true,
         "category_grid_title": "Compra Por categoría",
-        "category_collections": [],
+        "category_collections": [
+          "camisetas-hombre",
+          "men",
+          "hombre-jeans-medio",
+          "faldas-mujer",
+          "camisetas-mujer"
+        ],
         "show_product_carousel": true,
         "product_carousel_title": "Productos resaltados",
         "product_source": "collection",

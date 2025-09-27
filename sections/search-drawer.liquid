@@ -104,7 +104,7 @@
     </div>
 
     <!-- Scrollable Content -->
-    <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <div class="flex-1 overflow-y-auto scrollbar-hide">
       <!-- Featured Tags -->
       <div
         x-show="searchQuery.length === 0"
@@ -653,6 +653,16 @@
   .search-categories-carousel .swiper-slide,
   .search-products-carousel .swiper-slide {
     height: auto;
+  }
+
+  /* Hide scrollbars for all drawers */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
   }
 </style>
 

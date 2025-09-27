@@ -13,10 +13,6 @@
 {% assign ratings_metafield = product.metafields.custom.ratings %}
 {% assign debug = debug | default: false %}
 
-
-
-
-
 {% assign average_rating = 0 %}
 {% assign review_count = 0 %}
 {% assign has_ratings = false %}
@@ -63,9 +59,7 @@
 {%- assign show_review_count_flag = show_review_count | default: false -%}
 {%- assign show_rating_value_flag = show_rating_value | default: false -%}
 {%- assign show_review_text_flag = show_review_text | default: false -%}
-
-
-
+{%- assign single_star_mode_flag = single_star_mode | default: false -%}
 
 {%- comment -%}
   Render the star-rating here so callers don't rely on snippet variables
@@ -79,7 +73,8 @@
     show_review_count: show_review_count_flag,
     show_rating_value: show_rating_value_flag,
     review_count: review_count,
-    show_review_text: show_review_text_flag
+    show_review_text: show_review_text_flag,
+    single_star_mode: single_star_mode_flag
   %}
 {% else %}
   {% render 'star-rating',
@@ -90,7 +85,8 @@
     show_review_count: show_review_count_flag,
     show_rating_value: show_rating_value_flag,
     review_count: 0,
-    show_review_text: show_review_text_flag
+    show_review_text: show_review_text_flag,
+    single_star_mode: single_star_mode_flag
   %}
 {% endif %}
 

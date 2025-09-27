@@ -810,6 +810,9 @@
   .w-full {
     width: 100%;
   }
+  .w-min {
+    width: min-content;
+  }
   .max-w-2xl {
     max-width: var(--container-2xl);
   }
@@ -3059,7 +3062,7 @@
     text-wrap: balance;
     margin: 0;
   }
-  html, body {
+  body {
     scrollbar-gutter: stable;
   }
   h1 {

@@ -1,6 +1,6 @@
 {% assign header_mode = '' %}
 {% if template.name == 'product' or template.name == 'look_fit' %}
-  {% assign header_mode = 'solid-desktop' %}
+  {% assign header_mode = 'solid-desktop-transparent-mobile' %}
 {% endif %}
 {% if template.name == 'search' %}
   {% assign header_mode = 'solid' %}
@@ -77,7 +77,7 @@
 
 <header
   class="z-50 w-full transition-none ease-linear"
-  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : 'bg-transparent'"
+  :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'bg-white ' : (solidDesktopTransparentMobile && isDesktop) ? 'bg-white' : (solidDesktopTransparentMobile && !isDesktop) ? 'bg-transparent' : (transparentMobileProduct && !isDesktop) ? 'bg-transparent' : 'bg-transparent'"
   data-header-mode="{{ header_mode }}"
   data-scroll-threshold="{{ scroll_threshold }}"
   x-data="
@@ -90,6 +90,8 @@
       forceSolid: false,
       solidOnDesktop: false,
       solidOnMobile: false,
+      transparentMobileProduct: false,
+      solidDesktopTransparentMobile: false,
       scrollY: 0,
       isMenuHovered: false,
       init() {
@@ -105,6 +107,10 @@
           this.solidOnDesktop = true;
         } else if (mode === 'solid-mobile') {
           this.solidOnMobile = true;
+        } else if (mode === 'transparent-mobile-product') {
+          this.transparentMobileProduct = true;
+        } else if (mode === 'solid-desktop-transparent-mobile') {
+          this.solidDesktopTransparentMobile = true;
         }
       },
       handleScroll() {
@@ -132,7 +138,7 @@
 >
   <nav
     class="grid grid-cols-3 h-15 px-4 w-full lg:pl-9 lg:pr-12 bg-transparent relative transition-none ease-linear"
-    :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : 'text-white'"
+    :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled || isMenuHovered) ? 'text-black' : (solidDesktopTransparentMobile && isDesktop) ? 'text-black' : (solidDesktopTransparentMobile && !isDesktop) ? 'text-black' : (transparentMobileProduct && !isDesktop) ? 'text-black' : 'text-white'"
   >
     <!-- Desktop Menu -->
     <div class="header__menu hidden lg:flex items-center justify-center lg:justify-start ">
@@ -289,7 +295,7 @@
       <button
         @click="toggleMobileMenu()"
         class=""
-        :class="isScrolled ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
+        :class="(isScrolled || (solidDesktopTransparentMobile && isDesktop) || (solidDesktopTransparentMobile && !isDesktop)) ? 'text-black hover:text-gray-600' : 'text-white hover:text-gray-300'"
         aria-label="Toggle mobile menu"
       >
         {% render 'menu-icon' %}
@@ -302,7 +308,7 @@
               src="{{ section.settings.logo | image_url: width: 300 }}"
               alt="{{ shop.name }}"
               class=""
-              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : (solidDesktopTransparentMobile && isDesktop) ? 'invert-0' : (solidDesktopTransparentMobile && !isDesktop) ? 'invert-0' : 'invert-100'"
               style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
               loading="eager"
               width="700"
@@ -313,7 +319,7 @@
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
               class=""
-              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+              :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : (solidDesktopTransparentMobile && isDesktop) ? 'invert-0' : (solidDesktopTransparentMobile && !isDesktop) ? 'invert-0' : 'invert-100'"
               style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
               width="400"
               height="700"
@@ -331,7 +337,7 @@
             src="{{ section.settings.logo | image_url: width: 300 }}"
             alt="{{ shop.name }}"
             class=""
-            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : (solidDesktopTransparentMobile && isDesktop) ? 'invert-0' : (solidDesktopTransparentMobile && !isDesktop) ? 'invert-0' : 'invert-100'"
             style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
             loading="eager"
             width="400"
@@ -342,7 +348,7 @@
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
             class=""
-            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+            :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : (solidDesktopTransparentMobile && isDesktop) ? 'invert-0' : (solidDesktopTransparentMobile && !isDesktop) ? 'invert-0' : 'invert-100'"
             style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
             width="400"
             height="700"
@@ -661,7 +667,6 @@
               nextEl: carousel.querySelector('.carousel-next'),
               prevEl: carousel.querySelector('.carousel-prev'),
             },
-
           });
           carousel.swiper = swiper;
         }

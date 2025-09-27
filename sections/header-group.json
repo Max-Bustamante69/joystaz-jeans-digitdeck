@@ -65,22 +65,11 @@
             "aspect_ratio": "landscape",
             "text_position": "bottom-left"
           }
-        },
-        "mobile_card_L3arQF": {
-          "type": "mobile_card",
-          "settings": {
-            "image": "shopify://shop_images/Detras_12314b1e-b186-4dc4-a2f3-7e8df338f129.png",
-            "title": "Card Title",
-            "link": "",
-            "aspect_ratio": "portrait",
-            "text_position": "bottom-left"
-          }
         }
       },
       "block_order": [
         "mobile_card_7GXENa",
-        "mobile_card_VnyCjh",
-        "mobile_card_L3arQF"
+        "mobile_card_VnyCjh"
       ],
       "settings": {
         "header_variant_default": "auto",

@@ -65,17 +65,28 @@
             "aspect_ratio": "landscape",
             "text_position": "bottom-left"
           }
+        },
+        "mobile_card_L3arQF": {
+          "type": "mobile_card",
+          "settings": {
+            "image": "shopify://shop_images/Detras_12314b1e-b186-4dc4-a2f3-7e8df338f129.png",
+            "title": "Card Title",
+            "link": "",
+            "aspect_ratio": "portrait",
+            "text_position": "bottom-left"
+          }
         }
       },
       "block_order": [
         "mobile_card_7GXENa",
-        "mobile_card_VnyCjh"
+        "mobile_card_VnyCjh",
+        "mobile_card_L3arQF"
       ],
       "settings": {
         "header_variant_default": "auto",
         "logo": "shopify://shop_images/JoyStaz_-_Website_6_3b5842af-fc89-4929-8d10-f6634d653d47.png",
         "logo_height": 38,
-        "menu": "header-menu",
+        "menu": "primary-mega-menu-nav-bar",
         "mobile_subcollections_count": 4
       }
     }

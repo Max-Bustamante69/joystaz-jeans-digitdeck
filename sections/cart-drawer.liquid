@@ -68,6 +68,10 @@
         | sort: 'settings.threshold_value'
       %}
 
+      <div class="flex flex-col gap-4">
+
+      
+
       {% if sorted_thresholds.size > 0 %}
         <div class="py-4 lg:px-5 px-4 border-gray-100">
           <!-- Progress Bar with Dynamic Segments -->
@@ -139,6 +143,7 @@
         <div
           class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
         ></div>
+      </div>
       </div>
 
       <!-- Cart Add-on Item -->
@@ -213,7 +218,7 @@
       {% endif %}
 
       {% if section.settings.show_product_carousel %}
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3 mb-4">
           <h5 class=" lg:px-5 px-4">
             {{ section.settings.carousel_title | default: 'También te puede interesar' }}
           </h5>

@@ -31,10 +31,8 @@
           this.updateCartCount();
         });
 
-        // Also listen for native DOM events as backup
-        window.addEventListener('cart:updated', () => {
-          this.updateCartCount();
-        });
+        // Note: cart:updated events are handled by @cart:updated.window directive
+        // No need for additional window.addEventListener here
       }
     }
   "

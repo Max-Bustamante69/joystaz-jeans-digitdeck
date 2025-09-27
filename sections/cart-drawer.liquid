@@ -69,81 +69,79 @@
       %}
 
       <div class="flex flex-col gap-4">
-
-      
-
-      {% if sorted_thresholds.size > 0 %}
-        <div class="py-4 lg:px-5 px-4 border-gray-100">
-          <!-- Progress Bar with Dynamic Segments -->
-          <div class="w-full h-[4.8px] mb-2 flex gap-1">
-            {% for block in sorted_thresholds %}
-              <div
-                class="flex-1 bg-gray-200 overflow-hidden "
-                data-threshold
-                data-threshold-id="{{ block.id }}"
-                data-threshold-title="{{ block.settings.threshold_title }}"
-                data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
-              >
+        {% if sorted_thresholds.size > 0 %}
+          <div class="py-4 lg:px-5 px-4 border-gray-100">
+            <!-- Progress Bar with Dynamic Segments -->
+            <div class="w-full h-[4.8px] mb-2 flex gap-1">
+              {% for block in sorted_thresholds %}
                 <div
-                  class="bg-[#468847] h-full transition-all duration-300"
-                  :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
-                ></div>
-              </div>
-            {% endfor %}
-          </div>
-
-          <!-- Current Threshold Status -->
-          <div class="text-left">
-            <template x-for="threshold in sortedThresholds" :key="threshold.id">
-              <div x-show="isCurrentThreshold(threshold)" class="text-sm">
-                <p class="text-black font-semibold" x-show="!isThresholdAchieved(threshold)">
-                  {{ section.settings.progress_text | default: 'Estas a' }}
-                  <span class="font-bold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
-                  {{ section.settings.goal_text | default: 'de conseguir' }}
-                  <span class="font-semibold" x-text="threshold.title"></span>
-                </p>
-                <p class="text-green-600 font-semibold" x-show="isThresholdAchieved(threshold)">
-                  {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
-                  <span class="font-medium" x-text="threshold.title"></span>
-                </p>
-              </div>
-            </template>
-          </div>
-        </div>
-      {% endif %}
-
-      <template x-if="cartItems.length === 0">
-        <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
-          <h6>
-            {{ section.settings.empty_cart_title | default: 'Tu carrito está vacío' }}
-          </h6>
-
-          {% if section.settings.empty_buttons_collections.count > 0 %}
-            <div class="flex flex-col gap-2 w-full">
-              {% for collection in section.settings.empty_buttons_collections %}
-                {% if collection %}
-                  <a
-                    href="{{ collection.url }}"
-                    class="block w-full border border-primary  py-3 body font-semibold   transition-colors duration-200 hover:bg-primary hover:text-white"
-                  >
-                    {{ collection.title }}
-                  </a>
-                {% endif %}
+                  class="flex-1 bg-gray-200 overflow-hidden "
+                  data-threshold
+                  data-threshold-id="{{ block.id }}"
+                  data-threshold-title="{{ block.settings.threshold_title }}"
+                  data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
+                >
+                  <div
+                    class="bg-[#468847] h-full transition-all duration-300"
+                    :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
+                  ></div>
+                </div>
               {% endfor %}
             </div>
-          {% endif %}
-        </div>
-      </template>
 
-      <div class="flex flex-col gap-4 relative mb-7">
-        <template x-for="item in cartItems" :key="item.key">
-          {% render 'cart-product-card' %}
+            <!-- Current Threshold Status -->
+            <div class="text-left">
+              <template x-for="threshold in sortedThresholds" :key="threshold.id">
+                <div x-show="isCurrentThreshold(threshold)" class="text-sm">
+                  <p class="text-black font-semibold" x-show="!isThresholdAchieved(threshold)">
+                    {{ section.settings.progress_text | default: 'Estas a' }}
+                    <span class="font-bold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
+                    {{ section.settings.goal_text | default: 'de conseguir' }}
+                    <span class="font-semibold" x-text="threshold.title"></span>
+                  </p>
+                  <p class="text-green-600 font-semibold" x-show="isThresholdAchieved(threshold)">
+                    {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
+                    <span class="font-medium" x-text="threshold.title"></span>
+                  </p>
+                </div>
+              </template>
+            </div>
+          </div>
+        {% endif %}
+
+        <template x-if="cartItems.length === 0">
+          <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
+            <h6>
+              {{ section.settings.empty_cart_title | default: 'Tu carrito está vacío' }}
+            </h6>
+
+            {% if section.settings.empty_buttons_collections.count > 0 %}
+              <div class="flex flex-col gap-2 w-full">
+                {% for collection in section.settings.empty_buttons_collections %}
+                  {% if collection %}
+                    <a
+                      href="{{ collection.url }}"
+                      class="block w-full border border-primary  py-3 body font-semibold   transition-colors duration-200 hover:bg-primary hover:text-white"
+                    >
+                      {{ collection.title }}
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </template>
-        <!-- Subtle white fade at bottom -->
-        <div
-          class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
-        ></div>
-      </div>
+
+
+        <div class="flex flex-col gap-4 relative mb-7">
+          <template x-for="item in cartItems" :key="item.key">
+            {% render 'cart-product-card' %}
+          </template>
+          <!-- Subtle white fade at bottom -->
+          <div
+            class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
+          ></div>
+        </div>
       </div>
 
       <!-- Cart Add-on Item -->
@@ -354,7 +352,8 @@
                             show_color_swatches: false,
                             show_size_selector: true,
                             hide_info: true,
-                            show_wishlist: true
+                            show_wishlist: true,
+                            show_price_overlay: true
                           %}
                         </div>
                       </div>
@@ -393,7 +392,10 @@
         </span>
         <div class="text-right">
           <div class="flex items-center space-x-2">
-            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium">
+            <span
+              class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium"
+              x-show="cartSavings > 0"
+            >
               {{ section.settings.savings_text | default: 'AHORRA' }} $<span x-text="formatMoney(cartSavings)"></span>
             </span>
 

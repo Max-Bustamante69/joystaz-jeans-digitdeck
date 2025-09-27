@@ -311,6 +311,8 @@
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
               loading="eager"
+              width="700"
+              height="400"
             >
           {% else %}
             <img
@@ -319,6 +321,8 @@
               class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
               style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
+              width="400"
+              height="700"
             >
           {% endif %}
         </a>
@@ -336,6 +340,8 @@
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
             loading="eager"
+            width="400"
+            height="700"
           >
         {% else %}
           <img
@@ -344,6 +350,8 @@
             class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
             style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
+            width="400"
+            height="700"
           >
         {% endif %}
       </a>

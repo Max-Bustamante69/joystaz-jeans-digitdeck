@@ -167,6 +167,13 @@
       </div>
     {% endif %}
 
+    <!-- Price Overlay - positioned in bottom left corner -->
+    {% if show_price_overlay %}
+      <div class="absolute left-2 bottom-2  z-10">
+        <span class="body-xs lg:body-sm font-semibold text-black"> ${{ product.price | money_without_currency }} </span>
+      </div>
+    {% endif %}
+
     <!-- Size Selector Plus Button - positioned in bottom right corner (NOT in bundle mode) -->
     {% if product.options contains 'Talla' and wishlist_mode != true and bundle_mode != true %}
       <button

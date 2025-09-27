@@ -52,7 +52,7 @@
             "image": "shopify://shop_images/Detras_a712b750-bafa-4724-95bf-587a210d8353.png",
             "title": "Recibe 10% de descuento",
             "link": "shopify://pages/camisetas-mujer",
-            "aspect_ratio": "portrait",
+            "aspect_ratio": "landscape",
             "text_position": "bottom-left"
           }
         },
@@ -62,7 +62,7 @@
             "image": "shopify://shop_images/Detalle_86474a84-6741-4e8d-8415-ebb92f0a28a7.png",
             "title": "Agrup y Ahorra",
             "link": "",
-            "aspect_ratio": "portrait",
+            "aspect_ratio": "landscape",
             "text_position": "bottom-left"
           }
         }

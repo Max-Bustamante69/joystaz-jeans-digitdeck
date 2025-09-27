@@ -305,22 +305,20 @@
         <a href="{{ routes.root_url }}">
           {% if section.settings.logo != blank %}
             <img
-              src="{{ section.settings.logo | image_url: width: 120 }}"
+              src="{{ section.settings.logo | image_url: width: 300 }}"
               alt="{{ shop.name }}"
-              height="{{ section.settings.logo.height | default: 40 }}"
-              width="{{ section.settings.logo.width | default: 'auto' }}"
               class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+              style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
               loading="eager"
             >
           {% else %}
             <img
               src="{{ 'logo.png' | asset_url }}"
               alt="Logo"
-              class=" h-12"
+              class=""
               :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
-              width="60"
-              height="40"
+              style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
             >
           {% endif %}
         </a>
@@ -332,22 +330,20 @@
       <a href="{{ routes.root_url }}">
         {% if section.settings.logo != blank %}
           <img
-            src="{{ section.settings.logo | image_url: width: 120 }}"
+            src="{{ section.settings.logo | image_url: width: 300 }}"
             alt="{{ shop.name }}"
-            height="{{ section.settings.logo.height | default: 40 }}"
-            width="{{ section.settings.logo.width | default: 'auto' }}"
             class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
+            style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
             loading="eager"
           >
         {% else %}
           <img
             src="{{ 'logo.png' | asset_url }}"
             alt="Logo"
-            class=" h-12"
+            class=""
             :class="(forceSolid || (solidOnDesktop && isDesktop) || (solidOnMobile && !isDesktop) || isScrolled) ? 'invert-0' : 'invert-100'"
-            width="60"
-            height="40"
+            style="height: {{ section.settings.logo_height | default: 40 }}px; width: auto;"
           >
         {% endif %}
       </a>
@@ -760,6 +756,17 @@
       "id": "logo",
       "label": "Logo",
       "info": "Upload your logo image. If no logo is uploaded, the default logo from assets will be used."
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "min": 20,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "label": "Logo Height",
+      "default": 40,
+      "info": "Adjust the height of your logo"
     },
     {
       "type": "link_list",

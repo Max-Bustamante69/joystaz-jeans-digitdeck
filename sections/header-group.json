@@ -17,7 +17,7 @@
         "item_1": {
           "type": "ticker_item",
           "settings": {
-            "text": "Envío gratis en compras +$100.000"
+            "text": "Envío gratis a todo Colombia"
           }
         },
         "item_2": {
@@ -51,13 +51,24 @@
           "settings": {
             "title": "Card Title",
             "link": "shopify://pages/camisetas-mujer",
-            "aspect_ratio": "portrait",
+            "aspect_ratio": "landscape",
+            "text_position": "bottom-left"
+          }
+        },
+        "mobile_card_VnyCjh": {
+          "type": "mobile_card",
+          "settings": {
+            "image": "shopify://shop_images/Detalle_86474a84-6741-4e8d-8415-ebb92f0a28a7.png",
+            "title": "Agrupa y Ahorra",
+            "link": "",
+            "aspect_ratio": "landscape",
             "text_position": "bottom-left"
           }
         }
       },
       "block_order": [
-        "mobile_card_7GXENa"
+        "mobile_card_7GXENa",
+        "mobile_card_VnyCjh"
       ],
       "settings": {
         "header_variant_default": "auto",

@@ -1,0 +1,72 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "aside",
+  "name": "Search Drawer Group",
+  "sections": {
+    "search_drawer": {
+      "type": "search-drawer",
+      "settings": {
+        "search_title": "Busca Productos",
+        "search_placeholder": "Busca productos, categorias...",
+        "drawer_width": 420,
+        "history_title": "Búsquedas recientes",
+        "clear_text": "Borrar",
+        "clear_all_text": "Borrar todos",
+        "show_featured_tags": true,
+        "featured_tags_title": "Popular Categories",
+        "featured_collections": [
+          "bermudas-mujer",
+          "camisetas-hombre",
+          "camisetas-mujer",
+          "men",
+          "hombre-jeans-medio"
+        ],
+        "show_category_grid": true,
+        "category_grid_title": "Compra Por categoría",
+        "category_collections": [
+          "camisetas-hombre",
+          "men",
+          "hombre-jeans-medio",
+          "faldas-mujer",
+          "camisetas-mujer"
+        ],
+        "show_product_carousel": true,
+        "product_carousel_title": "Productos resaltados",
+        "product_source": "collection",
+        "collection": "",
+        "product_tags": "",
+        "products": [
+          "bermuda-animal-print",
+          "bermuda-cargo-con-sesgos-a-los-lados-764015",
+          "bermuda-con-sesgos-764014",
+          "bermuda-cargo-764018",
+          "bermuda-camuflada-764004",
+          "bermuda-cargo-con-cordon-764007",
+          "camiseta-beverly-hills-p75003",
+          "falda-de-blonda-negra-734009",
+          "falda-animal-print-734004"
+        ],
+        "max_products": 8,
+        "view_all_text": "Ver todos",
+        "results_title": "Productos encontrados",
+        "results_text": "resultados",
+        "matching_categories_title": "Categorías que coinciden",
+        "new_badge_text": "Nuevo",
+        "no_results_title": "Sin resultados",
+        "no_results_text": "Trata de buscar con palabras diferentes",
+        "searching_text": "Buscando..."
+      }
+    }
+  },
+  "order": [
+    "search_drawer"
+  ]
+}

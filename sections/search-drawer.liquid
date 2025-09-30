@@ -1,17 +1,20 @@
 {% comment %}
-  Optimized Search Drawer Component
-  - Uses Alpine.js native transitions
-  - Maximizes Tailwind utilities
-  - Removes unnecessary custom CSS
-  - Smoother animations with better performance
+  Search Drawer Section
+  Features:
+  - Slide-in drawer from right
+  - Real-time search with debouncing
+  - Search history with localStorage
+  - Featured collections and products
+  - Category grid and product carousels
+  - Responsive design
+  - Fully customizable via schema
 {% endcomment %}
 
 <div
   x-cloak
   x-data="searchDrawer()"
   x-show="isOpen"
-  class="fixed inset-0 z-50 overflow-hidden"
-  @click.self="closeDrawer()"
+  class="fixed inset-0 z-40 overflow-hidden"
   @keydown.escape.window="closeDrawer()"
   @search:open.window="openDrawer()"
 >
@@ -26,6 +29,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="absolute inset-0 bg-black/70"
+    @click="closeDrawer()"
   ></div>
 
   <!-- Drawer -->
@@ -38,13 +42,12 @@
     x-transition:leave="transform transition ease-in duration-300"
     x-transition:leave-start="translate-x-0 "
     x-transition:leave-end="translate-x-full "
-    class="absolute right-0 top-0 h-full py-3  w-[88vw] lg:w-[420px] bg-white shadow-xl flex flex-col overflow-hidden transform-gpu will-change-transform"
-    @click.outside="closeDrawer()"
+    class="absolute right-0 top-0 h-full py-3  w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden transform-gpu will-change-transform"
   >
     <!-- Header -->
     <div class="lg:px-6 px-4  flex-shrink-0">
       <div class="flex items-center justify-between mb-4">
-        <h5>Search</h5>
+        <h5>{{ section.settings.search_title | default: 'Search' }}</h5>
         <button
           @click="closeDrawer()"
           class="text-gray-400 hover:text-gray-600 transition-colors duration-200 "
@@ -62,10 +65,10 @@
           x-model="searchQuery"
           @input="handleSearch"
           @keydown.enter="viewAllResults"
-          placeholder="Search products, categories..."
-          class="w-full pl-12 py-3 border-b border-gray-300  focus:ring-0 focus:outline-none   transition-all duration-200"
+          placeholder="{{ section.settings.search_placeholder | default: 'Search products, categories...' }}"
+          class="w-full pl-8 py-3 border-b border-black/20 focus:border-black/50   focus:ring-0 focus:outline-none   transition-all duration-200"
         >
-        {% render 'search-icon', class: 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-black' %}
+        {% render 'search-icon', class: 'absolute left-0 top-1/2 -translate-y-1/2 w-5 h-5 text-black' %}
 
         <button
           x-show="searchQuery.length > 0"
@@ -73,7 +76,9 @@
           @click="clearSearch"
           class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-700 hover:text-gray-900 transition-colors duration-200"
         >
-          <p class="body-sm lg:body underline cursor-pointer opacity-80">Clear</p>
+          <p class="body-sm lg:body underline cursor-pointer opacity-80">
+            {{ section.settings.clear_text | default: 'Clear' }}
+          </p>
         </button>
       </div>
 
@@ -92,13 +97,13 @@
           @click="viewAllResults"
           class="w-full text-center py-2 text-gray-600 hover:text-gray-800 underline transition-colors duration-200"
         >
-          {{ settings.search_view_all_text | default: 'Ver todos' }}
+          {{ section.settings.view_all_text | default: 'Ver todos' }}
         </button>
       </div>
     </div>
 
     <!-- Scrollable Content -->
-    <div class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+    <div class="flex-1 overflow-y-auto scrollbar-hide">
       <!-- Featured Tags -->
       <div
         x-show="searchQuery.length === 0"
@@ -109,21 +114,37 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-2"
       >
-        {% if settings.search_show_featured_tags and settings.search_featured_collections != blank %}
+        {% if section.settings.show_featured_tags and section.settings.featured_collections.count > 0 %}
           <div class="py-6  space-y-4 border-gray-200">
             <h5 class=" lg:px-6">
-              {{ settings.search_featured_tags_title | default: 'Popular Categories' }}
+              {{ section.settings.featured_tags_title | default: 'Popular Categories' }}
             </h5>
 
-            <div class="search-tags-carousel swiper overflow-hidden" data-carousel-id="search-tags">
-              <div class="swiper-wrapper  lg:px-6">
-                {% for collection in settings.search_featured_collections %}
-                  <div class="swiper-slide">
-                    {% render 'collection-tag', collection: collection %}
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
+            {% capture tags_content %}
+              {% for collection in section.settings.featured_collections %}
+                <div class="swiper-slide">
+                  {% render 'collection-tag', collection: collection %}
+                </div>
+              {% endfor %}
+            {% endcapture %}
+
+            {% render 'generic-carousel',
+              carousel_id: 'search-tags',
+              carousel_class: 'search-tags-carousel',
+              content: tags_content,
+              show_arrows: false,
+              slides_per_view_mobile: 1.5,
+              slides_per_view_desktop: 2.2,
+              space_between_mobile: 2,
+              space_between_desktop: 4,
+              centered_slides: false,
+              free_mode: true,
+              total_items: section.settings.featured_collections.count,
+              padding_left_mobile: 24,
+              padding_right_mobile: 24,
+              padding_left_desktop: 24,
+              padding_right_desktop: 24
+            %}
           </div>
         {% endif %}
 
@@ -137,39 +158,31 @@
         >
           <div class="flex items-center justify-between mb-4">
             <h5>
-              {{ settings.search_history_title | default: 'Recent Searches' }}
+              {{ section.settings.history_title | default: 'Recent Searches' }}
             </h5>
             <button
               @click="clearHistory"
-              class="text-sm text-gray-500 hover:text-gray-700 underline transition-colors duration-200"
+              class="body-sm text-black underline transition-colors duration-200"
             >
-              {{ settings.search_clear_all_text | default: 'Clear all' }}
+              {{ section.settings.clear_all_text | default: 'Clear all' }}
             </button>
           </div>
 
-          <div class="space-y-2">
+          <div class="space-y-1">
             <template x-for="term in searchHistory" :key="term">
-              <div class="flex items-center justify-start w-full p-2 text-left text-gray-700 rounded-lg">
+              <div class="flex items-center justify-start w-full text-left text-black rounded-lg">
                 <!-- Left side: Clock icon + search term -->
                 <button
                   @click="searchFromHistory(term)"
                   class="flex items-center space-x-2  text-left"
                 >
-                  <svg
-                    class="w-4 h-4 text-gray-400 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
                   <span x-text="term" class="truncate"></span>
                 </button>
 
                 <!-- Right side: Remove button close to text -->
                 <button
                   @click.stop="removeFromHistory(term)"
-                  class="flex-shrink-0 ml-2 p-1 text-gray-400"
+                  class="flex-shrink-0 ml-2 p-1 text-black"
                   :title="`Remove '${term}' from history`"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,42 +195,58 @@
         </div>
 
         <!-- Categories -->
-        {% if settings.search_show_category_grid %}
+        {% if section.settings.show_category_grid %}
           <div class="py-6 ">
             <h5 class="mb-4  lg:px-6">
-              {{ settings.search_category_grid_title | default: 'Shop by Category' }}
+              {{ section.settings.category_grid_title | default: 'Shop by Category' }}
             </h5>
 
-            <div class="search-categories-carousel swiper overflow-hidden" data-carousel-id="search-categories">
-              <div class="swiper-wrapper  lg:px-6">
-                {% for collection in settings.search_category_collections %}
-                  <div class="swiper-slide">
-                    {% render 'collection-card', category: collection, aspect_ratio: 'portrait' %}
-                  </div>
-                {% endfor %}
-              </div>
-            </div>
+            {% capture categories_content %}
+              {% for collection in section.settings.category_collections %}
+                <div class="swiper-slide">
+                  {% render 'collection-card', category: collection, aspect_ratio: 'portrait' %}
+                </div>
+              {% endfor %}
+            {% endcapture %}
+
+            {% render 'generic-carousel',
+              carousel_id: 'search-categories',
+              carousel_class: 'search-categories-carousel',
+              content: categories_content,
+              show_arrows: false,
+              slides_per_view_mobile: 1.5,
+              slides_per_view_desktop: 2.2,
+              space_between_mobile: 2,
+              space_between_desktop: 4,
+              centered_slides: false,
+              free_mode: true,
+              total_items: section.settings.category_collections.count,
+              padding_left_mobile: 24,
+              padding_right_mobile: 24,
+              padding_left_desktop: 24,
+              padding_right_desktop: 24
+            %}
           </div>
         {% endif %}
 
         <!-- Products -->
-        {% if settings.search_show_product_carousel %}
+        {% if section.settings.show_product_carousel %}
           <div class="py-6 space-y-4">
             <div class=" lg:px-6">
               <h5>
-                {{ settings.search_product_carousel_title | default: 'Featured Products' }}
+                {{ section.settings.product_carousel_title | default: 'Featured Products' }}
               </h5>
             </div>
 
             {% assign products = '' %}
-            {% case settings.search_product_source %}
+            {% case section.settings.product_source %}
               {% when 'collection' %}
-                {% if settings.search_collection != blank %}
-                  {% assign products = settings.search_collection.products %}
+                {% if section.settings.collection != blank %}
+                  {% assign products = section.settings.collection.products %}
                 {% endif %}
               {% when 'tags' %}
-                {% if settings.search_product_tags != blank %}
-                  {% assign tag_array = settings.search_product_tags | split: ',' %}
+                {% if section.settings.product_tags != blank %}
+                  {% assign tag_array = section.settings.product_tags | split: ',' %}
                   {% assign products = collections.all.products %}
                   {% for tag in tag_array %}
                     {% assign tag_trimmed = tag | strip %}
@@ -225,23 +254,44 @@
                   {% endfor %}
                 {% endif %}
               {% when 'manual' %}
-                {% assign products = settings.search_products %}
+                {% assign products = section.settings.products %}
             {% endcase %}
 
-            {% if products != blank and products.size > 0 %}
-              <div class="search-products-carousel swiper overflow-hidden" data-carousel-id="search-products">
-                <div class="swiper-wrapper  lg:px-6">
-                  {% assign products_shown = 0 %}
-                  {% for product in products %}
-                    {% if product.available and products_shown < 8 %}
-                      <div class="swiper-slide">
-                        {% render 'product-card', product: product, show_badges: true, show_rating: true %}
-                      </div>
-                      {% assign products_shown = products_shown | plus: 1 %}
-                    {% endif %}
-                  {% endfor %}
-                </div>
-              </div>
+            {% if products != blank and products.count > 0 %}
+              {% assign products_shown = 0 %}
+              {% capture products_content %}
+                {% for product in products %}
+                  {% if product.available and products_shown < section.settings.max_products %}
+                    <div class="swiper-slide">
+                      {% render 'product-card',
+                        product: product,
+                        show_badges: true,
+                        show_rating: true,
+                        mobile_layout: true
+                      %}
+                    </div>
+                    {% assign products_shown = products_shown | plus: 1 %}
+                  {% endif %}
+                {% endfor %}
+              {% endcapture %}
+
+              {% render 'generic-carousel',
+                carousel_id: 'search-products',
+                carousel_class: 'search-products-carousel',
+                content: products_content,
+                show_arrows: false,
+                slides_per_view_mobile: 1.5,
+                slides_per_view_desktop: 2.2,
+                space_between_mobile: 2,
+                space_between_desktop: 4,
+                centered_slides: false,
+                free_mode: true,
+                total_items: products_shown,
+                padding_left_mobile: 24,
+                padding_right_mobile: 24,
+                padding_left_desktop: 24,
+                padding_right_desktop: 24
+              %}
             {% else %}
               <p class="text-gray-500 text-center py-8">No products available</p>
             {% endif %}
@@ -257,7 +307,7 @@
         x-transition:enter-end="opacity-100 translate-y-0"
         class="lg:p-6 p-4 space-y-4 "
       >
-        <h5>Categorías que coinciden</h5>
+        <h5>{{ section.settings.matching_categories_title | default: 'Categorías que coinciden' }}</h5>
 
         <div class="flex flex-col gap-2">
           <template x-for="category in matchingCategories" :key="category.id">
@@ -281,7 +331,12 @@
         x-data="{ layoutOption: 2 }"
       >
         <div class="flex items-center justify-between">
-          <h5>Productos encontrados (<span x-text="searchResults.length"></span>)</h5>
+          <h5>
+            {{ section.settings.results_title | default: 'Productos encontrados' }} (<span
+              x-text="searchResults.length"
+            ></span
+            >)
+          </h5>
 
           <!-- Mini Layout Toggle for Search Results -->
           <div class="flex gap-1">
@@ -337,7 +392,9 @@
                     loading="lazy"
                   >
                   <div class="absolute top-2 left-2">
-                    <span class="bg-white/90 backdrop-blur-sm text-black py-1 px-2 text-xs font-medium"> Nuevo </span>
+                    <span class="bg-white/90 backdrop-blur-sm text-black py-1 px-2 text-xs font-medium">
+                      {{ section.settings.new_badge_text | default: 'Nuevo' }}
+                    </span>
                   </div>
                 </div>
 
@@ -361,8 +418,8 @@
             @click="viewAllResults"
             class="px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-all duration-200 "
           >
-            {{ settings.search_view_all_text | default: 'Ver todos' }} los
-            <span x-text="searchResults.length"></span> resultados
+            {{ section.settings.view_all_text | default: 'Ver todos' }} los <span x-text="searchResults.length"></span>
+            {{ section.settings.results_text | default: 'resultados' }}
           </button>
         </div>
       </div>
@@ -376,8 +433,10 @@
         <svg class="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 011 4z"/>
         </svg>
-        <h5>No results found</h5>
-        <p class="body-sm lg:body">Try searching with different keywords</p>
+        <h5>{{ section.settings.no_results_title | default: 'No results found' }}</h5>
+        <p class="body-sm lg:body">
+          {{ section.settings.no_results_text | default: 'Try searching with different keywords' }}
+        </p>
       </div>
 
       <!-- Loading -->
@@ -387,7 +446,7 @@
         class="p-6 text-center"
       >
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-        <p class="text-gray-500 mt-2">Searching...</p>
+        <p class="text-gray-500 mt-2">{{ section.settings.searching_text | default: 'Searching...' }}</p>
       </div>
     </div>
   </div>
@@ -407,7 +466,6 @@
 
       init() {
         this.loadSearchHistory();
-        this.$nextTick(() => this.initializeCarousels());
       },
 
       openDrawer() {
@@ -415,9 +473,6 @@
         // Store current scroll position
         this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('search-drawer-open');
         // Focus after the transition to prevent abrupt scroll/focus jump
         this.$nextTick(() => {
@@ -429,12 +484,7 @@
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
         document.body.classList.remove('search-drawer-open');
-        // Restore scroll position
-        window.scrollTo(0, this.scrollY || 0);
         setTimeout(() => {
           this.searchQuery = '';
           this.searchResults = [];
@@ -592,54 +642,266 @@
       },
 
       initializeCarousels() {
-        if (typeof Swiper === 'undefined') return;
-
-        // Tags carousel
-        const tagsCarousel = this.$el.querySelector('.search-tags-carousel');
-        if (tagsCarousel) {
-          new Swiper(tagsCarousel, {
-            slidesPerView: 'auto',
-            spaceBetween: 8,
-            freeMode: { enabled: true, sticky: true },
-            grabCursor: false,
-          });
-        }
-
-        // Categories carousel
-        const categoriesCarousel = this.$el.querySelector('.search-categories-carousel');
-        if (categoriesCarousel) {
-          new Swiper(categoriesCarousel, {
-            slidesPerView: 1.5,
-            spaceBetween: 2,
-            freeMode: { enabled: true, sticky: true },
-            grabCursor: false,
-            breakpoints: { 1024: { slidesPerView: 2.2, spaceBetween: 4 } },
-          });
-        }
-
-        // Products carousel
-        const productsCarousel = this.$el.querySelector('.search-products-carousel');
-        if (productsCarousel) {
-          new Swiper(productsCarousel, {
-            slidesPerView: 1.5,
-            spaceBetween: 2,
-            freeMode: { enabled: true, sticky: true },
-            grabCursor: false,
-            breakpoints: { 1024: { slidesPerView: 2.2, spaceBetween: 4 } },
-          });
-        }
+        // All carousels are now handled by the generic-carousel snippet
+        // No custom initialization needed
       },
     };
   }
 </script>
 
 <style>
-  .search-tags-carousel .swiper-slide {
-    width: auto;
+  /* Hide scrollbars for all drawers */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+    scrollbar-width: none; /* Firefox */
   }
 
-  .search-categories-carousel .swiper-slide,
-  .search-products-carousel .swiper-slide {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+
+  /* Tags carousel now uses standard carousel behavior */
+  .search-tags-carousel .swiper-slide {
     height: auto;
   }
 </style>
+
+{% schema %}
+{
+  "name": "Search Drawer",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
+      "type": "text",
+      "id": "search_title",
+      "label": "Search Title",
+      "default": "Search"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search Placeholder",
+      "default": "Search products, categories..."
+    },
+    {
+      "type": "range",
+      "id": "drawer_width",
+      "min": 300,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "label": "Drawer Width (Desktop)",
+      "default": 420
+    },
+    {
+      "type": "header",
+      "content": "Search History"
+    },
+    {
+      "type": "text",
+      "id": "history_title",
+      "label": "History Section Title",
+      "default": "Recent Searches"
+    },
+    {
+      "type": "text",
+      "id": "clear_text",
+      "label": "Clear Button Text",
+      "default": "Clear"
+    },
+    {
+      "type": "text",
+      "id": "clear_all_text",
+      "label": "Clear All Button Text",
+      "default": "Clear all"
+    },
+    {
+      "type": "header",
+      "content": "Featured Tags"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured_tags",
+      "label": "Show Featured Tags",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "featured_tags_title",
+      "label": "Featured Tags Title",
+      "default": "Popular Categories"
+    },
+    {
+      "type": "collection_list",
+      "id": "featured_collections",
+      "label": "Featured Collections",
+      "info": "Collections to show as clickable tags",
+      "limit": 10
+    },
+    {
+      "type": "header",
+      "content": "Category Grid"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_category_grid",
+      "label": "Show Category Grid",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "category_grid_title",
+      "label": "Category Grid Title",
+      "default": "Shop by Category"
+    },
+    {
+      "type": "collection_list",
+      "id": "category_collections",
+      "label": "Category Collections",
+      "info": "Collections to show in category grid",
+      "limit": 8
+    },
+    {
+      "type": "header",
+      "content": "Product Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_carousel",
+      "label": "Show Product Carousel",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "product_carousel_title",
+      "label": "Product Carousel Title",
+      "default": "Featured Products"
+    },
+    {
+      "type": "select",
+      "id": "product_source",
+      "label": "Product Source",
+      "options": [
+        {
+          "value": "collection",
+          "label": "Collection"
+        },
+        {
+          "value": "tags",
+          "label": "Product Tags"
+        },
+        {
+          "value": "manual",
+          "label": "Manual Selection"
+        }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Select products from this collection"
+    },
+    {
+      "type": "text",
+      "id": "product_tags",
+      "label": "Product Tags",
+      "info": "Comma-separated tags (e.g., 'best-seller,new')"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Manual Product Selection"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "label": "Maximum Products in Carousel",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Search Results"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All Button Text",
+      "default": "Ver todos"
+    },
+    {
+      "type": "text",
+      "id": "results_title",
+      "label": "Results Title",
+      "default": "Productos encontrados"
+    },
+    {
+      "type": "text",
+      "id": "results_text",
+      "label": "Results Text",
+      "default": "resultados"
+    },
+    {
+      "type": "text",
+      "id": "matching_categories_title",
+      "label": "Matching Categories Title",
+      "default": "Categorías que coinciden"
+    },
+    {
+      "type": "text",
+      "id": "new_badge_text",
+      "label": "New Badge Text",
+      "default": "Nuevo"
+    },
+    {
+      "type": "header",
+      "content": "No Results"
+    },
+    {
+      "type": "text",
+      "id": "no_results_title",
+      "label": "No Results Title",
+      "default": "No results found"
+    },
+    {
+      "type": "text",
+      "id": "no_results_text",
+      "label": "No Results Text",
+      "default": "Try searching with different keywords"
+    },
+    {
+      "type": "text",
+      "id": "searching_text",
+      "label": "Searching Text",
+      "default": "Searching..."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Search Drawer",
+      "settings": {
+        "search_title": "Search",
+        "search_placeholder": "Search products, categories...",
+        "drawer_width": 420,
+        "show_featured_tags": true,
+        "featured_tags_title": "Popular Categories",
+        "show_category_grid": true,
+        "category_grid_title": "Shop by Category",
+        "show_product_carousel": true,
+        "product_carousel_title": "Featured Products",
+        "product_source": "collection",
+        "max_products": 8
+      }
+    }
+  ]
+}
+{% endschema %}

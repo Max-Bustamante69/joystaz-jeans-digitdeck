@@ -76,7 +76,7 @@
           {% endif %}
         </label>
       {% endif %}
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         {% for product_option_value in product_option.values %}
           {% comment %} Find the first variant that contains this size {% endcomment %}
           {% assign size_variant_id = null %}

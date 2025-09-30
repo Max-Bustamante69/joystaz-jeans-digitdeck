@@ -13,28 +13,6 @@
   "sections": {
     "cart_drawer": {
       "type": "cart-drawer",
-      "blocks": {
-        "cart_threshold_XCVDYa": {
-          "type": "cart_threshold",
-          "settings": {
-            "threshold_title": "Free Shipping",
-            "threshold_value": 150000,
-            "discount_code": "FREE-SHIPPING"
-          }
-        },
-        "cart_threshold_FpCi7C": {
-          "type": "cart_threshold",
-          "settings": {
-            "threshold_title": "5% Disscount",
-            "threshold_value": 200000,
-            "discount_code": "FREE-5"
-          }
-        }
-      },
-      "block_order": [
-        "cart_threshold_XCVDYa",
-        "cart_threshold_FpCi7C"
-      ],
       "settings": {
         "cart_title": "Tu Carrito",
         "drawer_width": 420,
@@ -46,14 +24,17 @@
         "show_product_carousel": true,
         "carousel_title": "También te puede interesar",
         "carousel_max_products": 8,
+        "fallback_type": "collections",
         "fallback_collections": [
           "men",
           "women"
         ],
+        "fallback_products": [],
         "empty_buttons_collections": [
           "men",
           "women"
         ],
+        "discount_savings_text": "DESCUENTOS APLICADOS:",
         "subtotal_text": "SUBTOTAL:",
         "savings_text": "AHORRA",
         "checkout_button_text": "Paga de forma segura"

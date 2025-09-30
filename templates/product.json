@@ -36,8 +36,8 @@
           "camiseta-oversize-375007-copia-2"
         ],
         "duo_eligible_collections": [],
-        "free_shipping_text": "Envío gratis En ordenes +500.000",
-        "free_returns_text": "Devoluciones gratis y intercambiables",
+        "free_shipping_text": "",
+        "free_returns_text": "",
         "cta_button_text": "Añadir Al Carrito",
         "show_reviews_average": true,
         "show_reviews_count": true,
@@ -85,6 +85,7 @@
     "product_reviews_section": {
       "type": "product-reviews",
       "settings": {
+        "reviews_api_url": "http://localhost:3001/api/reviews",
         "show_review_form": true,
         "write_review_text": "Write a Review"
       }

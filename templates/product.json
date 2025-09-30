@@ -32,9 +32,9 @@
         "duo_discount_percentage": 5,
         "duo_eligible_products": ["sample-product-handle"],
         "duo_eligible_collections": [],
-        "free_shipping_text": "Free shipping on orders over $100",
-        "free_returns_text": "Free returns and exchanges",
-        "cta_button_text": "Add to Cart",
+        "free_shipping_text": "Envío Gratis a todo Colombia",
+        "free_returns_text": "Devoluciones o cambios simples",
+        "cta_button_text": "Añadir Al Carrito",
         "show_reviews_average": true,
         "show_reviews_count": true,
         "show_slide_counter": true,
@@ -77,6 +77,7 @@
     "product_reviews_section": {
       "type": "product-reviews",
       "settings": {
+        "reviews_api_url": "http://localhost:3001/api/reviews",
         "show_review_form": true,
         "write_review_text": "Write a Review"
       }

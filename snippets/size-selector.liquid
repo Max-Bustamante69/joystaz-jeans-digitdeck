@@ -84,14 +84,49 @@
           <button
             {% if product_number %}
               @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ size_variant_id }})"
-              :class="{{ selected_size_variable | remove: "'" }}.size === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900 hover:border-gray-400'"
+              :class="
+                [
+                  {{ selected_size_variable | remove: "'" }}.size === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-gray-300 text-gray-900',
+                  !isSizeAvailable('{{ product_option_value }}') ? 'opacity-40 cursor-not-allowed' : 'hover:border-gray-400'
+                ]
+              "
+              :disabled="!isSizeAvailable('{{ product_option_value }}')"
             {% else %}
               @click="{{ click_function }}('{{ product_option_value }}', findVariantIdForSize('{{ product_option_value }}'))"
-              :class="{{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-black/10 text-black hover:border-primary'"
+              :class="
+                [
+                  {{ selected_size_variable }} === '{{ product_option_value }}' ? 'bg-primary text-white border-gray-900' : 'border-black/10 text-black',
+                  !isSizeAvailable('{{ product_option_value }}') ? 'opacity-40 cursor-not-allowed' : 'hover:border-primary'
+                ]
+              "
+              :disabled="!isSizeAvailable('{{ product_option_value }}')"
             {% endif %}
-            class="relative size-10 p-3 body-sm  flex items-center justify-center font-medium border rounded-full  transition-all  duration-300 overflow-hidden"
+            class="relative size-10 p-3 body-sm flex items-center justify-center font-medium border rounded-full transition-all duration-300 overflow-hidden"
           >
-            {{ product_option_value }}
+            <!-- Bell icon for unavailable sizes - positioned to the left -->
+            <div
+              x-show="!isSizeAvailable('{{ product_option_value }}')"
+              class="flex items-center gap-1"
+            >
+              {% render 'bell-icon', class: 'w-3 h-3 text-gray-400 flex-shrink-0' %}
+              <span>{{ product_option_value }}</span>
+            </div>
+
+            <!-- Normal size display for available sizes -->
+            <span x-show="isSizeAvailable('{{ product_option_value }}')">{{ product_option_value }}</span>
+
+            <!-- Diagonal line overlay for unavailable sizes -->
+            <div
+              x-show="!isSizeAvailable('{{ product_option_value }}')"
+              class="absolute inset-0 pointer-events-none flex items-center justify-center"
+            >
+              <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <line x1="0" y1="0" x2="100" y2="100"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      class="text-gray-400"/>
+              </svg>
+            </div>
           </button>
         {% endfor %}
       </div>

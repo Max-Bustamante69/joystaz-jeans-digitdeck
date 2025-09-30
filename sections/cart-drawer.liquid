@@ -13,7 +13,7 @@
   x-cloak
   x-data="cartDrawer()"
   x-show="isOpen"
-  class="fixed inset-0 z-50 overflow-hidden"
+  class="fixed inset-0 z-40 overflow-hidden"
   @cart:open.window="openDrawer()"
   @cart:updated.window="loadCart()"
 >
@@ -27,6 +27,7 @@
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="absolute inset-0 bg-black/70"
+    @click="closeDrawer()"
   ></div>
 
   <!-- Drawer -->
@@ -39,7 +40,6 @@
     x-transition:leave-start="translate-x-0"
     x-transition:leave-end="translate-x-full"
     class="absolute right-0 top-0 h-full   w-[88vw] lg:w-[{{ section.settings.drawer_width | default: 420 }}px] bg-white shadow-xl flex flex-col overflow-hidden"
-    @click.outside="closeDrawer()"
   >
     <!-- Header - Sticky at top -->
     <div class="sticky top-0 lg:px-5 px-4 z-10 bg-white flex items-center justify-between ">
@@ -69,81 +69,78 @@
       %}
 
       <div class="flex flex-col gap-4">
-
-      
-
-      {% if sorted_thresholds.size > 0 %}
-        <div class="py-4 lg:px-5 px-4 border-gray-100">
-          <!-- Progress Bar with Dynamic Segments -->
-          <div class="w-full h-[4.8px] mb-2 flex gap-1">
-            {% for block in sorted_thresholds %}
-              <div
-                class="flex-1 bg-gray-200 overflow-hidden "
-                data-threshold
-                data-threshold-id="{{ block.id }}"
-                data-threshold-title="{{ block.settings.threshold_title }}"
-                data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
-              >
+        {% if sorted_thresholds.size > 0 %}
+          <div class="py-4 lg:px-5 px-4 border-gray-100">
+            <!-- Progress Bar with Dynamic Segments -->
+            <div class="w-full h-[4.8px] mb-2 flex gap-1">
+              {% for block in sorted_thresholds %}
                 <div
-                  class="bg-[#468847] h-full transition-all duration-300"
-                  :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
-                ></div>
-              </div>
-            {% endfor %}
-          </div>
-
-          <!-- Current Threshold Status -->
-          <div class="text-left">
-            <template x-for="threshold in sortedThresholds" :key="threshold.id">
-              <div x-show="isCurrentThreshold(threshold)" class="text-sm">
-                <p class="text-black font-semibold" x-show="!isThresholdAchieved(threshold)">
-                  {{ section.settings.progress_text | default: 'Estas a' }}
-                  <span class="font-bold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
-                  {{ section.settings.goal_text | default: 'de conseguir' }}
-                  <span class="font-semibold" x-text="threshold.title"></span>
-                </p>
-                <p class="text-green-600 font-semibold" x-show="isThresholdAchieved(threshold)">
-                  {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
-                  <span class="font-medium" x-text="threshold.title"></span>
-                </p>
-              </div>
-            </template>
-          </div>
-        </div>
-      {% endif %}
-
-      <template x-if="cartItems.length === 0">
-        <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
-          <h6>
-            {{ section.settings.empty_cart_title | default: 'Tu carrito está vacío' }}
-          </h6>
-
-          {% if section.settings.empty_buttons_collections.count > 0 %}
-            <div class="flex flex-col gap-2 w-full">
-              {% for collection in section.settings.empty_buttons_collections %}
-                {% if collection %}
-                  <a
-                    href="{{ collection.url }}"
-                    class="block w-full border border-primary  py-3 body font-semibold   transition-colors duration-200 hover:bg-primary hover:text-white"
-                  >
-                    {{ collection.title }}
-                  </a>
-                {% endif %}
+                  class="flex-1 bg-gray-200 overflow-hidden "
+                  data-threshold
+                  data-threshold-id="{{ block.id }}"
+                  data-threshold-title="{{ block.settings.threshold_title }}"
+                  data-threshold-value="{{ block.settings.threshold_value | times: 100 }}"
+                >
+                  <div
+                    class="bg-[#468847] h-full transition-all duration-300"
+                    :style="`width: ${getThresholdSegmentProgress({{ block.settings.threshold_value | times: 100 }}, {{ forloop.index0 }})}%`"
+                  ></div>
+                </div>
               {% endfor %}
             </div>
-          {% endif %}
-        </div>
-      </template>
 
-      <div class="flex flex-col gap-4 relative mb-7">
-        <template x-for="item in cartItems" :key="item.key">
-          {% render 'cart-product-card' %}
+            <!-- Current Threshold Status -->
+            <div class="text-left">
+              <template x-for="threshold in sortedThresholds" :key="threshold.id">
+                <div x-show="isCurrentThreshold(threshold)" class="text-sm">
+                  <p class="text-black font-semibold" x-show="!isThresholdAchieved(threshold)">
+                    {{ section.settings.progress_text | default: 'Estas a' }}
+                    <span class="font-bold" x-text="'$' + formatMoney(threshold.value - cartTotal)"></span>
+                    {{ section.settings.goal_text | default: 'de conseguir' }}
+                    <span class="font-semibold" x-text="threshold.title"></span>
+                  </p>
+                  <p class="text-green-600 font-semibold" x-show="isThresholdAchieved(threshold)">
+                    {{ section.settings.achieved_text | default: '¡Felicidades! Has conseguido' }}
+                    <span class="font-medium" x-text="threshold.title"></span>
+                  </p>
+                </div>
+              </template>
+            </div>
+          </div>
+        {% endif %}
+
+        <template x-if="cartItems.length === 0">
+          <div class="text-center flex flex-col gap-4 py-12 px-4 lg:px-5 h-full justify-center">
+            <h6>
+              {{ section.settings.empty_cart_title | default: 'Tu carrito está vacío' }}
+            </h6>
+
+            {% if section.settings.empty_buttons_collections.count > 0 %}
+              <div class="flex flex-col gap-2 w-full">
+                {% for collection in section.settings.empty_buttons_collections %}
+                  {% if collection %}
+                    <a
+                      href="{{ collection.url }}"
+                      class="block w-full border border-primary  py-3 body font-semibold   transition-colors duration-200 hover:bg-primary hover:text-white"
+                    >
+                      {{ collection.title }}
+                    </a>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
         </template>
-        <!-- Subtle white fade at bottom -->
-        <div
-          class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
-        ></div>
-      </div>
+
+        <div class="flex flex-col gap-4 relative mb-7">
+          <template x-for="item in cartItems" :key="item.key">
+            {% render 'cart-product-card' %}
+          </template>
+          <!-- Subtle white fade at bottom -->
+          <div
+            class="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"
+          ></div>
+        </div>
       </div>
 
       <!-- Cart Add-on Item -->
@@ -184,8 +181,9 @@
             <div class="flex-1">
               <p class="body font-semibold">
                 {{ addon_block.settings.addon_title | default: addon_block.settings.addon_product.title }}
-                <span class="text-gray-600"
-                  >por COP {{ addon_block.settings.addon_product.price | money_without_currency -}}
+                <span class="text-gray-600">
+                  {{- section.settings.addon_price_text | default: 'por COP' }}
+                  {{ addon_block.settings.addon_product.price | money_without_currency -}}
                 </span>
               </p>
             </div>
@@ -354,7 +352,8 @@
                             show_color_swatches: false,
                             show_size_selector: true,
                             hide_info: true,
-                            show_wishlist: true
+                            show_wishlist: true,
+                            show_price_overlay: true
                           %}
                         </div>
                       </div>
@@ -393,7 +392,10 @@
         </span>
         <div class="text-right">
           <div class="flex items-center space-x-2">
-            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium">
+            <span
+              class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-medium"
+              x-show="cartSavings > 0"
+            >
               {{ section.settings.savings_text | default: 'AHORRA' }} $<span x-text="formatMoney(cartSavings)"></span>
             </span>
 
@@ -455,13 +457,13 @@
       wishlistHandles: [],
       loading: false,
       scrollY: 0, // Store scroll position for drawer
-      freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
-      
+      freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150000 }}, // Free shipping threshold in COP
+
       // Add-on state
       addonSelected: false,
       addonVariantId: null,
       addonInCart: false,
-      
+
       // Cart thresholds
       sortedThresholds: [],
       appliedDiscounts: new Set(),
@@ -471,18 +473,18 @@
         this.tryGetShopifyFreeShippingThreshold();
         this.initThresholds();
         this.initAddon();
-        
+
         // Use $nextTick to ensure DOM is ready
         this.$nextTick(() => {
           this.initializeCartCarousel();
         });
-        
+
         // Load wishlist state
         try {
           const raw = localStorage.getItem('wishlist_v1');
           this.wishlistHandles = raw ? JSON.parse(raw) : [];
         } catch(e) { this.wishlistHandles = []; }
-        
+
         // Listen for cart updates to refresh product carousel (only when cart items actually change)
         this.$watch('cartItems', (newItems, oldItems) => {
           // Only refresh if items actually changed (prevent infinite loops)
@@ -491,7 +493,7 @@
             // Don't call refreshProductCarousel here to prevent infinite loops
           }
         });
-        
+
         // Listen for cart updates from other components (like product cards)
         window.addEventListener('cart:updated', () => {
           this.loadCart();
@@ -535,37 +537,27 @@
 
       openDrawer() {
         this.isOpen = true;
-        // Store current scroll position
-        this.scrollY = window.scrollY;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.width = '100%';
-        document.body.style.top = `-${this.scrollY}px`;
         document.body.classList.add('cart-drawer-open');
       },
 
       closeDrawer() {
         this.isOpen = false;
         document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
         document.body.classList.remove('cart-drawer-open');
-        // Restore scroll position
-        window.scrollTo(0, this.scrollY || 0);
       },
 
       async loadCart() {
         try {
           const response = await fetch('/cart.js');
           const cart = await response.json();
-          
+
           // Clean product titles by removing numbers and special characters
           this.cartItems = cart.items.map(item => ({
             ...item,
             product_title: this.cleanProductTitle(item.product_title)
           }));
-          
+
           // Store cart totals for discount calculation
           this.cartTotal = cart.total_price;
           this.originalTotal = cart.original_total_price || cart.total_price;
@@ -579,18 +571,18 @@
       // Clean product title by removing numbers and special characters
       cleanProductTitle(title) {
         if (!title) return '';
-        
+
         let cleaned = title;
-        
+
         // Remove numbers
         cleaned = cleaned.replace(/[0-9]/g, '');
-        
+
         // Remove special characters
         cleaned = cleaned.replace(/[!@#$%^&*()_+\-=\[\]{};:,.<>?~'"\\\/]/g, '');
-        
+
         // Clean up extra spaces
         cleaned = cleaned.replace(/\s+/g, ' ').trim();
-        
+
         return cleaned;
       },
 
@@ -724,14 +716,22 @@
               spaceBetween: 2,
               freeMode: {
                 enabled: true,
-                sticky: true,
+                sticky: false,
                 momentum: true,
                 momentumRatio: 0.25,
                 momentumVelocityRatio: 0.5,
                 momentumBounce: true,
                 momentumBounceRatio: 0.3,
               },
-              grabCursor: false,
+              grabCursor: true,
+              resistance: true,
+              resistanceRatio: 0.85,
+              watchSlidesProgress: true,
+              watchSlidesVisibility: true,
+              snapOnRelease: true,
+              snapOnDrag: true,
+              snapSwipeThreshold: 0.1,
+              snapSwipeDuration: 300,
               navigation: {
                 nextEl: carouselElement.querySelector('.cart-carousel-next'),
                 prevEl: carouselElement.querySelector('.cart-carousel-prev'),
@@ -801,15 +801,15 @@
            if (!this.cartItems || this.cartItems.length === 0 || !this.isOpen) {
              return;
            }
-           
+
            // Update carousel display based on current cart state (no need to fetch again)
            this.updateCarouselDisplay();
-           
+
          } catch (error) {
            console.error('Error refreshing product carousel:', error);
          }
        },
-       
+
        // Update carousel display based on current cart state
        updateCarouselDisplay() {
          this.$nextTick(() => {
@@ -821,7 +821,7 @@
                if (productCard) {
                  const productHandle = productCard.getAttribute('data-handle');
                  const isInCart = this.cartItems.some(item => item.handle === productHandle);
-                 
+
                  if (isInCart) {
                    slide.style.display = 'none';
                    slide.classList.add('product-in-cart');
@@ -831,7 +831,7 @@
                  }
                }
              });
-             
+
              // Update swiper if it exists
              if (carouselElement.swiper) {
                carouselElement.swiper.update();
@@ -850,7 +850,7 @@
              title: el.dataset.thresholdTitle,
              value: parseInt(el.dataset.thresholdValue)
            })).sort((a, b) => a.value - b.value);
-           
+
            // Set up watchers after thresholds are initialized
            this.$watch('cartTotal', () => {
              this.checkThresholds();
@@ -869,20 +869,20 @@
        getThresholdSegmentProgress(thresholdValue, segmentIndex) {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
-           
+
            const currentThresholdIndex = this.getCurrentThresholdIndex();
-           
+
            // If this segment is before the current threshold, fill it completely
            if (segmentIndex < currentThresholdIndex) {
              return 100;
            }
-           
+
            // If this is the current threshold segment, show partial progress
            if (segmentIndex === currentThresholdIndex) {
              if (this.cartTotal >= thresholdValue) return 100;
              return Math.min((this.cartTotal / thresholdValue) * 100, 100);
            }
-           
+
            // If this segment is after the current threshold, don't fill it
            return 0;
          } catch (error) {
@@ -894,7 +894,7 @@
        getCurrentThresholdIndex() {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return 0;
-           
+
            for (let i = 0; i < this.sortedThresholds.length; i++) {
              if (this.cartTotal < this.sortedThresholds[i].value) {
                return i;
@@ -911,18 +911,18 @@
        isCurrentThreshold(threshold) {
          try {
            if (!this.sortedThresholds || this.sortedThresholds.length === 0) return false;
-           
+
            const currentIndex = this.sortedThresholds.findIndex(t => t.id === threshold.id);
-           
+
            if (currentIndex === -1) return false;
-           
+
            // Only show the next unachieved threshold
            for (let i = 0; i < this.sortedThresholds.length; i++) {
              if (this.cartTotal < this.sortedThresholds[i].value) {
                return i === currentIndex;
              }
            }
-           
+
            // If all thresholds are achieved, show the last one
            return currentIndex === this.sortedThresholds.length - 1;
          } catch (error) {
@@ -938,7 +938,7 @@
       async checkThresholds() {
         try {
           if (!this.sortedThresholds || this.sortedThresholds.length === 0) return;
-          
+
           for (const threshold of this.sortedThresholds) {
             if (this.cartTotal >= threshold.value && !this.appliedDiscounts.has(threshold.id)) {
               this.appliedDiscounts.add(threshold.id);
@@ -961,7 +961,7 @@
           if (addonCheckbox) {
             this.addonVariantId = addonCheckbox.getAttribute('data-variant-id');
           }
-          
+
           // Check if add-on is already in cart
           this.checkAddonInCart();
         });
@@ -969,7 +969,7 @@
 
       checkAddonInCart() {
         if (!this.addonVariantId) return;
-        
+
         // Check if the add-on variant is already in the cart
         const addonInCart = this.cartItems.find(item => item.variant_id == this.addonVariantId);
         this.addonInCart = !!addonInCart;
@@ -1181,6 +1181,23 @@
       "id": "checkout_button_text",
       "label": "Checkout Button Text",
       "default": "Paga de forma segura"
+    },
+    {
+      "type": "header",
+      "content": "Additional Text Settings"
+    },
+    {
+      "type": "text",
+      "id": "addon_price_text",
+      "label": "Add-on Price Text",
+      "default": "por COP"
+    },
+    {
+      "type": "text",
+      "id": "free_shipping_threshold",
+      "label": "Free Shipping Threshold (COP)",
+      "default": "150000",
+      "info": "Amount needed for free shipping in Colombian Pesos"
     }
   ],
   "blocks": [

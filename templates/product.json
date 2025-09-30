@@ -20,7 +20,9 @@
           }
         }
       },
-      "block_order": ["product_gallery_JmAGCm"],
+      "block_order": [
+        "product_gallery_JmAGCm"
+      ],
       "settings": {
         "delivery_days": 7,
         "availability_text": "Still available",
@@ -30,10 +32,15 @@
         "duo_option_subtitle": "Buy more and save",
         "best_value_text": "Best value",
         "duo_discount_percentage": 5,
-        "duo_eligible_products": ["sample-product-handle"],
+        "duo_eligible_products": [
+          "sample-product-handle"
+        ],
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío Gratis a todo Colombia",
         "free_returns_text": "Devoluciones o cambios simples",
+        "shipping_icon_alt": "Shipping Icon",
+        "returns_icon_alt": "Returns Icon",
+        "show_shipping_returns": true,
         "cta_button_text": "Añadir Al Carrito",
         "show_reviews_average": true,
         "show_reviews_count": true,
@@ -66,7 +73,11 @@
           }
         }
       },
-      "block_order": ["benefit_1", "benefit_2", "benefit_3"],
+      "block_order": [
+        "benefit_1",
+        "benefit_2",
+        "benefit_3"
+      ],
       "settings": {
         "title": "Goodbye To Discomfort",
         "subtitle": "Premium Quality",

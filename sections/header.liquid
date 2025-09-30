@@ -180,9 +180,9 @@
                 ]
               "
               style="
-                --anim-base-delay: 40ms;   /* delay before first child */
-                --anim-step: 60ms;         /* stagger step between items */
-                --anim-duration: 420ms;    /* each child animation duration */
+                --anim-base-delay: 20ms;   /* delay before first child */
+                --anim-step: 30ms;         /* stagger step between items */
+                --anim-duration: 250ms;    /* each child animation duration */
                 --anim-distance: 16px;     /* slide distance from left */
               "
               data-anim-container
@@ -209,7 +209,7 @@
                           </p>
 
                           <!-- Tertiary Links -->
-                          <div class="space-y-2">
+                          <div class="flex flex-col gap-2">
                             {% if sub_link.links.size > 0 %}
                               {% for tertiary_link in sub_link.links %}
                                 {% assign order_counter = order_counter | plus: 1 %}
@@ -245,18 +245,22 @@
                   <!-- Right: Collection Cards -->
                   <div class="flex w-full">
                     <div class="w-full flex  gap-1">
-                      {% if collection.metafields.custom.subcollections.value.size > 0 %}
+                      {% if collection.metafields.custom.subcollections.value.count > 0 %}
                         {% for subcollection_item_handle in collection.metafields.custom.subcollections.value
                           limit: 2
                         %}
-                          {% assign subcollection = collections[subcollection_item_handle] %}
+                          {% assign subcollection = collections[subcollection_item_handle.handle] %}
                           {% if subcollection %}
                             {% assign order_counter = order_counter | plus: 1 %}
-                            <div class="h-48 w-full" data-anim style="--anim-order: {{ order_counter }};">
+                            <div
+                              class="h-48 w-full overflow-hidden"
+                              data-anim
+                              style="--anim-order: {{ order_counter }};"
+                            >
                               {% render 'collection-card',
                                 collection: subcollection,
                                 text_position: 'bottom-left',
-                                aspect_ratio: 'portrait'
+                                aspect_ratio: '4:3'
                               %}
                             </div>
                           {% endif %}
@@ -407,9 +411,7 @@
       <div class="flex justify-between items-center mb-6">
         <div class="flex items-center gap-3">
           <button class="text-gray-600 hover:text-gray-800 ">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
+            {% render 'heart-icon', class: 'w-6 h-6 fill-transparent' %}
           </button>
         </div>
         <button
@@ -417,7 +419,7 @@
           class="text-gray-500 hover:text-gray-700 "
           aria-label="Close mobile menu"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
           </svg>
         </button>
@@ -425,13 +427,13 @@
 
       <!-- Mobile Menu Featured Sections Carousel -->
       {% if section.blocks.size > 0 %}
-        <div class="mb-6">
+        <div class="mb-6 -mx-4">
           <div
-            class="mobile-featured-carousel swiper overflow-hidden"
+            class="mobile-featured-carousel overflow-hidden px-4"
             data-carousel-id="mobile-featured-{{ section.id }}"
             data-carousel-type="mobile-featured"
           >
-            <div class="swiper-wrapper">
+            <div class="swiper-wrapper ">
               {% for block in section.blocks %}
                 {% if block.type == 'mobile_card' %}
                   <div class="swiper-slide" {{ block.shopify_attributes }}>
@@ -585,11 +587,11 @@
       </div>
 
       <!-- Tertiary Links List -->
-      <div class="space-y-3">
-        <template x-for="link in currentTertiaryLinks" :key="link.url">
+      <div class="space-y-3" x-init="ensureTertiaryLinks()">
+        <template x-for="link in currentTertiaryLinks" :key="link.id">
           <a
             :href="link.url"
-            class="block text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg  border-b border-gray-100 last:border-b-0"
+            class="block text-black   "
             @click="mobileMenuOpen = false"
           >
             <h5 x-text="link.title"></h5>
@@ -636,6 +638,23 @@
     animation-fill-mode: forwards;
     animation-delay: calc(var(--anim-base-delay, 40ms) + var(--anim-step, 60ms) * var(--anim-order, 0));
   }
+
+  /* Header Collection Cards - Fixed Height */
+  .mega-menu .h-48 {
+    height: 12rem !important; /* 192px - h-48 equivalent */
+  }
+
+  .mega-menu .h-48 .collection-card,
+  .mega-menu .h-48 .generic-card {
+    height: 100% !important;
+    max-height: 12rem !important;
+  }
+
+  .mega-menu .h-48 .collection-card img,
+  .mega-menu .h-48 .generic-card img {
+    height: 100% !important;
+    object-fit: cover !important;
+  }
 {% endstylesheet %}
 
 <script>
@@ -662,7 +681,7 @@
           const swiper = new Swiper(carousel, {
             slidesPerView: 2,
             spaceBetween: 2,
-            loop: true,
+            loop: false,
             navigation: {
               nextEl: carousel.querySelector('.carousel-next'),
               prevEl: carousel.querySelector('.carousel-prev'),
@@ -692,6 +711,13 @@
         this.showTertiaryView = false;
         this.currentTertiaryTitle = '';
         this.currentTertiaryLinks = [];
+      },
+
+      // Safety method to ensure currentTertiaryLinks is always an array
+      ensureTertiaryLinks() {
+        if (!Array.isArray(this.currentTertiaryLinks)) {
+          this.currentTertiaryLinks = [];
+        }
       },
     };
   }

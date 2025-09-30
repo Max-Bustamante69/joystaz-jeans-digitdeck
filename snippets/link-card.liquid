@@ -12,34 +12,36 @@
 {% assign card_title = title | default: link.title %}
 {% assign card_url = link.url %}
 {% assign has_sub_links = has_sub_links | default: false %}
-
 {% if has_sub_links %}
   <button
     @click="
       currentTertiaryTitle = '{{ link.title | escape }}';
       currentTertiaryLinks = [
-        {% for sub_link in link.links %}
-          { title: '{{ sub_link.title | escape }}', url: '{{ sub_link.url | escape }}' }{% unless forloop.last %},{% endunless %}
-        {% endfor %}
+        {% if link.links.size > 0 %}
+          {% for sub_link in link.links %}
+            {
+              title: '{{ sub_link.title | escape }}',
+              url: '{{ sub_link.url | escape }}',
+              id: '{{ forloop.index }}_{{ sub_link.title | handle }}'
+            }{% unless forloop.last %},{% endunless %}
+          {% endfor %}
+        {% endif %}
       ];
       showTertiaryView = true;
     "
     class="link-card  relative  items-center  group w-full text-left"
   >
     <div class="flex w-full  items-center justify-between">
-  
-        <h5 class="text-black">{{ card_title }}</h5>
- 
-  
-        <svg
-          class="w-4 h-4 text-black mt-1 transition-colors"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-        </svg>
-  
+      <h5 class="text-black">{{ card_title }}</h5>
+
+      <svg
+        class="w-4 h-4 text-black mt-1 transition-colors"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
     </div>
   </button>
 {% else %}
@@ -66,5 +68,3 @@
     </div>
   </a>
 {% endif %}
-
-

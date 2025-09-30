@@ -181,8 +181,9 @@
             <div class="flex-1">
               <p class="body font-semibold">
                 {{ addon_block.settings.addon_title | default: addon_block.settings.addon_product.title }}
-                <span class="text-gray-600"
-                  >por COP {{ addon_block.settings.addon_product.price | money_without_currency -}}
+                <span class="text-gray-600">
+                  {{- section.settings.addon_price_text | default: 'por COP' }}
+                  {{ addon_block.settings.addon_product.price | money_without_currency -}}
                 </span>
               </p>
             </div>
@@ -456,7 +457,7 @@
       wishlistHandles: [],
       loading: false,
       scrollY: 0, // Store scroll position for drawer
-      freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150 | times: 100 | times: 4000 }}, // Convert USD to COP (1 USD ≈ 4000 COP)
+      freeShippingThreshold: {{ section.settings.free_shipping_threshold | default: 150000 }}, // Free shipping threshold in COP
 
       // Add-on state
       addonSelected: false,
@@ -1180,6 +1181,23 @@
       "id": "checkout_button_text",
       "label": "Checkout Button Text",
       "default": "Paga de forma segura"
+    },
+    {
+      "type": "header",
+      "content": "Additional Text Settings"
+    },
+    {
+      "type": "text",
+      "id": "addon_price_text",
+      "label": "Add-on Price Text",
+      "default": "por COP"
+    },
+    {
+      "type": "text",
+      "id": "free_shipping_threshold",
+      "label": "Free Shipping Threshold (COP)",
+      "default": "150000",
+      "info": "Amount needed for free shipping in Colombian Pesos"
     }
   ],
   "blocks": [

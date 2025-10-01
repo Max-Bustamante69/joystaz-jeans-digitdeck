@@ -34,6 +34,9 @@
         "duo_eligible_collections": [],
         "free_shipping_text": "Envío Gratis a todo Colombia",
         "free_returns_text": "Devoluciones o cambios simples",
+        "shipping_icon_alt": "Shipping Icon",
+        "returns_icon_alt": "Returns Icon",
+        "show_shipping_returns": true,
         "cta_button_text": "Añadir Al Carrito",
         "show_reviews_average": true,
         "show_reviews_count": true,
@@ -92,7 +95,6 @@
   },
   "order": [
     "main",
-    "product_benefits_xxxxxx",
     "product_reviews_section",
     "related_collections_carousel_1"
   ]

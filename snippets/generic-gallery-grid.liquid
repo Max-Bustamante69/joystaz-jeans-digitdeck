@@ -107,6 +107,7 @@
       rememberPreference: rememberPreference,
       visibleResultsCount: 0,
       isMobile: false,
+      hasSavedPreference: false,
 
       init() {
         // Check if we should remember user preference
@@ -114,13 +115,15 @@
           const savedLayout = localStorage.getItem('gallery-layout-preference');
           if (savedLayout) {
             this.layoutOption = parseInt(savedLayout);
+            this.hasSavedPreference = true;
           } else {
             // Set initial layout based on screen size if no saved preference
-            this.updateLayoutForScreenSize();
+            this.hasSavedPreference = false;
+            this.updateLayoutForScreenSize(true);
           }
         } else {
           // Set initial layout based on screen size
-          this.updateLayoutForScreenSize();
+          this.updateLayoutForScreenSize(true);
         }
 
         // Listen for screen size changes
@@ -156,23 +159,20 @@
           // Save preference if enabled
           if (this.rememberPreference) {
             localStorage.setItem('gallery-layout-preference', this.layoutOption.toString());
+            this.hasSavedPreference = true;
           }
         });
       },
 
-      updateLayoutForScreenSize() {
+      updateLayoutForScreenSize(force = false) {
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth < 1024; // lg breakpoint
+        const shouldAutoSet =
+          force ||
+          !this.rememberPreference ||
+          (this.rememberPreference && !this.hasSavedPreference && wasMobile !== this.isMobile);
 
-        // Only update if screen size category changed and we're not remembering user preference
-        if (wasMobile !== this.isMobile && !this.rememberPreference) {
-          if (this.isMobile) {
-            this.layoutOption = this.mobileLayout;
-          } else {
-            this.layoutOption = this.desktopLayout;
-          }
-        } else if (!this.rememberPreference) {
-          // Set initial layout based on current screen size
+        if (shouldAutoSet) {
           if (this.isMobile) {
             this.layoutOption = this.mobileLayout;
           } else {

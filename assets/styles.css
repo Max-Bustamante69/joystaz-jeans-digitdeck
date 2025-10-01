@@ -358,9 +358,6 @@
   .left-4 {
     left: calc(var(--spacing) * 4);
   }
-  .-z-50 {
-    z-index: calc(50 * -1);
-  }
   .z-0 {
     z-index: 0;
   }
@@ -659,9 +656,6 @@
   }
   .h-20 {
     height: calc(var(--spacing) * 20);
-  }
-  .h-23 {
-    height: calc(var(--spacing) * 23);
   }
   .h-24 {
     height: calc(var(--spacing) * 24);
@@ -1646,14 +1640,14 @@
   .pb-6 {
     padding-bottom: calc(var(--spacing) * 6);
   }
+  .pb-24 {
+    padding-bottom: calc(var(--spacing) * 24);
+  }
   .pl-2 {
     padding-left: calc(var(--spacing) * 2);
   }
   .pl-3 {
     padding-left: calc(var(--spacing) * 3);
-  }
-  .pl-4 {
-    padding-left: calc(var(--spacing) * 4);
   }
   .pl-8 {
     padding-left: calc(var(--spacing) * 8);
@@ -2198,13 +2192,6 @@
       }
     }
   }
-  .hover\:border-gray-300 {
-    &:hover {
-      @media (hover: hover) {
-        border-color: var(--color-gray-300);
-      }
-    }
-  }
   .hover\:border-gray-400 {
     &:hover {
       @media (hover: hover) {
@@ -2237,13 +2224,6 @@
     &:hover {
       @media (hover: hover) {
         background-color: var(--color-gray-50);
-      }
-    }
-  }
-  .hover\:bg-gray-100 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-gray-100);
       }
     }
   }
@@ -2997,6 +2977,11 @@
   .lg\:pb-4 {
     @media (width >= 64rem) {
       padding-bottom: calc(var(--spacing) * 4);
+    }
+  }
+  .lg\:pb-32 {
+    @media (width >= 64rem) {
+      padding-bottom: calc(var(--spacing) * 32);
     }
   }
   .lg\:pl-2 {

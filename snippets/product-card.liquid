@@ -813,13 +813,6 @@
     <div class="mt-2 space-y-2 px-2 product-information">
       <button
         type="button"
-        class="w-full bg-primary text-white py-2 font-semibold"
-        @click.stop.prevent="handlePlusClick"
-      >
-        Añadir al carrito
-      </button>
-      <button
-        type="button"
         class="w-full text-sm text-gray-600 underline"
         @click.stop.prevent="
           (function(evt){try{const KEY='wishlist_v1';const raw=localStorage.getItem(KEY)||'[]';const list=JSON.parse(raw);const handle='{{ product.handle }}';const i=list.indexOf(handle);if(i>=0){list.splice(i,1);localStorage.setItem(KEY, JSON.stringify(list));}

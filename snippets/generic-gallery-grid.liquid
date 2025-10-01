@@ -10,97 +10,99 @@
   - products: Array of products for filtering (optional)
 {% endcomment %}
 
-<!-- Layout Toggle (only show when show_layout_toggle is true) -->
-{% if show_layout_toggle != false %}
-  <div
-    class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-20  justify-between mt-15  "
-    x-data="galleryGrid({{ settings.default_gallery_layout_mobile | default: 2 }}, {{ settings.default_gallery_layout_desktop | default: 2 }}, {{ settings.gallery_allow_layout_switching | default: true }}, {{ settings.gallery_remember_user_preference | default: true }})"
-  >
-    <div class="flex h-full items-center gap-4">
-      <!-- Layout Toggle -->
-      <div class="flex h-full items-center gap-2" x-show="allowSwitching">
-        <div class="flex gap-3">
-          <button @click="setLayoutOption(1)" class="p-2" :disabled="!allowSwitching">
-            <svg
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 1 ? ' opacity-100' : ' opacity-40'"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M19 5H5v14h14V5ZM3 3v18h18V3H3Z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button @click="setLayoutOption(2)" class="p-2" :disabled="!allowSwitching">
-            <svg
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 2 ? ' opacity-100' : ' opacity-40'"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M13 5h6v14h-6V5Zm-2-2h10v18H3V3h8Zm0 16H5V5h6v14Z" fill="currentColor"/>
-            </svg>
-          </button>
-          <button @click="setLayoutOption(3)" class="p-2" :disabled="!allowSwitching">
-            <svg
-              class="size-5 cursor-pointer  transition-opacity"
-              :class="layoutOption == 3 ? ' opacity-100' : ' opacity-40'"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-            >
-              <path d="M 10.83 16.17 L 15.83 16.17 L 15.83 11.17 L 10.83 11.17 Z M 10.833 9.167 L 15.833 9.167 L 15.833 4.167 L 10.833 4.167 Z M 17.5 2.5 L 17.5 17.5 L 2.5 17.5 L 2.5 2.5 Z M 9.167 4.167 L 4.167 4.167 L 4.167 9.167 L 9.167 9.167 Z M 9.167 11.167 L 4.167 11.167 L 4.167 16.167 L 9.167 16.167 Z" fill="rgba(0,0,0,1)"/>
-            </svg>
-          </button>
+<!-- Gallery Grid Container with Alpine.js data -->
+<div x-data="galleryGrid({{ settings.default_gallery_layout_mobile | default: 2 }}, {{ settings.default_gallery_layout_desktop | default: 2 }}, {{ settings.gallery_allow_layout_switching | default: true }}, {{ settings.gallery_remember_user_preference | default: true }})">
+  <!-- Layout Toggle (only show when show_layout_toggle is true) -->
+  {% if show_layout_toggle != false %}
+    <div
+      class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-20  justify-between mt-15  "
+    >
+      <div class="flex h-full items-center gap-4">
+        <!-- Layout Toggle -->
+        <div class="flex h-full items-center gap-2" x-show="allowSwitching">
+          <div class="flex gap-3">
+            <button @click="setLayoutOption(1)" class="p-2" :disabled="!allowSwitching">
+              <svg
+                class="size-5 cursor-pointer  transition-opacity"
+                :class="layoutOption == 1 ? ' opacity-100' : ' opacity-40'"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M19 5H5v14h14V5ZM3 3v18h18V3H3Z" fill="currentColor"/>
+              </svg>
+            </button>
+            <button @click="setLayoutOption(2)" class="p-2" :disabled="!allowSwitching">
+              <svg
+                class="size-5 cursor-pointer  transition-opacity"
+                :class="layoutOption == 2 ? ' opacity-100' : ' opacity-40'"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M13 5h6v14h-6V5Zm-2-2h10v18H3V3h8Zm0 16H5V5h6v14Z" fill="currentColor"/>
+              </svg>
+            </button>
+            <button @click="setLayoutOption(3)" class="p-2" :disabled="!allowSwitching">
+              <svg
+                class="size-5 cursor-pointer  transition-opacity"
+                :class="layoutOption == 3 ? ' opacity-100' : ' opacity-40'"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+              >
+                <path d="M 10.83 16.17 L 15.83 16.17 L 15.83 11.17 L 10.83 11.17 Z M 10.833 9.167 L 15.833 9.167 L 15.833 4.167 L 10.833 4.167 Z M 17.5 2.5 L 17.5 17.5 L 2.5 17.5 L 2.5 2.5 Z M 9.167 4.167 L 4.167 4.167 L 4.167 9.167 L 9.167 9.167 Z M 9.167 11.167 L 4.167 11.167 L 4.167 16.167 L 9.167 16.167 Z" fill="rgba(0,0,0,1)"/>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Filters Button and Results Counter (only show when show_filters is true) -->
+      {% if show_filters != false %}
+        <div class="flex items-center gap-3">
+          <!-- Results Counter -->
+          <div class="flex items-start gap-1">
+            <span class="body-sm font-medium" x-text="visibleResultsCount">0</span>
+            <span class="body-sm font-medium">Resultados</span>
+          </div>
+
+          <div class="h-[16px] w-[1px] bg-black/10"></div>
+
+          <!-- Filter Button -->
+          <button
+            @click="window.dispatchEvent(new CustomEvent('filter:open'))"
+            class="flex items-center gap-1 p-1 lg:py-2 lg:pr-3 lg:pl-2 lg:border lg:boder-black lg:rounded-full  justify-center cursor-pointer  transition-colors"
+          >
+            {% render 'filter-icon', class: 'size-5' %}
+            <p class="body-sm hidden lg:block">Filtros</p>
+          </button>
+        </div>
+      {% endif %}
     </div>
+  {% endif %}
 
-    <!-- Filters Button and Results Counter (only show when show_filters is true) -->
-    {% if show_filters != false %}
-      <div class="flex items-center gap-3">
-        <!-- Results Counter -->
-        <div class="flex items-start gap-1">
-          <span class="body-sm font-medium" x-text="visibleResultsCount">0</span>
-          <span class="body-sm font-medium">Resultados</span>
-        </div>
-
-        <div class="h-[16px] w-[1px] bg-black/10"></div>
-
-        <!-- Filter Button -->
-        <button
-          @click="window.dispatchEvent(new CustomEvent('filter:open'))"
-          class="flex items-center gap-1 p-1 lg:py-2 lg:pr-3 lg:pl-2 lg:border lg:boder-black lg:rounded-full  justify-center cursor-pointer  transition-colors"
-        >
-          {% render 'filter-icon', class: 'size-5' %}
-          <p class="body-sm hidden lg:block">Filtros</p>
-        </button>
-      </div>
-    {% endif %}
-  </div>
-{% endif %}
-
-<!-- Content Grid -->
-<div class="">
-  <div
-    id="generic-gallery-grid"
-    class="grid w-full transition-all duration-300"
-    :class="
-      {
-        'grid-cols-1 lg:grid-cols-3 gap-x-0.5 lg:gap-x-1 gap-y-3 lg:gap-y-4': layoutOption === 1,
-        'grid-cols-2 lg:grid-cols-4 gap-x-0.5 lg:gap-x-1 gap-y-3 lg:gap-y-4': layoutOption === 2,
-        'grid-cols-3 lg:grid-cols-6 gap-0.5 lg:gap-1': layoutOption === 3
-      }
-    "
-  >
-    {{ content }}
+  <!-- Content Grid -->
+  <div class="">
+    <div
+      id="generic-gallery-grid"
+      class="grid w-full transition-all duration-300"
+      :class="
+        {
+          'grid-cols-1 lg:grid-cols-3 gap-x-0.5 lg:gap-x-1 gap-y-3 lg:gap-y-4': layoutOption === 1,
+          'grid-cols-2 lg:grid-cols-4 gap-x-0.5 lg:gap-x-1 gap-y-3 lg:gap-y-4': layoutOption === 2,
+          'grid-cols-3 lg:grid-cols-6 gap-0.5 lg:gap-1': layoutOption === 3
+        }
+      "
+    >
+      {{ content }}
+    </div>
   </div>
 </div>
 
 <script>
   function galleryGrid(mobileLayout = 2, desktopLayout = 2, allowSwitching = true, rememberPreference = true) {
     return {
-      mobileLayout: mobileLayout,
-      desktopLayout: desktopLayout,
-      layoutOption: desktopLayout, // Default to desktop layout
+      mobileLayout: parseInt(mobileLayout),
+      desktopLayout: parseInt(desktopLayout),
+      layoutOption: parseInt(desktopLayout), // Default to desktop layout
       allowSwitching: allowSwitching,
       rememberPreference: rememberPreference,
       visibleResultsCount: 0,
@@ -112,11 +114,14 @@
           const savedLayout = localStorage.getItem('gallery-layout-preference');
           if (savedLayout) {
             this.layoutOption = parseInt(savedLayout);
+          } else {
+            // Set initial layout based on screen size if no saved preference
+            this.updateLayoutForScreenSize();
           }
+        } else {
+          // Set initial layout based on screen size
+          this.updateLayoutForScreenSize();
         }
-
-        // Set initial layout based on screen size
-        this.updateLayoutForScreenSize();
 
         // Listen for screen size changes
         window.addEventListener('resize', () => {
@@ -166,12 +171,19 @@
           } else {
             this.layoutOption = this.desktopLayout;
           }
+        } else if (!this.rememberPreference) {
+          // Set initial layout based on current screen size
+          if (this.isMobile) {
+            this.layoutOption = this.mobileLayout;
+          } else {
+            this.layoutOption = this.desktopLayout;
+          }
         }
       },
 
       setLayoutOption(option) {
         if (this.allowSwitching) {
-          this.layoutOption = option;
+          this.layoutOption = parseInt(option);
         }
       },
 
@@ -199,7 +211,6 @@
           }
 
           this.visibleResultsCount = count;
-          console.log('Results count updated:', count);
         }
       },
     };

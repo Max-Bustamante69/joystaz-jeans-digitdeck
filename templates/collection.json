@@ -40,13 +40,16 @@
         "slides_per_view_desktop": 6,
         "space_between_mobile": 2,
         "space_between_desktop": 4,
-        "centered_slides": true,
+        "centered_slides": false,
         "free_mode": true
       }
     },
     "main": {
       "type": "collection",
       "settings": {
+        "no_results_title": "No products found",
+        "no_results_subtext": "Try adjusting your search terms or browse our collections instead.",
+        "no_results_cta_text": "Browse Men's",
         "browse_collections": []
       }
     },

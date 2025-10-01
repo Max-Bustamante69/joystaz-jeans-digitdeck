@@ -150,5 +150,74 @@
         "info": "Scroll threshold specifically for static pages (as % of viewport height)"
       }
     ]
+  },
+  {
+    "name": "Gallery Layout",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Default Gallery Layout"
+      },
+      {
+        "type": "select",
+        "id": "default_gallery_layout_mobile",
+        "label": "Default Mobile Layout",
+        "options": [
+          {
+            "value": "1",
+            "label": "1 Column"
+          },
+          {
+            "value": "2",
+            "label": "2 Columns"
+          },
+          {
+            "value": "3",
+            "label": "3 Columns"
+          }
+        ],
+        "default": "2",
+        "info": "Choose the default mobile layout for gallery grids"
+      },
+      {
+        "type": "select",
+        "id": "default_gallery_layout_desktop",
+        "label": "Default Desktop Layout",
+        "options": [
+          {
+            "value": "1",
+            "label": "3 Columns"
+          },
+          {
+            "value": "2",
+            "label": "4 Columns"
+          },
+          {
+            "value": "3",
+            "label": "6 Columns"
+          }
+        ],
+        "default": "2",
+        "info": "Choose the default desktop layout for gallery grids"
+      },
+      {
+        "type": "header",
+        "content": "Layout Behavior"
+      },
+      {
+        "type": "checkbox",
+        "id": "gallery_allow_layout_switching",
+        "label": "Allow Layout Switching",
+        "default": true,
+        "info": "Allow users to switch between different layout options using the toggle buttons"
+      },
+      {
+        "type": "checkbox",
+        "id": "gallery_remember_user_preference",
+        "label": "Remember User Preference",
+        "default": true,
+        "info": "Remember the user's layout preference in localStorage"
+      }
+    ]
   }
 ]

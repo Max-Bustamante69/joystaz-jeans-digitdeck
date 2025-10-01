@@ -152,163 +152,71 @@
     ]
   },
   {
-    "name": "Search Drawer",
+    "name": "Gallery Layout",
     "settings": [
       {
         "type": "header",
-        "content": "Featured Tags"
-      },
-      {
-        "type": "checkbox",
-        "id": "search_show_featured_tags",
-        "label": "Show Featured Tags",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "search_featured_tags_title",
-        "label": "Featured Tags Title",
-        "default": "Popular Categories"
-      },
-      {
-        "type": "header",
-        "content": "Search History"
-      },
-      {
-        "type": "text",
-        "id": "search_history_title",
-        "label": "History Section Title",
-        "default": "Recent Searches"
-      },
-      {
-        "type": "text",
-        "id": "search_clear_all_text",
-        "label": "Clear All Button Text",
-        "default": "Clear all"
-      },
-      {
-        "type": "header",
-        "content": "Search Results"
-      },
-      {
-        "type": "text",
-        "id": "search_view_all_text",
-        "label": "View All Button Text",
-        "default": "Ver todos"
-      },
-      {
-        "type": "header",
-        "content": "Category Grid"
-      },
-      {
-        "type": "checkbox",
-        "id": "search_show_category_grid",
-        "label": "Show Category Grid",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "search_category_grid_title",
-        "label": "Category Grid Title",
-        "default": "Shop by Category"
-      },
-      {
-        "type": "header",
-        "content": "Product Carousel"
-      },
-      {
-        "type": "checkbox",
-        "id": "search_show_product_carousel",
-        "label": "Show Product Carousel",
-        "default": true
-      },
-      {
-        "type": "text",
-        "id": "search_product_carousel_title",
-        "label": "Product Carousel Title",
-        "default": "Featured Products"
+        "content": "Default Gallery Layout"
       },
       {
         "type": "select",
-        "id": "search_product_source",
-        "label": "Product Source",
+        "id": "default_gallery_layout_mobile",
+        "label": "Default Mobile Layout",
         "options": [
           {
-            "value": "collection",
-            "label": "Collection"
+            "value": "1",
+            "label": "1 Column"
           },
           {
-            "value": "tags",
-            "label": "Product Tags"
+            "value": "2",
+            "label": "2 Columns"
           },
           {
-            "value": "manual",
-            "label": "Manual Selection"
+            "value": "3",
+            "label": "3 Columns"
           }
         ],
-        "default": "collection"
+        "default": "2",
+        "info": "Choose the default mobile layout for gallery grids"
       },
       {
-        "type": "collection",
-        "id": "search_collection",
-        "label": "Collection",
-        "info": "Select products from this collection"
-      },
-      {
-        "type": "text",
-        "id": "search_product_tags",
-        "label": "Product Tags",
-        "info": "Comma-separated tags (e.g., 'best-seller,new')"
-      },
-      {
-        "type": "product_list",
-        "id": "search_products",
-        "label": "Manual Product Selection"
-      },
-      {
-        "type": "header",
-        "content": "Featured Collections (Tags)"
-      },
-      {
-        "type": "collection_list",
-        "id": "search_featured_collections",
-        "label": "Select Collections to Show as Tags",
-        "info": "Choose which collections will appear as clickable tags in the search drawer",
-        "limit": 10
+        "type": "select",
+        "id": "default_gallery_layout_desktop",
+        "label": "Default Desktop Layout",
+        "options": [
+          {
+            "value": "1",
+            "label": "3 Columns"
+          },
+          {
+            "value": "2",
+            "label": "4 Columns"
+          },
+          {
+            "value": "3",
+            "label": "6 Columns"
+          }
+        ],
+        "default": "2",
+        "info": "Choose the default desktop layout for gallery grids"
       },
       {
         "type": "header",
-        "content": "Category Carousel Collections"
+        "content": "Layout Behavior"
       },
       {
-        "type": "collection_list",
-        "id": "search_category_collections",
-        "label": "Select Collections for Category Carousel",
-        "info": "Choose which collections will appear in the category carousel section",
-        "limit": 8
-      }
-    ]
-  },
-  {
-    "name": "Product Configuration",
-    "settings": [
-      {
-        "type": "header",
-        "content": "Size Option Configuration"
+        "type": "checkbox",
+        "id": "gallery_allow_layout_switching",
+        "label": "Allow Layout Switching",
+        "default": true,
+        "info": "Allow users to switch between different layout options using the toggle buttons"
       },
       {
-        "type": "text",
-        "id": "size_option_handle",
-        "label": "Size Option Handle",
-        "default": "shopify--shoe-size",
-        "info": "The handle/name of the size option in your product variants (e.g., 'talla', 'size', 'shopify--shoe-size'). This should match exactly how the size option is named in your product variants."
-      },
-      {
-        "type": "text",
-        "id": "size_option_label",
-        "label": "Size Option Display Label",
-        "default": "Talla",
-        "info": "The display label for the size option shown to customers"
+        "type": "checkbox",
+        "id": "gallery_remember_user_preference",
+        "label": "Remember User Preference",
+        "default": true,
+        "info": "Remember the user's layout preference in localStorage"
       }
     ]
   }

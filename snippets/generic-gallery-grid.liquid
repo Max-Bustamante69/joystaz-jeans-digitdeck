@@ -14,13 +14,13 @@
 {% if show_layout_toggle != false %}
   <div
     class="flex items-center pl-2 pr-4 lg:pl-10 lg:pr-12 py-2 w-full  sticky top-15  bg-white z-20  justify-between mt-15  "
-    x-data="galleryGrid()"
+    x-data="galleryGrid({{ settings.default_gallery_layout_mobile | default: 2 }}, {{ settings.default_gallery_layout_desktop | default: 2 }}, {{ settings.gallery_allow_layout_switching | default: true }}, {{ settings.gallery_remember_user_preference | default: true }})"
   >
     <div class="flex h-full items-center gap-4">
       <!-- Layout Toggle -->
-      <div class="flex h-full items-center gap-2">
+      <div class="flex h-full items-center gap-2" x-show="allowSwitching">
         <div class="flex gap-3">
-          <button @click="layoutOption = 1" class="p-2">
+          <button @click="setLayoutOption(1)" class="p-2" :disabled="!allowSwitching">
             <svg
               class="size-5 cursor-pointer  transition-opacity"
               :class="layoutOption == 1 ? ' opacity-100' : ' opacity-40'"
@@ -30,7 +30,7 @@
               <path fill-rule="evenodd" clip-rule="evenodd" d="M19 5H5v14h14V5ZM3 3v18h18V3H3Z" fill="currentColor"/>
             </svg>
           </button>
-          <button @click="layoutOption = 2" class="p-2">
+          <button @click="setLayoutOption(2)" class="p-2" :disabled="!allowSwitching">
             <svg
               class="size-5 cursor-pointer  transition-opacity"
               :class="layoutOption == 2 ? ' opacity-100' : ' opacity-40'"
@@ -40,7 +40,7 @@
               <path fill-rule="evenodd" clip-rule="evenodd" d="M13 5h6v14h-6V5Zm-2-2h10v18H3V3h8Zm0 16H5V5h6v14Z" fill="currentColor"/>
             </svg>
           </button>
-          <button @click="layoutOption = 3" class="p-2">
+          <button @click="setLayoutOption(3)" class="p-2" :disabled="!allowSwitching">
             <svg
               class="size-5 cursor-pointer  transition-opacity"
               :class="layoutOption == 3 ? ' opacity-100' : ' opacity-40'"
@@ -96,11 +96,33 @@
 </div>
 
 <script>
-  function galleryGrid() {
+  function galleryGrid(mobileLayout = 2, desktopLayout = 2, allowSwitching = true, rememberPreference = true) {
     return {
+      mobileLayout: mobileLayout,
+      desktopLayout: desktopLayout,
+      layoutOption: desktopLayout, // Default to desktop layout
+      allowSwitching: allowSwitching,
+      rememberPreference: rememberPreference,
       visibleResultsCount: 0,
+      isMobile: false,
 
       init() {
+        // Check if we should remember user preference
+        if (this.rememberPreference) {
+          const savedLayout = localStorage.getItem('gallery-layout-preference');
+          if (savedLayout) {
+            this.layoutOption = parseInt(savedLayout);
+          }
+        }
+
+        // Set initial layout based on screen size
+        this.updateLayoutForScreenSize();
+
+        // Listen for screen size changes
+        window.addEventListener('resize', () => {
+          this.updateLayoutForScreenSize();
+        });
+
         // Initial count with delay to ensure DOM is ready
         setTimeout(() => {
           this.updateResultsCount();
@@ -125,7 +147,32 @@
           this.$nextTick(() => {
             this.updateResultsCount();
           });
+
+          // Save preference if enabled
+          if (this.rememberPreference) {
+            localStorage.setItem('gallery-layout-preference', this.layoutOption.toString());
+          }
         });
+      },
+
+      updateLayoutForScreenSize() {
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth < 1024; // lg breakpoint
+
+        // Only update if screen size category changed and we're not remembering user preference
+        if (wasMobile !== this.isMobile && !this.rememberPreference) {
+          if (this.isMobile) {
+            this.layoutOption = this.mobileLayout;
+          } else {
+            this.layoutOption = this.desktopLayout;
+          }
+        }
+      },
+
+      setLayoutOption(option) {
+        if (this.allowSwitching) {
+          this.layoutOption = option;
+        }
       },
 
       updateResultsCount() {

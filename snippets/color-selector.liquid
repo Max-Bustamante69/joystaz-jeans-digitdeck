@@ -200,48 +200,51 @@
                       {% endif %}
                     {% endfor %}
 
-                    {% comment %} Only render if there's an image available {% endcomment %}
-                    {% if color_variant and color_variant.featured_image or product_option_value.swatch.image %}
-                      <div class="swiper-slide flex-shrink-0 p-0.5">
-                        <button
-                          {% if product_number %}
-                            @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
-                            :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'border-black border-1' : 'border-transparent'"
-                          {% else %}
-                            {% if color_variant and color_variant.featured_image %}
-                              @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
-                            {% elsif product_option_value.swatch.image %}
-                              @click="{{ click_function }}('{{ product_option_value }}', '{{ product_option_value.swatch.image | image_url: width: 800 }}', {{ color_variant.id }})"
-                            {% else %}
-                              @click="{{ click_function }}('{{ product_option_value }}', '', {{ color_variant.id }})"
-                            {% endif %}
-                            :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? 'border-black border-1' : 'border-transparent'"
-                          {% endif %}
-                          class="relative transition-all duration-200 overflow-visible w-full aspect-[1.5/2]"
-                          title="{{ product_option_value }}"
-                        >
+                    <div class="swiper-slide flex-shrink-0 p-0.5">
+                      <button
+                        {% if product_number %}
+                          @click="{{ click_function }}({{ product_number }}, '{{ product_option_value }}', {{ color_variant.id }})"
+                          :class="{{ selected_color_variable | remove: "'" }}.color === '{{ product_option_value }}' ? 'border-black border-1' : 'border-gray-200'"
+                        {% else %}
                           {% if color_variant and color_variant.featured_image %}
-                            <img
-                              src="{{ color_variant.featured_image | image_url: width: 300 }}"
-                              alt="{{ product_option_value }}"
-                              class="w-full h-full object-cover"
-                              width="300"
-                              height="400"
-                              loading="lazy"
-                            >
+                            @click="{{ click_function }}('{{ product_option_value }}', '{{ color_variant.featured_image | image_url: width: 800 }}', {{ color_variant.id }})"
                           {% elsif product_option_value.swatch.image %}
-                            <img
-                              src="{{ product_option_value.swatch.image | image_url: width: 300 }}"
-                              alt="{{ product_option_value }}"
-                              class="w-full h-full object-cover"
-                              width="300"
-                              height="400"
-                              loading="lazy"
-                            >
+                            @click="{{ click_function }}('{{ product_option_value }}', '{{ product_option_value.swatch.image | image_url: width: 800 }}', {{ color_variant.id }})"
+                          {% else %}
+                            @click="{{ click_function }}('{{ product_option_value }}', '', {{ color_variant.id }})"
                           {% endif %}
-                        </button>
-                      </div>
-                    {% endif %}
+                          :class="{{ selected_color_variable }} === '{{ product_option_value }}' ? 'border-black border-1' : 'border-black/10 border-1'"
+                        {% endif %}
+                        class="relative transition-all duration-200 overflow-visible w-full aspect-[1.5/2]"
+                        title="{{ product_option_value }}"
+                      >
+                        {% if color_variant and color_variant.featured_image %}
+                          <img
+                            src="{{ color_variant.featured_image | image_url: width: 300 }}"
+                            alt="{{ product_option_value }}"
+                            class="w-full h-full object-cover"
+                            width="300"
+                            height="400"
+                            loading="lazy"
+                          >
+                        {% elsif product_option_value.swatch.image %}
+                          <img
+                            src="{{ product_option_value.swatch.image | image_url: width: 300 }}"
+                            alt="{{ product_option_value }}"
+                            class="w-full h-full object-cover"
+                            width="300"
+                            height="400"
+                            loading="lazy"
+                          >
+                        {% else %}
+                          <div
+                            class="w-full h-full"
+                            style="background-color: {{ product_option_value.swatch.color }};"
+                            aria-label="{{ product_option_value }}"
+                          ></div>
+                        {% endif %}
+                      </button>
+                    </div>
                   {% endfor %}
                 </div>
               </div>

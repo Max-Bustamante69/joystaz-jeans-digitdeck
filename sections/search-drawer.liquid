@@ -328,7 +328,7 @@
         x-transition:enter-start="opacity-0 translate-y-4"
         x-transition:enter-end="opacity-100 translate-y-0"
         class="p-6 space-y-4"
-        x-data="{ layoutOption: 2 }"
+        x-data="{ layoutOption: {{ settings.default_gallery_layout_desktop | default: 2 }} }"
       >
         <div class="flex items-center justify-between">
           <h5>

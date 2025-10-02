@@ -106,7 +106,7 @@
         {% endif %}
       {% else %}
         <!-- Collection Products -->
-        {% paginate collection.products by 18 %}
+        
           {% for product in collection.products %}
             <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
               <div :style="`order: ${getProductOrder({{ product.id }})}`"
@@ -134,7 +134,7 @@
             </template>
           {% endfor %}
           
-        {% endpaginate %}
+        
       {% endif %}
   {% endcapture %}
 

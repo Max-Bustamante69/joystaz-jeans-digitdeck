@@ -63,11 +63,16 @@
         "view_all_link": "",
         "view_all_link_collections": "",
         "show_arrows": true,
-        "product_source": "collection",
+        "product_source": "manual",
         "collection": "mas-buscados-vendidos",
         "collections": [],
         "product_tags": "",
-        "products": [],
+        "products": [
+          "bermuda-animal-print",
+          "bermuda-cargo-con-sesgos-a-los-lados-764015",
+          "bermuda-negra-clasica-764009",
+          "bermuda-con-sesgos-764014"
+        ],
         "max_products": 12,
         "show_badges": true,
         "show_rating": true,

@@ -166,23 +166,13 @@
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
-        },
-        "category_j3tHan": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "image_source": "collection_image",
-            "text_position": "bottom-left",
-            "aspect_ratio": "portrait"
-          }
         }
       },
       "block_order": [
         "category_QC8xmk",
         "category_V68LeD",
         "category_pPrFBF",
-        "category_gatxCg",
-        "category_j3tHan"
+        "category_gatxCg"
       ],
       "name": "Category Grid",
       "settings": {

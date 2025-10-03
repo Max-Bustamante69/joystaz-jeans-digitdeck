@@ -166,13 +166,23 @@
             "text_position": "bottom-left",
             "aspect_ratio": "portrait"
           }
+        },
+        "category_GF7Bm7": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "image_source": "collection_image",
+            "text_position": "bottom-left",
+            "aspect_ratio": "portrait"
+          }
         }
       },
       "block_order": [
         "category_QC8xmk",
         "category_V68LeD",
         "category_pPrFBF",
-        "category_gatxCg"
+        "category_gatxCg",
+        "category_GF7Bm7"
       ],
       "name": "Category Grid",
       "settings": {

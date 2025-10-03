@@ -224,26 +224,6 @@
         "show_bullets": true
       }
     },
-    "image_with_text_G6betb": {
-      "type": "image-with-text",
-      "name": "Image with Text",
-      "settings": {
-        "layout_direction": "text_first",
-        "image_style": "full_width",
-        "image": "shopify://shop_images/1_1.jpg",
-        "image_alt": "",
-        "use_product_image": false,
-        "title": "Visítanos en Medellín",
-        "rich_text": "<p>Conoce nuestra tienda en <strong>Calle 29D #55-178, Zona Industrial de Belén</strong>, pruébate tus jeans favoritos y recibe asesoría personalizada para encontrar el fit perfecto.</p>",
-        "button_text": "Cómo Llegar",
-        "button_link": "/collections/all",
-        "button_style": "border",
-        "background_color": "#ffffff",
-        "title_color": "#000000",
-        "subtitle_color": "#000000",
-        "text_color": "#525252"
-      }
-    },
     "product_carousel_VNfNQL": {
       "type": "product-carousel",
       "name": "Product Carousel",
@@ -277,7 +257,6 @@
     "category_grid_tiJRNW",
     "quote_E6r7tE",
     "hero_x9Qnqz",
-    "image_with_text_G6betb",
     "product_carousel_VNfNQL"
   ]
 }

@@ -9,7 +9,7 @@
  */
 {
   "current": {
-    "primary_color": "#000000",
+    "primary_color": "#1e1e1e",
     "header_scroll_threshold_default": 95,
     "header_scroll_threshold_home": 95,
     "header_scroll_threshold_product": 95,

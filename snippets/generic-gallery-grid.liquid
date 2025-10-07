@@ -11,7 +11,7 @@
 {% endcomment %}
 
 <!-- Gallery Grid Container with Alpine.js data -->
-<div x-data="galleryGrid({{ settings.default_gallery_layout_mobile | default: 2 }}, {{ settings.default_gallery_layout_desktop | default: 2 }}, {{ settings.gallery_allow_layout_switching | default: true }}, {{ settings.gallery_remember_user_preference | default: true }})">
+<div x-data="galleryGrid({{ settings.default_gallery_layout_mobile | default: 2 }}, {{ settings.default_gallery_layout_desktop | default: 2 }}, {{ settings.gallery_allow_layout_switching | default: true }})">
   <!-- Layout Toggle (only show when show_layout_toggle is true) -->
   {% if show_layout_toggle != false %}
     <div
@@ -83,6 +83,7 @@
   <div class="">
     <div
       id="generic-gallery-grid"
+      data-product-grid
       class="grid w-full transition-all duration-300"
       :class="
         {
@@ -98,30 +99,18 @@
 </div>
 
 <script>
-  function galleryGrid(mobileLayout = 2, desktopLayout = 2, allowSwitching = true, rememberPreference = true) {
+  function galleryGrid(mobileLayout = 2, desktopLayout = 2, allowSwitching = true) {
     return {
       mobileLayout: parseInt(mobileLayout),
       desktopLayout: parseInt(desktopLayout),
       layoutOption: parseInt(desktopLayout), // Default to desktop layout
       allowSwitching: allowSwitching,
-      rememberPreference: rememberPreference,
       visibleResultsCount: 0,
       isMobile: false,
 
       init() {
-        // Check if we should remember user preference
-        if (this.rememberPreference) {
-          const savedLayout = localStorage.getItem('gallery-layout-preference');
-          if (savedLayout) {
-            this.layoutOption = parseInt(savedLayout);
-          } else {
-            // Set initial layout based on screen size if no saved preference
-            this.updateLayoutForScreenSize();
-          }
-        } else {
-          // Set initial layout based on screen size
-          this.updateLayoutForScreenSize();
-        }
+        // Set initial layout based on screen size
+        this.updateLayoutForScreenSize();
 
         // Listen for screen size changes
         window.addEventListener('resize', () => {
@@ -152,11 +141,6 @@
           this.$nextTick(() => {
             this.updateResultsCount();
           });
-
-          // Save preference if enabled
-          if (this.rememberPreference) {
-            localStorage.setItem('gallery-layout-preference', this.layoutOption.toString());
-          }
         });
       },
 
@@ -164,20 +148,11 @@
         const wasMobile = this.isMobile;
         this.isMobile = window.innerWidth < 1024; // lg breakpoint
 
-        // Only update if screen size category changed and we're not remembering user preference
-        if (wasMobile !== this.isMobile && !this.rememberPreference) {
-          if (this.isMobile) {
-            this.layoutOption = this.mobileLayout;
-          } else {
-            this.layoutOption = this.desktopLayout;
-          }
-        } else if (!this.rememberPreference) {
-          // Set initial layout based on current screen size
-          if (this.isMobile) {
-            this.layoutOption = this.mobileLayout;
-          } else {
-            this.layoutOption = this.desktopLayout;
-          }
+        // Always update layout based on screen size
+        if (this.isMobile) {
+          this.layoutOption = this.mobileLayout;
+        } else {
+          this.layoutOption = this.desktopLayout;
         }
       },
 

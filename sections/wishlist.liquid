@@ -1,5 +1,5 @@
-<section class="w-full  px-4 lg:px-12 mt-24" x-data="wishlistPage()">
-  <div class="flex items-center justify-between mb-6">
+<section class="w-full  mt-24 pb-24 lg:pb-32" x-data="wishlistPage()">
+  <div class="flex w-full  px-4 lg:px-12 mt-24 items-center justify-between mb-6">
     <h1 class="text-2xl font-semibold">Lista de deseos</h1>
     <a href="{{ routes.all_products_collection_url }}" class="text-sm underline">Seguir comprando</a>
   </div>
@@ -13,7 +13,9 @@
 
   {% capture wishlist_grid_content %}
   {% endcapture %}
-  {% render 'generic-gallery-grid', content: wishlist_grid_content, show_layout_toggle: true, show_filters: false %}
+  <div id="wishlist-grid-wrap">
+    {% render 'generic-gallery-grid', content: wishlist_grid_content, show_layout_toggle: true, show_filters: false %}
+  </div>
 </section>
 
 <script>
@@ -459,15 +461,22 @@
 
     async function render() {
       const grid = document.getElementById('generic-gallery-grid');
+      const gridWrap = document.getElementById('wishlist-grid-wrap');
       const empty = document.getElementById('wishlist-empty');
       if (!grid || !empty) return;
       const handles = getWishlist();
       if (!handles.length) {
         empty.classList.remove('hidden');
         grid.innerHTML = '';
+        // Hide the actual gallery grid when the wishlist is empty
+        grid.style.display = 'none';
+        if (gridWrap) gridWrap.style.display = 'none';
         return;
       }
       empty.classList.add('hidden');
+      // Show grid when there are items
+      grid.style.display = '';
+      if (gridWrap) gridWrap.style.display = '';
       window.WISHLIST_PRODUCTS = handles.filter(Boolean).map((h) => ({ handle: h }));
       window.dispatchEvent(new CustomEvent('wishlist:loaded', { detail: { products: window.WISHLIST_PRODUCTS } }));
       await renderGrid(window.WISHLIST_PRODUCTS);

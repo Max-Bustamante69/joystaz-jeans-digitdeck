@@ -26,7 +26,7 @@
 {% assign slides_per_view_desktop = slides_per_view_desktop | default: 4 %}
 {% assign space_between_mobile = space_between_mobile | default: 2 %}
 {% assign space_between_desktop = space_between_desktop | default: 4 %}
-{% assign centered_slides = centered_slides | default: true %}
+{% assign centered_slides = centered_slides | default: false %}
 {% assign free_mode = free_mode | default: true %}
 {% assign total_items = total_items | default: 0 %}
 {% assign padding_left_mobile = padding_left_mobile | default: 16 %}
@@ -87,7 +87,7 @@
           momentumBounceRatio: 0.3,
         },
         {% endif %}
-        grabCursor: true,
+        grabCursor: false,
         resistance: true,
         resistanceRatio: 0.85,
         watchSlidesProgress: true,

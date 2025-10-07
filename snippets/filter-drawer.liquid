@@ -11,7 +11,6 @@
   x-cloak
   x-data="filterDrawer()"
   x-show="isOpen"
-  x-transition.opacity.duration.500ms
   class="fixed inset-0 z-40 overflow-hidden"
   @keydown.escape.window="closeDrawer()"
   @filter:open.window="openDrawer()"
@@ -85,11 +84,11 @@
           <div
             x-show="styleSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start=" max-h-0 overflow-hidden"
-            x-transition:enter-end=" max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start=" max-h-96 overflow-hidden"
-            x-transition:leave-end=" max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <!-- Style Options -->
@@ -137,11 +136,11 @@
           <div
             x-show="colorSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-            x-transition:enter-end="opacity-100 max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 max-h-96 overflow-hidden"
-            x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <!-- Color Grid like reference: square swatch with label below -->
@@ -194,11 +193,11 @@
           <div
             x-show="sizeSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-            x-transition:enter-end="opacity-100 max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 max-h-96 overflow-hidden"
-            x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <!-- Size Options -->
@@ -246,11 +245,11 @@
           <div
             x-show="collectionSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-            x-transition:enter-end="opacity-100 max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 max-h-96 overflow-hidden"
-            x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <!-- Collection Options -->
@@ -297,11 +296,11 @@
           <div
             x-show="saleSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-            x-transition:enter-end="opacity-100 max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 max-h-96 overflow-hidden"
-            x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <button
@@ -344,11 +343,11 @@
           <div
             x-show="sortSectionExpanded"
             x-transition:enter="transition ease-out duration-300"
-            x-transition:enter-start="opacity-0 max-h-0 overflow-hidden"
-            x-transition:enter-end="opacity-100 max-h-96 overflow-visible"
+            x-transition:enter-start="max-h-0 overflow-hidden"
+            x-transition:enter-end="max-h-96 overflow-visible"
             x-transition:leave="transition ease-in duration-200"
-            x-transition:leave-start="opacity-100 max-h-96 overflow-hidden"
-            x-transition:leave-end="opacity-0 max-h-0 overflow-hidden"
+            x-transition:leave-start="max-h-96 overflow-hidden"
+            x-transition:leave-end="max-h-0 overflow-hidden"
             class="space-y-3"
           >
             <!-- Sort Options -->

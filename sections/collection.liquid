@@ -77,8 +77,8 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               {% endif %}
-              <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-              <p class="text-gray-500 mb-6">Try adjusting your search terms or browse our collections instead.</p>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">{{ section.settings.no_results_title | default: 'No products found' }}</h3>
+              <p class="text-gray-500 mb-6">{{ section.settings.no_results_subtext | default: 'Try adjusting your search terms or browse our collections instead.' }}</p>
 
               <!-- Custom Browse Collections Buttons -->
               {% if section.settings.browse_collections %}
@@ -98,7 +98,7 @@
                   href="{{ routes.all_products_collection_url }}"
                   class="inline-flex items-center  py-2 border border-primary text-primary text-sm font-medium transition-colors hover:bg-primary hover:text-white"
                 >
-                  Browse Men's
+                  {{ section.settings.no_results_cta_text | default: "Browse Men's" }}
                 </a>
               {% endif %}
             </div>
@@ -106,7 +106,7 @@
         {% endif %}
       {% else %}
         <!-- Collection Products -->
-        {% paginate collection.products by 18 %}
+        {% paginate collection.products by 250 %}
           {% for product in collection.products %}
             <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
               <div :style="`order: ${getProductOrder({{ product.id }})}`"
@@ -133,13 +133,23 @@
               </div>
             </template>
           {% endfor %}
-          
         {% endpaginate %}
+        
       {% endif %}
   {% endcapture %}
 
-  <!-- Render Grid with Content -->
-  {% render 'generic-gallery-grid', content: grid_content, show_layout_toggle: true, show_filters: true %}
+  <!-- Render Grid with Content and Infinite Scroll anchor within paginate -->
+  {% paginate collection.products by 50 %}
+    {% render 'generic-gallery-grid', content: grid_content, show_layout_toggle: true, show_filters: true %}
+    <infinite-scroll style="display: flex; justify-content: center;">
+      {%- if paginate.next -%}
+        <a
+          style="color: currentColor; text-decoration: none; pointer-events: none;"
+          href="{{ paginate.next.url }}&section_id={{ section.id }}"
+        ></a>
+      {%- endif -%}
+    </infinite-scroll>
+  {% endpaginate %}
 </div>
 
 <!-- Filter Drawer (outside collection page scope) -->
@@ -415,6 +425,24 @@
       "id": "not_found_icon",
       "label": "Not Found Icon",
       "info": "Custom icon to show when no products are found (search context only). Leave empty to use default icon."
+    },
+    {
+      "type": "text",
+      "id": "no_results_title",
+      "label": "No Results Title",
+      "default": "No products found"
+    },
+    {
+      "type": "textarea",
+      "id": "no_results_subtext",
+      "label": "No Results Subtext",
+      "default": "Try adjusting your search terms or browse our collections instead."
+    },
+    {
+      "type": "text",
+      "id": "no_results_cta_text",
+      "label": "Default CTA Text",
+      "default": "Browse Men's"
     },
     {
       "type": "collection_list",

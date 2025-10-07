@@ -193,24 +193,6 @@
     },
     "hero_x9Qnqz": {
       "type": "hero",
-      "blocks": {
-        "slide_Jmyy8G": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/ChatGPT_Image_Sep_26_2025_06_00_17_PM.png",
-            "image_url": "https://via.placeholder.com/1326x800/cccccc/666666?text=Hero+Image",
-            "title": "Explora la Colección de Mujer",
-            "description": "Los pares más buscados, marcas top y diseños para cada ocasión. Compra fácil, recibe rápido y luce siempre al día.",
-            "button_text": "Ver Ahora",
-            "button_link": "shopify://collections/mujer",
-            "button_style": "text-xl px-6 py-3 border border-white"
-          }
-        }
-      },
-      "block_order": [
-        "slide_4rHAFr"
-      ],
       "name": "Hero Section",
       "settings": {
         "min_height": 100,
@@ -257,7 +239,14 @@
           "hombre"
         ],
         "product_tags": "",
-        "products": [],
+        "products": [
+          "adidas-courtblock",
+          "x-1",
+          "adidas-advantage-base-2-0",
+          "adidas-hombre-run-70s-2-0",
+          "adidas-hombre-run-70s-2-1",
+          "x-2"
+        ],
         "max_products": 12,
         "show_badges": true,
         "show_rating": true,

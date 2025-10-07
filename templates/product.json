@@ -95,6 +95,7 @@
   },
   "order": [
     "main",
+    "product_benefits_xxxxxx",
     "product_reviews_section",
     "related_collections_carousel_1"
   ]

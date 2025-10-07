@@ -106,7 +106,7 @@
         {% endif %}
       {% else %}
         <!-- Collection Products -->
-        {% paginate collection.products by 18 %}
+        {% paginate collection.products by 250 %}
           {% for product in collection.products %}
             <template x-if="filteredProducts.some(p => p.id === {{ product.id }})">
               <div :style="`order: ${getProductOrder({{ product.id }})}`"
@@ -133,13 +133,23 @@
               </div>
             </template>
           {% endfor %}
-          
         {% endpaginate %}
+        
       {% endif %}
   {% endcapture %}
 
-  <!-- Render Grid with Content -->
-  {% render 'generic-gallery-grid', content: grid_content, show_layout_toggle: true, show_filters: true %}
+  <!-- Render Grid with Content and Infinite Scroll anchor within paginate -->
+  {% paginate collection.products by 50 %}
+    {% render 'generic-gallery-grid', content: grid_content, show_layout_toggle: true, show_filters: true %}
+    <infinite-scroll style="display: flex; justify-content: center;">
+      {%- if paginate.next -%}
+        <a
+          style="color: currentColor; text-decoration: none; pointer-events: none;"
+          href="{{ paginate.next.url }}&section_id={{ section.id }}"
+        ></a>
+      {%- endif -%}
+    </infinite-scroll>
+  {% endpaginate %}
 </div>
 
 <!-- Filter Drawer (outside collection page scope) -->

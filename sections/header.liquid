@@ -161,7 +161,7 @@
             class="font-semibold h-full flex items-center px-3"
             :class="activeMegaMenu === '{{ collection_handle }}' ? ((isScrolled || isMenuHovered) ? 'text-gray-600' : 'text-gray-300') : ''"
           >
-            <span class="hover-line">
+            <span class="hover-line body">
               {{ link.title }}
             </span>
           </a>
@@ -186,6 +186,7 @@
                 --anim-distance: 16px;     /* slide distance from left */
               "
               data-anim-container
+              class="overflow-hidden"
             >
               <div class="">
                 <div class="flex gap-8">

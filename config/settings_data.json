@@ -9,13 +9,14 @@
  */
 {
   "current": {
-    "primary_color": "#3b2e10",
+    "primary_color": "#1e1e1e",
     "header_scroll_threshold_default": 95,
     "header_scroll_threshold_home": 95,
     "header_scroll_threshold_product": 95,
     "header_scroll_threshold_collection": 55,
     "header_scroll_threshold_page": 95,
-    "default_gallery_layout_mobile": "1",
+    "default_gallery_layout_mobile": "2",
+    "default_gallery_layout_desktop": "2",
     "search_featured_tags_title": "Categorías populares",
     "search_history_title": "Busquedas Recientes",
     "search_clear_all_text": "Borrar todos",

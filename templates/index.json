@@ -199,6 +199,7 @@
       "settings": {
         "layout_direction": "text_first",
         "image_style": "full_width",
+        "image": "shopify://shop_images/sede_fisica_new_urban_mejorada.jpg",
         "image_alt": "",
         "use_product_image": false,
         "title": "Visítanos en Nuestra Tienda Física",

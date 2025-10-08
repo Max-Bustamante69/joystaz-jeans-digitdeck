@@ -59,11 +59,13 @@
           "adidas-hombre-run-70s-2-1",
           "adidas-runblaze-m",
           "adidas-tracefinder",
-          "adidas-court",
           "adidas-breaknet-sleek",
           "adidas-urban-court",
           "adidas-galaxy-7",
-          "adidas-mujer-runblaze"
+          "adidas-mujer-runblaze",
+          "adidas-advantage-base-2-1",
+          "adidas-court",
+          "adidas-galaxy-6-w"
         ],
         "max_products": 12,
         "show_badges": true,

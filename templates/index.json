@@ -184,25 +184,13 @@
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p><br/>\"Joystaz nació para que cada persona encuentre <em><strong>su par perfecto sin estrés, con estilo y a su medida</strong></em>\".<br/><br/></p>",
+        "quote_text": "<p><br/>“Donde la elegancia <em><strong>habla en silencio.</strong></em>”</p>",
         "background_color": "#ffffff",
         "text_color": "#000000",
         "emphasis_color": "#000000",
         "border_color": "#3b82f6",
         "text_size": 2,
         "padding": 3
-      }
-    },
-    "hero_x9Qnqz": {
-      "type": "hero",
-      "name": "Hero Section",
-      "settings": {
-        "min_height": 100,
-        "autoplay_duration": 3000,
-        "animation_duration": 1000,
-        "pause_on_hover": true,
-        "show_navigation": false,
-        "show_bullets": true
       }
     },
     "image_with_text_G6betb": {
@@ -236,7 +224,7 @@
         "view_all_link_collections": "",
         "show_arrows": true,
         "product_source": "collection",
-        "collection": "featured-collection",
+        "collection": "hombre",
         "collections": [
           "hombre"
         ],
@@ -265,7 +253,6 @@
     "image_with_text_gxhgP9",
     "category_grid_tiJRNW",
     "quote_E6r7tE",
-    "hero_x9Qnqz",
     "image_with_text_G6betb",
     "product_carousel_VNfNQL"
   ]

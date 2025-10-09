@@ -256,7 +256,15 @@
           &copy; {{ 'now' | date: '%Y' }}
           {{ shop.name }}
           {% if section.settings.credit_text != blank %}
-            <span class="mx-1">&middot;</span>{{ section.settings.credit_text }}
+            <span class="mx-1">&middot;</span>
+            <a 
+              href="https://digitdeck.online" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="hover:text-white transition-colors duration-300"
+            >
+              {{ section.settings.credit_text }}
+            </a>
           {% endif %}
         </div>
       </div>

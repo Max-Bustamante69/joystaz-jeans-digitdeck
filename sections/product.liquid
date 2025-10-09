@@ -859,10 +859,53 @@
         %}
         
         <!-- Size Guide Modal Component -->
-        <div x-data="sizeGuideModal()">
+        <div x-data="{
+          isOpen: false,
+          activeTab: 'hombre',
+          hombreSizes: [
+            { usa: '7', col: '38', cm: '25' },
+            { usa: '7.5', col: '38.5', cm: '25.5' },
+            { usa: '8', col: '39', cm: '26' },
+            { usa: '8.5', col: '39.5', cm: '26.5' },
+            { usa: '9', col: '40', cm: '27' },
+            { usa: '9.5', col: '40.5', cm: '27.5' },
+            { usa: '10', col: '41', cm: '28' },
+            { usa: '10.5', col: '41.5', cm: '28.5' },
+            { usa: '11', col: '42', cm: '29' },
+            { usa: '11.5', col: '42.5', cm: '29.5' },
+            { usa: '12', col: '43', cm: '30' },
+            { usa: '12.5', col: '43.5', cm: '30.5' },
+            { usa: '13', col: '44', cm: '31' }
+          ],
+          mujerSizes: [
+            { usa: '5', col: '35', cm: '22' },
+            { usa: '5.5', col: '35.5', cm: '22.5' },
+            { usa: '6', col: '36', cm: '23' },
+            { usa: '6.5', col: '36.5', cm: '23.5' },
+            { usa: '7', col: '37', cm: '24' },
+            { usa: '7.5', col: '37.5', cm: '24.5' },
+            { usa: '8', col: '38', cm: '25' },
+            { usa: '8.5', col: '38.5', cm: '25.5' },
+            { usa: '9', col: '39', cm: '26' },
+            { usa: '9.5', col: '39.5', cm: '26.5' },
+            { usa: '10', col: '40', cm: '27' }
+          ],
+          get currentSizes() {
+            return this.activeTab === 'hombre' ? this.hombreSizes : this.mujerSizes;
+          },
+          openModal() {
+            this.isOpen = true;
+            document.body.style.overflow = 'hidden';
+          },
+          closeModal() {
+            this.isOpen = false;
+            document.body.style.overflow = '';
+          }
+        }" 
+        @keydown.escape.window="closeModal()">
           <!-- Botón para abrir la guía -->
           <button
-            @click="openModal"
+            @click="openModal()"
             type="button"
             class="text-sm text-gray-900 underline hover:text-gray-700 transition-colors"
           >
@@ -878,7 +921,7 @@
             x-transition:leave="transition ease-in duration-200"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            @click.self="closeModal"
+            @click.self="closeModal()"
             class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
             x-cloak
           >
@@ -897,7 +940,7 @@
               <div class="flex items-center justify-between p-4 sm:p-6 border-b">
                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Guía de Tallas</h2>
                 <button
-                  @click="closeModal"
+                  @click="closeModal()"
                   type="button"
                   class="text-gray-400 hover:text-gray-600 transition-colors p-1"
                 >
@@ -2486,74 +2529,6 @@
           }
         });
       },
-    };
-  }
-
-  // Size Guide Modal functionality
-  function sizeGuideModal() {
-    return {
-      isOpen: false,
-      activeTab: 'hombre',
-      
-      hombreSizes: [
-        { usa: '7', col: '38', cm: '25' },
-        { usa: '7.5', col: '38.5', cm: '25.5' },
-        { usa: '8', col: '39', cm: '26' },
-        { usa: '8.5', col: '39.5', cm: '26.5' },
-        { usa: '9', col: '40', cm: '27' },
-        { usa: '9.5', col: '40.5', cm: '27.5' },
-        { usa: '10', col: '41', cm: '28' },
-        { usa: '10.5', col: '41.5', cm: '28.5' },
-        { usa: '11', col: '42', cm: '29' },
-        { usa: '11.5', col: '42.5', cm: '29.5' },
-        { usa: '12', col: '43', cm: '30' },
-        { usa: '12.5', col: '43.5', cm: '30.5' },
-        { usa: '13', col: '44', cm: '31' },
-      ],
-
-      mujerSizes: [
-        { usa: '5', col: '35', cm: '22' },
-        { usa: '5.5', col: '35.5', cm: '22.5' },
-        { usa: '6', col: '36', cm: '23' },
-        { usa: '6.5', col: '36.5', cm: '23.5' },
-        { usa: '7', col: '37', cm: '24' },
-        { usa: '7.5', col: '37.5', cm: '24.5' },
-        { usa: '8', col: '38', cm: '25' },
-        { usa: '8.5', col: '38.5', cm: '25.5' },
-        { usa: '9', col: '39', cm: '26' },
-        { usa: '9.5', col: '39.5', cm: '26.5' },
-        { usa: '10', col: '40', cm: '27' },
-      ],
-
-      get currentSizes() {
-        return this.activeTab === 'hombre' ? this.hombreSizes : this.mujerSizes;
-      },
-
-      openModal() {
-        this.isOpen = true;
-        document.body.style.overflow = 'hidden';
-      },
-
-      closeModal() {
-        this.isOpen = false;
-        document.body.style.overflow = '';
-      },
-
-      init() {
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && this.isOpen) {
-            this.closeModal();
-          }
-        });
-      },
-
-      destroy() {
-        // Cleanup: restore body scroll if modal was open
-        if (this.isOpen) {
-          document.body.style.overflow = '';
-        }
-      }
     };
   }
 </script>

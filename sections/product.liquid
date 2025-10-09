@@ -47,6 +47,17 @@
   [x-data] .alpine-fallback {
     display: none !important;
   }
+
+  /* Size Guide Modal - Maximum z-index */
+  .size-guide-modal-overlay {
+    z-index: 2147483647 !important; /* Maximum z-index value */
+    position: fixed !important;
+  }
+
+  .size-guide-modal-content {
+    z-index: 2147483647 !important;
+    position: relative !important;
+  }
 </style>
 
 <script>
@@ -922,7 +933,8 @@
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
             @click.self="closeModal()"
-            class="fixed inset-0 bg-transparent lg:bg-black lg:bg-opacity-50 z-[9999] flex items-center justify-center p-0 lg:p-4"
+            class="size-guide-modal-overlay fixed inset-0 bg-transparent lg:bg-black lg:bg-opacity-50 flex items-center justify-center p-0 lg:p-4"
+            style="z-index: 2147483647 !important;"
             x-cloak
           >
             <!-- Modal Content -->
@@ -935,7 +947,8 @@
               x-transition:leave-start="opacity-100 translate-y-0 lg:scale-100"
               x-transition:leave-end="opacity-0 translate-y-4 lg:scale-95"
               @click.stop
-              class="bg-white w-full h-full lg:h-auto lg:rounded-lg lg:max-w-2xl lg:max-h-[90vh] overflow-hidden shadow-2xl"
+              class="size-guide-modal-content bg-white w-full h-full lg:h-auto lg:rounded-lg lg:max-w-2xl lg:max-h-[90vh] overflow-hidden shadow-2xl"
+              style="z-index: 2147483647 !important;"
             >
               <!-- Header -->
               <div class="flex items-center justify-between p-4 sm:p-6 border-b bg-white sticky top-0 z-10">

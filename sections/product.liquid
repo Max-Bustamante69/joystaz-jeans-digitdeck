@@ -855,8 +855,129 @@
           selected_size_variable: 'selectedSize',
           click_function: 'selectSize',
           show_main_label: true,
-          show_size_guide: true
+          show_size_guide: false
         %}
+        
+        <!-- Size Guide Modal Component -->
+        <div x-data="sizeGuideModal()">
+          <!-- Botón para abrir la guía -->
+          <button
+            @click="openModal"
+            type="button"
+            class="text-sm text-gray-900 underline hover:text-gray-700 transition-colors"
+          >
+            Guía de tallas
+          </button>
+
+          <!-- Modal Overlay -->
+          <div
+            x-show="isOpen"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click.self="closeModal"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+            x-cloak
+          >
+            <div
+              x-show="isOpen"
+              x-transition:enter="transition ease-out duration-300"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-transition:leave="transition ease-in duration-200"
+              x-transition:leave-start="opacity-100 scale-100"
+              x-transition:leave-end="opacity-0 scale-95"
+              @click.stop
+              class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            >
+              <!-- Header -->
+              <div class="flex items-center justify-between p-4 sm:p-6 border-b">
+                <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Guía de Tallas</h2>
+                <button
+                  @click="closeModal"
+                  type="button"
+                  class="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                >
+                  <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Tabs -->
+              <div class="flex border-b">
+                <button
+                  @click="activeTab = 'hombre'"
+                  type="button"
+                  :class="activeTab === 'hombre' 
+                    ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                  class="flex-1 py-3 sm:py-4 px-4 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base"
+                >
+                  HOMBRE
+                </button>
+                <button
+                  @click="activeTab = 'mujer'"
+                  type="button"
+                  :class="activeTab === 'mujer' 
+                    ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900' 
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+                  class="flex-1 py-3 sm:py-4 px-4 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base"
+                >
+                  MUJER
+                </button>
+              </div>
+
+              <!-- Content -->
+              <div class="p-4 sm:p-6 overflow-y-auto" style="max-height: calc(90vh - 180px);">
+                <div class="mb-4 text-center">
+                  <p class="text-sm sm:text-base text-gray-600">Encuentra tu talla perfecta</p>
+                </div>
+
+                <!-- Tabla de Conversión -->
+                <div class="bg-white rounded-lg overflow-hidden border border-gray-200">
+                  <h3 class="text-center font-semibold py-3 sm:py-4 text-sm sm:text-base text-gray-900 border-b">
+                    Tabla de Conversión
+                  </h3>
+                  
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm sm:text-base">
+                      <thead>
+                        <tr class="bg-gray-900 text-white">
+                          <th class="py-2 sm:py-3 px-2 sm:px-4 text-center font-semibold">USA</th>
+                          <th class="py-2 sm:py-3 px-2 sm:px-4 text-center font-semibold">COL</th>
+                          <th class="py-2 sm:py-3 px-2 sm:px-4 text-center font-semibold">CM</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <template x-for="(size, index) in currentSizes" :key="index">
+                          <tr 
+                            :class="index % 2 === 0 ? 'bg-white' : 'bg-gray-50'"
+                            class="border-b border-gray-200 last:border-b-0"
+                          >
+                            <td class="py-2 sm:py-3 px-2 sm:px-4 text-center font-semibold text-gray-900" x-text="size.usa"></td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-4 text-center text-gray-700" x-text="size.col"></td>
+                            <td class="py-2 sm:py-3 px-2 sm:px-4 text-center text-gray-700" x-text="size.cm"></td>
+                          </tr>
+                        </template>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Información adicional -->
+                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                  <p class="text-xs sm:text-sm text-gray-600 text-center">
+                    💡 Si tienes dudas entre dos tallas, te recomendamos elegir la talla mayor para mayor comodidad.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Purchase Options Logic -->
@@ -2365,6 +2486,74 @@
           }
         });
       },
+    };
+  }
+
+  // Size Guide Modal functionality
+  function sizeGuideModal() {
+    return {
+      isOpen: false,
+      activeTab: 'hombre',
+      
+      hombreSizes: [
+        { usa: '7', col: '38', cm: '25' },
+        { usa: '7.5', col: '38.5', cm: '25.5' },
+        { usa: '8', col: '39', cm: '26' },
+        { usa: '8.5', col: '39.5', cm: '26.5' },
+        { usa: '9', col: '40', cm: '27' },
+        { usa: '9.5', col: '40.5', cm: '27.5' },
+        { usa: '10', col: '41', cm: '28' },
+        { usa: '10.5', col: '41.5', cm: '28.5' },
+        { usa: '11', col: '42', cm: '29' },
+        { usa: '11.5', col: '42.5', cm: '29.5' },
+        { usa: '12', col: '43', cm: '30' },
+        { usa: '12.5', col: '43.5', cm: '30.5' },
+        { usa: '13', col: '44', cm: '31' },
+      ],
+
+      mujerSizes: [
+        { usa: '5', col: '35', cm: '22' },
+        { usa: '5.5', col: '35.5', cm: '22.5' },
+        { usa: '6', col: '36', cm: '23' },
+        { usa: '6.5', col: '36.5', cm: '23.5' },
+        { usa: '7', col: '37', cm: '24' },
+        { usa: '7.5', col: '37.5', cm: '24.5' },
+        { usa: '8', col: '38', cm: '25' },
+        { usa: '8.5', col: '38.5', cm: '25.5' },
+        { usa: '9', col: '39', cm: '26' },
+        { usa: '9.5', col: '39.5', cm: '26.5' },
+        { usa: '10', col: '40', cm: '27' },
+      ],
+
+      get currentSizes() {
+        return this.activeTab === 'hombre' ? this.hombreSizes : this.mujerSizes;
+      },
+
+      openModal() {
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+      },
+
+      closeModal() {
+        this.isOpen = false;
+        document.body.style.overflow = '';
+      },
+
+      init() {
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.isOpen) {
+            this.closeModal();
+          }
+        });
+      },
+
+      destroy() {
+        // Cleanup: restore body scroll if modal was open
+        if (this.isOpen) {
+          document.body.style.overflow = '';
+        }
+      }
     };
   }
 </script>

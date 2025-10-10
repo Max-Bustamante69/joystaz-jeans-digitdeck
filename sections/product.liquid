@@ -1053,12 +1053,17 @@
         </button>
 
         <!-- Addi Payment Widget -->
-        <div id="addi-widget-container" class="w-full">
+        <div class="w-full mt-3">
+          <!-- Precio oculto para referencia de Addi -->
+          <span id="addi-price-reference" style="display: none;" data-price="{{ product.price | money_without_currency }}">
+            {{ product.price | money_without_currency }}
+          </span>
+          
           <script
             data-name="shopifyAddiWidget"
             data-id="newurbanisa-ecommerce"
             data-ally-slug="newurbanisa-ecommerce"
-            data-element-reference="addi-widget-container"
+            data-element-reference="addi-price-reference"
             src="https://statics.addi.com/shopify/js/shopify-co-widget-wrapper.bundle.min.js"
           ></script>
         </div>

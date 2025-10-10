@@ -58,6 +58,27 @@
     z-index: 2147483647 !important;
     position: relative !important;
   }
+
+  #addi-widget-placement {
+    position: relative;
+  }
+
+  #addi-widget-placement addi-product-widget {
+    display: block;
+    width: 100%;
+  }
+
+  .addi-price-sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
 </style>
 
 <script>
@@ -1054,11 +1075,12 @@
 
         <!-- Addi Payment Widget -->
         <div class="w-full mt-3" id="addi-widget-placement">
-          <div class="price__regular" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; visibility: hidden;">
-            <span class="price-item price-item--regular">
-              {{ product.price | money_without_currency }}
-            </span>
-          </div>
+          <span
+            id="addi-price-anchor"
+            class="price-item price-item--regular addi-price-sr-only"
+          >
+            {{ product.selected_or_first_available_variant.price | money }}
+          </span>
         </div>
       </div>
       <!-- Shipping and Returns -->

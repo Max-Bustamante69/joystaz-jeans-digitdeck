@@ -834,7 +834,7 @@
             {% endif %}
           </div>
           <div class="flex flex-col items-end gap-0.5">
-            <h6 class=" {%if product.compare_at_price > product.price %} text-red-700  {% else %} text-black {% endif %} ">
+            <h6 class="product-price-addi {%if product.compare_at_price > product.price %} text-red-700  {% else %} text-black {% endif %} ">
               ${{ product.price | money_without_currency }}
             </h6>
             {% if product.compare_at_price > product.price %}
@@ -1054,16 +1054,11 @@
 
         <!-- Addi Payment Widget -->
         <div class="w-full mt-3">
-          <!-- Precio oculto para referencia de Addi -->
-          <span id="addi-price-reference" style="display: none;" data-price="{{ product.price | money_without_currency }}">
-            {{ product.price | money_without_currency }}
-          </span>
-          
           <script
             data-name="shopifyAddiWidget"
             data-id="newurbanisa-ecommerce"
             data-ally-slug="newurbanisa-ecommerce"
-            data-element-reference="addi-price-reference"
+            data-element-reference=".product-price-addi"
             src="https://statics.addi.com/shopify/js/shopify-co-widget-wrapper.bundle.min.js"
           ></script>
         </div>

@@ -1052,11 +1052,13 @@
           <span class="alpine-fallback"> Elije tu {{ settings.size_option_label | default: 'talla' }} </span>
         </button>
 
-        <!-- Addi Payment Widget - Price reference -->
-        <div class="w-full mt-3">
-          <span class="addi-price-container" style="font-size: 0; line-height: 0; opacity: 0; height: 0; display: block;">
-            ${{ product.price | money_without_currency }}
-          </span>
+        <!-- Addi Payment Widget -->
+        <div class="w-full mt-3" id="addi-widget-placement">
+          <div class="price__regular">
+            <span class="price-item price-item--regular">
+              {{ product.price | money_without_currency }}
+            </span>
+          </div>
         </div>
       </div>
       <!-- Shipping and Returns -->

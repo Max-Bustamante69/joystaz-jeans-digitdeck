@@ -739,56 +739,8 @@
       <div class="flex flex-col {% if mobile_layout %}gap-1{% else %}gap-1 lg:flex-row{% endif %} items-start  justify-between">
         <!-- Product Title Section -->
         <div class="flex flex-col {% if mobile_layout %}gap-1{% else %}gap-2{% endif %} items-start justify-start">
-          {% assign cleaned_title = product.title %}
-
-          {% assign cleaned_title = cleaned_title
-            | remove: '0'
-            | remove: '1'
-            | remove: '2'
-            | remove: '3'
-            | remove: '4'
-            | remove: '5'
-            | remove: '6'
-            | remove: '7'
-            | remove: '8'
-            | remove: '9'
-          %}
-
-          {% assign cleaned_title = cleaned_title
-            | remove: '!'
-            | remove: '@'
-            | remove: '#'
-            | remove: '$'
-            | remove: '%'
-            | remove: '^'
-            | remove: '&'
-            | remove: '*'
-            | remove: '('
-            | remove: ')'
-            | remove: '_'
-            | remove: '+'
-            | remove: '='
-            | remove: '-'
-            | remove: '['
-            | remove: ']'
-            | remove: '{'
-            | remove: '}'
-            | remove: ';'
-            | remove: ':'
-            | remove: ','
-            | remove: '.'
-            | remove: '<'
-            | remove: '>'
-            | remove: '?'
-            | remove: '~'
-            | remove: "'"
-            | remove: '"'
-            | remove: '\'
-            | remove: '/'
-          %}
-
           <p class="{% if mobile_layout %}body-xs lg:body-sm{% else %}body-sm lg:body{% endif %} font-semibold ">
-            {{ cleaned_title }}
+            {{ product.title }}
           </p>
 
           <!-- Color Circles - Using product.options_with_values for proper swatch access -->

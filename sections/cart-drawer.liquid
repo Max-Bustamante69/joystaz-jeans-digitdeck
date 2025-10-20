@@ -552,11 +552,7 @@
           const response = await fetch('/cart.js');
           const cart = await response.json();
 
-          // Clean product titles by removing numbers and special characters
-          this.cartItems = cart.items.map(item => ({
-            ...item,
-            product_title: this.cleanProductTitle(item.product_title)
-          }));
+          this.cartItems = cart.items;
 
           // Store cart totals for discount calculation
           this.cartTotal = cart.total_price;
@@ -568,23 +564,6 @@
         }
       },
 
-      // Clean product title by removing numbers and special characters
-      cleanProductTitle(title) {
-        if (!title) return '';
-
-        let cleaned = title;
-
-        // Remove numbers
-        cleaned = cleaned.replace(/[0-9]/g, '');
-
-        // Remove special characters
-        cleaned = cleaned.replace(/[!@#$%^&*()_+\-=\[\]{};:,.<>?~'"\\\/]/g, '');
-
-        // Clean up extra spaces
-        cleaned = cleaned.replace(/\s+/g, ' ').trim();
-
-        return cleaned;
-      },
 
 
       async updateQuantity(itemKey, newQuantity) {

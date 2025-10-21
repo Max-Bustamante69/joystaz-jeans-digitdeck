@@ -205,7 +205,7 @@
         "title": "Visítanos en Nuestra Tienda Física",
         "rich_text": "<p><br/>Prueba tus pares favoritos, recibe asesoría personalizada y llévatelos al instante. Ven y vive la experiencia completa de elegir en persona.<br/><br/></p>",
         "button_text": "Cómo Llegar",
-        "button_link": "/collections/all",
+        "button_link": "https://maps.app.goo.gl/c1wjkq5forwzoXuU6?g_st=ipc",
         "button_style": "border",
         "background_color": "#ffffff",
         "title_color": "#000000",

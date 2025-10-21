@@ -415,36 +415,55 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const toggleButtons = document.querySelectorAll('[data-location-toggle]');
+  (function() {
+    function initLocationToggle() {
+      const toggleButtons = document.querySelectorAll('[data-location-toggle]');
 
-    toggleButtons.forEach(function(toggleButton) {
-      const targetId = toggleButton.getAttribute('aria-controls');
-      const storeLocations = document.getElementById(targetId);
+      toggleButtons.forEach(function(toggleButton) {
+        // Remove any existing listeners to avoid duplicates
+        const newButton = toggleButton.cloneNode(true);
+        toggleButton.parentNode.replaceChild(newButton, toggleButton);
 
-      if (toggleButton && storeLocations) {
-        toggleButton.addEventListener('click', function() {
-          const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        const targetId = newButton.getAttribute('aria-controls');
+        const storeLocations = document.getElementById(targetId);
 
-          if (isExpanded) {
-            // Close the dropdown
-            this.setAttribute('aria-expanded', 'false');
-            storeLocations.classList.remove('show');
-            setTimeout(function() {
-              storeLocations.style.display = 'none';
-            }, 300);
-          } else {
-            // Open the dropdown
-            this.setAttribute('aria-expanded', 'true');
-            storeLocations.style.display = 'block';
-            setTimeout(function() {
-              storeLocations.classList.add('show');
-            }, 10);
-          }
-        });
-      }
-    });
-  });
+        if (newButton && storeLocations) {
+          newButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+            if (isExpanded) {
+              // Close the dropdown
+              this.setAttribute('aria-expanded', 'false');
+              storeLocations.classList.remove('show');
+              setTimeout(function() {
+                storeLocations.style.display = 'none';
+              }, 300);
+            } else {
+              // Open the dropdown
+              this.setAttribute('aria-expanded', 'true');
+              storeLocations.style.display = 'block';
+              setTimeout(function() {
+                storeLocations.classList.add('show');
+              }, 10);
+            }
+          });
+        }
+      });
+    }
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initLocationToggle);
+    } else {
+      initLocationToggle();
+    }
+
+    // Re-initialize after Shopify section updates (for theme editor)
+    document.addEventListener('shopify:section:load', initLocationToggle);
+  })();
 </script>
 
 {% schema %}

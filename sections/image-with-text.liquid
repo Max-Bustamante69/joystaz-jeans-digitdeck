@@ -373,24 +373,25 @@
 
   .store-location-button {
     position: relative;
+    padding-right: 3rem !important;
   }
 
   .store-location-button::after {
     content: '';
     position: absolute;
-    right: 1.5rem;
+    right: 1rem;
     top: 50%;
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    border-left: 6px solid currentColor;
-    border-top: 4px solid transparent;
-    border-bottom: 4px solid transparent;
+    border-left: 8px solid currentColor;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
     transition: right 0.3s ease;
   }
 
   .store-location-button:hover::after {
-    right: 1.25rem;
+    right: 0.75rem;
   }
 
   /* Responsive adjustments */

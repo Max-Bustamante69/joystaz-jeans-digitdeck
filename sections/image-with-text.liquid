@@ -77,7 +77,53 @@
             </div>
           {% endif %}
 
-          {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+          {% if section.settings.show_location_buttons %}
+            <div class="button-container space-y-4">
+              <button
+                type="button"
+                class="location-toggle-button flex items-center justify-center gap-2 w-fit px-6 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-1 border-black/50 hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
+                data-location-toggle
+                aria-expanded="false"
+                aria-controls="store-locations-full"
+              >
+                <h6>{{ section.settings.main_button_label }}</h6>
+                <svg class="location-chevron w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <div
+                id="store-locations-full"
+                class="store-locations-container"
+                data-store-locations
+                style="display: none; overflow: hidden; max-height: 0; opacity: 0; transition: all 0.3s ease;"
+              >
+                <div class="flex flex-col gap-3">
+                  {% if section.settings.store_1_label != blank and section.settings.store_1_url != blank %}
+                    <a
+                      href="{{ section.settings.store_1_url }}"
+                      class="store-location-button flex items-center justify-center w-fit px-6 h-11 transition-all duration-300 ease-in-out bg-transparent text-black border-2 border-black hover:bg-black hover:text-white"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h6>{{ section.settings.store_1_label }}</h6>
+                    </a>
+                  {% endif %}
+
+                  {% if section.settings.store_2_label != blank and section.settings.store_2_url != blank %}
+                    <a
+                      href="{{ section.settings.store_2_url }}"
+                      class="store-location-button flex items-center justify-center w-fit px-6 h-11 transition-all duration-300 ease-in-out bg-transparent text-black border-2 border-black hover:bg-black hover:text-white"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h6>{{ section.settings.store_2_label }}</h6>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% elsif section.settings.button_text != blank and section.settings.button_link != blank %}
             <div class="button-container">
               <a
                 href="{{ section.settings.button_link }}"
@@ -188,7 +234,53 @@
             </div>
           {% endif %}
 
-          {% if section.settings.button_text != blank and section.settings.button_link != blank %}
+          {% if section.settings.show_location_buttons %}
+            <div class="button-container pt-4 space-y-4">
+              <button
+                type="button"
+                class="location-toggle-button flex items-center justify-center gap-2 w-fit px-8 h-11 transition-all duration-300 ease-in-out {% if section.settings.button_style == 'border' %}bg-transparent text-black border-2 border-black hover:bg-black hover:text-white{% else %}bg-primary text-white hover:bg-primary/90{% endif %}"
+                data-location-toggle
+                aria-expanded="false"
+                aria-controls="store-locations-windowed"
+              >
+                <h6>{{ section.settings.main_button_label }}</h6>
+                <svg class="location-chevron w-4 h-4 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <div
+                id="store-locations-windowed"
+                class="store-locations-container"
+                data-store-locations
+                style="display: none; overflow: hidden; max-height: 0; opacity: 0; transition: all 0.3s ease;"
+              >
+                <div class="flex flex-col gap-3">
+                  {% if section.settings.store_1_label != blank and section.settings.store_1_url != blank %}
+                    <a
+                      href="{{ section.settings.store_1_url }}"
+                      class="store-location-button flex items-center justify-center w-fit px-8 h-11 transition-all duration-300 ease-in-out bg-transparent text-black border-2 border-black hover:bg-black hover:text-white"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h6>{{ section.settings.store_1_label }}</h6>
+                    </a>
+                  {% endif %}
+
+                  {% if section.settings.store_2_label != blank and section.settings.store_2_url != blank %}
+                    <a
+                      href="{{ section.settings.store_2_url }}"
+                      class="store-location-button flex items-center justify-center w-fit px-8 h-11 transition-all duration-300 ease-in-out bg-transparent text-black border-2 border-black hover:bg-black hover:text-white"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <h6>{{ section.settings.store_2_label }}</h6>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% elsif section.settings.button_text != blank and section.settings.button_link != blank %}
             <div class="button-container pt-4">
               <a
                 href="{{ section.settings.button_link }}"
@@ -260,8 +352,46 @@
     margin-left: 1rem;
   }
 
+  /* Location Toggle Button Styles */
+  .location-toggle-button .location-chevron {
+    transition: transform 0.3s ease;
+  }
 
+  .location-toggle-button[aria-expanded="true"] .location-chevron {
+    transform: rotate(180deg);
+  }
 
+  .store-locations-container {
+    transition: all 0.3s ease;
+  }
+
+  .store-locations-container.show {
+    display: block !important;
+    max-height: 300px !important;
+    opacity: 1 !important;
+  }
+
+  .store-location-button {
+    position: relative;
+  }
+
+  .store-location-button::after {
+    content: '';
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid currentColor;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    transition: right 0.3s ease;
+  }
+
+  .store-location-button:hover::after {
+    right: 1.25rem;
+  }
 
   /* Responsive adjustments */
   @media screen and (max-width: 1023px) {
@@ -282,6 +412,39 @@
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleButtons = document.querySelectorAll('[data-location-toggle]');
+
+    toggleButtons.forEach(function(toggleButton) {
+      const targetId = toggleButton.getAttribute('aria-controls');
+      const storeLocations = document.getElementById(targetId);
+
+      if (toggleButton && storeLocations) {
+        toggleButton.addEventListener('click', function() {
+          const isExpanded = this.getAttribute('aria-expanded') === 'true';
+
+          if (isExpanded) {
+            // Close the dropdown
+            this.setAttribute('aria-expanded', 'false');
+            storeLocations.classList.remove('show');
+            setTimeout(function() {
+              storeLocations.style.display = 'none';
+            }, 300);
+          } else {
+            // Open the dropdown
+            this.setAttribute('aria-expanded', 'true');
+            storeLocations.style.display = 'block';
+            setTimeout(function() {
+              storeLocations.classList.add('show');
+            }, 10);
+          }
+        });
+      }
+    });
+  });
+</script>
 
 {% schema %}
 {
@@ -368,15 +531,31 @@
       "content": "Button Settings"
     },
     {
+      "type": "checkbox",
+      "id": "show_location_buttons",
+      "label": "Mostrar botones de ubicación",
+      "default": false,
+      "info": "Activa esta opción para mostrar el botón 'Cómo llegar' con las ubicaciones de tiendas"
+    },
+    {
+      "type": "text",
+      "id": "main_button_label",
+      "label": "Texto del botón principal",
+      "default": "Cómo llegar",
+      "info": "Solo se muestra si 'Mostrar botones de ubicación' está activado"
+    },
+    {
       "type": "text",
       "id": "button_text",
       "label": "Button Text",
-      "default": "Descubrelos"
+      "default": "Descubrelos",
+      "info": "Solo se usa si 'Mostrar botones de ubicación' está desactivado"
     },
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button Link"
+      "label": "Button Link",
+      "info": "Solo se usa si 'Mostrar botones de ubicación' está desactivado"
     },
     {
       "type": "select",
@@ -393,6 +572,40 @@
         }
       ],
       "default": "background"
+    },
+    {
+      "type": "header",
+      "content": "Tienda 1 - Configuración"
+    },
+    {
+      "type": "text",
+      "id": "store_1_label",
+      "label": "Nombre de la tienda 1",
+      "default": "Visita Tienda San Antonio",
+      "info": "Texto que aparecerá en el botón de la primera tienda"
+    },
+    {
+      "type": "url",
+      "id": "store_1_url",
+      "label": "URL de Google Maps - Tienda 1",
+      "info": "Ejemplo: https://maps.app.goo.gl/c1wjkq5forwzoXuU6?g_st=ipc"
+    },
+    {
+      "type": "header",
+      "content": "Tienda 2 - Configuración"
+    },
+    {
+      "type": "text",
+      "id": "store_2_label",
+      "label": "Nombre de la tienda 2",
+      "default": "Visita Tienda Centro",
+      "info": "Texto que aparecerá en el botón de la segunda tienda"
+    },
+    {
+      "type": "url",
+      "id": "store_2_url",
+      "label": "URL de Google Maps - Tienda 2",
+      "info": "Ejemplo: https://maps.app.goo.gl/TFbm1L7sUpYouE146?g_st=ipc"
     },
     {
       "type": "header",

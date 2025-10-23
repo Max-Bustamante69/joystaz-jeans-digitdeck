@@ -879,11 +879,16 @@
             });
 
             // Send JSON payload
+            const headers = {
+              'Content-Type': 'application/json'
+              {% if section.settings.review_api_key != blank %}
+              , 'X-Review-Api-Key': {{ section.settings.review_api_key | json }}
+              {% endif %}
+            };
+
             const res = await fetch(API_BASE_URL, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
+              headers,
               body: JSON.stringify(payload)
             });
             const result = await res.json().catch(() => ({}));
@@ -1388,6 +1393,12 @@
       "label": "Reviews API URL",
       "info": "Endpoint to POST new reviews as JSON",
       "default": "http://localhost:3001/api/reviews"
+    },
+    {
+      "type": "text",
+      "id": "review_api_key",
+      "label": "Review API Key",
+      "info": "Optional shared secret sent in the X-Review-Api-Key header"
     },
     {
       "type": "header",

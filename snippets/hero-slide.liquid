@@ -34,7 +34,7 @@
       {% comment %} Mobile Video (hidden on desktop) {% endcomment %}
       {% if has_mobile_video %}
         <video
-          class="h-full w-auto object-cover lg:hidden"
+          class="w-full h-full object-cover lg:hidden"
           autoplay
           muted
           loop
@@ -56,7 +56,7 @@
       {% comment %} Desktop Video (hidden on mobile) {% endcomment %}
       {% if has_desktop_video %}
         <video
-          class="h-full w-auto object-cover hidden lg:block"
+          class="w-full h-full object-cover hidden lg:block"
           autoplay
           muted
           loop
@@ -78,7 +78,7 @@
       {% comment %} Legacy single video (shown when mobile/desktop not specified) {% endcomment %}
       {% if slide.video and has_mobile_video == false and has_desktop_video == false %}
         <video
-          class="h-full w-auto object-cover"
+          class="w-full h-full object-cover"
           autoplay
           muted
           loop

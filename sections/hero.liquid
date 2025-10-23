@@ -7,7 +7,7 @@
   - Autoplay and navigation controls
 {% endcomment %}
 
-<div class="hero relative flex items-end p-0 h-dvh" >
+<div class="hero relative flex items-end p-0 h-screen" >
   {% comment %} overlay gradient {% endcomment %}
 
   {% if section.blocks.size > 0 %}
@@ -464,14 +464,34 @@
 </script>
 
 <style>
+  .hero-section-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .hero {
     position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 
   .hero .swiper {
     position: relative;
     width: 100%;
     height: 100%;
+  }
+
+  .hero .swiper-slide {
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 
   /* PAGINATION POSITIONED ON RIGHT SIDE VERTICALLY */
@@ -681,7 +701,7 @@
 {
   "name": "Hero Section",
   "tag": "section",
-  "class": "section",
+  "class": "hero-section-wrapper",
   "settings": [
     {
       "type": "range",

@@ -582,9 +582,14 @@
 
     function initializeReviewForm() {
       const form = document.getElementById('review-form-{{ product.id }}');
-      if (!form) return;
+      console.log('🔵 [DEBUG] initializeReviewForm called, form found:', !!form);
+      if (!form) {
+        console.error('❌ [DEBUG] Review form not found! ID:', 'review-form-{{ product.id }}');
+        return;
+      }
 
       const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
+      console.log('🔵 [DEBUG] Review form initialized with API URL:', API_BASE_URL);
 
       // Set product id
       const productIdInput = form.querySelector('#reviewProductId');
@@ -806,8 +811,18 @@
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('🔵 [DEBUG] Form submit triggered');
         const fd = new FormData(form);
+
+        console.log('🔵 [DEBUG] FormData:', {
+          sizePurchased: fd.get('sizePurchased'),
+          rating: fd.get('rating'),
+          title: fd.get('title'),
+          body: fd.get('body')
+        });
+
         if (!fd.get('sizePurchased')) {
+          console.log('❌ [DEBUG] Validation failed: sizePurchased is missing');
           showAlert('error', 'Por favor selecciona una {{ settings.size_option_label | default: "talla" }} comprada.');
           return;
         }
@@ -817,6 +832,7 @@
 
         try {
           const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
+          console.log('🔵 [DEBUG] API_BASE_URL:', API_BASE_URL);
           if (API_BASE_URL) {
             // Create JSON payload with all form data
             const payload = {
@@ -872,7 +888,7 @@
             }
 
             // Debug: Log payload (without huge media)
-            console.log('Review payload:', {
+            console.log('🔵 [DEBUG] Review payload:', {
               ...payload,
               image: payload.image ? '[base64 image]' : undefined,
               video: payload.video ? '[base64 video]' : undefined,
@@ -886,12 +902,24 @@
               {% endif %}
             };
 
+            console.log('🔵 [DEBUG] Headers:', headers);
+            console.log('🔵 [DEBUG] About to send fetch request...');
+
             const res = await fetch(API_BASE_URL, {
               method: 'POST',
               headers,
               body: JSON.stringify(payload)
             });
+
+            console.log('✅ [DEBUG] Fetch response received:', {
+              status: res.status,
+              ok: res.ok,
+              statusText: res.statusText
+            });
+
             const result = await res.json().catch(() => ({}));
+            console.log('🔵 [DEBUG] Response JSON:', result);
+
             if (!res.ok || result.success === false) {
               throw new Error(result.message || 'Failed to submit review');
             }
@@ -919,9 +947,11 @@
           if (imgFb) { imgFb.className = 'mt-2 text-sm hidden'; imgFb.textContent = ''; }
           if (vidFb) { vidFb.className = 'mt-2 text-sm hidden'; vidFb.textContent = ''; }
         } catch (err) {
-          console.error(err);
+          console.error('❌ [DEBUG] Error caught:', err);
+          console.error('❌ [DEBUG] Error stack:', err.stack);
           showAlert('error', err.message || 'Error enviando la reseña. Intenta nuevamente.');
         } finally {
+          console.log('🔵 [DEBUG] Finally block - re-enabling form');
           if (submitBtn) submitBtn.disabled = false;
           if (loading) loading.style.display = 'none';
         }

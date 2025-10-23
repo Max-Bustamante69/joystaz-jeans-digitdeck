@@ -35,10 +35,11 @@
       {% if has_mobile_video %}
         <video
           class="h-full w-auto object-cover lg:hidden"
+          autoplay
           muted
           loop
           playsinline
-          preload="metadata"
+          preload="auto"
           data-video-element
         >
           {% if slide.video_mobile.sources %}
@@ -56,10 +57,11 @@
       {% if has_desktop_video %}
         <video
           class="h-full w-auto object-cover hidden lg:block"
+          autoplay
           muted
           loop
           playsinline
-          preload="metadata"
+          preload="auto"
           data-video-element
         >
           {% if slide.video_desktop.sources %}
@@ -77,10 +79,11 @@
       {% if slide.video and has_mobile_video == false and has_desktop_video == false %}
         <video
           class="h-full w-auto object-cover"
+          autoplay
           muted
           loop
           playsinline
-          preload="metadata"
+          preload="auto"
           data-video-element
         >
           {% if slide.video.sources %}

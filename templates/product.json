@@ -88,7 +88,8 @@
     "product_reviews_section": {
       "type": "product-reviews",
       "settings": {
-        "reviews_api_url": "http://localhost:3001/api/reviews",
+        "reviews_api_url": "https://retail-orbit-reviews.newurbanisaf.workers.dev/",
+        "review_api_key": "R3views-2025-Secret",
         "show_review_form": true,
         "write_review_text": "Escribe una Reseña"
       }

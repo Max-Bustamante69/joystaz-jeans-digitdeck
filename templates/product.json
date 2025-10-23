@@ -90,7 +90,7 @@
       "settings": {
         "reviews_api_url": "http://localhost:3001/api/reviews",
         "show_review_form": true,
-        "write_review_text": "Write a Review"
+        "write_review_text": "Escribe una Reseña"
       }
     },
     "related_collections_carousel_1": {

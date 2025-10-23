@@ -54,22 +54,22 @@
         "benefit_1": {
           "type": "benefit_item",
           "settings": {
-            "title": "Double The Softness Of Cotton",
-            "description": "<p>Your refuge for skin wellbeing—hydrating, enhancing, and protecting every day.</p>"
+            "title": "100 días de tranquilidad",
+            "description": "<p>Tienes hasta 100 días de garantía por defectos de fábrica. Es la más extensa del mercado para que compres con total confianza.</p>"
           }
         },
         "benefit_2": {
           "type": "benefit_item",
           "settings": {
-            "title": "Comfortable All Day",
-            "description": "<p>Experience unmatched comfort that lasts throughout your entire day.</p>"
+            "title": "Tú decides sin presión",
+            "description": "<p>Puedes devolver tu compra hasta 45 días después. El primer cambio es completamente gratis. Así de fácil.</p>"
           }
         },
         "benefit_3": {
           "type": "benefit_item",
           "settings": {
-            "title": "Premium Quality",
-            "description": "<p>Made with the finest materials and attention to detail.</p>"
+            "title": "Siempre hablamos contigo",
+            "description": "<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte.” y aquí al final de esta sección poner un icono- pop up- hipervínculo para escribir a whatsapp si tienes dudas.</p>"
           }
         }
       },
@@ -79,8 +79,8 @@
         "benefit_3"
       ],
       "settings": {
-        "title": "Goodbye To Discomfort",
-        "subtitle": "Premium Quality",
+        "title": "Beneficios que te dan tranquilidad",
+        "subtitle": "COMPRA CON CONFIANZA",
         "layout": "benefits-left",
         "image_count": "1"
       }

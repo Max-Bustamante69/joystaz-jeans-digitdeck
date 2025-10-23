@@ -1,7 +1,22 @@
 {% assign slide_image = slide.image_url | default: slide.image %}
 {% assign is_video = false %}
-{% if slide.media_type == 'video' and slide.video %}
-  {% assign is_video = true %}
+{% assign has_mobile_video = false %}
+{% assign has_desktop_video = false %}
+
+{% comment %} Check for new mobile/desktop video fields {% endcomment %}
+{% if slide.media_type == 'video' %}
+  {% if slide.video_mobile %}
+    {% assign has_mobile_video = true %}
+    {% assign is_video = true %}
+  {% endif %}
+  {% if slide.video_desktop %}
+    {% assign has_desktop_video = true %}
+    {% assign is_video = true %}
+  {% endif %}
+  {% comment %} Fallback to legacy video field {% endcomment %}
+  {% if slide.video and has_mobile_video == false and has_desktop_video == false %}
+    {% assign is_video = true %}
+  {% endif %}
 {% endif %}
 
 {% if slide_image or slide.title or slide.description or slide.button_text or is_video %}
@@ -16,23 +31,68 @@
   >
     {% if is_video %}
       <!-- Video Slide -->
-      <video
-        class="h-full w-auto object-cover"
-        muted
-        loop
-        playsinline
-        preload="metadata"
-        data-video-element
-      >
-        {% if slide.video.sources %}
-          {% for source in slide.video.sources %}
-            <source src="{{ source.url }}" type="{{ source.mime_type }}">
-          {% endfor %}
-        {% else %}
-          <source src="{{ slide.video | file_url }}" type="video/mp4">
-        {% endif %}
-        Your browser does not support the video tag.
-      </video>
+      {% comment %} Mobile Video (hidden on desktop) {% endcomment %}
+      {% if has_mobile_video %}
+        <video
+          class="h-full w-auto object-cover lg:hidden"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          data-video-element
+        >
+          {% if slide.video_mobile.sources %}
+            {% for source in slide.video_mobile.sources %}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {% endfor %}
+          {% else %}
+            <source src="{{ slide.video_mobile | file_url }}" type="video/mp4">
+          {% endif %}
+          Your browser does not support the video tag.
+        </video>
+      {% endif %}
+
+      {% comment %} Desktop Video (hidden on mobile) {% endcomment %}
+      {% if has_desktop_video %}
+        <video
+          class="h-full w-auto object-cover hidden lg:block"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          data-video-element
+        >
+          {% if slide.video_desktop.sources %}
+            {% for source in slide.video_desktop.sources %}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {% endfor %}
+          {% else %}
+            <source src="{{ slide.video_desktop | file_url }}" type="video/mp4">
+          {% endif %}
+          Your browser does not support the video tag.
+        </video>
+      {% endif %}
+
+      {% comment %} Legacy single video (shown when mobile/desktop not specified) {% endcomment %}
+      {% if slide.video and has_mobile_video == false and has_desktop_video == false %}
+        <video
+          class="h-full w-auto object-cover"
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          data-video-element
+        >
+          {% if slide.video.sources %}
+            {% for source in slide.video.sources %}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {% endfor %}
+          {% else %}
+            <source src="{{ slide.video | file_url }}" type="video/mp4">
+          {% endif %}
+          Your browser does not support the video tag.
+        </video>
+      {% endif %}
     {% elsif slide_image %}
       <!-- Image Slide -->
       {% if slide.image_url %}

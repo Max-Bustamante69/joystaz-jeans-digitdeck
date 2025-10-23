@@ -17,7 +17,7 @@
           {% case block.type %}
             {% when 'slide' %}
               <div class="swiper-slide ">
-                {% render 'hero-slide', slide: block.settings %}
+                {% render 'hero-slide', slide: block.settings, section: section %}
               </div>
           {% endcase %}
         {% endfor %}
@@ -750,6 +750,23 @@
       "id": "show_bullets",
       "label": "Show Bullet Navigation",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Default Button"
+    },
+    {
+      "type": "text",
+      "id": "default_button_text",
+      "label": "Default Button Text",
+      "default": "Ver Zapatos",
+      "info": "Used when slide-specific button text is empty."
+    },
+    {
+      "type": "url",
+      "id": "default_button_link",
+      "label": "Default Button Link",
+      "info": "Used when slide-specific button link is empty."
     }
   ],
   "blocks": [

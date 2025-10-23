@@ -2,6 +2,14 @@
 {% assign is_video = false %}
 {% assign has_mobile_video = false %}
 {% assign has_desktop_video = false %}
+{% assign fallback_button_text = section.settings.default_button_text | default: '' %}
+{% assign fallback_button_link = section.settings.default_button_link | default: '' %}
+{% assign button_text = slide.button_text | default: fallback_button_text %}
+{% assign button_link_setting = slide.button_link | default: fallback_button_link %}
+{% assign button_link = '' %}
+{% if button_link_setting != blank %}
+  {% assign button_link = button_link_setting | link_url %}
+{% endif %}
 
 {% comment %} Check for new mobile/desktop video fields {% endcomment %}
 {% if slide.media_type == 'video' %}
@@ -19,7 +27,7 @@
   {% endif %}
 {% endif %}
 
-{% if slide_image or slide.title or slide.description or slide.button_text or is_video %}
+{% if slide_image or slide.title or slide.description or button_text or is_video %}
   <div
     class="absolute top-0 z-5 left-0 right-0 bottom-0 bg-gradient-to-t from-black/60 via-transparent to-black/60 pointer-events-none"
   ></div>
@@ -116,7 +124,7 @@
       {% endif %}
     {% endif %}
 
-    {% if slide.title or slide.description or slide.button_text %}
+{% if slide.title or slide.description or button_text %}
       <div
         class="hero-slide-content absolute bottom-8 left-4 lg:left-12 text-white flex flex-col gap-7 z-10  lg:text-left"
       >
@@ -134,9 +142,9 @@
             </p>
           {% endif %}
           </div>
-        {% if slide.button_text and slide.button_link %}
+        {% if button_text != blank and button_link != blank %}
           <a
-            href="{{ slide.button_link }}"
+            href="{{ button_link }}"
             class="
               font-semibold w-fit flex items-center justify-center 
               {{ slide.button_style }}
@@ -144,7 +152,7 @@
           >
             <button>
               <h6 class="capitalize">
-                {{ slide.button_text }}
+                {{ button_text }}
               </h6>
             </button>
           </a>

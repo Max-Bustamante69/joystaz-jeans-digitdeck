@@ -18,7 +18,7 @@
       {% assign total_reviews = reviews.count %}
       {% assign sum_ratings = 0 %}
       {% for r in reviews %}
-        {% assign r_rating = r.rating | default: 0 | plus: 0 %}
+        {% assign r_rating = r.rating_value | default: 0 | plus: 0 %}
         {% assign sum_ratings = sum_ratings | plus: r_rating %}
       {% endfor %}
       {% assign average_rating = sum_ratings | divided_by: total_reviews %}
@@ -29,8 +29,8 @@
       {% assign sum_fit = 0 %}
       {% assign count_fit = 0 %}
       {% for r in reviews %}
-        {% if r.fit_rating %}
-          {% assign sum_fit = sum_fit | plus: r.fit_rating %}
+        {% if r.fit_rating_value %}
+          {% assign sum_fit = sum_fit | plus: r.fit_rating_value %}
           {% assign count_fit = count_fit | plus: 1 %}
         {% endif %}
       {% endfor %}
@@ -68,7 +68,7 @@
                 {% assign current_rating = 6 | minus: i %}
                 {% assign star_count = 0 %}
                 {% for r in reviews %}
-                  {% if r.rating == current_rating %}
+                  {% if r.rating_value == current_rating %}
                     {% assign star_count = star_count | plus: 1 %}
                   {% endif %}
                 {% endfor %}
@@ -179,25 +179,25 @@
                         </div>
                       {% endif %}
 
-                      {% if review.shipping_rating %}
+                      {% if review.shipping_rating_value %}
                         <div class="flex items-center gap-2">
                           <span class="text-gray-500 font-medium">Calificación de envío:</span>
                           <div class="flex items-center gap-1">
                             {% comment %}si el shipping rating es 1 -> renderizar un texto que dice muy malo, 2 -> malo, 3 -> regular, 4 -> bueno, 5 -> muy bueno {% endcomment %}
                             <span class="text-gray-600 text-xs ml-1">
-                              {% if review.shipping_rating == 1 %}
+                              {% if review.shipping_rating_value == 1 %}
                                 Muy malo
-                              {% elsif review.shipping_rating == 2 %}
+                              {% elsif review.shipping_rating_value == 2 %}
                                 Malo
-                              {% elsif review.shipping_rating == 3 %}
+                              {% elsif review.shipping_rating_value == 3 %}
                                 Regular
-                              {% elsif review.shipping_rating == 4 %}
+                              {% elsif review.shipping_rating_value == 4 %}
                                 Bueno
-                              {% elsif review.shipping_rating == 5 %}
+                              {% elsif review.shipping_rating_value == 5 %}
                                 Excelente
                               {% endif %}
                             </span>
-                            <span class="text-gray-600 text-xs ml-1">({{ review.shipping_rating }}/5)</span>
+                            <span class="text-gray-600 text-xs ml-1">({{ review.shipping_rating_value }}/5)</span>
                           </div>
                         </div>
                       {% endif %}
@@ -226,7 +226,7 @@
                 <div class="space-y-2">
                   <!-- Star rating -->
                   {% render 'star-rating',
-                    rating: review.rating,
+                    rating: review.rating_value,
                     size: 'md',
                     color: 'text-[#f3a000]',
                     show_count: false,
@@ -242,7 +242,7 @@
                   {% endif %}
 
                   <!-- Fit evaluation bar -->
-                  {% if review.fit_rating %}
+                  {% if review.fit_rating_value %}
                     <div class="fit-evaluation">
                       <div class="relative">
                         <!-- Fit slider track -->
@@ -257,7 +257,7 @@
                           </div>
 
                           <!-- Active marker - Fixed positioning for 1-5 scale -->
-                          {% assign fit_position = review.fit_rating | minus: 1 | times: 25 %}
+                          {% assign fit_position = review.fit_rating_value | minus: 1 | times: 25 %}
                           <div
                             class="absolute top-1/2 transform -translate-y-1/2 w-2.5 h-2.5 bg-gray-800 rounded-full"
                             style="left: calc({{ fit_position }}% - 8px);"
@@ -287,15 +287,15 @@
                   {% endif %}
 
                   <!-- Media carousel -->
-                  {% if review.image or review.video %}
+                  {% if review.image_gid or review.video_gid %}
                     <div class="review-media-carousel relative w-32 h-40">
                       <div class="swiper review-swiper-{{ forloop.index }}">
                         <div class="swiper-wrapper">
-                          {% if review.image %}
+                          {% if review.image_gid %}
                             <div class="swiper-slide">
                               <div class="w-full h-full bg-gray-100  overflow-hidden">
                                 <img
-                                  src="{{ review.image | image_url: width: 300 }}"
+                                  src="{{ review.image_gid | image_url: width: 300 }}"
                                   alt="Review image"
                                   class="w-full h-full object-cover"
                                   width="128"
@@ -306,81 +306,27 @@
                             </div>
                           {% endif %}
 
-                          {% if review.video %}
+                          {% if review.video_gid %}
                             <div class="swiper-slide">
                               <div class="w-full h-full bg-gray-100  overflow-hidden">
-                                {% if review.video.sources %}
-                                  <video
-                                    controls
-                                    class="w-full h-full object-cover"
-                                    muted
-                                    loop
-                                    playsinline
-                                    preload="metadata"
-                                  >
-                                    {% for source in review.video.sources %}
-                                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
-                                    {% endfor %}
-                                    Your browser does not support the video tag.
-                                  </video>
-                                {% elsif review.video.value and review.video.value.sources %}
-                                  <video
-                                    controls
-                                    class="w-full h-full object-cover"
-                                    muted
-                                    loop
-                                    playsinline
-                                    preload="metadata"
-                                  >
-                                    {% for source in review.video.value.sources %}
-                                      <source src="{{ source.url }}" type="{{ source.mime_type }}">
-                                    {% endfor %}
-                                    Your browser does not support the video tag.
-                                  </video>
-                                {% elsif review.video contains 'gid://shopify/Video/' %}
-                                  <video
-                                    controls
-                                    class="w-full h-full object-cover"
-                                    muted
-                                    loop
-                                    playsinline
-                                    preload="metadata"
-                                  >
-                                    <source src="{{ review.video | file_url }}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                  </video>
-                                {% elsif review.video contains '.mp4' %}
-                                  <video
-                                    controls
-                                    class="w-full h-full object-cover"
-                                    muted
-                                    loop
-                                    playsinline
-                                    preload="metadata"
-                                  >
-                                    <source src="{{ review.video }}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                  </video>
-                                {% else %}
-                                  <div class="w-full h-full flex items-center justify-center bg-gray-800 ">
-                                    <a
-                                      href="{{ review.video }}"
-                                      target="_blank"
-                                      rel="noopener"
-                                      class="text-white text-center p-2"
-                                    >
-                                      <div class="text-2xl mb-1">▶️</div>
-                                      <div class="text-xs">Ver video</div>
-                                    </a>
-                                  </div>
-                                {% endif %}
+                                <video
+                                  controls
+                                  class="w-full h-full object-cover"
+                                  muted
+                                  loop
+                                  playsinline
+                                  preload="metadata"
+                                >
+                                  <source src="{{ review.video_gid | file_url }}" type="video/mp4">
+                                  Your browser does not support the video tag.
+                                </video>
                               </div>
                             </div>
                           {% endif %}
                         </div>
 
                         <!-- Navigation arrows -->
-                        {% if review.image and review.video %}
+                        {% if review.image_gid and review.video_gid %}
                           <div class="swiper-button-next review-next-{{ forloop.index }}"></div>
                           <div class="swiper-button-prev review-prev-{{ forloop.index }}"></div>
                         {% endif %}
@@ -582,14 +528,7 @@
 
     function initializeReviewForm() {
       const form = document.getElementById('review-form-{{ product.id }}');
-      console.log('🔵 [DEBUG] initializeReviewForm called, form found:', !!form);
-      if (!form) {
-        console.error('❌ [DEBUG] Review form not found! ID:', 'review-form-{{ product.id }}');
-        return;
-      }
-
-      const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
-      console.log('🔵 [DEBUG] Review form initialized with API URL:', API_BASE_URL);
+      if (!form) return;
 
       // Set product id
       const productIdInput = form.querySelector('#reviewProductId');
@@ -806,33 +745,58 @@
 
       function showAlert(type, message) {
         if (!alertContainer) return;
-        alertContainer.innerHTML = `<div class="alert ${type === 'success' ? 'alert-success' : 'alert-error'}">${message}</div>`;
+        alertContainer.innerHTML = `<div class="p-3 rounded-md text-sm ${type === 'success' ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-800 border border-red-200'}">${message}</div>`;
+        alertContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function highlightField(fieldName) {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (field) {
+          field.classList.add('border-red-500', 'border-2');
+          field.focus();
+          setTimeout(() => {
+            field.classList.remove('border-red-500', 'border-2');
+          }, 3000);
+        }
       }
 
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        console.log('🔵 [DEBUG] Form submit triggered');
         const fd = new FormData(form);
 
-        console.log('🔵 [DEBUG] FormData:', {
-          sizePurchased: fd.get('sizePurchased'),
-          rating: fd.get('rating'),
-          title: fd.get('title'),
-          body: fd.get('body')
-        });
-
-        if (!fd.get('sizePurchased')) {
-          console.log('❌ [DEBUG] Validation failed: sizePurchased is missing');
-          showAlert('error', 'Por favor selecciona una {{ settings.size_option_label | default: "talla" }} comprada.');
+        // Validate required fields with specific messages
+        if (!fd.get('rating')) {
+          showAlert('error', '⭐ Por favor califica el producto haciendo clic en las estrellas.');
+          document.getElementById('overallRating-{{ product.id }}').scrollIntoView({ behavior: 'smooth', block: 'center' });
           return;
         }
+        if (!fd.get('title')) {
+          showAlert('error', 'Por favor escribe un título para tu reseña.');
+          highlightField('title');
+          return;
+        }
+        if (!fd.get('body')) {
+          showAlert('error', 'Por favor escribe tu reseña (campo obligatorio).');
+          highlightField('body');
+          return;
+        }
+        if (!fd.get('authorName')) {
+          showAlert('error', 'Por favor escribe tu nombre.');
+          highlightField('authorName');
+          return;
+        }
+        if (!fd.get('authorEmail')) {
+          showAlert('error', 'Por favor escribe tu email.');
+          highlightField('authorEmail');
+          return;
+        }
+
         if (submitBtn) submitBtn.disabled = true;
         if (loading) loading.style.display = 'block';
         alertContainer.innerHTML = '';
 
         try {
           const API_BASE_URL = '{{ section.settings.reviews_api_url | default: "http://localhost:3001/api/reviews" }}';
-          console.log('🔵 [DEBUG] API_BASE_URL:', API_BASE_URL);
           if (API_BASE_URL) {
             // Create JSON payload with all form data
             const payload = {
@@ -887,13 +851,6 @@
               payload.video = await fileToBase64(vid);
             }
 
-            // Debug: Log payload (without huge media)
-            console.log('🔵 [DEBUG] Review payload:', {
-              ...payload,
-              image: payload.image ? '[base64 image]' : undefined,
-              video: payload.video ? '[base64 video]' : undefined,
-            });
-
             // Send JSON payload
             const headers = {
               'Content-Type': 'application/json'
@@ -902,23 +859,13 @@
               {% endif %}
             };
 
-            console.log('🔵 [DEBUG] Headers:', headers);
-            console.log('🔵 [DEBUG] About to send fetch request...');
-
             const res = await fetch(API_BASE_URL, {
               method: 'POST',
               headers,
               body: JSON.stringify(payload)
             });
 
-            console.log('✅ [DEBUG] Fetch response received:', {
-              status: res.status,
-              ok: res.ok,
-              statusText: res.statusText
-            });
-
             const result = await res.json().catch(() => ({}));
-            console.log('🔵 [DEBUG] Response JSON:', result);
 
             if (!res.ok || result.success === false) {
               throw new Error(result.message || 'Failed to submit review');
@@ -947,11 +894,9 @@
           if (imgFb) { imgFb.className = 'mt-2 text-sm hidden'; imgFb.textContent = ''; }
           if (vidFb) { vidFb.className = 'mt-2 text-sm hidden'; vidFb.textContent = ''; }
         } catch (err) {
-          console.error('❌ [DEBUG] Error caught:', err);
-          console.error('❌ [DEBUG] Error stack:', err.stack);
+          console.error('Error submitting review:', err);
           showAlert('error', err.message || 'Error enviando la reseña. Intenta nuevamente.');
         } finally {
-          console.log('🔵 [DEBUG] Finally block - re-enabling form');
           if (submitBtn) submitBtn.disabled = false;
           if (loading) loading.style.display = 'none';
         }

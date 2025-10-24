@@ -69,7 +69,7 @@
           "type": "benefit_item",
           "settings": {
             "title": "Siempre hablamos contigo",
-            "description": "<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte.” y aquí al final de esta sección poner un icono- pop up- hipervínculo para escribir a whatsapp si tienes dudas.</p>"
+            "description": "<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte.</p>"
           }
         }
       },

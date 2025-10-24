@@ -23,7 +23,7 @@
             "title": "Encuentra el Par Perfecto sin Perder Tiempo",
             "description": "Olvídate de buscar en mil tiendas: aquí tienes las mejores marcas en un solo lugar, entregas rápidas y precios justos. Siempre stock actualizado, variedad para todos los estilos y atención que te resuelve en minutos.",
             "button_text": "Ver Zapatos",
-            "button_link": "shopify://collections",
+            "button_link": "shopify://collections/all",
             "button_style": "underline  border-none text-sm"
           }
         }
@@ -37,7 +37,9 @@
         "animation_duration": 1000,
         "pause_on_hover": true,
         "show_navigation": false,
-        "show_bullets": true
+        "show_bullets": true,
+        "default_button_text": "Ver Zapatos",
+        "default_button_link": ""
       }
     },
     "product_carousel_WRxntn": {

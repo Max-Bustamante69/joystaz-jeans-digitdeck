@@ -110,7 +110,7 @@
         <img
           src="{{ slide.image_url }}"
           alt="{{ slide.title | escape }}"
-          class="h-dvh w-dvw object-cover"
+          class="w-full h-full object-cover"
           width="1920"
           height="1080"
           loading="lazy"
@@ -119,7 +119,7 @@
         {{
           slide.image
           | image_url: width: 1920
-          | image_tag: class: 'h-dvh w-dvw object-cover', alt: slide.title, loading: 'lazy', width: 1920, height: 1080
+          | image_tag: class: 'w-full h-full object-cover', alt: slide.title, loading: 'lazy', width: 1920, height: 1080
         }}
       {% endif %}
     {% endif %}

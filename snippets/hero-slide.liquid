@@ -49,6 +49,7 @@
           playsinline
           preload="auto"
           data-video-element
+          onloadedmetadata="this.play().catch(e => console.log('Mobile video autoplay prevented:', e))"
         >
           {% if slide.video_mobile.sources %}
             {% for source in slide.video_mobile.sources %}
@@ -71,6 +72,7 @@
           playsinline
           preload="auto"
           data-video-element
+          onloadedmetadata="this.play().catch(e => console.log('Desktop video autoplay prevented:', e))"
         >
           {% if slide.video_desktop.sources %}
             {% for source in slide.video_desktop.sources %}
@@ -93,6 +95,7 @@
           playsinline
           preload="auto"
           data-video-element
+          onloadedmetadata="this.play().catch(e => console.log('Legacy video autoplay prevented:', e))"
         >
           {% if slide.video.sources %}
             {% for source in slide.video.sources %}
@@ -126,18 +129,18 @@
 
 {% if slide.title or slide.description or button_text %}
       <div
-        class="hero-slide-content absolute bottom-8 left-4 lg:left-12 text-white flex flex-col gap-7 z-10  lg:text-left"
+        class="hero-slide-content absolute inset-x-0 bottom-8 px-4 lg:px-24 text-white flex flex-col gap-7 z-10 text-left"
       >
-      <div class="flex flex-col gap-3">
+      <div class="hero-slide-text flex flex-col gap-3 max-w-full lg:max-w-4xl">
 
         {% if slide.title %}
-          <h1>
+          <h1 class="text-shadow">
             {{ slide.title }}
             </h1>
           {% endif %}
-          
+
           {% if slide.description %}
-            <p class="body text-white/90 text-balance lg:text-left max-w-md text-shadow">
+            <p class="body text-white/90 text-shadow">
             {{ slide.description }}
             </p>
           {% endif %}
@@ -146,7 +149,7 @@
           <a
             href="{{ button_link }}"
             class="
-              font-semibold w-fit flex items-center justify-center 
+              font-semibold w-fit flex items-center justify-center
               {{ slide.button_style }}
             "
           >

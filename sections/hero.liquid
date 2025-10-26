@@ -54,6 +54,71 @@
     // Check if any slide has a video
     const hasVideoSlides = heroElement.querySelectorAll('[data-video-slide="true"]').length > 0;
     const autoplayDuration = {{ section.settings.autoplay_duration | default: 3000 }};
+    const heroVideos = Array.from(heroElement.querySelectorAll('[data-video-element]'));
+
+    const requestVideoInteraction = (video) => {
+      const resumePlayback = () => {
+        video.play().catch(() => {});
+        window.removeEventListener('pointerdown', resumePlayback);
+        window.removeEventListener('touchstart', resumePlayback);
+      };
+
+      window.addEventListener('pointerdown', resumePlayback, { once: true });
+      window.addEventListener('touchstart', resumePlayback, { once: true });
+    };
+
+    const ensureVideoAutoplay = (video) => {
+      if (!video) return;
+
+      video.muted = true;
+      video.setAttribute('muted', 'muted');
+      video.playsInline = true;
+      video.setAttribute('playsinline', '');
+      video.autoplay = true;
+      video.setAttribute('autoplay', 'autoplay');
+
+      const tryPlay = () => {
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') {
+          playPromise.catch(() => requestVideoInteraction(video));
+        }
+      };
+
+      if (video.readyState >= 2) {
+        tryPlay();
+      } else {
+        const onLoadedData = () => {
+          video.removeEventListener('loadeddata', onLoadedData);
+          tryPlay();
+        };
+        video.addEventListener('loadeddata', onLoadedData);
+      }
+    };
+
+    const ensureAllHeroVideosPlaying = () => {
+      heroVideos.forEach((video) => {
+        if (video.paused || video.currentTime === 0) {
+          ensureVideoAutoplay(video);
+        }
+      });
+    };
+
+    const getVisibleVideo = (slide) => {
+      if (!slide) return null;
+      const videos = Array.from(slide.querySelectorAll('video'));
+      if (!videos.length) return null;
+      const visibleVideo = videos.find((vid) => window.getComputedStyle(vid).display !== 'none');
+      return visibleVideo || videos[0];
+    };
+
+    heroVideos.forEach((video) => ensureVideoAutoplay(video));
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        ensureAllHeroVideosPlaying();
+      }
+    });
+    window.addEventListener('focus', ensureAllHeroVideosPlaying);
 
     // Optimized progress controller
     class ProgressController {
@@ -181,7 +246,7 @@
         this.stopSlide();
         
         const slide = heroElement.querySelectorAll('.swiper-slide')[slideIndex];
-        const video = slide?.querySelector('video');
+        const video = getVisibleVideo(slide);
         const isVideo = bullet?.dataset.isVideo === 'true';
         
         this.currentSlide = slide;
@@ -200,7 +265,8 @@
           if (pauseIcon) pauseIcon.style.display = 'flex';
           if (playIcon) playIcon.style.display = 'none';
           
-          video.play();
+          video.currentTime = 0;
+          ensureVideoAutoplay(video);
           this.animateVideoProgress(video, bullet, () => {
             this.advanceSlide();
           });
@@ -231,9 +297,10 @@
         this.cleanup();
         
         if (this.currentSlide) {
-          const video = this.currentSlide.querySelector('video');
-          if (video && !video.paused) {
+          const video = getVisibleVideo(this.currentSlide);
+          if (video) {
             video.pause();
+            video.currentTime = 0;
           }
         }
         
@@ -256,7 +323,7 @@
         this.cleanup();
         
         if (this.currentSlide) {
-          const video = this.currentSlide.querySelector('video');
+          const video = getVisibleVideo(this.currentSlide);
           if (video && !video.paused) {
             video.pause();
             
@@ -501,6 +568,42 @@
     width: 100%;
     height: 100%;
     position: relative;
+  }
+
+  .hero .hero-slide-content {
+    width: 100%;
+    pointer-events: auto;
+  }
+
+  .hero .hero-slide-text {
+    width: 100%;
+  }
+
+  @media (min-width: 1024px) {
+    .hero .hero-slide-content {
+      top: 0;
+      bottom: 0;
+      padding-left: clamp(2.5rem, 8vw, 10rem);
+      padding-right: clamp(2.5rem, 8vw, 10rem);
+      padding-top: 0;
+      padding-bottom: 0;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .hero .hero-slide-text {
+      max-width: clamp(32rem, 48vw, 54rem);
+    }
+
+    .hero .hero-slide-text h1 {
+      font-size: clamp(2.75rem, 4vw, 4.75rem);
+      line-height: 1.05;
+    }
+
+    .hero .hero-slide-text p {
+      font-size: clamp(1rem, 1.2vw, 1.35rem);
+      line-height: 1.5;
+    }
   }
 
   /* Ensure responsive video visibility works */

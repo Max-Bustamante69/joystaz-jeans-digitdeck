@@ -37,7 +37,9 @@
         "animation_duration": 1000,
         "pause_on_hover": true,
         "show_navigation": false,
-        "show_bullets": true
+        "show_bullets": true,
+        "default_button_text": "Ver Zapatos",
+        "default_button_link": "shopify://collections/all"
       }
     },
     "product_carousel_WRxntn": {

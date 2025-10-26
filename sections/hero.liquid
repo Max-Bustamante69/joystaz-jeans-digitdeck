@@ -503,12 +503,14 @@
     } else if (slideCount === 1) {
       // Handle single slide case
       heroElement.classList.remove('swiper');
+      heroElement.classList.add('hero-single-slide');
       const wrapper = heroElement.querySelector('.swiper-wrapper');
       const slide = heroElement.querySelector('.swiper-slide');
 
       if (wrapper && slide) {
         wrapper.classList.remove('swiper-wrapper');
         slide.classList.remove('swiper-slide');
+        slide.classList.add('hero-single-slide-item');
         heroElement.appendChild(slide);
         wrapper.remove();
       }
@@ -545,6 +547,18 @@
 
   .hero .swiper {
     position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero .hero-single-slide {
+    width: 100%;
+    height: 100%;
+    flex: 1 1 auto;
+    position: relative;
+  }
+
+  .hero .hero-single-slide-item {
     width: 100%;
     height: 100%;
   }

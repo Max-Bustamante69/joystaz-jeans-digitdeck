@@ -1265,49 +1265,36 @@
 </div>
 
 <!-- Size Guide Modal - OUTSIDE product-page for independent z-index context -->
-<div x-data="{
-  isOpen: false,
-  activeTab: 'hombre',
-  hombreSizes: [
-    { usa: '7', col: '38', cm: '25' },
-    { usa: '7.5', col: '38.5', cm: '25.5' },
-    { usa: '8', col: '39', cm: '26' },
-    { usa: '8.5', col: '39.5', cm: '26.5' },
-    { usa: '9', col: '40', cm: '27' },
-    { usa: '9.5', col: '40.5', cm: '27.5' },
-    { usa: '10', col: '41', cm: '28' },
-    { usa: '10.5', col: '41.5', cm: '28.5' },
-    { usa: '11', col: '42', cm: '29' },
-    { usa: '11.5', col: '42.5', cm: '29.5' },
-    { usa: '12', col: '43', cm: '30' },
-    { usa: '12.5', col: '43.5', cm: '30.5' },
-    { usa: '13', col: '44', cm: '31' }
-  ],
-  mujerSizes: [
-    { usa: '5', col: '35', cm: '22' },
-    { usa: '5.5', col: '35.5', cm: '22.5' },
-    { usa: '6', col: '36', cm: '23' },
-    { usa: '6.5', col: '36.5', cm: '23.5' },
-    { usa: '7', col: '37', cm: '24' },
-    { usa: '7.5', col: '37.5', cm: '24.5' },
-    { usa: '8', col: '38', cm: '25' },
-    { usa: '8.5', col: '38.5', cm: '25.5' },
-    { usa: '9', col: '39', cm: '26' },
-    { usa: '9.5', col: '39.5', cm: '26.5' },
-    { usa: '10', col: '40', cm: '27' }
-  ],
-  get currentSizes() {
-    return this.activeTab === 'hombre' ? this.hombreSizes : this.mujerSizes;
-  },
-  openModal() {
-    this.isOpen = true;
-    document.body.style.overflow = 'hidden';
-  },
-  closeModal() {
-    this.isOpen = false;
-    document.body.style.overflow = '';
-  }
-}" 
+{% comment %} Get product vendor and gender metafield {% endcomment %}
+{% assign product_vendor = product.vendor | downcase %}
+{% assign target_genders = product.metafields.shopify.target_gender.value %}
+{% assign has_masculino = false %}
+{% assign has_femenino = false %}
+{% assign has_ninos = false %}
+
+{% comment %} Check which genders apply to this product {% endcomment %}
+{% if target_genders %}
+  {% for gender in target_genders %}
+    {% assign gender_handle = gender.handle | downcase %}
+    {% if gender_handle contains 'masculino' %}
+      {% assign has_masculino = true %}
+    {% elsif gender_handle contains 'femenino' %}
+      {% assign has_femenino = true %}
+    {% elsif gender_handle contains 'unisex' %}
+      {% assign has_masculino = true %}
+      {% assign has_femenino = true %}
+    {% elsif gender_handle contains 'niño' or gender_handle contains 'nino' or gender_handle contains 'infantil' %}
+      {% assign has_ninos = true %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  {% comment %} If no gender specified, show all tabs {% endcomment %}
+  {% assign has_masculino = true %}
+  {% assign has_femenino = true %}
+  {% assign has_ninos = true %}
+{% endif %}
+
+<div x-data="sizeGuideModal('{{ product_vendor }}', {{ has_masculino | json }}, {{ has_femenino | json }}, {{ has_ninos | json }})"
 @open-size-guide.window="openModal()"
 @keydown.escape.window="isOpen && closeModal()">
   
@@ -1355,24 +1342,37 @@
       <!-- Tabs -->
       <div class="flex border-b bg-white sticky top-[60px] lg:top-0 lg:static z-10">
         <button
+          x-show="showHombre"
           @click="activeTab = 'hombre'"
           type="button"
-          :class="activeTab === 'hombre' 
-            ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900' 
+          :class="activeTab === 'hombre'
+            ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           class="flex-1 py-3 sm:py-4 px-4 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base"
         >
           HOMBRE
         </button>
         <button
+          x-show="showMujer"
           @click="activeTab = 'mujer'"
           type="button"
-          :class="activeTab === 'mujer' 
-            ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900' 
+          :class="activeTab === 'mujer'
+            ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900'
             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
           class="flex-1 py-3 sm:py-4 px-4 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base"
         >
           MUJER
+        </button>
+        <button
+          x-show="showNinos"
+          @click="activeTab = 'ninos'"
+          type="button"
+          :class="activeTab === 'ninos'
+            ? 'bg-gray-100 text-gray-900 border-b-2 border-gray-900'
+            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+          class="flex-1 py-3 sm:py-4 px-4 sm:px-6 text-center font-medium transition-colors text-sm sm:text-base"
+        >
+          NIÑOS
         </button>
       </div>
 
@@ -2605,6 +2605,367 @@
           }
         });
       },
+    };
+  }
+
+  // Size Guide Modal Function
+  function sizeGuideModal(vendor, showHombre, showMujer, showNinos) {
+    return {
+      isOpen: false,
+      activeTab: showHombre ? 'hombre' : (showMujer ? 'mujer' : 'ninos'),
+      vendor: vendor,
+      showHombre: showHombre,
+      showMujer: showMujer,
+      showNinos: showNinos,
+
+      get currentSizes() {
+        const sizeData = this.getSizeDataForVendor();
+        if (this.activeTab === 'hombre') {
+          return sizeData.hombre || [];
+        } else if (this.activeTab === 'mujer') {
+          return sizeData.mujer || [];
+        } else if (this.activeTab === 'ninos') {
+          return sizeData.ninos || [];
+        }
+        return [];
+      },
+
+      getSizeDataForVendor() {
+        // Generic sizes as fallback
+        const genericSizes = {
+          hombre: [
+            { usa: '7', col: '38', cm: '25' },
+            { usa: '7.5', col: '38.5', cm: '25.5' },
+            { usa: '8', col: '39', cm: '26' },
+            { usa: '8.5', col: '39.5', cm: '26.5' },
+            { usa: '9', col: '40', cm: '27' },
+            { usa: '9.5', col: '40.5', cm: '27.5' },
+            { usa: '10', col: '41', cm: '28' },
+            { usa: '10.5', col: '41.5', cm: '28.5' },
+            { usa: '11', col: '42', cm: '29' },
+            { usa: '11.5', col: '42.5', cm: '29.5' },
+            { usa: '12', col: '43', cm: '30' },
+            { usa: '12.5', col: '43.5', cm: '30.5' },
+            { usa: '13', col: '44', cm: '31' }
+          ],
+          mujer: [
+            { usa: '5', col: '35', cm: '22' },
+            { usa: '5.5', col: '35.5', cm: '22.5' },
+            { usa: '6', col: '36', cm: '23' },
+            { usa: '6.5', col: '36.5', cm: '23.5' },
+            { usa: '7', col: '37', cm: '24' },
+            { usa: '7.5', col: '37.5', cm: '24.5' },
+            { usa: '8', col: '38', cm: '25' },
+            { usa: '8.5', col: '38.5', cm: '25.5' },
+            { usa: '9', col: '39', cm: '26' },
+            { usa: '9.5', col: '39.5', cm: '26.5' },
+            { usa: '10', col: '40', cm: '27' }
+          ],
+          ninos: [
+            { usa: '10.5C', col: '27', cm: '16.5' },
+            { usa: '11C', col: '28', cm: '17' },
+            { usa: '11.5C', col: '28.5', cm: '17.5' },
+            { usa: '12C', col: '29', cm: '18' },
+            { usa: '12.5C', col: '30', cm: '18.5' },
+            { usa: '13C', col: '31', cm: '19' },
+            { usa: '1Y', col: '32', cm: '20' },
+            { usa: '1.5Y', col: '33', cm: '20.5' },
+            { usa: '2Y', col: '33.5', cm: '21' },
+            { usa: '2.5Y', col: '34', cm: '21.5' },
+            { usa: '3Y', col: '35', cm: '22' },
+            { usa: '3.5Y', col: '35.5', cm: '22.5' },
+            { usa: '4Y', col: '36', cm: '23' },
+            { usa: '4.5Y', col: '36.5', cm: '23.5' },
+            { usa: '5Y', col: '37.5', cm: '24' },
+            { usa: '5.5Y', col: '38', cm: '24.5' },
+            { usa: '6Y', col: '38.5', cm: '25' },
+            { usa: '6.5Y', col: '39', cm: '25.5' },
+            { usa: '7Y', col: '40', cm: '26' }
+          ]
+        };
+
+        // Brand-specific sizes
+        const brandSizes = {
+          'nike': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '5C', col: '21', cm: '11' },
+              { usa: '6C', col: '22', cm: '12' },
+              { usa: '7C', col: '23.5', cm: '13' },
+              { usa: '8C', col: '25', cm: '14' },
+              { usa: '9C', col: '26', cm: '15' },
+              { usa: '10C', col: '27', cm: '16' },
+              { usa: '10.5C', col: '27.5', cm: '16.5' },
+              { usa: '11C', col: '28', cm: '17' },
+              { usa: '11.5C', col: '28.5', cm: '17.5' },
+              { usa: '12C', col: '29.5', cm: '18' },
+              { usa: '12.5C', col: '30', cm: '18.5' },
+              { usa: '13C', col: '31', cm: '19' },
+              { usa: '13.5C', col: '31.5', cm: '19.5' },
+              { usa: '1Y', col: '32', cm: '20' },
+              { usa: '1.5Y', col: '33', cm: '20.5' },
+              { usa: '2Y', col: '33.5', cm: '21' },
+              { usa: '2.5Y', col: '34', cm: '21.5' },
+              { usa: '3Y', col: '35', cm: '22' },
+              { usa: '3.5Y', col: '35.5', cm: '22.5' },
+              { usa: '4Y', col: '36', cm: '23' },
+              { usa: '4.5Y', col: '36.5', cm: '23.5' },
+              { usa: '5Y', col: '37.5', cm: '23.5' },
+              { usa: '5.5Y', col: '38', cm: '24' },
+              { usa: '6Y', col: '38.5', cm: '24' },
+              { usa: '6.5Y', col: '39', cm: '24.5' },
+              { usa: '7Y', col: '40', cm: '25' }
+            ]
+          },
+          'adidas': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '1k', col: '16', cm: '8.1' },
+              { usa: '2k', col: '17', cm: '9' },
+              { usa: '3k', col: '18', cm: '9.8' },
+              { usa: '4k', col: '19', cm: '10.6' },
+              { usa: '5K', col: '20', cm: '11.5' },
+              { usa: '5.5K', col: '21', cm: '12.3' },
+              { usa: '6K', col: '22', cm: '12.8' },
+              { usa: '6.5K', col: '23', cm: '13.2' },
+              { usa: '7K', col: '23.5', cm: '13.6' },
+              { usa: '7.5K', col: '24', cm: '14' },
+              { usa: '8K', col: '25', cm: '14.5' },
+              { usa: '8.5K', col: '25.5', cm: '14.9' },
+              { usa: '9K', col: '26', cm: '15.3' },
+              { usa: '9.5K', col: '26.5', cm: '15.7' },
+              { usa: '10K', col: '27', cm: '16.1' },
+              { usa: '10.5K', col: '28', cm: '16.6' },
+              { usa: '11K', col: '28.5', cm: '17' },
+              { usa: '11.5K', col: '29', cm: '17.4' },
+              { usa: '12K', col: '30', cm: '17.8' },
+              { usa: '12.5K', col: '30.5', cm: '18.3' },
+              { usa: '13K', col: '31', cm: '18.7' },
+              { usa: '13.5K', col: '31.5', cm: '19.1' },
+              { usa: '1', col: '32', cm: '19.5' },
+              { usa: '1.5', col: '33', cm: '20' },
+              { usa: '2', col: '33.5', cm: '20.4' },
+              { usa: '2.5', col: '34', cm: '20.8' },
+              { usa: '3', col: '35', cm: '21.2' },
+              { usa: '3.5', col: '35.5', cm: '21.6' },
+              { usa: '4', col: '36', cm: '22.1' },
+              { usa: '4.5', col: '36.5', cm: '22.5' },
+              { usa: '5', col: '37', cm: '22.9' },
+              { usa: '5.5', col: '38', cm: '23.3' },
+              { usa: '6', col: '38.5', cm: '23.8' },
+              { usa: '6.5', col: '39', cm: '24.2' },
+              { usa: '7', col: '40', cm: '24.6' },
+              { usa: '7.5', col: '40.5', cm: '25' }
+            ]
+          },
+          'puma': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '1k', col: '16', cm: '8.1' },
+              { usa: '2k', col: '17', cm: '9' },
+              { usa: '3k', col: '18', cm: '9.8' },
+              { usa: '4k', col: '19', cm: '10.6' },
+              { usa: '5K', col: '20', cm: '11.5' },
+              { usa: '5.5K', col: '21', cm: '12.3' },
+              { usa: '6K', col: '22', cm: '12.8' },
+              { usa: '6.5K', col: '23', cm: '13.2' },
+              { usa: '7K', col: '23.5', cm: '13.6' },
+              { usa: '7.5K', col: '24', cm: '14' },
+              { usa: '8K', col: '25', cm: '14.5' },
+              { usa: '8.5K', col: '25.5', cm: '14.9' },
+              { usa: '9K', col: '26', cm: '15.3' },
+              { usa: '9.5K', col: '26.5', cm: '15.7' },
+              { usa: '10K', col: '27', cm: '16.1' },
+              { usa: '10.5K', col: '28', cm: '16.6' },
+              { usa: '11K', col: '28.5', cm: '17' },
+              { usa: '11.5K', col: '29', cm: '17.4' },
+              { usa: '12K', col: '30', cm: '17.8' },
+              { usa: '12.5K', col: '30.5', cm: '18.3' },
+              { usa: '13K', col: '31', cm: '18.7' },
+              { usa: '13.5K', col: '31.5', cm: '19.1' },
+              { usa: '1', col: '32', cm: '19.5' },
+              { usa: '1.5', col: '33', cm: '20' },
+              { usa: '2', col: '33.5', cm: '20.4' },
+              { usa: '2.5', col: '34', cm: '20.8' },
+              { usa: '3', col: '35', cm: '21.2' },
+              { usa: '3.5', col: '35.5', cm: '21.6' },
+              { usa: '4', col: '36', cm: '22.1' },
+              { usa: '4.5', col: '36.5', cm: '22.5' },
+              { usa: '5', col: '37', cm: '22.9' },
+              { usa: '5.5', col: '38', cm: '23.3' },
+              { usa: '6', col: '38.5', cm: '23.8' },
+              { usa: '6.5', col: '39', cm: '24.2' },
+              { usa: '7', col: '40', cm: '24.6' },
+              { usa: '7.5', col: '40.5', cm: '25' }
+            ]
+          },
+          'converse': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '2', col: '18', cm: '10' },
+              { usa: '3', col: '19', cm: '11' },
+              { usa: '4', col: '20', cm: '11.5' },
+              { usa: '5', col: '21', cm: '12.5' },
+              { usa: '6', col: '22', cm: '13' },
+              { usa: '7', col: '23', cm: '14' },
+              { usa: '8', col: '24', cm: '15' },
+              { usa: '9', col: '25', cm: '15.5' },
+              { usa: '10', col: '26', cm: '16.5' },
+              { usa: '10.5', col: '27', cm: '17' },
+              { usa: '11', col: '28', cm: '17' },
+              { usa: '11.5', col: '28.5', cm: '17.5' },
+              { usa: '12', col: '29', cm: '18' },
+              { usa: '12.5', col: '30', cm: '18.5' },
+              { usa: '13', col: '31', cm: '19' },
+              { usa: '13.5', col: '31.5', cm: '19' },
+              { usa: '1', col: '32', cm: '19.5' },
+              { usa: '1.5', col: '33', cm: '20' },
+              { usa: '2', col: '33.5', cm: '20.5' },
+              { usa: '2.5', col: '34', cm: '21' },
+              { usa: '3', col: '35', cm: '21.5' },
+              { usa: '3.5', col: '35.5', cm: '21.5' },
+              { usa: '4', col: '36', cm: '22' },
+              { usa: '4.5', col: '37', cm: '22.5' },
+              { usa: '5', col: '37.5', cm: '23' },
+              { usa: '5.5', col: '38', cm: '23.5' },
+              { usa: '6', col: '38.5', cm: '24' },
+              { usa: '6.5', col: '39', cm: '24.5' },
+              { usa: '7', col: '40', cm: '25' },
+              { usa: '7.5', col: '40.5', cm: '25.5' }
+            ]
+          },
+          'under armour': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '2K', col: '17.5', cm: '8' },
+              { usa: '3K', col: '18.5', cm: '9' },
+              { usa: '4K', col: '19.5', cm: '10' },
+              { usa: '5K', col: '21', cm: '11' },
+              { usa: '6K', col: '22', cm: '12' },
+              { usa: '7K', col: '23.5', cm: '13' },
+              { usa: '8K', col: '25', cm: '14' },
+              { usa: '9K', col: '26', cm: '15' },
+              { usa: '10K', col: '27', cm: '16' },
+              { usa: '10.5K', col: '27.5', cm: '16.5' },
+              { usa: '11K', col: '28', cm: '17' },
+              { usa: '11.5K', col: '29', cm: '17.5' },
+              { usa: '12K', col: '29.5', cm: '18' },
+              { usa: '12.5K', col: '30', cm: '18.5' },
+              { usa: '13K', col: '31', cm: '19' },
+              { usa: '1', col: '32', cm: '20' },
+              { usa: '1.5', col: '33', cm: '20.5' },
+              { usa: '2', col: '33.5', cm: '21' },
+              { usa: '2.5', col: '34', cm: '21.5' },
+              { usa: '3', col: '35', cm: '22' },
+              { usa: '3.5', col: '35.5', cm: '22.5' },
+              { usa: '4', col: '36', cm: '23' },
+              { usa: '4.5', col: '36.5', cm: '23.5' },
+              { usa: '5', col: '37.5', cm: '24' },
+              { usa: '5.5', col: '38', cm: '24.5' },
+              { usa: '6', col: '38.5', cm: '25' },
+              { usa: '6.5', col: '39', cm: '25.5' },
+              { usa: '7', col: '40', cm: '26' }
+            ]
+          },
+          'reebok': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: [
+              { usa: '1k', col: '16', cm: '8.1' },
+              { usa: '2k', col: '17', cm: '9' },
+              { usa: '3k', col: '18', cm: '9.8' },
+              { usa: '4k', col: '19', cm: '10.6' },
+              { usa: '5K', col: '20', cm: '11.5' },
+              { usa: '5.5K', col: '21', cm: '12.3' },
+              { usa: '6K', col: '22', cm: '12.8' },
+              { usa: '6.5K', col: '23', cm: '13.2' },
+              { usa: '7K', col: '23.5', cm: '13.6' },
+              { usa: '7.5K', col: '24', cm: '14' },
+              { usa: '8K', col: '25', cm: '14.5' },
+              { usa: '8.5K', col: '25.5', cm: '14.9' },
+              { usa: '9K', col: '26', cm: '15.3' },
+              { usa: '9.5K', col: '26.5', cm: '15.7' },
+              { usa: '10K', col: '27', cm: '16.1' },
+              { usa: '10.5', col: '27', cm: '16.5' },
+              { usa: '11', col: '27.5', cm: '17' },
+              { usa: '11.5', col: '28', cm: '17.5' },
+              { usa: '12', col: '29', cm: '18' },
+              { usa: '12.5', col: '30', cm: '18.5' },
+              { usa: '13', col: '30.5', cm: '19' },
+              { usa: '13.5', col: '31', cm: '19.5' },
+              { usa: '1', col: '31.5', cm: '20' },
+              { usa: '1.5', col: '32', cm: '20.5' },
+              { usa: '2', col: '32.5', cm: '21' },
+              { usa: '2.5', col: '33', cm: '21.5' },
+              { usa: '3', col: '34', cm: '22' },
+              { usa: '4', col: '35', cm: '23' },
+              { usa: '4.5', col: '36', cm: '23.3' },
+              { usa: '5', col: '36.5', cm: '23.5' },
+              { usa: '5.5', col: '37', cm: '24' },
+              { usa: '5.5', col: '38', cm: '24.5' },
+              { usa: '6.5', col: '38.5', cm: '24.5' },
+              { usa: '7', col: '39', cm: '25' }
+            ]
+          },
+          'new balance': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'skechers': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'le coq sportif': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'diesel': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'clemont': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'merrel': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'polo': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          },
+          'urban': {
+            hombre: genericSizes.hombre,
+            mujer: genericSizes.mujer,
+            ninos: genericSizes.ninos
+          }
+        };
+
+        return brandSizes[this.vendor] || genericSizes;
+      },
+
+      openModal() {
+        this.isOpen = true;
+        document.body.style.overflow = 'hidden';
+      },
+
+      closeModal() {
+        this.isOpen = false;
+        document.body.style.overflow = '';
+      }
     };
   }
 </script>

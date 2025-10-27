@@ -166,6 +166,32 @@
         total_items: available_count
       %}
 
+      {% comment %} Ver Productos Button {% endcomment %}
+      {% if section.settings.show_view_products_button %}
+        {% assign button_url = '' %}
+        {% case section.settings.product_source %}
+          {% when 'collection' %}
+            {% if section.settings.collection != blank %}
+              {% assign button_url = section.settings.collection.url %}
+            {% endif %}
+          {% when 'collections' %}
+            {% assign button_url = section.settings.view_all_link_collections %}
+          {% else %}
+            {% assign button_url = section.settings.view_all_link %}
+        {% endcase %}
+
+        {% if button_url != blank %}
+          <div class="flex justify-center mt-8 px-4">
+            <a
+              href="{{ button_url }}"
+              class="body-lg font-semibold py-4 px-8 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
+            >
+              {{ section.settings.view_products_button_text | default: 'Ver Productos' }}
+            </a>
+          </div>
+        {% endif %}
+      {% endif %}
+
     {% else %}
       {% comment %} Show message when no products are available {% endcomment %}
       <div class="text-center py-8">
@@ -222,6 +248,24 @@
       "id": "view_all_link_collections",
       "label": "View All Link (Multiple Collections)",
       "info": "Used when multiple collections are selected"
+    },
+    {
+      "type": "header",
+      "content": "Ver Productos Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_products_button",
+      "label": "Show 'Ver Productos' Button",
+      "default": true,
+      "info": "Display a button below the carousel to view all products"
+    },
+    {
+      "type": "text",
+      "id": "view_products_button_text",
+      "label": "Button Text",
+      "default": "Ver Productos",
+      "info": "Text displayed on the button"
     },
     {
       "type": "checkbox",

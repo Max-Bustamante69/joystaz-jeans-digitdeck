@@ -157,16 +157,28 @@
     {% endif %}
 
     <!-- Product Badges -->
-    {% if show_badges and product.tags.size > 0 %}
-      <div class="absolute top-3 left-3 flex gap-1 z-10">
-        {% for tag in product.tags %}
-          {% assign tag_lower = tag | downcase %}
-          {% if tag_lower contains 'nuevo' %}
-            <span class="bg-white/70 backdrop-blur-sm  text-black py-2 px-3 body-xs font-medium">
-              {{- 'nuevo' | upcase -}}
-            </span>
-          {% endif %}
-        {% endfor %}
+    {% if show_badges %}
+      <div class="absolute top-3 left-3 flex flex-col gap-1 z-10">
+        {% comment %} Discount Badge - Black with 50% transparency {% endcomment %}
+        {% if product.compare_at_price > product.price %}
+          {% assign discount_amount = product.compare_at_price | minus: product.price %}
+          {% assign discount_percentage = discount_amount | times: 100.0 | divided_by: product.compare_at_price | round %}
+          <span class="bg-black/50 backdrop-blur-sm text-white py-2 px-3 body-xs font-bold uppercase">
+            -{{ discount_percentage }}%
+          </span>
+        {% endif %}
+
+        {% comment %} New Product Badge - Red {% endcomment %}
+        {% if product.tags.size > 0 %}
+          {% for tag in product.tags %}
+            {% assign tag_lower = tag | downcase %}
+            {% if tag_lower contains 'nuevo' %}
+              <span class="bg-red-600 text-white py-2 px-3 body-xs font-bold uppercase">
+                Nuevo
+              </span>
+            {% endif %}
+          {% endfor %}
+        {% endif %}
       </div>
     {% endif %}
 

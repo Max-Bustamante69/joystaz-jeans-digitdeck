@@ -194,40 +194,257 @@
           </div>
         </div>
 
-        <!-- Categories -->
-        {% if section.settings.show_category_grid %}
-          <div class="py-6 ">
-            <h5 class="mb-4  lg:px-6">
-              {{ section.settings.category_grid_title | default: 'Shop by Category' }}
-            </h5>
+        <!-- Filters Section -->
+        <div class="py-6 px-4 lg:px-6 space-y-6 border-b border-gray-200">
+          <!-- Filter Toggle Button -->
+          <button
+            @click="showFilters = !showFilters"
+            class="w-full flex items-center justify-between py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            <span class="body font-semibold">Filtrar</span>
+            <svg
+              class="w-5 h-5 transition-transform"
+              :class="showFilters ? 'rotate-180' : ''"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
 
-            {% capture categories_content %}
-              {% for collection in section.settings.category_collections %}
-                <div class="swiper-slide">
-                  {% render 'collection-card', category: collection, aspect_ratio: 'portrait' %}
-                </div>
-              {% endfor %}
-            {% endcapture %}
+          <!-- Filters Content -->
+          <div
+            x-show="showFilters"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 -translate-y-2"
+            x-transition:enter-end="opacity-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 translate-y-0"
+            x-transition:leave-end="opacity-0 -translate-y-2"
+            class="space-y-6"
+          >
+            <!-- Estilo Filter -->
+            <div>
+              <button
+                @click="expandedFilter === 'estilo' ? expandedFilter = null : expandedFilter = 'estilo'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Estilo</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'estilo' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'estilo'"
+                x-collapse
+                class="flex flex-wrap gap-2"
+              >
+                <template x-for="estilo in availableEstilos" :key="estilo">
+                  <button
+                    @click="toggleFilter('estilos', estilo)"
+                    class="py-2 px-4 rounded-full border transition-all body-sm"
+                    :class="filters.estilos.includes(estilo) ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                    x-text="estilo"
+                  ></button>
+                </template>
+              </div>
+            </div>
 
-            {% render 'generic-carousel',
-              carousel_id: 'search-categories',
-              carousel_class: 'search-categories-carousel',
-              content: categories_content,
-              show_arrows: false,
-              slides_per_view_mobile: 1.5,
-              slides_per_view_desktop: 2.2,
-              space_between_mobile: 2,
-              space_between_desktop: 4,
-              centered_slides: false,
-              free_mode: true,
-              total_items: section.settings.category_collections.count,
-              padding_left_mobile: 24,
-              padding_right_mobile: 24,
-              padding_left_desktop: 24,
-              padding_right_desktop: 24
-            %}
+            <!-- Marcas Filter -->
+            <div>
+              <button
+                @click="expandedFilter === 'marcas' ? expandedFilter = null : expandedFilter = 'marcas'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Marcas</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'marcas' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'marcas'"
+                x-collapse
+                class="flex flex-wrap gap-2"
+              >
+                <template x-for="marca in availableMarcas" :key="marca">
+                  <button
+                    @click="toggleFilter('marcas', marca)"
+                    class="py-2 px-4 rounded-full border transition-all body-sm"
+                    :class="filters.marcas.includes(marca) ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                    x-text="marca"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Género Filter -->
+            <div>
+              <button
+                @click="expandedFilter === 'genero' ? expandedFilter = null : expandedFilter = 'genero'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Género</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'genero' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'genero'"
+                x-collapse
+                class="flex flex-wrap gap-2"
+              >
+                <template x-for="genero in availableGeneros" :key="genero">
+                  <button
+                    @click="toggleFilter('generos', genero)"
+                    class="py-2 px-4 rounded-full border transition-all body-sm"
+                    :class="filters.generos.includes(genero) ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                    x-text="genero"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Categoría Filter (Ropa/Calzado) -->
+            <div>
+              <button
+                @click="expandedFilter === 'categoria' ? expandedFilter = null : expandedFilter = 'categoria'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Categoría</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'categoria' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'categoria'"
+                x-collapse
+                class="flex flex-wrap gap-2"
+              >
+                <button
+                  @click="toggleFilter('categorias', 'Ropa')"
+                  class="py-2 px-4 rounded-full border transition-all body-sm"
+                  :class="filters.categorias.includes('Ropa') ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                >
+                  Ropa
+                </button>
+                <button
+                  @click="toggleFilter('categorias', 'Calzado')"
+                  class="py-2 px-4 rounded-full border transition-all body-sm"
+                  :class="filters.categorias.includes('Calzado') ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                >
+                  Calzado
+                </button>
+              </div>
+            </div>
+
+            <!-- Color Filter -->
+            <div>
+              <button
+                @click="expandedFilter === 'color' ? expandedFilter = null : expandedFilter = 'color'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Color</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'color' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'color'"
+                x-collapse
+                class="flex flex-wrap gap-2"
+              >
+                <template x-for="color in availableColors" :key="color">
+                  <button
+                    @click="toggleFilter('colores', color)"
+                    class="py-2 px-4 rounded-full border transition-all body-sm"
+                    :class="filters.colores.includes(color) ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                    x-text="color"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Talla Filter -->
+            <div>
+              <button
+                @click="expandedFilter === 'talla' ? expandedFilter = null : expandedFilter = 'talla'"
+                class="w-full flex items-center justify-between mb-3"
+              >
+                <h6 class="body font-semibold">Talla</h6>
+                <svg
+                  class="w-4 h-4 transition-transform"
+                  :class="expandedFilter === 'talla' ? '' : 'rotate-180'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+              <div
+                x-show="expandedFilter === 'talla'"
+                x-collapse
+                class="grid grid-cols-4 gap-2"
+              >
+                <template x-for="talla in availableTallas" :key="talla">
+                  <button
+                    @click="toggleFilter('tallas', talla)"
+                    class="py-2 px-3 rounded-lg border transition-all body-sm text-center"
+                    :class="filters.tallas.includes(talla) ? 'bg-black text-white border-black' : 'bg-white text-black border-gray-300 hover:border-black'"
+                    x-text="talla"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <!-- Filter Action Buttons -->
+            <div class="flex gap-3 pt-4 border-t border-gray-200">
+              <button
+                @click="clearAllFilters()"
+                class="flex-1 py-3 px-6 border border-gray-300 text-black font-semibold rounded-lg hover:bg-gray-50 transition-colors body"
+              >
+                Limpiar
+              </button>
+              <button
+                @click="applyFilters()"
+                class="flex-1 py-3 px-6 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors body"
+              >
+                Aplicar Filtros
+              </button>
+            </div>
           </div>
-        {% endif %}
+        </div>
 
         <!-- Products -->
         {% if section.settings.show_product_carousel %}
@@ -458,11 +675,33 @@
       isOpen: false,
       searchQuery: '',
       searchResults: [],
+      allSearchResults: [], // Store unfiltered results
       matchingCategories: [],
       searchHistory: [],
       isSearching: false,
       searchTimeout: null,
       scrollY: 0, // Store scroll position for drawer
+
+      // Filter UI state
+      showFilters: false,
+      expandedFilter: null,
+
+      // Filter selections
+      filters: {
+        estilos: [],
+        marcas: [],
+        generos: [],
+        categorias: [],
+        colores: [],
+        tallas: []
+      },
+
+      // Available filter options (will be populated from search results)
+      availableEstilos: ['Balocesto', 'Caminata', 'Casual', 'Casual Urbano', 'Casual Lifestyle', 'Clasico', 'Deportivo', 'Entrenamiento', 'Gimnasio', 'Gym', 'Ligero', 'Más Vendidos', 'Outdoor', 'Para Caminar', 'Plataforma', 'Running', 'Running Retro', 'Running Treto', 'Senderismo', 'Streetwear', 'Trail', 'Trail Running', 'Training', 'Urbano', 'Uso Diario', 'Zapatillas Reto'],
+      availableMarcas: ['Nike', 'Adidas', 'Puma', 'Skechers', 'Le Coq Sportif', 'Diesel', 'Clemont', 'Under Armour', 'Converse', 'New Balance', 'Merrel', 'Reebok', 'Polo', 'Urban'],
+      availableGeneros: ['Masculino', 'Femenino', 'Unisex', 'Niños'],
+      availableColors: [],
+      availableTallas: [],
 
       init() {
         this.loadSearchHistory();
@@ -508,10 +747,14 @@
         try {
           // Search for products
           const productsResponse = await fetch(
-            `/search/suggest.json?q=${encodeURIComponent(this.searchQuery)}&resources[type]=product&resources[limit]=20`
+            `/search/suggest.json?q=${encodeURIComponent(this.searchQuery)}&resources[type]=product&resources[limit]=50`
           );
           const productsData = await productsResponse.json();
-          this.searchResults = productsData.resources.results.products || [];
+          this.allSearchResults = productsData.resources.results.products || [];
+          this.searchResults = [...this.allSearchResults];
+
+          // Extract available colors and sizes from results
+          this.extractFilterOptions();
 
           // Search for collections/categories
           const collectionsResponse = await fetch(
@@ -528,10 +771,140 @@
         } catch (error) {
           console.error('Search error:', error);
           this.searchResults = [];
+          this.allSearchResults = [];
           this.matchingCategories = [];
         } finally {
           this.isSearching = false;
         }
+      },
+
+      extractFilterOptions() {
+        // Extract unique colors
+        const colors = new Set();
+        const tallas = new Set();
+
+        this.allSearchResults.forEach(product => {
+          // Extract colors from options
+          if (product.options) {
+            product.options.forEach(option => {
+              if (option.name === 'Color' && option.values) {
+                option.values.forEach(value => colors.add(value));
+              }
+            });
+          }
+
+          // Extract sizes from variants
+          if (product.variants) {
+            product.variants.forEach(variant => {
+              if (variant.option1) tallas.add(variant.option1);
+              if (variant.option2) tallas.add(variant.option2);
+              if (variant.option3) tallas.add(variant.option3);
+            });
+          }
+        });
+
+        this.availableColors = Array.from(colors).sort();
+        this.availableTallas = Array.from(tallas).sort((a, b) => {
+          const numA = parseFloat(a);
+          const numB = parseFloat(b);
+          if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+          return a.localeCompare(b);
+        });
+      },
+
+      toggleFilter(filterType, value) {
+        const filterArray = this.filters[filterType];
+        const index = filterArray.indexOf(value);
+
+        if (index > -1) {
+          filterArray.splice(index, 1);
+        } else {
+          filterArray.push(value);
+        }
+      },
+
+      applyFilters() {
+        if (this.allSearchResults.length === 0) {
+          this.searchResults = [];
+          return;
+        }
+
+        this.searchResults = this.allSearchResults.filter(product => {
+          // Filter by Estilo (tags)
+          if (this.filters.estilos.length > 0) {
+            const productTags = product.tags || [];
+            const hasEstilo = this.filters.estilos.some(estilo =>
+              productTags.some(tag => tag.toLowerCase().includes(estilo.toLowerCase()))
+            );
+            if (!hasEstilo) return false;
+          }
+
+          // Filter by Marca (vendor)
+          if (this.filters.marcas.length > 0) {
+            const hasVendor = this.filters.marcas.some(marca =>
+              product.vendor && product.vendor.toLowerCase().includes(marca.toLowerCase())
+            );
+            if (!hasVendor) return false;
+          }
+
+          // Filter by Género (metafield - we'll need to check if available in API)
+          if (this.filters.generos.length > 0) {
+            // Note: Shopify API might not include metafields in search results
+            // This filter might need adjustment based on actual API response
+            if (product.metafields && product.metafields.target_gender) {
+              const hasGenero = this.filters.generos.includes(product.metafields.target_gender);
+              if (!hasGenero) return false;
+            }
+          }
+
+          // Filter by Categoría (product_type)
+          if (this.filters.categorias.length > 0) {
+            const hasCategoria = this.filters.categorias.some(cat =>
+              product.product_type && product.product_type.toLowerCase().includes(cat.toLowerCase())
+            );
+            if (!hasCategoria) return false;
+          }
+
+          // Filter by Color (options)
+          if (this.filters.colores.length > 0) {
+            let hasColor = false;
+            if (product.options) {
+              product.options.forEach(option => {
+                if (option.name === 'Color' && option.values) {
+                  hasColor = this.filters.colores.some(color => option.values.includes(color));
+                }
+              });
+            }
+            if (!hasColor) return false;
+          }
+
+          // Filter by Talla (variants)
+          if (this.filters.tallas.length > 0) {
+            let hasTalla = false;
+            if (product.variants) {
+              hasTalla = product.variants.some(variant =>
+                this.filters.tallas.includes(variant.option1) ||
+                this.filters.tallas.includes(variant.option2) ||
+                this.filters.tallas.includes(variant.option3)
+              );
+            }
+            if (!hasTalla) return false;
+          }
+
+          return true;
+        });
+      },
+
+      clearAllFilters() {
+        this.filters = {
+          estilos: [],
+          marcas: [],
+          generos: [],
+          categorias: [],
+          colores: [],
+          tallas: []
+        };
+        this.searchResults = [...this.allSearchResults];
       },
 
       clearSearch() {
@@ -745,29 +1118,6 @@
     },
     {
       "type": "header",
-      "content": "Category Grid"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_category_grid",
-      "label": "Show Category Grid",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "category_grid_title",
-      "label": "Category Grid Title",
-      "default": "Shop by Category"
-    },
-    {
-      "type": "collection_list",
-      "id": "category_collections",
-      "label": "Category Collections",
-      "info": "Collections to show in category grid",
-      "limit": 8
-    },
-    {
-      "type": "header",
       "content": "Product Carousel"
     },
     {
@@ -894,8 +1244,6 @@
         "drawer_width": 420,
         "show_featured_tags": true,
         "featured_tags_title": "Popular Categories",
-        "show_category_grid": true,
-        "category_grid_title": "Shop by Category",
         "show_product_carousel": true,
         "product_carousel_title": "Featured Products",
         "product_source": "collection",

@@ -1,4 +1,4 @@
-{% comment %}
+﻿{% comment %}
   Product Benefits Content Snippet
 
   Displays the section title, subtitle, and benefit blocks
@@ -38,7 +38,12 @@
                 {% if block.settings.title != blank %}
                   <h6 class="capitalize">{{ block.settings.title }}</h6>
                 {% endif %}
-                {% if block.settings.description != blank %}
+                {% assign whatsapp_help_text = '<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte</p>' %}
+                {% if forloop.last %}
+                  <div class="body">
+                    {{ whatsapp_help_text }}
+                  </div>
+                {% elsif block.settings.description != blank %}
                   <div class="body">
                     {{ block.settings.description }}
                   </div>

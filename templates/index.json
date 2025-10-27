@@ -142,6 +142,58 @@
         "text_color": "#000000"
       }
     },
+    "video_carousel_E7BbMw": {
+      "type": "video-carousel",
+      "blocks": {
+        "video_slide_UUrmQx": {
+          "type": "video_slide",
+          "settings": {
+            "video_title": "",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        },
+        "video_slide_3nQ9cM": {
+          "type": "video_slide",
+          "settings": {
+            "video_title": "",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        },
+        "video_slide_JHG4hU": {
+          "type": "video_slide",
+          "settings": {
+            "video_title": "",
+            "video_description": "",
+            "video_link": "",
+            "link_text": "Watch Full Video"
+          }
+        }
+      },
+      "block_order": [
+        "video_slide_UUrmQx",
+        "video_slide_3nQ9cM",
+        "video_slide_JHG4hU"
+      ],
+      "name": "Video Carousel",
+      "settings": {
+        "title": "Video Gallery",
+        "subtitle": "Discover our latest content",
+        "slides_mobile": 1,
+        "slides_tablet": 2,
+        "slides_desktop": 3,
+        "slides_large_desktop": 4,
+        "slide_spacing": 20,
+        "loop": true,
+        "show_pagination": true,
+        "autoplay": false,
+        "autoplay_delay": 5000,
+        "transition_speed": 800
+      }
+    },
     "category_grid_tiJRNW": {
       "type": "category-grid",
       "blocks": {
@@ -319,6 +371,7 @@
     "product_carousel_WRxntn",
     "category-grid",
     "image_with_text_gxhgP9",
+    "video_carousel_E7BbMw",
     "category_grid_tiJRNW",
     "quote_E6r7tE",
     "image_with_text_G6betb",

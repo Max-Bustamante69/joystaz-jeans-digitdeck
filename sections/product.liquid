@@ -1710,9 +1710,34 @@
 
       <!-- Content -->
       <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 180px);">
-        <div class="mb-4 text-center">
-          <p class="text-gray-600">Encuentra tu talla perfecta</p>
-        </div>
+        <!-- Custom Title, Description and Button -->
+        {% if section.settings.size_guide_title != blank or section.settings.size_guide_description != blank %}
+          <div class="mb-6 text-center space-y-4">
+            {% if section.settings.size_guide_title != blank %}
+              <h3 class="text-xl font-semibold text-gray-900">
+                {{ section.settings.size_guide_title }}
+              </h3>
+            {% endif %}
+
+            {% if section.settings.size_guide_description != blank %}
+              <p class="body text-gray-600 max-w-2xl mx-auto">
+                {{ section.settings.size_guide_description }}
+              </p>
+            {% endif %}
+
+            {% if section.settings.size_guide_button_text != blank and section.settings.size_guide_button_link != blank %}
+              <div class="pt-2">
+                <a
+                  href="{{ section.settings.size_guide_button_link }}"
+                  class="inline-block body font-semibold py-3 px-6 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
+                  {% if section.settings.size_guide_button_new_tab %}target="_blank" rel="noopener"{% endif %}
+                >
+                  {{ section.settings.size_guide_button_text }}
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
 
         <div class="bg-white rounded-lg overflow-hidden border border-gray-200">
           <h3 class="text-center font-semibold py-4 text-gray-900 border-b">
@@ -3119,6 +3144,40 @@
       "label": "Show Mobile Navigation Arrows",
       "default": false,
       "info": "Display navigation arrows on mobile carousel (disabled by default)"
+    },
+    {
+      "type": "header",
+      "content": "Size Guide Modal Content"
+    },
+    {
+      "type": "text",
+      "id": "size_guide_title",
+      "label": "Size Guide Title",
+      "info": "Optional title displayed at the top of the size guide modal"
+    },
+    {
+      "type": "textarea",
+      "id": "size_guide_description",
+      "label": "Size Guide Description",
+      "info": "Optional description text below the title"
+    },
+    {
+      "type": "text",
+      "id": "size_guide_button_text",
+      "label": "Button Text",
+      "info": "Text for the call-to-action button"
+    },
+    {
+      "type": "url",
+      "id": "size_guide_button_link",
+      "label": "Button Link",
+      "info": "URL for the button (required if button text is provided)"
+    },
+    {
+      "type": "checkbox",
+      "id": "size_guide_button_new_tab",
+      "label": "Open button link in new tab",
+      "default": false
     }
   ],
   "blocks": [

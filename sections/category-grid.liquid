@@ -117,6 +117,19 @@
         </div>
       {% endif %}
     </div>
+
+    {% comment %} Ver Colecciones Button - Below grid, left aligned {% endcomment %}
+    {% if section.settings.show_view_collections_button and section.blocks.size > 0 %}
+      <div class="flex justify-start mt-8 mx-4 lg:mx-12">
+        <a
+          href="{{ section.settings.view_collections_link | default: '/collections' }}"
+          class="body-lg font-semibold py-4 px-8 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
+        >
+          {{ section.settings.view_collections_button_text | default: 'Ver Colecciones' }}
+        </a>
+      </div>
+    {% endif %}
+
   {% else %}
     <div class="text-center py-12">
       <p class="text-gray-500 text-lg">No categories added yet</p>
@@ -190,6 +203,30 @@
       "id": "subtitle",
       "label": "Section Subtitle",
       "info": "Optional subtitle below the main title"
+    },
+    {
+      "type": "header",
+      "content": "Ver Colecciones Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_collections_button",
+      "label": "Show 'Ver Colecciones' Button",
+      "default": true,
+      "info": "Display a button below the category grid to view all collections"
+    },
+    {
+      "type": "text",
+      "id": "view_collections_button_text",
+      "label": "Button Text",
+      "default": "Ver Colecciones",
+      "info": "Text displayed on the button"
+    },
+    {
+      "type": "url",
+      "id": "view_collections_link",
+      "label": "Button Link",
+      "info": "URL for the button. Defaults to /collections if not set"
     },
     {
       "type": "header",

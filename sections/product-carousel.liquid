@@ -166,7 +166,7 @@
         total_items: available_count
       %}
 
-      {% comment %} Ver Productos Button {% endcomment %}
+      {% comment %} Ver Productos Button - Below carousel, left aligned {% endcomment %}
       {% if section.settings.show_view_products_button %}
         {% assign button_url = '' %}
         {% case section.settings.product_source %}
@@ -175,21 +175,23 @@
               {% assign button_url = section.settings.collection.url %}
             {% endif %}
           {% when 'collections' %}
-            {% assign button_url = section.settings.view_all_link_collections %}
+            {% if section.settings.view_all_link_collections != blank %}
+              {% assign button_url = section.settings.view_all_link_collections %}
+            {% endif %}
           {% else %}
-            {% assign button_url = section.settings.view_all_link %}
+            {% if section.settings.view_all_link != blank %}
+              {% assign button_url = section.settings.view_all_link %}
+            {% endif %}
         {% endcase %}
 
-        {% if button_url != blank %}
-          <div class="flex justify-center mt-8 px-4">
-            <a
-              href="{{ button_url }}"
-              class="body-lg font-semibold py-4 px-8 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
-            >
-              {{ section.settings.view_products_button_text | default: 'Ver Productos' }}
-            </a>
-          </div>
-        {% endif %}
+        <div class="flex justify-start mt-8 mx-4 lg:mx-12">
+          <a
+            href="{{ button_url | default: '#' }}"
+            class="body-lg font-semibold py-4 px-8 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
+          >
+            {{ section.settings.view_products_button_text | default: 'Ver Productos' }}
+          </a>
+        </div>
       {% endif %}
 
     {% else %}

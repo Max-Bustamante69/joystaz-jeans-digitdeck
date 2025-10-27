@@ -52,6 +52,8 @@
         "view_all_text": "View All",
         "view_all_link": "",
         "view_all_link_collections": "",
+        "show_view_products_button": true,
+        "view_products_button_text": "Ver Productos",
         "show_arrows": true,
         "product_source": "manual",
         "collection": "best-sellers",
@@ -108,6 +110,9 @@
       "settings": {
         "title": "",
         "subtitle": "",
+        "show_view_collections_button": true,
+        "view_collections_button_text": "Ver Colecciones",
+        "view_collections_link": "",
         "mobile_layout": "column"
       }
     },
@@ -187,6 +192,9 @@
       "settings": {
         "title": "Te recomendamos",
         "subtitle": "",
+        "show_view_collections_button": true,
+        "view_collections_button_text": "Ver Colecciones",
+        "view_collections_link": "",
         "mobile_layout": "slider"
       }
     },
@@ -239,6 +247,8 @@
         "view_all_text": "View All",
         "view_all_link": "",
         "view_all_link_collections": "",
+        "show_view_products_button": true,
+        "view_products_button_text": "Ver Productos",
         "show_arrows": true,
         "product_source": "collection",
         "collection": "hombre",
@@ -261,6 +271,47 @@
         "show_size_selector": true,
         "no_products_message": "No products available at this time."
       }
+    },
+    "faq_RNNDQ7": {
+      "type": "faq",
+      "blocks": {
+        "faq_item_Q4w76M": {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Cuanto tiempo tarda el envio?",
+            "answer": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
+          }
+        },
+        "faq_item_AyHmWM": {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Como funciona la garantia?",
+            "answer": "<p>Ofrecemos una garantía de 30 días en todos nuestros productos. Si no estás satisfecho con tu compra, puedes devolver el producto en su estado original para un reembolso completo o cambio.</p>"
+          }
+        },
+        "faq_item_WXq7GK": {
+          "type": "faq_item",
+          "settings": {
+            "question": "¿Es seguro comprar en la tienda online?",
+            "answer": "<p>Sí, es completamente seguro. Utilizamos tecnología SSL de encriptación para proteger toda la información personal y de pago. Además, nunca almacenamos los datos de tu tarjeta de crédito en nuestros servidores.</p>"
+          }
+        }
+      },
+      "block_order": [
+        "faq_item_Q4w76M",
+        "faq_item_AyHmWM",
+        "faq_item_WXq7GK"
+      ],
+      "name": "FAQ",
+      "settings": {
+        "title": "Preguntas Frecuentes",
+        "background_color": "#ffffff",
+        "title_color": "#1f2937",
+        "question_color": "#1f2937",
+        "answer_color": "#374151",
+        "border_color": "#e5e7eb",
+        "accent_color": "#3B2E10"
+      }
     }
   },
   "order": [
@@ -271,6 +322,7 @@
     "category_grid_tiJRNW",
     "quote_E6r7tE",
     "image_with_text_G6betb",
-    "product_carousel_VNfNQL"
+    "product_carousel_VNfNQL",
+    "faq_RNNDQ7"
   ]
 }

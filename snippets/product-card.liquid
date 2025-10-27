@@ -164,20 +164,23 @@
           {% assign discount_amount = product.compare_at_price | minus: product.price %}
           {% assign discount_percentage = discount_amount | times: 100.0 | divided_by: product.compare_at_price | round %}
           <span class="bg-black/50 backdrop-blur-sm text-white py-2 px-3 body-xs font-bold uppercase">
-            -{{ discount_percentage }}%
+            -{{ discount_percentage }}% OFF
           </span>
         {% endif %}
 
-        {% comment %} New Product Badge - Red {% endcomment %}
-        {% if product.tags.size > 0 %}
-          {% for tag in product.tags %}
-            {% assign tag_lower = tag | downcase %}
-            {% if tag_lower contains 'nuevo' %}
-              <span class="bg-red-600 text-white py-2 px-3 body-xs font-bold uppercase">
-                Nuevo
-              </span>
-            {% endif %}
-          {% endfor %}
+        {% comment %} New Product Badge - Red (based on collection "Nuevos") {% endcomment %}
+        {% assign is_new_product = false %}
+        {% for collection in product.collections %}
+          {% assign collection_handle = collection.handle | downcase %}
+          {% if collection_handle == 'nuevos' %}
+            {% assign is_new_product = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+        {% if is_new_product %}
+          <span class="bg-red-600 text-white py-2 px-3 body-xs font-bold uppercase">
+            Nuevo
+          </span>
         {% endif %}
       </div>
     {% endif %}

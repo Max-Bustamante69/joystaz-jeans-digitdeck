@@ -426,31 +426,39 @@
         </button>
       </div>
 
-      <!-- Mobile Menu Featured Sections Carousel -->
-      {% if section.blocks.size > 0 %}
-        <div class="mb-6 -mx-4">
-          <div
-            class="mobile-featured-carousel overflow-hidden px-4"
-            data-carousel-id="mobile-featured-{{ section.id }}"
-            data-carousel-type="mobile-featured"
-          >
-            <div class="swiper-wrapper ">
-              {% for block in section.blocks %}
-                {% if block.type == 'mobile_card' %}
-                  <div class="swiper-slide" {{ block.shopify_attributes }}>
-                    <div class="w-full">
-                      {% render 'generic-card',
-                        image: block.settings.image,
-                        title: block.settings.title,
-                        link: block.settings.link,
-                        aspect_ratio: block.settings.aspect_ratio,
-                        text_position: block.settings.text_position
-                      %}
-                    </div>
+      <!-- Mobile Menu Featured Collections -->
+      {% if section.settings.show_mobile_collections and section.settings.mobile_featured_collections.count > 0 %}
+        <div class="mb-6">
+          <div class="grid grid-cols-2 gap-3">
+            {% for collection in section.settings.mobile_featured_collections limit: 6 %}
+              <a
+                href="{{ collection.url }}"
+                class="relative overflow-hidden rounded-lg group aspect-[4/5]"
+                @click="toggleMobileMenu()"
+              >
+                {% if collection.image %}
+                  <img
+                    src="{{ collection.image | image_url: width: 400 }}"
+                    alt="{{ collection.title }}"
+                    width="400"
+                    height="500"
+                    class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
+                  >
+                {% else %}
+                  <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
                   </div>
                 {% endif %}
-              {% endfor %}
-            </div>
+
+                <!-- Overlay with collection title -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent flex items-end p-4">
+                  <h6 class="text-white font-semibold">{{ collection.title }}</h6>
+                </div>
+              </a>
+            {% endfor %}
           </div>
         </div>
       {% endif %}
@@ -762,7 +770,6 @@
 {% schema %}
 {
   "name": "t:general.header",
-  "max_blocks": 10,
   "settings": [
     {
       "type": "select",
@@ -799,7 +806,20 @@
       "label": "t:labels.menu",
       "info": "Define your main menu. This menu supports up to 3 levels for the mega menu functionality."
     },
-    { "type": "header", "content": "Mobile Menu" },
+    { "type": "header", "content": "Mobile Menu Featured Collections" },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_collections",
+      "label": "Show Featured Collections",
+      "default": true
+    },
+    {
+      "type": "collection_list",
+      "id": "mobile_featured_collections",
+      "label": "Featured Collections",
+      "info": "Select up to 6 collections to display in the mobile menu. Each collection will show its image and title.",
+      "limit": 6
+    },
     {
       "type": "range",
       "id": "mobile_subcollections_count",
@@ -809,91 +829,6 @@
       "label": "Number of Subcollections to Show",
       "default": 4,
       "info": "Number of subcollections to display in the mobile menu carousel for collection tabs"
-    }
-  ],
-  "blocks": [
-    {
-      "type": "mobile_card",
-      "name": "Featured Section",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Card Image",
-          "info": "Upload an image for this card. If no image is provided, a placeholder will be shown."
-        },
-        {
-          "type": "text",
-          "id": "title",
-          "label": "Card Title",
-          "default": "Card Title",
-          "info": "Enter the title text for this card."
-        },
-        {
-          "type": "url",
-          "id": "link",
-          "label": "Card Link",
-          "info": "Enter the URL this card should link to."
-        },
-        {
-          "type": "select",
-          "id": "aspect_ratio",
-          "label": "Aspect Ratio",
-          "options": [
-            {
-              "value": "square",
-              "label": "Square (1:1)"
-            },
-            {
-              "value": "portrait",
-              "label": "Portrait (3:4)"
-            },
-            {
-              "value": "landscape",
-              "label": "Landscape (4:3)"
-            },
-            {
-              "value": "wide",
-              "label": "Wide (16:9)"
-            },
-            {
-              "value": "ultra-wide",
-              "label": "Ultra Wide (21:9)"
-            },
-            {
-              "value": "tall",
-              "label": "Tall (2:3)"
-            }
-          ],
-          "default": "portrait",
-          "info": "Choose the aspect ratio for this card."
-        },
-        {
-          "type": "select",
-          "id": "text_position",
-          "label": "Text Position",
-          "options": [
-            {
-              "value": "bottom-left",
-              "label": "Bottom Left"
-            },
-            {
-              "value": "bottom-center",
-              "label": "Bottom Center"
-            },
-            {
-              "value": "bottom-right",
-              "label": "Bottom Right"
-            },
-            {
-              "value": "center",
-              "label": "Center"
-            }
-          ],
-          "default": "bottom-left",
-          "info": "Choose where the title text should be positioned on the card."
-        }
-      ]
     }
   ]
 }

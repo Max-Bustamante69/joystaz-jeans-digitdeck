@@ -45,12 +45,7 @@
         "show_reviews_average": true,
         "show_reviews_count": true,
         "show_slide_counter": true,
-        "show_mobile_navigation": true,
-        "size_guide_title": "¿NO ES LA TALLA O EL COLOR CORRECTO?",
-        "size_guide_description": "No te preocupes, te ofrecemos un cambio de tallas gratuito y un servicio de devolución de productos gratuito. Recuerda que tienes 45 días desde la fecha de recepción de tu pedido para iniciar tu proceso de Devolución o cambio.",
-        "size_guide_button_text": "¿No sabes que talla escoger?",
-        "size_guide_button_link": "https://wa.me/message/3T5VOJRD6SUHF1",
-        "size_guide_button_new_tab": true
+        "show_mobile_navigation": true
       }
     },
     "product_benefits_xxxxxx": {
@@ -74,7 +69,7 @@
           "type": "benefit_item",
           "settings": {
             "title": "Siempre hablamos contigo",
-            "description": "<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte.</p>"
+            "description": "<p>Resolvemos tus dudas por WhatsApp de forma rápida y cercana. Solo personas listas para ayudarte.” y aquí al final de esta sección poner un icono- pop up- hipervínculo para escribir a whatsapp si tienes dudas.</p>"
           }
         }
       },

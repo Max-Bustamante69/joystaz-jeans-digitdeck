@@ -104,7 +104,6 @@
 
     <!-- Scrollable Content -->
     <div class="flex-1 overflow-y-auto scrollbar-hide">
-      <!-- Security Icons Section -->
       <div
         x-show="searchQuery.length === 0"
         x-transition:enter="transition ease-out duration-300"
@@ -114,112 +113,6 @@
         x-transition:leave-start="opacity-100 translate-y-0"
         x-transition:leave-end="opacity-0 -translate-y-2"
       >
-        {% if section.settings.show_security_icons %}
-          <div class="py-6 px-4 lg:px-6 border-b border-gray-200">
-            <div class="grid grid-cols-3 gap-4 text-center">
-              <!-- Security Icon 1 -->
-              {% if section.settings.show_security_icon_1 %}
-                <div class="flex flex-col items-center space-y-2">
-                  {% if section.settings.security_icon_1 %}
-                    <img
-                      src="{{ section.settings.security_icon_1 | image_url: width: 48 }}"
-                      alt="{{ section.settings.security_title_1 }}"
-                      width="48"
-                      height="48"
-                      class="w-12 h-12 object-contain"
-                    >
-                  {% else %}
-                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                  {% endif %}
-                  {% if section.settings.security_title_1 != blank %}
-                    <p class="body-xs font-semibold text-gray-900">{{ section.settings.security_title_1 }}</p>
-                  {% endif %}
-                  {% if section.settings.security_description_1 != blank %}
-                    <p class="body-xs text-gray-600">{{ section.settings.security_description_1 }}</p>
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              <!-- Security Icon 2 -->
-              {% if section.settings.show_security_icon_2 %}
-                <div class="flex flex-col items-center space-y-2">
-                  {% if section.settings.security_icon_2 %}
-                    <img
-                      src="{{ section.settings.security_icon_2 | image_url: width: 48 }}"
-                      alt="{{ section.settings.security_title_2 }}"
-                      width="48"
-                      height="48"
-                      class="w-12 h-12 object-contain"
-                    >
-                  {% else %}
-                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
-                    </svg>
-                  {% endif %}
-                  {% if section.settings.security_title_2 != blank %}
-                    <p class="body-xs font-semibold text-gray-900">{{ section.settings.security_title_2 }}</p>
-                  {% endif %}
-                  {% if section.settings.security_description_2 != blank %}
-                    <p class="body-xs text-gray-600">{{ section.settings.security_description_2 }}</p>
-                  {% endif %}
-                </div>
-              {% endif %}
-
-              <!-- Security Icon 3 -->
-              {% if section.settings.show_security_icon_3 %}
-                <div class="flex flex-col items-center space-y-2">
-                  {% if section.settings.security_icon_3 %}
-                    <img
-                      src="{{ section.settings.security_icon_3 | image_url: width: 48 }}"
-                      alt="{{ section.settings.security_title_3 }}"
-                      width="48"
-                      height="48"
-                      class="w-12 h-12 object-contain"
-                    >
-                  {% else %}
-                    <svg class="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
-                    </svg>
-                  {% endif %}
-                  {% if section.settings.security_title_3 != blank %}
-                    <p class="body-xs font-semibold text-gray-900">{{ section.settings.security_title_3 }}</p>
-                  {% endif %}
-                  {% if section.settings.security_description_3 != blank %}
-                    <p class="body-xs text-gray-600">{{ section.settings.security_description_3 }}</p>
-                  {% endif %}
-                </div>
-              {% endif %}
-            </div>
-          </div>
-        {% endif %}
-
-        <!-- CTA Section -->
-        {% if section.settings.show_cta_section %}
-          <div class="py-6 px-4 lg:px-6 border-b border-gray-200">
-            {% if section.settings.cta_title != blank %}
-              <h5 class="mb-3 text-center">{{ section.settings.cta_title }}</h5>
-            {% endif %}
-
-            {% if section.settings.cta_description != blank %}
-              <p class="body text-gray-600 text-center mb-4">{{ section.settings.cta_description }}</p>
-            {% endif %}
-
-            {% if section.settings.cta_button_text != blank and section.settings.cta_button_link != blank %}
-              <div class="text-center">
-                <a
-                  href="{{ section.settings.cta_button_link }}"
-                  class="inline-block body font-semibold py-3 px-6 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
-                  @click="closeDrawer()"
-                >
-                  {{ section.settings.cta_button_text }}
-                </a>
-              </div>
-            {% endif %}
-          </div>
-        {% endif %}
-
         <!-- Search History -->
         <div
           x-show="searchHistory.length > 0"

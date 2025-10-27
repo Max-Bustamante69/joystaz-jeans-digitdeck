@@ -102,14 +102,20 @@
   {% elsif media_to_show %}
     {% if media_type == 'video' %}
       <!-- Video Display -->
-      <div class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden">
+      <div
+        class="relative w-full aspect-[4/3] bg-gray-100 rounded-lg overflow-hidden"
+        x-data="{ isPlaying: false }"
+        @click="isPlaying ? $refs.video.pause() : $refs.video.play(); isPlaying = !isPlaying"
+      >
         <video
-          class="w-full h-full object-cover"
+          x-ref="video"
+          class="w-full h-full object-cover cursor-pointer"
           muted
           loop
           playsinline
           preload="metadata"
-          controls
+          @play="isPlaying = true"
+          @pause="isPlaying = false"
         >
           {% if media_to_show.sources %}
             {% for source in media_to_show.sources %}
@@ -122,7 +128,11 @@
         </video>
 
         <!-- Video Play Overlay -->
-        <div class="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity duration-300">
+        <div
+          x-show="!isPlaying"
+          x-transition
+          class="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none"
+        >
           <div class="w-16 h-16 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
             <svg class="w-8 h-8 text-gray-800 ml-1" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>

@@ -1711,33 +1711,36 @@
       <!-- Content -->
       <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 180px);">
         <!-- Custom Title, Description and Button -->
-        {% if section.settings.size_guide_title != blank or section.settings.size_guide_description != blank %}
-          <div class="mb-6 text-center space-y-4">
-            {% if section.settings.size_guide_title != blank %}
-              <h3 class="text-xl font-semibold text-gray-900">
-                {{ section.settings.size_guide_title }}
-              </h3>
-            {% endif %}
+        {% assign size_guide_title = section.settings.size_guide_title | default: '¿NO ES LA TALLA O EL COLOR CORRECTO?' %}
+        {% assign size_guide_description = section.settings.size_guide_description | default: 'No te preocupes, te ofrecemos un cambio de tallas gratuito y un servicio de devolución de productos gratuito. Recuerda que tienes 45 días desde la fecha de recepción de tu pedido para iniciar tu proceso de Devolución o cambio.' %}
+        {% assign size_guide_button_text = section.settings.size_guide_button_text | default: '¿No sabes qué talla escoger?' %}
+        {% assign size_guide_button_link = section.settings.size_guide_button_link | default: 'https://wa.me/message/3T5VOJRD6SUHF1' %}
 
-            {% if section.settings.size_guide_description != blank %}
-              <p class="body text-gray-600 max-w-2xl mx-auto">
-                {{ section.settings.size_guide_description }}
-              </p>
-            {% endif %}
+        <div class="mb-6 text-center space-y-4">
+          {% if size_guide_title != blank %}
+            <h3 class="text-xl font-semibold text-gray-900">
+              {{ size_guide_title }}
+            </h3>
+          {% endif %}
 
-            {% if section.settings.size_guide_button_text != blank and section.settings.size_guide_button_link != blank %}
-              <div class="pt-2">
-                <a
-                  href="{{ section.settings.size_guide_button_link }}"
-                  class="inline-block body font-semibold py-3 px-6 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
-                  {% if section.settings.size_guide_button_new_tab %}target="_blank" rel="noopener"{% endif %}
-                >
-                  {{ section.settings.size_guide_button_text }}
-                </a>
-              </div>
-            {% endif %}
-          </div>
-        {% endif %}
+          {% if size_guide_description != blank %}
+            <p class="body text-gray-600 max-w-2xl mx-auto">
+              {{ size_guide_description | newline_to_br }}
+            </p>
+          {% endif %}
+
+          {% if size_guide_button_text != blank and size_guide_button_link != blank %}
+            <div class="pt-2">
+              <a
+                href="{{ size_guide_button_link }}"
+                class="inline-block body font-semibold py-3 px-6 bg-primary border border-primary text-white hover:bg-transparent hover:border-black hover:text-black transition-colors duration-300"
+                {% if section.settings.size_guide_button_new_tab %}target="_blank" rel="noopener"{% endif %}
+              >
+                {{ size_guide_button_text }}
+              </a>
+            </div>
+          {% endif %}
+        </div>
 
         <div class="bg-white rounded-lg overflow-hidden border border-gray-200">
           <h3 class="text-center font-semibold py-4 text-gray-900 border-b">
@@ -3153,19 +3156,22 @@
       "type": "text",
       "id": "size_guide_title",
       "label": "Size Guide Title",
-      "info": "Optional title displayed at the top of the size guide modal"
+      "info": "Optional title displayed at the top of the size guide modal",
+      "default": "¿NO ES LA TALLA O EL COLOR CORRECTO?"
     },
     {
       "type": "textarea",
       "id": "size_guide_description",
       "label": "Size Guide Description",
-      "info": "Optional description text below the title"
+      "info": "Optional description text below the title",
+      "default": "No te preocupes, te ofrecemos un cambio de tallas gratuito y un servicio de devolución de productos gratuito. Recuerda que tienes 45 días desde la fecha de recepción de tu pedido para iniciar tu proceso de Devolución o cambio."
     },
     {
       "type": "text",
       "id": "size_guide_button_text",
       "label": "Button Text",
-      "info": "Text for the call-to-action button"
+      "info": "Text for the call-to-action button",
+      "default": "¿No sabes qué talla escoger?"
     },
     {
       "type": "url",

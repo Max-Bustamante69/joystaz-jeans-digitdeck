@@ -172,7 +172,8 @@
         {% assign is_new_product = false %}
         {% for collection in product.collections %}
           {% assign collection_handle = collection.handle | downcase %}
-          {% if collection_handle == 'nuevos' %}
+          {% assign collection_title = collection.title | downcase %}
+          {% if collection_handle contains 'nuevo' or collection_title contains 'nuevo' %}
             {% assign is_new_product = true %}
             {% break %}
           {% endif %}

@@ -255,13 +255,9 @@
       "type": "quote",
       "name": "Quote",
       "settings": {
-        "quote_text": "<p><br/>“Donde la elegancia <em><strong>habla en silencio.</strong></em>”</p>",
         "background_color": "#ffffff",
         "text_color": "#000000",
-        "emphasis_color": "#000000",
-        "border_color": "#3b82f6",
-        "text_size": 2,
-        "padding": 3
+        "text_size": 2
       }
     },
     "image_with_text_G6betb": {

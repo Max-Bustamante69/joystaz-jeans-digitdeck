@@ -206,13 +206,13 @@
       ],
       "name": "Content Carousel",
       "settings": {
-        "title": "Content Carousel",
+        "title": "Nuestra Familia Newurban",
         "show_view_all": false,
         "view_all_text": "Ver todos",
         "view_all_link": "",
-        "show_arrows": true,
         "items_per_view": 5,
-        "gap": 24
+        "gap": 24,
+        "scroll_speed": 3000
       }
     },
     "category_grid_tiJRNW": {

@@ -206,7 +206,7 @@
       ],
       "name": "Content Carousel",
       "settings": {
-        "title": "Content Carousel",
+        "title": "",
         "show_view_all": false,
         "view_all_text": "Ver todos",
         "view_all_link": "",

@@ -143,56 +143,76 @@
         "text_color": "#000000"
       }
     },
-    "video_carousel_YGKNep": {
-      "type": "video-carousel",
+    "content_carousel_XDADFh": {
+      "type": "content-carousel",
       "blocks": {
-        "video_slide_DtcamX": {
-          "type": "video_slide",
+        "content_card_qr8eJC": {
+          "type": "content_card",
           "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
+            "content_image": "shopify://shop_images/IMG_3721.jpg",
+            "content_title": "",
+            "product_count": "",
+            "content_description": "",
+            "content_link": ""
           }
         },
-        "video_slide_8p7HJ4": {
-          "type": "video_slide",
+        "content_card_XxhVc4": {
+          "type": "content_card",
           "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
+            "content_image": "shopify://shop_images/IMG_3966.jpg",
+            "content_title": "",
+            "product_count": "",
+            "content_description": "",
+            "content_link": ""
           }
         },
-        "video_slide_y6NYrR": {
-          "type": "video_slide",
+        "content_card_kHdqjg": {
+          "type": "content_card",
           "settings": {
-            "video_title": "",
-            "video_description": "",
-            "video_link": "",
-            "link_text": "Watch Full Video"
+            "content_image": "shopify://shop_images/IMG_3877.jpg",
+            "content_title": "",
+            "product_count": "",
+            "content_description": "",
+            "content_link": ""
+          }
+        },
+        "content_card_6J9QM6": {
+          "type": "content_card",
+          "settings": {
+            "content_image": "shopify://shop_images/IMG_3751.jpg",
+            "content_title": "",
+            "product_count": "",
+            "content_description": "",
+            "content_link": ""
+          }
+        },
+        "content_card_DbWVtH": {
+          "type": "content_card",
+          "settings": {
+            "content_image": "shopify://shop_images/IMG_3734.jpg",
+            "content_title": "",
+            "product_count": "",
+            "content_description": "",
+            "content_link": ""
           }
         }
       },
       "block_order": [
-        "video_slide_DtcamX",
-        "video_slide_8p7HJ4",
-        "video_slide_y6NYrR"
+        "content_card_qr8eJC",
+        "content_card_XxhVc4",
+        "content_card_kHdqjg",
+        "content_card_6J9QM6",
+        "content_card_DbWVtH"
       ],
-      "name": "Video Carousel",
+      "name": "Content Carousel",
       "settings": {
-        "title": "Video Gallery",
-        "subtitle": "Discover our latest content",
-        "slides_mobile": 1,
-        "slides_tablet": 2,
-        "slides_desktop": 3,
-        "slides_large_desktop": 4,
-        "slide_spacing": 20,
-        "loop": true,
-        "show_pagination": true,
-        "autoplay": false,
-        "autoplay_delay": 5000,
-        "transition_speed": 800
+        "title": "Content Carousel",
+        "show_view_all": false,
+        "view_all_text": "Ver todos",
+        "view_all_link": "",
+        "show_arrows": true,
+        "items_per_view": 5,
+        "gap": 24
       }
     },
     "category_grid_tiJRNW": {
@@ -396,7 +416,7 @@
     "product_carousel_WRxntn",
     "category-grid",
     "image_with_text_gxhgP9",
-    "video_carousel_YGKNep",
+    "content_carousel_XDADFh",
     "category_grid_tiJRNW",
     "quote_E6r7tE",
     "image_with_text_G6betb",

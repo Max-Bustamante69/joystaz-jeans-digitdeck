@@ -253,11 +253,39 @@
     },
     "quote_E6r7tE": {
       "type": "quote",
+      "blocks": {
+        "quote_xBhPPR": {
+          "type": "quote",
+          "settings": {
+            "quote_text": "Productos originales y servicio impecable. Súper recomendados"
+          }
+        },
+        "quote_zR8kVE": {
+          "type": "quote",
+          "settings": {
+            "quote_text": "Los tenis son originales. Tal cual como en las fotos"
+          }
+        },
+        "quote_WUbnWc": {
+          "type": "quote",
+          "settings": {
+            "quote_text": "La atención fue excelente y los tenis llegaron rapidísimo"
+          }
+        }
+      },
+      "block_order": [
+        "quote_xBhPPR",
+        "quote_zR8kVE",
+        "quote_WUbnWc"
+      ],
       "name": "Quote",
       "settings": {
         "background_color": "#ffffff",
         "text_color": "#000000",
-        "text_size": 2
+        "icon_color": "#1e1e1e",
+        "text_size": 2,
+        "animation_speed": 40,
+        "pause_on_hover": true
       }
     },
     "image_with_text_G6betb": {

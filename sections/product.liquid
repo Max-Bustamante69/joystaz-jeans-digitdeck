@@ -349,20 +349,9 @@
           return !!this.findVariant(size, null, true);
         }
 
-        // IMPORTANT FIX: When no size is selected yet, show all sizes available in ANY color
-        // This prevents hiding sizes that are available in other colors but not in the pre-selected color
-        // Only after user selects a size, we filter by the selected color
-        if (!this.selectedSize) {
-          return !!this.findVariant(size, null, true);
-        }
-
-        // After user selects a size, filter by color
-        if (!this.selectedColor) {
-          return !!this.findVariant(size, null, true);
-        }
-
-        // Check if this specific size+color combination is available
-        return !!this.findVariant(size, this.selectedColor, true);
+        // Always show all sizes available in ANY color
+        // This prevents hiding sizes when user changes selection
+        return !!this.findVariant(size, null, true);
       },
       isDuoColorAvailable(productNumber, color) {
         if (!this.hasColorVariants()) return true;
@@ -390,22 +379,34 @@
         return !!this.findVariant(size, productColor, true);
       },
       findVariantIdForSize(size) {
-        if (!this.hasColorVariants()) {
-          const variant = this.findVariant(size, null, false);
-          return variant ? variant.id : null;
-        }
+        // First, try to find with selected color if available
         if (this.selectedColor) {
-          const variant = this.findVariant(size, this.selectedColor, false);
-          return variant ? variant.id : null;
+          const variant = this.findVariant(size, this.selectedColor, true);
+          if (variant) return variant.id;
         }
-        const variant = this.findVariant(size, null, false);
+
+        // If no color selected or color combination not available,
+        // find first available variant with this size (any color)
+        const variant = this.findVariant(size, null, true);
         return variant ? variant.id : null;
       },
       selectSize(size, variantId) {
         this.selectedSize = size;
         this.selectedVariantId = variantId;
+
+        // Update color based on the selected variant
+        const variants = this.getVariants();
+        const selectedVariant = variants.find(v => v.id === variantId);
+        if (selectedVariant && selectedVariant.color) {
+          this.selectedColor = selectedVariant.color;
+        }
+
+        // Sync with duo product
         this.duoProduct1.size = size;
         this.duoProduct1.variantId = variantId;
+        if (selectedVariant && selectedVariant.color) {
+          this.duoProduct1.color = selectedVariant.color;
+        }
       },
       selectDuoColor(productNumber, color, variantId) {
         if (productNumber === 1) {
@@ -2011,20 +2012,9 @@
           return !!this.findVariant(size, null, true);
         }
 
-        // IMPORTANT FIX: When no size is selected yet, show all sizes available in ANY color
-        // This prevents hiding sizes that are available in other colors but not in the pre-selected color
-        // Only after user selects a size, we filter by the selected color
-        if (!this.selectedSize) {
-          return !!this.findVariant(size, null, true);
-        }
-
-        // After user selects a size, filter by color
-        if (!this.selectedColor) {
-          return !!this.findVariant(size, null, true);
-        }
-
-        // Check if this specific size+color combination is available
-        return !!this.findVariant(size, this.selectedColor, true);
+        // Always show all sizes available in ANY color
+        // This prevents hiding sizes when user changes selection
+        return !!this.findVariant(size, null, true);
       },
 
       // Check if a color is available for duo product

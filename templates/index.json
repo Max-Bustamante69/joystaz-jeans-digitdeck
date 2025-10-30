@@ -206,7 +206,7 @@
       ],
       "name": "Content Carousel",
       "settings": {
-        "title": "",
+        "title": "Nuestros Clientes",
         "show_view_all": false,
         "view_all_text": "Ver todos",
         "view_all_link": "",
@@ -375,6 +375,13 @@
         "faq_item_nbtwEg": {
           "type": "faq_item",
           "settings": {
+            "question": "¿Cómo puedo estar 100% seguro de que son productos originales?",
+            "answer": "<p><br/>En New Urban solo vendemos producto 100% original, adquirido por canales autorizados.<br/>Cada par incluye su caja original, etiquetas con código de fábrica y factura electrónica legal.<br/>Antes de enviarlo, hacemos un control interno de autenticidad.<br/><br/></p>"
+          }
+        },
+        "faq_item_LyPf7p": {
+          "type": "faq_item",
+          "settings": {
             "question": "¿Cuanto tiempo tarda el envio?",
             "answer": "<p>El tiempo de envío depende de tu ubicación y el método de envío seleccionado. Generalmente, los pedidos se procesan en 1-2 días hábiles y el envío tarda entre 3-7 días hábiles para envíos nacionales.</p>"
           }
@@ -383,7 +390,7 @@
           "type": "faq_item",
           "settings": {
             "question": "¿Como funciona la garantia?",
-            "answer": "<p>Ofrecemos una garantía de 30 días en todos nuestros productos. Si no estás satisfecho con tu compra, puedes devolver el producto en su estado original para un reembolso completo o cambio.</p>"
+            "answer": "<p>Nuestra garantía cubre <strong>defectos de fábrica</strong> (como costuras abiertas, suelas despegadas o fallas en materiales) por un período de 100 desde la compra.</p><p>No cubre daños por uso normal, maltrato o desgaste.</p><p>Si tu producto presenta un defecto, evaluamos el caso y gestionamos <strong>reparación, cambio o saldo a favor</strong> según corresponda.</p>"
           }
         },
         "faq_item_ycQYMj": {
@@ -396,6 +403,7 @@
       },
       "block_order": [
         "faq_item_nbtwEg",
+        "faq_item_LyPf7p",
         "faq_item_hmpNYt",
         "faq_item_ycQYMj"
       ],

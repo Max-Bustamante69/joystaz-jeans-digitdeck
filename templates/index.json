@@ -36,7 +36,7 @@
         "min_height": 100,
         "autoplay_duration": 3000,
         "animation_duration": 1000,
-        "pause_on_hover": true,
+        "pause_on_hover": false,
         "show_navigation": false,
         "show_bullets": true,
         "default_button_text": "Ver Zapatos",

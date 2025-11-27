@@ -154,8 +154,16 @@
     {% endif %}
 
     <!-- Product Badges -->
-    {% if show_badges and product.tags.size > 0 %}
+    {% assign has_discount_badge = product.compare_at_price > product.price %}
+    {% assign has_tag_badge = product.tags.size > 0 %}
+    {% if show_badges and (has_discount_badge or has_tag_badge) %}
       <div class="absolute top-3 left-3 flex gap-1 z-10">
+        {% if has_discount_badge %}
+          {% assign discount_percentage = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price | round %}
+          <span class="bg-white/80 backdrop-blur-sm text-black py-2 px-3 body-xs font-semibold">
+            -{{ discount_percentage }}%
+          </span>
+        {% endif %}
         {% for tag in product.tags %}
           {% assign tag_lower = tag | downcase %}
           {% if tag_lower contains 'nuevo' %}

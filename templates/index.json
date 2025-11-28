@@ -16,12 +16,12 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Detras_1.png",
+            "image": "shopify://shop_images/BANNER_WEB_1.svg",
             "image_url": "",
             "title": "Lleva tus jeans al siguiente nivel",
             "description": "Creamos jeans que realzan tu figura, se mueven contigo y duran de verdad. Diseñados en Medellín para mujeres que buscan estilo, actitud y calidad en cada costura.",
             "button_text": "ver Jeans",
-            "button_link": "shopify://collections/jeans-mujer",
+            "button_link": "shopify://collections/all",
             "button_style": ""
           }
         },

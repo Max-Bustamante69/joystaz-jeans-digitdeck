@@ -12,6 +12,19 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "slide_XGyQyc": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/BANNER-WEB-_Sitio-web.jpg",
+            "image_url": "",
+            "title": "Celebra la temporada con estilo",
+            "description": "Celebra con Joy Staz esta navidad con tus looks favoritos y con moda que te haga sentir increíble",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": "h-11 px-6 border border-1 border-white capitalize"
+          }
+        },
         "slide_wfyam9": {
           "type": "slide",
           "settings": {
@@ -40,6 +53,7 @@
         }
       },
       "block_order": [
+        "slide_XGyQyc",
         "slide_wfyam9",
         "slide_kF6V7J"
       ],

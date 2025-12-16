@@ -12,18 +12,6 @@
     "hero": {
       "type": "hero",
       "blocks": {
-        "slide_yRVHha": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": "h-11 px-6 border border-1 border-white capitalize"
-          }
-        },
         "slide_XGyQyc": {
           "type": "slide",
           "settings": {
@@ -36,52 +24,10 @@
             "button_link": "",
             "button_style": "h-11 px-6 border border-1 border-white capitalize"
           }
-        },
-        "slide_wfyam9": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/Detras_1_fe2a9515-bbda-4d07-8569-0c13fc674c77.png",
-            "image_url": "",
-            "title": "Lleva tus jeans al siguiente nivel",
-            "description": "Creamos jeans que realzan tu figura, se mueven contigo y duran de verdad. Diseñados en Medellín para mujeres que buscan estilo, actitud y calidad en cada costura.",
-            "button_text": "ver Jeans",
-            "button_link": "shopify://collections/all",
-            "button_style": ""
-          }
-        },
-        "slide_hKxcai": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": "h-11 px-6 border border-1 border-white capitalize"
-          }
-        },
-        "slide_kF6V7J": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image": "shopify://shop_images/BANNER_WEB_2.svg",
-            "image_url": "",
-            "title": "Estilo urbano lleno de vibras",
-            "description": "Porque tu estilo también cuentan una historia",
-            "button_text": "Descúbrelos",
-            "button_link": "shopify://collections/bermudas-mujer",
-            "button_style": "underline  border-none text-sm"
-          }
         }
       },
       "block_order": [
-        "slide_yRVHha",
-        "slide_XGyQyc",
-        "slide_wfyam9",
-        "slide_hKxcai",
-        "slide_kF6V7J"
+        "slide_XGyQyc"
       ],
       "settings": {
         "min_height": 100,

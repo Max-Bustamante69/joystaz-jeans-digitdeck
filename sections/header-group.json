@@ -46,6 +46,35 @@
     "header": {
       "type": "header",
       "blocks": {
+        "mobile_card_rWtcJm": {
+          "type": "mobile_card",
+          "settings": {
+            "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_1.png",
+            "title": "Card Title",
+            "link": "",
+            "aspect_ratio": "portrait",
+            "text_position": "bottom-left"
+          }
+        },
+        "mobile_card_qqEbby": {
+          "type": "mobile_card",
+          "settings": {
+            "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_2.png",
+            "title": "Card Title",
+            "link": "",
+            "aspect_ratio": "portrait",
+            "text_position": "bottom-left"
+          }
+        },
+        "mobile_card_KnrUni": {
+          "type": "mobile_card",
+          "settings": {
+            "title": "Card Title",
+            "link": "",
+            "aspect_ratio": "portrait",
+            "text_position": "bottom-left"
+          }
+        },
         "mobile_card_7GXENa": {
           "type": "mobile_card",
           "settings": {
@@ -68,6 +97,9 @@
         }
       },
       "block_order": [
+        "mobile_card_rWtcJm",
+        "mobile_card_qqEbby",
+        "mobile_card_KnrUni",
         "mobile_card_7GXENa",
         "mobile_card_VnyCjh"
       ],

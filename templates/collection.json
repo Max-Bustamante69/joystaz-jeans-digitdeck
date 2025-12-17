@@ -9,15 +9,6 @@
  */
 {
   "sections": {
-    "page_hero_FFLtz9": {
-      "type": "page-hero",
-      "name": "Page Hero",
-      "settings": {
-        "image": "shopify://shop_images/BANNER_WEB_Sitio_web_1.png",
-        "title": "{{ collection.title }}",
-        "description": "<p>Descubre nuestra colección para mujer, pensada para acompañarte en cada momento de tu día. Prendas versátiles, cómodas y con estilo único que resaltan tu autenticidad y te hacen sentir segura en cualquier ocasión</p>"
-      }
-    },
     "page_hero_3F69PQ": {
       "type": "page-hero",
       "name": "Page Hero",
@@ -90,7 +81,6 @@
     }
   },
   "order": [
-    "page_hero_FFLtz9",
     "page_hero_3F69PQ",
     "collections_carousel_wy4DPz",
     "main",

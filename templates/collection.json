@@ -18,6 +18,15 @@
         "description": "<p>Descubre nuestra colección para mujer, pensada para acompañarte en cada momento de tu día. Prendas versátiles, cómodas y con estilo único que resaltan tu autenticidad y te hacen sentir segura en cualquier ocasión</p>"
       }
     },
+    "page_hero_3F69PQ": {
+      "type": "page-hero",
+      "name": "Page Hero",
+      "settings": {
+        "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_2.png",
+        "title": "{{ collection.title }}",
+        "description": "<p>Descubre nuestra colección para mujer, pensada para acompañarte en cada momento de tu día. Prendas versátiles, cómodas y con estilo único que resaltan tu autenticidad y te hacen sentir segura en cualquier ocasión</p>"
+      }
+    },
     "collections_carousel_wy4DPz": {
       "type": "collections-carousel",
       "name": "Collections Carousel",
@@ -82,6 +91,7 @@
   },
   "order": [
     "page_hero_FFLtz9",
+    "page_hero_3F69PQ",
     "collections_carousel_wy4DPz",
     "main",
     "collections_carousel_MU7FFj"

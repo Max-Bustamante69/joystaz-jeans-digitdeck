@@ -12,6 +12,19 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "slide_FnEjJX": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_1.svg",
+            "image_url": "https://joystazjeans.com/collections/sale",
+            "title": "SALE",
+            "description": "Encuentra en prendas seleccionadas todos nuestros descuentos",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": "h-11 px-6 border border-1 border-white capitalize"
+          }
+        },
         "slide_XGyQyc": {
           "type": "slide",
           "settings": {
@@ -27,6 +40,7 @@
         }
       },
       "block_order": [
+        "slide_FnEjJX",
         "slide_XGyQyc"
       ],
       "settings": {

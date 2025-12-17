@@ -13,7 +13,7 @@
       "type": "page-hero",
       "name": "Page Hero",
       "settings": {
-        "image": "shopify://shop_images/BANNER_WEB.svg",
+        "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal.png",
         "title": "{{ collection.title }}",
         "description": "<p>Descubre nuestra colección para mujer, pensada para acompañarte en cada momento de tu día. Prendas versátiles, cómodas y con estilo único que resaltan tu autenticidad y te hacen sentir segura en cualquier ocasión</p>"
       }

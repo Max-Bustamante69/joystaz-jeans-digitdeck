@@ -13,7 +13,7 @@
       "type": "page-hero",
       "name": "Page Hero",
       "settings": {
-        "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_2_23c2b1d5-8451-459e-8753-4ce9c3d5c8bc.png",
+        "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_3_d65fa58e-0be9-4473-9cc8-589eb4b10895.png",
         "title": "{{ collection.title }}",
         "description": "<p>Descubre nuestra colección para mujer, pensada para acompañarte en cada momento de tu día. Prendas versátiles, cómodas y con estilo único que resaltan tu autenticidad y te hacen sentir segura en cualquier ocasión</p>"
       }
@@ -47,6 +47,7 @@
     "main": {
       "type": "collection",
       "settings": {
+        "not_found_icon": "shopify://shop_images/BANNER_WEB_Banner_horizontal_92da07b7-22f1-4fcc-b2cc-284bac0bed7b.png",
         "no_results_title": "No products found",
         "no_results_subtext": "Try adjusting your search terms or browse our collections instead.",
         "no_results_cta_text": "Browse Men's",

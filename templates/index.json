@@ -55,6 +55,7 @@
           "settings": {
             "collection": "men",
             "image_source": "collection_image",
+            "custom_image": "shopify://shop_images/WEB_PRODUCTO.jpg",
             "text_position": "bottom-left",
             "aspect_ratio": "landscape"
           }

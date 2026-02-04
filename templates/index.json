@@ -12,6 +12,19 @@
     "hero": {
       "type": "hero",
       "blocks": {
+        "slide_xyGTCi": {
+          "type": "slide",
+          "settings": {
+            "media_type": "image",
+            "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_708a6736-9ffd-4b63-a02f-8e3da3f0c515.png",
+            "image_url": "",
+            "title": "Viste el espíritu",
+            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "button_text": "Descubrelos",
+            "button_link": "",
+            "button_style": "h-11 px-6 border border-1 border-white capitalize"
+          }
+        },
         "slide_XGyQyc": {
           "type": "slide",
           "settings": {
@@ -27,6 +40,7 @@
         }
       },
       "block_order": [
+        "slide_xyGTCi",
         "slide_XGyQyc"
       ],
       "settings": {

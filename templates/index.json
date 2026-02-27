@@ -16,10 +16,10 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/BANNER_WEB_Sitio_web.png",
+            "image": "shopify://shop_images/BANNER_WEB_Sitio_web_2.png",
             "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
+            "title": "",
+            "description": "",
             "button_text": "Descubrelos",
             "button_link": "",
             "button_style": "h-11 px-6 border border-1 border-white capitalize"

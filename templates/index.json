@@ -20,7 +20,7 @@
             "title": "Viste el espíritu",
             "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
             "button_text": "Descubrelos",
-            "button_link": "",
+            "button_link": "shopify://collections/bermudas",
             "button_style": "h-11 px-6 border border-1 border-white capitalize"
           }
         },

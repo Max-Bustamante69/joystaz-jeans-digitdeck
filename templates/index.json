@@ -24,36 +24,10 @@
             "button_link": "shopify://collections/jeans-skinnys",
             "button_style": "h-11 px-6"
           }
-        },
-        "slide_cnkGwn": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "shopify://collections/bermudas",
-            "button_style": "h-11 px-6 border border-1 border-white capitalize"
-          }
-        },
-        "slide_fN3QDY": {
-          "type": "slide",
-          "settings": {
-            "media_type": "image",
-            "image_url": "",
-            "title": "Viste el espíritu",
-            "description": "Creemos que la moda no es solo ropa es la historia que cuentas cada vez que te vistes",
-            "button_text": "Descubrelos",
-            "button_link": "",
-            "button_style": "h-11 px-6 border border-1 border-white capitalize"
-          }
         }
       },
       "block_order": [
-        "slide_kLhVdX",
-        "slide_cnkGwn",
-        "slide_fN3QDY"
+        "slide_kLhVdX"
       ],
       "settings": {
         "min_height": 100,

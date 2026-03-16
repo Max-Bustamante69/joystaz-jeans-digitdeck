@@ -22,7 +22,7 @@
             "description": "",
             "button_text": "",
             "button_link": "shopify://collections/jeans-skinnys",
-            "button_style": "h-11 px-6"
+            "button_style": "underline  border-none text-sm"
           }
         }
       },

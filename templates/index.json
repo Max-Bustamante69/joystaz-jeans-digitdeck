@@ -16,13 +16,13 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/BANNER_WEB_Sitio_web.png",
+            "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_1_72fee3b5-86f4-4a1d-a719-a82674a0b117.png",
             "image_url": "",
             "title": "",
             "description": "",
             "button_text": "",
             "button_link": "shopify://collections/jeans-skinnys",
-            "button_style": "underline  border-none text-sm"
+            "button_style": "h-11 px-6 border border-1 border-white capitalize"
           }
         }
       },

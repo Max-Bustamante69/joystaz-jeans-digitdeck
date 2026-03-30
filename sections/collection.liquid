@@ -223,6 +223,7 @@
             {% endfor %}
           ];
         {% else %}
+          {% paginate collection.products by 250 %}
           this.allProducts = [
             {% for product in collection.products %}
               {
@@ -263,6 +264,7 @@
               }{% unless forloop.last %},{% endunless %}
             {% endfor %}
           ];
+          {% endpaginate %}
         {% endif %}
 
         this.filteredProducts = [...this.allProducts];

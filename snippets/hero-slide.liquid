@@ -36,20 +36,36 @@
     {% elsif slide_image %}
       <!-- Image Slide -->
       {% if slide.image_url %}
-        <img
-          src="{{ slide.image_url }}"
-          alt="{{ slide.title | escape }}"
-          class="h-dvh w-dvw object-cover"
-          width="1920"
-          height="1080"
-          loading="lazy"
-        >
+        <picture>
+          {% if slide.mobile_image %}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ slide.mobile_image | image_url: width: 750 }} 750w"
+            >
+          {% endif %}
+          <img
+            src="{{ slide.image_url }}"
+            alt="{{ slide.title | escape }}"
+            class="h-dvh w-dvw object-cover"
+            width="1920"
+            height="1080"
+            loading="lazy"
+          >
+        </picture>
       {% elsif slide.image %}
-        {{
-          slide.image
-          | image_url: width: 1920
-          | image_tag: class: 'h-dvh w-dvw object-cover', alt: slide.title, loading: 'lazy', width: 1920, height: 1080
-        }}
+        <picture>
+          {% if slide.mobile_image %}
+            <source
+              media="(max-width: 749px)"
+              srcset="{{ slide.mobile_image | image_url: width: 750 }} 750w"
+            >
+          {% endif %}
+          {{
+            slide.image
+            | image_url: width: 1920
+            | image_tag: class: 'h-dvh w-dvw object-cover', alt: slide.title, loading: 'lazy', width: 1920, height: 1080
+          }}
+        </picture>
       {% endif %}
     {% endif %}
 

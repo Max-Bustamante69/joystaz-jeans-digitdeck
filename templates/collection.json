@@ -15,7 +15,7 @@
       "settings": {
         "image": "shopify://shop_images/BANNER_WEB_Sitio_web_d01b4673-273e-4711-81ff-5bf897581620.png",
         "title": "{{ collection.title }}",
-        "description": "<p>Tu primer flechazo en denim… con 10% OFF</p>"
+        "description": "<p>Encuentra esa prenda que te hará sentir identificada con tu esencia.</p>"
       }
     },
     "collections_carousel_wy4DPz": {

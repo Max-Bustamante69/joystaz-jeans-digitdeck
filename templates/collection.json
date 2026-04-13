@@ -13,9 +13,9 @@
       "type": "page-hero",
       "name": "Page Hero",
       "settings": {
-        "image": "shopify://shop_images/BANNER_WEB_Banner_horizontal_1_5c7feba2-9060-4660-b0d6-10e632e95e22.png",
+        "image": "shopify://shop_images/BANNER_WEB_Sitio_web_d01b4673-273e-4711-81ff-5bf897581620.png",
         "title": "{{ collection.title }}",
-        "description": "<p>Encuentra esa prenda que te hará sentir identificada con tu esencia.</p>"
+        "description": "<p>Tu primer flechazo en denim… con 10% OFF</p>"
       }
     },
     "collections_carousel_wy4DPz": {

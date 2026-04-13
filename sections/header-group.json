@@ -26,6 +26,12 @@
             "text": "Pagos seguros"
           }
         },
+        "ticker_item_LNJcte": {
+          "type": "ticker_item",
+          "settings": {
+            "text": "Class Is in Session"
+          }
+        },
         "item_3": {
           "type": "ticker_item",
           "settings": {
@@ -36,6 +42,7 @@
       "block_order": [
         "item_1",
         "item_2",
+        "ticker_item_LNJcte",
         "item_3"
       ],
       "settings": {

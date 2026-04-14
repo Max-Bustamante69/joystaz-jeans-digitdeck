@@ -13,7 +13,7 @@
       "type": "page-hero",
       "name": "Page Hero",
       "settings": {
-        "image": "shopify://shop_images/Banner_largo_pagina_web.png",
+        "image": "shopify://shop_images/Banner_largo_pagina_web_4b5b9040-73c3-4ad7-b752-65c172a678ca.png",
         "title": "{{ collection.title }}",
         "description": "<p>Encuentra esa prenda que te hará sentir identificada con tu esencia.</p>"
       }

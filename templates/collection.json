@@ -13,7 +13,7 @@
       "type": "page-hero",
       "name": "Page Hero",
       "settings": {
-        "image": "shopify://shop_images/Banner_largo_pagina_web_4b5b9040-73c3-4ad7-b752-65c172a678ca.png",
+        "image": "shopify://shop_images/Banner_largo_pagina_web_1e403efa-4e3d-4f99-ad5c-b4351633e9be.png",
         "title": "{{ collection.title }}",
         "description": ""
       }

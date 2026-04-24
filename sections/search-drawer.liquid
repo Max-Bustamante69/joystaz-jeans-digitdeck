@@ -15,6 +15,7 @@
   x-data="searchDrawer()"
   x-show="isOpen"
   class="fixed inset-0 z-40 overflow-hidden"
+  data-scroll-lock-overlay
   @keydown.escape.window="closeDrawer()"
   @search:open.window="openDrawer()"
 >

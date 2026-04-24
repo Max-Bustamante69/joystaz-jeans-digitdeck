@@ -61,7 +61,7 @@
         };
 
         const hasVisibleFullscreenOverlay = () => {
-          const overlayCandidates = document.querySelectorAll('.fixed.inset-0');
+          const overlayCandidates = document.querySelectorAll('[data-scroll-lock-overlay]');
           return Array.from(overlayCandidates).some((element) => {
             const styles = window.getComputedStyle(element);
             if (styles.display === 'none' || styles.visibility === 'hidden' || styles.opacity === '0') {
@@ -78,23 +78,20 @@
 
         const clearStaleClassLocks = (reason = 'unknown') => {
           if (!document.body || activeLocks.size > 0) return;
-          if (!hasKnownClassLock() || hasVisibleFullscreenOverlay()) return;
+          if (!hasKnownClassLock()) return;
+          if (hasVisibleFullscreenOverlay()) return;
 
           const staleClasses = knownLockClasses.filter((className) => document.body.classList.contains(className));
           if (!staleClasses.length) return;
 
           document.body.classList.remove(...staleClasses);
-          console.warn('[themeScrollLock] Cleared stale class locks', {
-            reason,
-            staleClasses,
-          });
+          document.body.style.overflow = '';
         };
 
         const applyLockState = () => {
           if (!document.body) return;
 
-          const shouldLock = activeLocks.size > 0 || (hasKnownClassLock() && hasVisibleFullscreenOverlay());
-          if (shouldLock) {
+          if (activeLocks.size > 0) {
             document.body.style.overflow = 'hidden';
             return;
           }
@@ -107,17 +104,11 @@
         const clearGhostLock = (reason = 'unknown') => {
           if (!document.body) return;
           clearStaleClassLocks(reason);
-          if (activeLocks.size > 0 || hasKnownClassLock()) return;
+          if (activeLocks.size > 0) return;
 
           const bodyInlineLocked = document.body.style.overflow === 'hidden';
           const htmlInlineLocked = document.documentElement.style.overflow === 'hidden';
           if (!bodyInlineLocked && !htmlInlineLocked) return;
-
-          console.warn('[themeScrollLock] Cleared ghost scroll lock', {
-            reason,
-            bodyOverflow: document.body.style.overflow,
-            htmlOverflow: document.documentElement.style.overflow,
-          });
 
           document.body.style.overflow = '';
           if (htmlInlineLocked) {
@@ -168,6 +159,23 @@
             applyLockState();
             clearGhostLock('theme:scroll-lock-sync');
           });
+
+          let scrollSafetyTimer = null;
+          window.addEventListener('scroll', () => {
+            if (scrollSafetyTimer) return;
+            scrollSafetyTimer = setTimeout(() => {
+              scrollSafetyTimer = null;
+              if (activeLocks.size === 0 && document.body.style.overflow === 'hidden') {
+                clearGhostLock('scroll-safety');
+              }
+            }, 200);
+          }, { passive: true });
+
+          setInterval(() => {
+            if (activeLocks.size === 0) {
+              clearGhostLock('periodic-check');
+            }
+          }, 3000);
         };
 
         if (document.readyState === 'loading') {

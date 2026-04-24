@@ -14,6 +14,7 @@
   x-data="cartDrawer()"
   x-show="isOpen"
   class="fixed inset-0 z-40 overflow-hidden"
+  data-scroll-lock-overlay
   @cart:open.window="openDrawer()"
   @cart:updated.window="loadCart()"
 >

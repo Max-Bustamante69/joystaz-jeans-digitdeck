@@ -72,6 +72,13 @@
       const swiper = new Swiper(carouselElement, {
         slidesPerView: {{ slides_per_view_mobile | json }},
         spaceBetween: {{ space_between_mobile }},
+        touchReleaseOnEdges: true,
+        touchStartPreventDefault: false,
+        touchMoveStopPropagation: false,
+        touchAngle: 20,
+        threshold: 8,
+        nested: true,
+        passiveListeners: true,
         {% if centered_slides %}
         centeredSlides: true,
         centeredSlidesBounds: true,
@@ -125,13 +132,7 @@
           init: function() {
             updateGenericArrowStates(this, '{{ carousel_id }}');
           },
-          afterInit: function() {
-            updateGenericArrowStates(this, '{{ carousel_id }}');
-          },
           slideChange: function() {
-            updateGenericArrowStates(this, '{{ carousel_id }}');
-          },
-          activeIndexChange: function() {
             updateGenericArrowStates(this, '{{ carousel_id }}');
           },
           reachBeginning: function() {
@@ -141,12 +142,6 @@
             updateGenericArrowStates(this, '{{ carousel_id }}');
           },
           fromEdge: function() {
-            updateGenericArrowStates(this, '{{ carousel_id }}');
-          },
-          slideChangeTransitionEnd: function() {
-            updateGenericArrowStates(this, '{{ carousel_id }}');
-          },
-          transitionEnd: function() {
             updateGenericArrowStates(this, '{{ carousel_id }}');
           },
         },
@@ -179,8 +174,6 @@
           nextArrow = nextArrow || sectionContainer.querySelector('.carousel-next');
         }
       }
-
-      console.log('Carousel', carouselId, '- isBeginning:', swiper.isBeginning, 'isEnd:', swiper.isEnd, 'activeIndex:', swiper.activeIndex, 'slides:', swiper.slides.length);
 
       if (prevArrow) {
         if (swiper.isBeginning) {

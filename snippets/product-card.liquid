@@ -1470,10 +1470,15 @@
         this.$nextTick(() => {
           const carouselElement = this.$el.querySelector('.product-image-carousel');
           if (carouselElement && typeof Swiper !== 'undefined') {
-            const carouselId = carouselElement.id;
-
             // Check if this carousel is already initialized
             if (carouselElement.swiper) {
+              return;
+            }
+
+            // Skip Swiper overhead when there is only one image.
+            const slideCount = carouselElement.querySelectorAll('.swiper-slide').length;
+            if (slideCount <= 1) {
+              this.currentSlide = 0;
               return;
             }
 
@@ -1487,7 +1492,8 @@
               touchReleaseOnEdges: true,
               grabCursor: false,
               touchRatio: 1,
-              touchAngle: 45,
+              touchAngle: 20,
+              threshold: 8,
               simulateTouch: true,
               touchStartPreventDefault: false,
               touchStartForcePreventDefault: false,
@@ -1628,10 +1634,11 @@
           grabCursor: false,
           touchRatio: 1,
           touchAngle: 45,
-          simulateTouch: true,
+          simulateTouch: false,
           allowTouchMove: false,
           touchStartPreventDefault: false,
           touchMoveStopPropagation: false,
+          watchOverflow: true,
           preventInteractionOnTransition: false,
           speed: 300,
           freeMode: {
@@ -1675,15 +1682,6 @@
             },
             progress: () => {
               this.updateCarouselStates();
-            },
-            touchStart: () => {
-              // No need to disable arrows since they hide automatically
-            },
-            touchEnd: () => {
-              // Update states after touch interaction
-              setTimeout(() => {
-                this.updateCarouselStates();
-              }, 100);
             }
           }
         });
@@ -1778,10 +1776,11 @@
           grabCursor: false,
           touchRatio: 1,
           touchAngle: 45,
-          simulateTouch: true,
+          simulateTouch: false,
           allowTouchMove: false,
           touchStartPreventDefault: false,
           touchMoveStopPropagation: false,
+          watchOverflow: true,
           preventInteractionOnTransition: false,
           speed: 300,
           freeMode: {
@@ -1818,15 +1817,6 @@
             },
             progress: () => {
               this.updateCarouselStates();
-            },
-            touchStart: () => {
-              // No need to disable arrows since they hide automatically
-            },
-            touchEnd: () => {
-              // Update states after touch interaction
-              setTimeout(() => {
-                this.updateCarouselStates();
-              }, 100);
             }
           }
         });

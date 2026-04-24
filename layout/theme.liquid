@@ -53,6 +53,13 @@
         const hasKnownClassLock = () =>
           knownLockClasses.some((className) => document.body.classList.contains(className));
 
+        const syncAnnouncementOffset = () => {
+          const tickerSection = document.querySelector('.shopify-section-group-header-group[id*="__ticker"]');
+          const announcementBar = tickerSection ? tickerSection.querySelector('[data-announcement-bar]') : null;
+          const offset = announcementBar ? Math.round(announcementBar.getBoundingClientRect().height) : 0;
+          document.documentElement.style.setProperty('--announcement-bar-offset', `${offset}px`);
+        };
+
         const hasVisibleFullscreenOverlay = () => {
           const overlayCandidates = document.querySelectorAll('.fixed.inset-0');
           return Array.from(overlayCandidates).some((element) => {
@@ -140,17 +147,24 @@
         };
 
         const init = () => {
+          syncAnnouncementOffset();
           applyLockState();
           clearGhostLock('dom-ready');
+          setTimeout(syncAnnouncementOffset, 250);
+          setTimeout(syncAnnouncementOffset, 1200);
           setTimeout(() => clearGhostLock('post-load-1200ms'), 1200);
           setTimeout(() => clearGhostLock('post-load-2500ms'), 2500);
 
           window.addEventListener('pageshow', () => {
+            syncAnnouncementOffset();
             applyLockState();
             clearGhostLock('pageshow');
           });
 
+          window.addEventListener('resize', syncAnnouncementOffset);
+
           window.addEventListener('theme:scroll-lock-sync', () => {
+            syncAnnouncementOffset();
             applyLockState();
             clearGhostLock('theme:scroll-lock-sync');
           });

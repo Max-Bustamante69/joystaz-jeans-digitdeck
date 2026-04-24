@@ -3133,13 +3133,15 @@
       display: none !important;
     }
   }
-  .shopify-section-group-header-group:has(.ticker-container) {
-    position: relative;
-    z-index: 10;
-  }
-  .shopify-section-group-header-group:has(header) {
+  /* Keep ticker and header sticky without overlap on initial hero scroll */
+  .shopify-section-group-header-group[id*="__ticker"] {
     position: sticky;
     top: 0;
+    z-index: 31;
+  }
+  .shopify-section-group-header-group[id*="__header"] {
+    position: sticky;
+    top: var(--announcement-bar-offset, 32px);
     z-index: 30;
   }
   input[type="radio"] {

@@ -25,6 +25,19 @@
     @mouseleave="isDesktop && (showSizeSelector = false)"
   {% endif %}
 >
+  {% if hide_info %}
+    {% assign card_image_width = 400 %}
+    {% assign card_image_height = 533 %}
+  {% else %}
+    {% assign card_image_width = 1800 %}
+    {% assign card_image_height = 1800 %}
+  {% endif %}
+  {% if hide_info %}
+    {% assign card_gallery_width = 400 %}
+  {% else %}
+    {% assign card_gallery_width = 800 %}
+  {% endif %}
+
   <!-- Product Image Container -->
   <div class="relative {% if mobile_layout %}aspect-[3/4]{% else %}aspect-[3/4.5]{% endif %} w-full overflow-hidden  max-w-full">
     <!-- Unified Product Image Carousel (handles 1, 2, or many images) -->
@@ -68,8 +81,8 @@
                     :src="slide.srcA"
                     alt="{{ product.title }} - Image 1"
                     class="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
-                    width="1800"
-                    height="1800"
+                    width="{{ card_image_width }}"
+                    height="{{ card_image_height }}"
                     :loading="slide.eager ? 'eager' : 'lazy'"
                   >
                   <img
@@ -77,19 +90,19 @@
                     alt="{{ product.title }} - Image 2"
                     :class="imageHovered ? 'opacity-100' : 'opacity-0'"
                     class="absolute inset-0 w-full h-full object-cover z-20 transition-opacity duration-300 ease-in-out pointer-events-none"
-                    width="1800"
-                    height="1800"
+                    width="{{ card_image_width }}"
+                    height="{{ card_image_height }}"
                     loading="lazy"
                   >
                 </div>
               </template>
               <template x-if="slide.type === 'single'">
                 <img
-                  :src="slide.src || '{{ product.featured_image | image_url: width: 1800 }}'"
+                  :src="slide.src || '{{ product.featured_image | image_url: width: card_image_width }}'"
                   alt="{{ product.title }}"
                   class="w-full h-full object-cover pointer-events-none"
-                  width="1800"
-                  height="1800"
+                  width="{{ card_image_width }}"
+                  height="{{ card_image_height }}"
                   :loading="slide.eager ? 'eager' : 'lazy'"
                 >
               </template>
@@ -853,7 +866,7 @@
             gallery: [
               {% if variant.metafields.custom.variant_gallery.value %}
                 {% for image in variant.metafields.custom.variant_gallery.value %}
-                  '{{ image | image_url: width: 800 }}'{% unless forloop.last %},{% endunless %}
+                  '{{ image | image_url: width: card_gallery_width }}'{% unless forloop.last %},{% endunless %}
                 {% endfor %}
               {% endif %}
             ]
@@ -864,7 +877,7 @@
       // Fallback product images
       productImages: [
         {% for image in product.images %}
-          '{{ image | image_url: width: 800 }}'{% unless forloop.last %},{% endunless %}
+          '{{ image | image_url: width: card_gallery_width }}'{% unless forloop.last %},{% endunless %}
         {% endfor %}
       ],
 
@@ -1471,6 +1484,7 @@
               allowTouchMove: true,
               resistanceRatio: 0,
               nested: true,
+              touchReleaseOnEdges: true,
               grabCursor: false,
               touchRatio: 1,
               touchAngle: 45,

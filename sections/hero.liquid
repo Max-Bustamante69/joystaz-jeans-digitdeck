@@ -356,6 +356,8 @@
         loop: true,
         speed: {{ section.settings.animation_duration | default: 1000 }},
         grabCursor: false,
+        touchReleaseOnEdges: true,
+        touchStartPreventDefault: false,
         freeMode: { enabled: true, sticky: true },
         navigation: {
           nextEl: '.swiper-button-next',

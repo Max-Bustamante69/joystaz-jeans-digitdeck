@@ -330,12 +330,6 @@
               class="cart-product-carousel swiper-cart-carousel overflow-hidden lg:px-5 px-4 touch-pan-y"
               data-carousel-id="cart-carousel"
               data-carousel-type="cart-carousel"
-              @touchstart.stop
-              @touchmove.stop
-              @touchend.stop
-              @mousedown.stop
-              @mousemove.stop
-              @mouseup.stop
             >
               <div class="swiper-wrapper">
                 {% assign product_handles = final_products | split: ',' %}
@@ -343,7 +337,7 @@
                   {% if handle != blank %}
                     {% assign product = all_products[handle] %}
                     {% if product and product.available %}
-                      <div class="swiper-slide h-auto" @click.stop @touchstart.stop @touchend.stop>
+                      <div class="swiper-slide h-auto">
                         <div class="w-full h-full">
                           {% render 'product-card',
                             product: product,
@@ -444,6 +438,17 @@
     </div>
   </div>
 </div>
+
+<style>
+  .swiper-cart-carousel .swiper-slide {
+    width: calc(50% - 1px);
+    flex-shrink: 0;
+  }
+  .swiper-cart-carousel .swiper-slide img {
+    max-width: 100%;
+    height: auto;
+  }
+</style>
 
 <script>
   function cartDrawer() {
@@ -693,6 +698,8 @@
               const swiperInstance = new Swiper(carouselElement, {
               slidesPerView: 2,
               spaceBetween: 2,
+              touchReleaseOnEdges: true,
+              touchStartPreventDefault: false,
               freeMode: {
                 enabled: true,
                 sticky: false,

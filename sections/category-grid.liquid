@@ -135,6 +135,8 @@
       const mobileSwiper = new Swiper(mobileSliderElement, {
         slidesPerView: 1.2,
         spaceBetween: 2,
+        touchReleaseOnEdges: true,
+        touchStartPreventDefault: false,
         freeMode: {
           enabled: true,
           sticky: true,
@@ -154,6 +156,8 @@
         const desktopSwiper = new Swiper(desktopSliderElement, {
           slidesPerView: 4.2,
           spaceBetween: 4,
+          touchReleaseOnEdges: true,
+          touchStartPreventDefault: false,
           freeMode: {
             enabled: true,
             sticky: true,

@@ -533,26 +533,9 @@
       },
 
       async tryGetShopifyFreeShippingThreshold() {
-        // Try to get free shipping threshold from Shopify's shipping zones
-        try {
-          const response = await fetch('/admin/shipping_zones.json');
-          if (response.ok) {
-            const shippingZones = await response.json();
-            // Look for free shipping rates in shipping zones
-            for (const zone of shippingZones.shipping_zones) {
-              for (const rate of zone.weight_based_shipping_rates || []) {
-                if (rate.name.toLowerCase().includes('free') && rate.price === '0.00') {
-                  // Found a free shipping rate, but we need the threshold
-                  // This is limited as Shopify doesn't expose free shipping thresholds via API
-                  console.log('Found free shipping rate:', rate);
-                }
-              }
-            }
-          }
-        } catch (error) {
-          // Silently fail - we'll use the theme setting instead
-          console.log('Could not fetch shipping zones, using theme setting');
-        }
+        // Storefront scripts cannot access `/admin/*` endpoints due CORS.
+        // Keep the theme setting as the source of truth for free-shipping threshold.
+        return;
       },
 
       openDrawer() {

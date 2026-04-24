@@ -37,6 +37,102 @@
     <!-- Search Drawer -->
     {% sections 'search-drawer-group' %}
 
+    <script>
+      (() => {
+        const knownLockClasses = [
+          'mobile-menu-open',
+          'cart-drawer-open',
+          'search-drawer-open',
+          'filter-drawer-open',
+          'product-gallery-open',
+          'video-gallery-open',
+          'look-fit-gallery-open',
+        ];
+        const activeLocks = new Set();
+
+        const hasKnownClassLock = () =>
+          knownLockClasses.some((className) => document.body.classList.contains(className));
+
+        const applyLockState = () => {
+          if (!document.body) return;
+
+          const shouldLock = activeLocks.size > 0 || hasKnownClassLock();
+          if (shouldLock) {
+            document.body.style.overflow = 'hidden';
+            return;
+          }
+
+          if (document.body.style.overflow === 'hidden') {
+            document.body.style.overflow = '';
+          }
+        };
+
+        const clearGhostLock = (reason = 'unknown') => {
+          if (!document.body) return;
+          if (activeLocks.size > 0 || hasKnownClassLock()) return;
+
+          const bodyInlineLocked = document.body.style.overflow === 'hidden';
+          const htmlInlineLocked = document.documentElement.style.overflow === 'hidden';
+          if (!bodyInlineLocked && !htmlInlineLocked) return;
+
+          console.warn('[themeScrollLock] Cleared ghost scroll lock', {
+            reason,
+            bodyOverflow: document.body.style.overflow,
+            htmlOverflow: document.documentElement.style.overflow,
+          });
+
+          document.body.style.overflow = '';
+          if (htmlInlineLocked) {
+            document.documentElement.style.overflow = '';
+          }
+        };
+
+        window.themeScrollLock = {
+          lock(source) {
+            if (!source) return;
+            activeLocks.add(source);
+            applyLockState();
+          },
+          unlock(source) {
+            if (source) {
+              activeLocks.delete(source);
+            }
+            applyLockState();
+          },
+          sync() {
+            applyLockState();
+          },
+          clearGhostLock,
+          getActiveLocks() {
+            return Array.from(activeLocks);
+          },
+        };
+
+        const init = () => {
+          applyLockState();
+          clearGhostLock('dom-ready');
+          setTimeout(() => clearGhostLock('post-load-1200ms'), 1200);
+          setTimeout(() => clearGhostLock('post-load-2500ms'), 2500);
+
+          window.addEventListener('pageshow', () => {
+            applyLockState();
+            clearGhostLock('pageshow');
+          });
+
+          window.addEventListener('theme:scroll-lock-sync', () => {
+            applyLockState();
+            clearGhostLock('theme:scroll-lock-sync');
+          });
+        };
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', init, { once: true });
+        } else {
+          init();
+        }
+      })();
+    </script>
+
     <!-- Swiper.js JS -->
     <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   </body>

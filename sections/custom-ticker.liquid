@@ -9,12 +9,14 @@
 
 {% comment %} Check if we have items to display and count them {% endcomment %}
 {% if ticker_items.size > 0 %}
-  {% assign has_items = true %}
   {% for item in ticker_items %}
     {% if item.type == 'ticker_item' and item.settings.text != blank %}
       {% assign item_count = item_count | plus: 1 %}
     {% endif %}
   {% endfor %}
+  {% if item_count > 0 %}
+    {% assign has_items = true %}
+  {% endif %}
 {% endif %}
 
 {% comment %} Fallback items if no items are provided {% endcomment %}
@@ -24,10 +26,11 @@
 {% endunless %}
 
 <div
-  class="ticker-container flex items-center w-full overflow-hidden"
+  class="announcement-ticker flex items-center w-full overflow-hidden"
+  data-announcement-bar
   style="background-color: {{ section.settings.background_color | default: 'var(--color-primary)' }}; height: {{ section.settings.height | default: '2rem' }};"
 >
-  <div class="ticker-wrap flex items-center" style="width: max-content;">
+  <div class="announcement-ticker__track flex items-center" style="width: max-content;">
     {% comment %} Create enough duplicates to fill screen + buffer {% endcomment %}
     {% for i in (1..12) %}
       {% comment %} First set of items {% endcomment %}
@@ -35,7 +38,7 @@
         {% for item in ticker_items %}
           {% if item.type == 'ticker_item' and item.settings.text != blank %}
             <span
-              class="ticker-item flex items-center whitespace-nowrap"
+              class="announcement-ticker__item flex items-center whitespace-nowrap"
               style="
                 color: {{ section.settings.text_color | default: '#ffffff' }};
                 font-size: {{ section.settings.font_size | default: '0.875rem' }};
@@ -46,7 +49,7 @@
             </span>
             {% unless forloop.last %}
               <span
-                class="ticker-bullet mx-3"
+                class="announcement-ticker__bullet mx-3"
                 style="
                   color: {{ section.settings.text_color | default: '#ffffff' }};
                   font-size: {{ section.settings.font_size | default: '0.875rem' }};
@@ -60,7 +63,7 @@
       {% else %}
         {% for fallback_item in fallback_items %}
           <span
-            class="ticker-item flex items-center whitespace-nowrap"
+            class="announcement-ticker__item flex items-center whitespace-nowrap"
             style="
               color: {{ section.settings.text_color | default: '#ffffff' }};
               font-size: {{ section.settings.font_size | default: '0.875rem' }};
@@ -71,7 +74,7 @@
           </span>
           {% unless forloop.last %}
             <span
-              class="ticker-bullet mx-3"
+              class="announcement-ticker__bullet mx-3"
               style="
                 color: {{ section.settings.text_color | default: '#ffffff' }};
                 font-size: {{ section.settings.font_size | default: '0.875rem' }};
@@ -86,7 +89,7 @@
       {% comment %} Add bullet between sets (except for the last set) {% endcomment %}
       {% unless forloop.last %}
         <span
-          class="ticker-bullet mx-3"
+          class="announcement-ticker__bullet mx-3"
           style="
             color: {{ section.settings.text_color | default: '#ffffff' }};
             font-size: {{ section.settings.font_size | default: '0.875rem' }};
@@ -101,11 +104,11 @@
 
 <style>
   /* Smart Ticker Animation */
-  .ticker-container {
+  .announcement-ticker {
     position: relative;
   }
 
-  .ticker-wrap {
+  .announcement-ticker__track {
     animation: ticker linear infinite;
     animation-duration: {{ section.settings.animation_duration | default: 40 }}s;
     transform: translateX(0%);
@@ -124,24 +127,48 @@
     }
   }
 
-  .ticker-item {
+  .announcement-ticker__item {
     flex-shrink: 0;
   }
 
-  .ticker-bullet {
+  .announcement-ticker__bullet {
     flex-shrink: 0;
   }
 
   @media (max-width: 768px) {
-    .ticker-wrap {
+    .announcement-ticker__track {
       animation-duration: {{ section.settings.mobile_animation_duration | default: 25 }}s;
     }
 
-    .ticker-bullet {
+    .announcement-ticker__bullet {
       margin: 0 0.75rem; /* Smaller spacing on mobile */
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.querySelector('#shopify-section-{{ section.id }} [data-announcement-bar]');
+    if (!bar) return;
+
+    const styles = window.getComputedStyle(bar);
+    const hiddenByCss =
+      styles.display === 'none'
+      || styles.visibility === 'hidden'
+      || Number.parseFloat(styles.opacity || '1') === 0
+      || bar.offsetHeight === 0;
+
+    if (hiddenByCss) {
+      console.warn('[announcement-bar] Hidden by CSS/injection', {
+        sectionId: '{{ section.id }}',
+        display: styles.display,
+        visibility: styles.visibility,
+        opacity: styles.opacity,
+        className: bar.className,
+      });
+    }
+  });
+</script>
 
 {% schema %}
 {

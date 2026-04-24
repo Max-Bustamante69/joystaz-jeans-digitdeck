@@ -449,6 +449,14 @@
       availableCollections: [],
 
       init() {
+        // Reset stale lock state in case of bfcache restores or interrupted transitions
+        document.body.classList.remove('filter-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('filter-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         this.loadCollectionData();
         this.$watch('selectedStyles', () => this.applyFiltersImmediately());
         this.$watch('selectedColors', () => this.applyFiltersImmediately());
@@ -460,14 +468,22 @@
 
       openDrawer() {
         this.isOpen = true;
-        document.body.style.overflow = 'hidden';
         document.body.classList.add('filter-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('filter-drawer');
+        } else {
+          document.body.style.overflow = 'hidden';
+        }
       },
 
       closeDrawer() {
         this.isOpen = false;
-        document.body.style.overflow = '';
         document.body.classList.remove('filter-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('filter-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
       },
 
       toggleStyleSection() {

@@ -474,6 +474,14 @@
       appliedDiscounts: new Set(),
 
       init() {
+        // Reset stale lock state in case of bfcache restores or interrupted transitions
+        document.body.classList.remove('cart-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('cart-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         this.loadCart();
         this.tryGetShopifyFreeShippingThreshold();
         this.initThresholds();
@@ -515,6 +523,13 @@
         if (this.cartCarouselSwiper) {
           this.cartCarouselSwiper.destroy(true, true);
         }
+
+        document.body.classList.remove('cart-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('cart-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
       },
 
       async tryGetShopifyFreeShippingThreshold() {
@@ -542,14 +557,22 @@
 
       openDrawer() {
         this.isOpen = true;
-        document.body.style.overflow = 'hidden';
         document.body.classList.add('cart-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('cart-drawer');
+        } else {
+          document.body.style.overflow = 'hidden';
+        }
       },
 
       closeDrawer() {
         this.isOpen = false;
-        document.body.style.overflow = '';
         document.body.classList.remove('cart-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('cart-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
       },
 
       async loadCart() {

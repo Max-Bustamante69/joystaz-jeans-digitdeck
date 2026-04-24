@@ -247,6 +247,13 @@
       totalVideos: 0,
 
       init() {
+        document.body.classList.remove('video-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('video-gallery');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         this.$nextTick(() => {
           this.initializeCarousel();
         });
@@ -357,6 +364,13 @@
           this.gallerySwiper.destroy();
           this.gallerySwiper = null;
         }
+
+        document.body.classList.remove('video-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('video-gallery');
+        } else {
+          document.body.style.overflow = '';
+        }
       },
 
       // Video Gallery Methods
@@ -369,8 +383,13 @@
         this.showVideoGallery = true;
         this.currentVideoIndex = clickedVideoIndex;
         this.isMuted = false;
-        // Prevent body scroll when overlay is open
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('video-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('video-gallery');
+        } else {
+          // Prevent body scroll when overlay is open
+          document.body.style.overflow = 'hidden';
+        }
         
         // Initialize gallery swiper after overlay is shown
         this.$nextTick(() => {
@@ -403,8 +422,13 @@
           this.gallerySwiper.destroy(true, true);
           this.gallerySwiper = null;
         }
-        // Restore body scroll
-        document.body.style.overflow = '';
+        document.body.classList.remove('video-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('video-gallery');
+        } else {
+          // Restore body scroll
+          document.body.style.overflow = '';
+        }
       },
 
 

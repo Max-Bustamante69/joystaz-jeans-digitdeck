@@ -99,6 +99,14 @@
         window.addEventListener('scroll', this.handleScroll.bind(this));
         window.addEventListener('resize', () => { this.isDesktop = window.innerWidth >= 1024; });
 
+        // Reset stale menu lock state on load/bfcache restores
+        document.body.classList.remove('mobile-menu-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('mobile-menu');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         // Configure header behavior based on data attribute from Liquid
         const mode = this.$el.dataset.headerMode || '';
         if (mode === 'solid') {
@@ -123,14 +131,29 @@
       openCartDrawer() { this.cartDrawerOpen = true; },
       showMegaMenu(collectionHandle) { this.activeMegaMenu = collectionHandle; },
       hideMegaMenu() { this.activeMegaMenu = null; },
-      toggleMobileMenu() {
-        this.mobileMenuOpen = !this.mobileMenuOpen;
-        if (this.mobileMenuOpen) {
+      openMobileMenu() {
+        this.mobileMenuOpen = true;
+        document.body.classList.add('mobile-menu-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('mobile-menu');
+        } else {
           document.body.style.overflow = 'hidden';
-          document.body.classList.add('mobile-menu-open');
+        }
+      },
+      closeMobileMenu() {
+        this.mobileMenuOpen = false;
+        document.body.classList.remove('mobile-menu-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('mobile-menu');
         } else {
           document.body.style.overflow = '';
-          document.body.classList.remove('mobile-menu-open');
+        }
+      },
+      toggleMobileMenu() {
+        if (this.mobileMenuOpen) {
+          this.closeMobileMenu();
+        } else {
+          this.openMobileMenu();
         }
       }
     }
@@ -593,7 +616,7 @@
           <a
             :href="link.url"
             class="block text-black   "
-            @click="mobileMenuOpen = false"
+            @click="closeMobileMenu()"
           >
             <h5 x-text="link.title"></h5>
           </a>

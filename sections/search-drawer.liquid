@@ -465,6 +465,14 @@
       scrollY: 0, // Store scroll position for drawer
 
       init() {
+        // Reset stale lock state in case of bfcache restores or interrupted transitions
+        document.body.classList.remove('search-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('search-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         this.loadSearchHistory();
       },
 
@@ -472,8 +480,12 @@
         this.isOpen = true;
         // Store current scroll position
         this.scrollY = window.scrollY;
-        document.body.style.overflow = 'hidden';
         document.body.classList.add('search-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('search-drawer');
+        } else {
+          document.body.style.overflow = 'hidden';
+        }
         // Focus after the transition to prevent abrupt scroll/focus jump
         this.$nextTick(() => {
           const input = this.$el.querySelector('input[type="text"]');
@@ -483,8 +495,12 @@
 
       closeDrawer() {
         this.isOpen = false;
-        document.body.style.overflow = '';
         document.body.classList.remove('search-drawer-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('search-drawer');
+        } else {
+          document.body.style.overflow = '';
+        }
         setTimeout(() => {
           this.searchQuery = '';
           this.searchResults = [];

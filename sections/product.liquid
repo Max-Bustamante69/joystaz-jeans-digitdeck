@@ -1184,6 +1184,13 @@
 
       // Initialize product page
       init() {
+        document.body.classList.remove('product-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('product-gallery');
+        } else {
+          document.body.style.overflow = '';
+        }
+
         this.calculateDeliveryDate();
         
         // Initialize gallery
@@ -1391,14 +1398,24 @@
       // Mobile Gallery Methods
       openMobileGallery() {
         this.showMobileGallery = true;
-        // Prevent body scroll when overlay is open
-        document.body.style.overflow = 'hidden';
+        document.body.classList.add('product-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.lock('product-gallery');
+        } else {
+          // Prevent body scroll when overlay is open
+          document.body.style.overflow = 'hidden';
+        }
       },
 
       closeMobileGallery() {
         this.showMobileGallery = false;
-        // Restore body scroll
-        document.body.style.overflow = '';
+        document.body.classList.remove('product-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('product-gallery');
+        } else {
+          // Restore body scroll
+          document.body.style.overflow = '';
+        }
       },
 
       // Initialize mobile carousel
@@ -1453,8 +1470,11 @@
 
       // Cleanup method
       destroy() {
-        // Restore body scroll if gallery was open
-        if (this.showMobileGallery) {
+        document.body.classList.remove('product-gallery-open');
+        if (window.themeScrollLock) {
+          window.themeScrollLock.unlock('product-gallery');
+        } else if (this.showMobileGallery) {
+          // Restore body scroll if gallery was open
           document.body.style.overflow = '';
         }
       }

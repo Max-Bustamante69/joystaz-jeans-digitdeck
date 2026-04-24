@@ -157,6 +157,13 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
+      document.body.classList.remove('look-fit-gallery-open');
+      if (window.themeScrollLock) {
+        window.themeScrollLock.unlock('look-fit-gallery');
+      } else {
+        document.body.style.overflow = '';
+      }
+
       const carousel = document.querySelector('.look-fit-carousel-{{ section.id | default: 'default' }}');
       if (carousel && typeof Swiper !== 'undefined') {
         const paginationEl = carousel.querySelector('.swiper-pagination-mobile');
@@ -276,7 +283,12 @@
           if (overlay) {
             populateGalleryContent();
             overlay.classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('look-fit-gallery-open');
+            if (window.themeScrollLock) {
+              window.themeScrollLock.lock('look-fit-gallery');
+            } else {
+              document.body.style.overflow = 'hidden';
+            }
           }
         }
 
@@ -284,7 +296,12 @@
         function closeMobileGallery() {
           if (overlay) {
             overlay.classList.add('hidden');
-            document.body.style.overflow = '';
+            document.body.classList.remove('look-fit-gallery-open');
+            if (window.themeScrollLock) {
+              window.themeScrollLock.unlock('look-fit-gallery');
+            } else {
+              document.body.style.overflow = '';
+            }
           }
         }
 

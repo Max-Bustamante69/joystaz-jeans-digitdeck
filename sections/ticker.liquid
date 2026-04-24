@@ -6,11 +6,11 @@
 
 <style>
   /* Smart Ticker Animation */
-  .ticker-container {
+  .announcement-ticker {
     position: relative;
   }
 
-  .ticker-wrap {
+  .announcement-ticker__track {
     animation: ticker linear infinite;
     animation-duration: {{ section.settings.animation_duration | default: 40 }}s;
     transform: translateX(0%);
@@ -29,25 +29,49 @@
     }
   }
 
-  .ticker-item {
+  .announcement-ticker__item {
     flex-shrink: 0;
   }
 
-  .ticker-bullet {
+  .announcement-ticker__bullet {
     flex-shrink: 0;
     opacity: 0.8;
   }
 
   @media (max-width: 768px) {
-    .ticker-wrap {
+    .announcement-ticker__track {
       animation-duration: {{ section.settings.mobile_animation_duration | default: 25 }}s;
     }
 
-    .ticker-bullet {
+    .announcement-ticker__bullet {
       margin: 0 0.75rem; /* Smaller spacing on mobile */
     }
   }
 </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.querySelector('#shopify-section-{{ section.id }} [data-announcement-bar]');
+    if (!bar) return;
+
+    const styles = window.getComputedStyle(bar);
+    const hiddenByCss =
+      styles.display === 'none'
+      || styles.visibility === 'hidden'
+      || Number.parseFloat(styles.opacity || '1') === 0
+      || bar.offsetHeight === 0;
+
+    if (hiddenByCss) {
+      console.warn('[announcement-bar] Hidden by CSS/injection', {
+        sectionId: '{{ section.id }}',
+        display: styles.display,
+        visibility: styles.visibility,
+        opacity: styles.opacity,
+        className: bar.className,
+      });
+    }
+  });
+</script>
 
 {% schema %}
 {

@@ -30,7 +30,7 @@
       {% if section.settings.mobile_layout == 'slider' %}
         <!-- Mobile Slider -->
         <div class="lg:hidden">
-          <div id="category-mobile-slider-{{ section.id }}" class=" ">
+          <div id="category-mobile-slider-{{ section.id }}" style="touch-action: pan-y;">
             <div class="swiper-wrapper">
               {% for block in section.blocks %}
                 {% case block.type %}
@@ -55,7 +55,7 @@
         {% if section.blocks.size > 4 %}
           <!-- Desktop Carousel for more than 4 slides -->
           <div class="hidden lg:block">
-            <div id="category-desktop-slider-{{ section.id }}" class="  ">
+            <div id="category-desktop-slider-{{ section.id }}" style="touch-action: pan-y;">
               <div class="swiper-wrapper ">
                 {% for block in section.blocks %}
                   {% case block.type %}
@@ -135,8 +135,8 @@
       const mobileSwiper = new Swiper(mobileSliderElement, {
         slidesPerView: 1.2,
         spaceBetween: 2,
-        touchReleaseOnEdges: true,
         touchStartPreventDefault: false,
+        touchAngle: 45,
         freeMode: {
           enabled: true,
           sticky: true,
@@ -156,8 +156,8 @@
         const desktopSwiper = new Swiper(desktopSliderElement, {
           slidesPerView: 4.2,
           spaceBetween: 4,
-          touchReleaseOnEdges: true,
           touchStartPreventDefault: false,
+          touchAngle: 45,
           freeMode: {
             enabled: true,
             sticky: true,

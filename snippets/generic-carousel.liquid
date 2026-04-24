@@ -39,7 +39,7 @@
     class="swiper-{{ carousel_id }} {{ carousel_class }}"
     data-carousel-id="{{ carousel_id }}"
     data-carousel-type="generic-carousel"
-    style="padding-left: {{ padding_left_mobile }}px; padding-right: {{ padding_right_mobile }}px;"
+    style="padding-left: {{ padding_left_mobile }}px; padding-right: {{ padding_right_mobile }}px; touch-action: pan-y;"
   >
     <div class="swiper-wrapper">
       {{ content }}
@@ -72,11 +72,10 @@
       const swiper = new Swiper(carouselElement, {
         slidesPerView: {{ slides_per_view_mobile | json }},
         spaceBetween: {{ space_between_mobile }},
-        touchReleaseOnEdges: true,
         touchStartPreventDefault: false,
         touchMoveStopPropagation: false,
-        touchAngle: 20,
-        threshold: 8,
+        touchAngle: 45,
+        threshold: 10,
         passiveListeners: true,
         {% if centered_slides %}
         centeredSlides: true,
@@ -96,12 +95,6 @@
         grabCursor: false,
         resistance: true,
         resistanceRatio: 0.85,
-        watchSlidesProgress: true,
-        watchSlidesVisibility: true,
-        snapOnRelease: true,
-        snapOnDrag: true,
-        snapSwipeThreshold: 0.1,
-        snapSwipeDuration: 300,
         breakpoints: {
           1024: {
             slidesPerView: {{ slides_per_view_desktop | json }},

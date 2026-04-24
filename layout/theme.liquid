@@ -14,6 +14,12 @@
     {{ content_for_header }}
     <!-- Swiper.js CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <style>
+      .swiper-horizontal,
+      .swiper-horizontal > .swiper-wrapper {
+        touch-action: pan-y !important;
+      }
+    </style>
 
     <!-- HLS.js for video streaming -->
     <script defer src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>

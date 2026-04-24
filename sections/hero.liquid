@@ -11,7 +11,7 @@
   {% comment %} overlay gradient {% endcomment %}
 
   {% if section.blocks.size > 0 %}
-    <div id="hero-swiper-{{ section.id }}" class="swiper z-10">
+    <div id="hero-swiper-{{ section.id }}" class="swiper z-10" style="touch-action: pan-y;">
       <div class="swiper-wrapper">
         {% for block in section.blocks %}
           {% case block.type %}
@@ -356,9 +356,8 @@
         loop: true,
         speed: {{ section.settings.animation_duration | default: 1000 }},
         grabCursor: false,
-        touchReleaseOnEdges: true,
         touchStartPreventDefault: false,
-        freeMode: { enabled: true, sticky: true },
+        touchAngle: 45,
         navigation: {
           nextEl: '.swiper-button-next',
           prevEl: '.swiper-button-prev',

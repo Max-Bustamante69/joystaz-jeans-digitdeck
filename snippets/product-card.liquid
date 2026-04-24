@@ -47,7 +47,7 @@
         data-section-id="{{ section.id }}"
         data-carousel-type="product-images"
         id="product-images-carousel-{{ product.id }}-{{ section.id }}"
-        style="touch-action: pan-y; overscroll-behavior: contain;"
+        style="touch-action: pan-y;"
       >
         <div class="swiper-wrapper h-full" @mouseenter="imageHovered = true" @mouseleave="imageHovered = false">
           <!-- Build slides: overlay for first two, then remaining singles -->
@@ -1489,16 +1489,11 @@
               allowTouchMove: true,
               resistanceRatio: 0,
               nested: true,
-              touchReleaseOnEdges: true,
               grabCursor: false,
-              touchRatio: 1,
-              touchAngle: 20,
-              threshold: 8,
-              simulateTouch: true,
+              touchAngle: 45,
+              threshold: 10,
               touchStartPreventDefault: false,
-              touchStartForcePreventDefault: false,
               touchMoveStopPropagation: false,
-              autoHeight: false,
               centeredSlides: false,
               loop: false,
               navigation: {

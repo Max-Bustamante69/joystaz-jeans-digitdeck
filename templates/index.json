@@ -16,12 +16,12 @@
           "type": "slide",
           "settings": {
             "media_type": "image",
-            "image": "shopify://shop_images/Copia_de_BANNER_WEB_712_x_400_px.png",
-            "mobile_image": "shopify://shop_images/Stories.png",
+            "image": "shopify://shop_images/Copia_de_BANNER_WEB_712_x_400_px_2.png",
+            "mobile_image": "shopify://shop_images/BANNER_WEB_712_x_400_px_Historia_de_Instagram.png",
             "image_url": "",
             "title": "",
             "description": "",
-            "button_text": "VER COLECCIÓN",
+            "button_text": "VER LO NUEVO",
             "button_link": "shopify://collections/jeans-mujer",
             "button_style": "h-11 px-6 border border-1 border-white capitalize"
           }

@@ -352,20 +352,7 @@
                   {% endcapture %}
 
                   {% comment %} Render carousel using generic carousel snippet {% endcomment %}
-                  {%
-                    render 'generic-carousel',
-                    carousel_id: block.id,
-                    carousel_class: 'look-fit-carousel',
-                    content: carousel_content,
-                    show_arrows: true,
-                    slides_per_view_mobile: block.settings.carousel_slides_mobile | default: 1.2,
-                    slides_per_view_desktop: block.settings.carousel_slides_desktop | default: 3,
-                    space_between_mobile: block.settings.carousel_gap_mobile | default: 16,
-                    space_between_desktop: block.settings.carousel_gap_desktop | default: 24,
-                    centered_slides: true,
-                    free_mode: true,
-                    total_items: fits_to_show.size
-                  %}
+                  {% render 'generic-carousel', carousel_id: block.id, carousel_class: 'look-fit-carousel', content: carousel_content, show_arrows: true, slides_per_view_mobile: block.settings.carousel_slides_mobile, default: 24, slides_per_view_desktop: block.settings.carousel_slides_desktop, space_between_mobile: block.settings.carousel_gap_mobile, space_between_desktop: block.settings.carousel_gap_desktop, centered_slides: true, free_mode: true, total_items: fits_to_show.size %}
 
                 {% else %}
                   {% comment %} Grid Display Mode {% endcomment %}
@@ -386,17 +373,7 @@
 
                   {% comment %} Render grid using generic grid snippet {% endcomment %}
                   <div class="px-4 lg:px-12">
-                    {%
-                      render 'generic-grid',
-                      grid_id: block.id,
-                      grid_class: 'look-fit-grid',
-                      content: grid_content,
-                      columns_mobile: block.settings.grid_columns_mobile | default: 2,
-                      columns_desktop: block.settings.grid_columns_desktop | default: 4,
-                      gap_mobile: block.settings.grid_gap_mobile | default: 4,
-                      gap_desktop: block.settings.grid_gap_desktop | default: 6,
-                      total_items: fits_to_show.size
-                    %}
+                    {% render 'generic-grid', grid_id: block.id, grid_class: 'look-fit-grid', content: grid_content, columns_mobile: block.settings.grid_columns_mobile, default: 6, columns_desktop: block.settings.grid_columns_desktop, gap_mobile: block.settings.grid_gap_mobile, gap_desktop: block.settings.grid_gap_desktop, total_items: fits_to_show.size %}
                   </div>
                 {% endif %}
               </div>
@@ -810,3 +787,49 @@
     transition: all 0.3s ease;
   }
 </style>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: |-
+    {%
+                        render 'generic-carousel',
+                        carousel_id: block.id,
+                        carousel_class: 'look-fit-carousel',
+                        content: carousel_content,
+                        show_arrows: true,
+                        slides_per_view_mobile: block.settings.carousel_slides_mobile | default: 1.2,
+                        slides_per_view_desktop: block.settings.carousel_slides_desktop | default: 3,
+                        space_between_mobile: block.settings.carousel_gap_mobile | default: 16,
+                        space_between_desktop: block.settings.carousel_gap_desktop | default: 24,
+                        centered_slides: true,
+                        free_mode: true,
+                        total_items: fits_to_show.size
+                      %}
+  to: "{% render 'generic-carousel', carousel_id: block.id, carousel_class: 'look-fit-carousel',
+    content: carousel_content, show_arrows: true, slides_per_view_mobile: block.settings.carousel_slides_mobile,
+    default: 24, slides_per_view_desktop: block.settings.carousel_slides_desktop,
+    space_between_mobile: block.settings.carousel_gap_mobile, space_between_desktop:
+    block.settings.carousel_gap_desktop, centered_slides: true, free_mode: true, total_items:
+    fits_to_show.size %}"
+  position: 17443..17911
+- from: |-
+    {%
+                          render 'generic-grid',
+                          grid_id: block.id,
+                          grid_class: 'look-fit-grid',
+                          content: grid_content,
+                          columns_mobile: block.settings.grid_columns_mobile | default: 2,
+                          columns_desktop: block.settings.grid_columns_desktop | default: 4,
+                          gap_mobile: block.settings.grid_gap_mobile | default: 4,
+                          gap_desktop: block.settings.grid_gap_desktop | default: 6,
+                          total_items: fits_to_show.size
+                        %}
+  to: "{% render 'generic-grid', grid_id: block.id, grid_class: 'look-fit-grid', content:
+    grid_content, columns_mobile: block.settings.grid_columns_mobile, default: 6,
+    columns_desktop: block.settings.grid_columns_desktop, gap_mobile: block.settings.grid_gap_mobile,
+    gap_desktop: block.settings.grid_gap_desktop, total_items: fits_to_show.size %}"
+  position: 18856..19194
+{% endcomment %}
